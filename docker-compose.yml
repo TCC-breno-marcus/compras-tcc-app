@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  # Serviço do Banco de Dados PostgreSQL
+  postgres-db:
+    image: postgres:17
+    container_name: postgres-db-container
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=meuuser
+      - POSTGRES_PASSWORD=minhasenha
+      - POSTGRES_DB=meudb
+    ports:
+      - "5432:5432" # Expõe a porta para o host (sua máquina)
+    volumes:
+      - postgres-data:/var/lib/postgresql/data # Volume para persistir os dados
+
+  # Serviço do Backend .NET
+  backend-service:
+    image: mcr.microsoft.com/dotnet/sdk:8.0 # Usamos a imagem do SDK para ter as ferramentas .NET
+    container_name: backend-service-container
+    working_dir: /app/backend
+    command: dotnet watch run --urls "http://*:8080"
+    ports:
+      - "5000:8080" # Mapeia a porta 8080 do container para 5000 no host
+      - "5001:8081" # Mapeia a porta 8081 do container para 5001 no host (para https)
+    volumes:
+      - ./backend:/app/backend # Mapeia a pasta local 'backend' para dentro do container
+
+  # Serviço do Frontend Vue.js
+  frontend-service:
+    image: node:20
+    container_name: frontend-service-container
+    working_dir: /app/frontend
+    command: npm run dev -- --host
+    ports:
+      - "5173:5173" # Expõe a porta do Vite
+    volumes:
+      - ./frontend:/app/frontend # Mapeia a pasta local 'frontend' para dentro do container
+
+volumes:
+  postgres-data: # Declaração do volume de dados do Postgres
