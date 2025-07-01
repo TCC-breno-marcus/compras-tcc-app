@@ -1,0 +1,32 @@
+<script setup lang="ts">
+import { RouterView } from 'vue-router'
+import Header from '@/components/layout/Header.vue'
+import SidebarMenu from '@/components/layout/SidebarMenu.vue'
+import Footer from '@/components/layout/Footer.vue'
+import { computed } from 'vue';
+import { useLayoutStore } from '@/stores/layout';
+
+const layoutStore = useLayoutStore();
+const isSidebarCollapsed = computed(() => layoutStore.isSidebarCollapsed);
+</script>
+
+<template>
+  <div class="flex w-full">
+
+    <!-- <div class="w-14rem"> -->
+      <SidebarMenu />
+    <!-- </div> -->
+
+    <div class="flex flex-column justify-content-between align-items-between w-full h-screen">
+      <Header />
+      <main class="flex flex-column h-full p-4">
+        <RouterView />
+      </main>
+      <Footer />
+    </div>
+
+  </div>
+</template>
+
+<style scoped>
+</style>
