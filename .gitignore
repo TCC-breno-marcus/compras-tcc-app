@@ -1,0 +1,29 @@
+# .gitignore
+
+### Pasta do Visual Studio ###
+.vs/
+*.suo
+*.user
+*.sln.docstates
+
+### Arquivos do Rider ###
+.idea/
+
+### Pasta do .NET ###
+obj/
+bin/
+
+### Arquivos gerados pelo sistema ###
+*.DS_Store
+Thumbs.db
+
+### Logs ###
+logs/
+*.log
+
+### Dependências do Node ###
+node_modules/
+dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
