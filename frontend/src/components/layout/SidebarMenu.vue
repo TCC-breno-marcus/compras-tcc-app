@@ -21,24 +21,32 @@ const items = ref([
             },
             {
                 label: 'Nova Solicitação',
-                icon: 'pi pi-folder-open'
+                icon: 'pi pi-folder-open',
+                route: '/solicitacoes/criar'
             },
             {
                 label: 'Minhas Solicitações',
-                icon: 'pi pi-print'
+                icon: 'pi pi-print',
+                route: '/solicitacoes/minhas'
             }
         ]
     },
     {
-        label: 'Search',
-        icon: 'pi pi-search'
+        label: 'Painel do Gestor',
+        icon: 'pi pi-th-large',
+        command: () => {
+            router.push('/painel-gestor');
+        }
     },
     {
         separator: true
     },
     {
         label: 'Fale Conosco',
-        icon: 'pi pi-share-alt'
+        icon: 'pi pi-envelope',
+        command: () => {
+            router.push('/fale-conosco');
+        }
     }
 ]);
 
@@ -49,9 +57,9 @@ const items = ref([
         <h1>
             {{ isSidebarCollapsed ? 'LG' : 'LOGO' }}
         </h1>
-        <div class="sidebar-container flex justify-center" :class="{ 'sidebar-collapsed': isSidebarCollapsed }">
+        <div class="sidebar-container flex justify-center text-sm" :class="{ 'sidebar-collapsed': isSidebarCollapsed }">
             <div class="menu-header" :class="{ 'menu-header-collapsed': isSidebarCollapsed }">
-                <span class="menu-label">MENU</span>
+                <span class="menu-label ">MENU</span>
             </div>
             <TieredMenu :model="items" :pt="{
                 root: {
@@ -60,7 +68,23 @@ const items = ref([
                         'border': 'none'
                     }
                 }
-            }" />
+            }">
+
+                <template #item="{ item, props, hasSubmenu }">
+                    <router-link v-if="item.route" v-slot="{ href, navigate }" :to="item.route" custom>
+                        <a v-ripple :href="href" v-bind="props.action" @click="navigate">
+                            <span :class="item.icon" />
+                            <span class="tieredmenu-subitem-label ml-2">{{ item.label }}</span>
+                        </a>
+                    </router-link>
+                    <a v-else v-ripple :href="item.url" :target="item.target" v-bind="props.action">
+                        <span :class="item.icon" />
+                        <span class="tieredmenu-item-label ml-2">{{ item.label }}</span>
+                        <span v-if="hasSubmenu" class="submenu-icon pi pi-angle-right ml-auto" />
+                    </a>
+                </template>
+
+            </TieredMenu>
         </div>
     </div>
 </template>
@@ -93,16 +117,16 @@ const items = ref([
     display: none;
 }
 
-:deep(.sidebar-collapsed ul.p-tieredmenu-root-list .p-tieredmenu-item-label) {
+.sidebar-collapsed .tieredmenu-item-label {
     display: none;
 }
 
-:deep(.sidebar-collapsed ul.p-tieredmenu-submenu .p-tieredmenu-item-label) {
+:deep(.sidebar-collapsed .p-tieredmenu-submenu .tieredmenu-item-label) {
     display: flex;
 }
 
 /* Remove seta de submenu */
-:deep(.sidebar-collapsed .p-icon.p-tieredmenu-submenu-icon) {
+.sidebar-collapsed .submenu-icon {
     display: none;
 }
 
@@ -111,9 +135,10 @@ const items = ref([
     min-width: auto;
 }
 
-:deep(.sidebar-collapsed .p-tieredmenu-submenu) {
+:deep(.p-tieredmenu-submenu) {
     width: max-content;
 }
+
 
 .sidebar-container :deep(.submenu-title) a {
     display: none;
@@ -161,5 +186,9 @@ const items = ref([
 
 :deep(.p-tieredmenu-submenu .p-tieredmenu-item-content:focus) {
     background-color: var(--p-surface-100) !important;
+}
+
+:deep(.p-tieredmenu-separator) {
+    border-block-start: 1px solid var(--p-surface-500)
 }
 </style>

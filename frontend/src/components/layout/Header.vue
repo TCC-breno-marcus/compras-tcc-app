@@ -15,7 +15,7 @@ function toggleSidebar() {
     <Button icon="pi pi-bars" variant="text" style="color: var(--p-text-color);" @click="toggleSidebar" />
     <div class="flex align-items-center">
       <Avatar label="J" class="mr-2" shape="circle" />
-      <p>João da Silva (DCOMP)</p>
+      <p class="text-sm">João da Silva (DCOMP)</p>
     </div>
   </div>
 </template>
