@@ -12,7 +12,7 @@ const router = useRouter();
 const items = ref([
     {
         label: 'Solicitações',
-        icon: 'pi pi-file',
+        icon: 'pi pi-shopping-cart',
         items: [
             {
                 label: 'Solicitações',
@@ -21,12 +21,12 @@ const items = ref([
             },
             {
                 label: 'Nova Solicitação',
-                icon: 'pi pi-folder-open',
+                icon: 'pi pi-cart-plus',
                 route: '/solicitacoes/criar'
             },
             {
                 label: 'Minhas Solicitações',
-                icon: 'pi pi-print',
+                icon: 'pi pi-list',
                 route: '/solicitacoes/minhas'
             }
         ]
@@ -54,9 +54,9 @@ const items = ref([
 
 <template>
     <div class="sidebar-container flex flex-column align-items-center p-2 gap-2 h-screen">
-        <h1>
+        <h2>
             {{ isSidebarCollapsed ? 'LG' : 'LOGO' }}
-        </h1>
+        </h2>
         <div class="sidebar-container flex justify-center text-sm" :class="{ 'sidebar-collapsed': isSidebarCollapsed }">
             <div class="menu-header" :class="{ 'menu-header-collapsed': isSidebarCollapsed }">
                 <span class="menu-label ">MENU</span>
@@ -77,8 +77,9 @@ const items = ref([
                             <span class="tieredmenu-subitem-label ml-2">{{ item.label }}</span>
                         </a>
                     </router-link>
-                    <a v-else v-ripple :href="item.url" :target="item.target" v-bind="props.action">
-                        <span :class="item.icon" v-tooltip="isSidebarCollapsed ? { value: item.label } : null" />
+                    <a v-else v-ripple :href="item.url" :target="item.target" v-bind="props.action"
+                        v-tooltip="isSidebarCollapsed ? { value: item.label } : null">
+                        <span :class="item.icon" />
                         <span class="tieredmenu-item-label ml-2">{{ item.label }}</span>
                         <span v-if="hasSubmenu" class="submenu-icon pi pi-angle-right ml-auto" />
                     </a>
@@ -92,6 +93,7 @@ const items = ref([
 <style scoped>
 .sidebar-container {
     background-color: var(--p-surface-800);
+    /* background-color: #1B325F; */
     color: var(--p-surface-100);
     padding: 1rem 0;
     transition: width 0.3s ease;
