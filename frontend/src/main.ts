@@ -6,6 +6,7 @@ import PrimeVue from 'primevue/config';
 import 'primeflex/primeflex.css'
 import MyPreset from './theme'
 import 'primeicons/primeicons.css'
+import Tooltip from 'primevue/tooltip';
 
 import App from './App.vue'
 import router from './router'
@@ -28,5 +29,7 @@ app.use(PrimeVue, {
 });
 
 app.use(router)
+
+app.directive('tooltip', Tooltip);
 
 app.mount('#app')

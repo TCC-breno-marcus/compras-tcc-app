@@ -78,7 +78,7 @@ const items = ref([
                         </a>
                     </router-link>
                     <a v-else v-ripple :href="item.url" :target="item.target" v-bind="props.action">
-                        <span :class="item.icon" />
+                        <span :class="item.icon" v-tooltip="isSidebarCollapsed ? { value: item.label } : null" />
                         <span class="tieredmenu-item-label ml-2">{{ item.label }}</span>
                         <span v-if="hasSubmenu" class="submenu-icon pi pi-angle-right ml-auto" />
                     </a>
