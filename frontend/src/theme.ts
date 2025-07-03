@@ -5,10 +5,6 @@ import Aura from '@primeuix/themes/aura'
 
 const MyPreset = definePreset(Aura, {
 
-  base: {
-    fontFamily:
-      "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif",
-  },
   semantic: {
     // Cores Semânticas Principais
     primary: {
