@@ -1,12 +1,18 @@
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { defineStore } from 'pinia'
 
-export const useLayoutStore = defineStore('layout', () => {
-  const isSidebarCollapsed = ref(false)
+export const useLayoutStore = defineStore(
+  'layout',
+  () => {
+    const isSidebarCollapsed = ref(false)
 
-  function toggleSidebar() {
-    isSidebarCollapsed.value = !isSidebarCollapsed.value
-  }
+    function toggleSidebar() {
+      isSidebarCollapsed.value = !isSidebarCollapsed.value
+    }
 
-  return { isSidebarCollapsed, toggleSidebar }
-})
+    return { isSidebarCollapsed, toggleSidebar }
+  },
+  {
+    persist: true,
+  },
+)
