@@ -97,6 +97,7 @@ const MyPreset = definePreset(Aura, {
     button: {
       root: {
         borderRadius: '8px',
+        paddingY: '4px'
       },
     },
     card: {
@@ -107,9 +108,21 @@ const MyPreset = definePreset(Aura, {
     },
     inputtext: {
       root: {
-        borderRadius: '6px',
+        borderRadius: '10px',
         borderColor: '{surface.300}',
+        paddingY: '4px'
       },
+    },
+    select: {
+      root: {
+        paddingY: '4px'
+      }
+    },
+    toolbar: {
+      root: {
+        padding: '6px',
+        borderColor: 'transparent'
+      }
     }
   },
 })

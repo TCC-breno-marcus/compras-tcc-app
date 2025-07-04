@@ -53,7 +53,7 @@ const toggle = (event: Event) => {
         aria-controls="overlay_menu" />
       <!-- <p class="text-sm">João da Silva</p> -->
       <Popover ref="op">
-        <div class="user-menu-content flex flex-column gap-2 w-14rem text-sm">
+        <div class="user-menu-content flex flex-column w-14rem text-sm">
 
           <div class="flex flex-column align-items-center p-">
             <Avatar label="J" size="large" shape="circle" />

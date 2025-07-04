@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import AppLayout from '@/layouts/AppLayout.vue'
 import NotFoundView from '@/views/NotFoundView.vue'
+import NewSolicitation from '@/features/solicitations/views/NewSolicitation.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -12,8 +13,13 @@ const router = createRouter({
       children: [
         // As páginas são "filhas" do layout
         {
-          path: '', // Rota raiz (ex: dashboard)
-          name: 'home',
+          path: '/solicitacoes/criar',
+          name: 'NewSolicitation',
+          component: NewSolicitation,
+        },
+        {
+          path: '',
+          name: 'Home',
           component: HomeView,
         },
         {
