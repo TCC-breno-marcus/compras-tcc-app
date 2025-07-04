@@ -8,7 +8,7 @@ export const useMenuStore = defineStore('menu', () => {
   const itemsMenu = ref([
     {
       label: 'Solicitações',
-      icon: 'shopping_cart',
+      icon: 'assignment',
       materialIcon: true,
       items: [
         {
@@ -18,13 +18,13 @@ export const useMenuStore = defineStore('menu', () => {
         },
         {
           label: 'Nova Solicitação',
-          icon: 'add_shopping_cart',
+          icon: 'add',
           materialIcon: true,
           route: '/solicitacoes/criar',
         },
         {
           label: 'Minhas Solicitações',
-          icon: 'list_alt',
+          icon: 'assignment_ind',
           materialIcon: true,
           route: '/solicitacoes/minhas',
         },

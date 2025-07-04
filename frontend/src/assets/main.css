@@ -6,6 +6,11 @@
 body {
   font-family: 'Inter', 'Roboto', sans-serif;
   color: var(--p-text-color);
+  background-color: var(--p-surface-50);
+}
+
+.p-dark body {
+  background-color: initial;
 }
 
 a {

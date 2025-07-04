@@ -44,9 +44,10 @@ const toggle = (event: Event) => {
 <template>
   <div class="header-container flex align-items-center justify-content-between px-4 py-2">
     <OverlayMenu v-if="!isLargeScreen" />
-    <h2>
-      Compras TCC
-    </h2>
+    <router-link to="/" class="logo-link logo-avancado-wrapper">
+      <span class="material-symbols-outlined">shopping_cart</span>
+      <h2 class="logo-gradiente">Compras TCC</h2>
+    </router-link>
     <div class="flex align-items-center">
       <Avatar label="J" class="mr-2 cursor-pointer" shape="circle" @click="toggle" aria-haspopup="true"
         aria-controls="overlay_menu" />
@@ -87,6 +88,32 @@ const toggle = (event: Event) => {
 </template>
 
 <style scoped>
+.logo-link {
+  text-decoration: none;
+}
+
+.logo-avancado-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-avancado-wrapper span {
+  font-size: 1.8rem;
+  color: #3498db;
+}
+
+.logo-gradiente {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 800;
+  margin: 0;
+  background: linear-gradient(45deg, #3498db, #17B287);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
 /* .header-container {
   background: linear-gradient(to bottom, transparent 0%, var(--p-surface-50) 100%);
 } */
@@ -133,8 +160,8 @@ const toggle = (event: Event) => {
   background-color: var(--p-surface-100);
 }
 
-.p-dark .profile-menu-item:hover{
-  background-color: var(--p-surface-700); 
+.p-dark .profile-menu-item:hover {
+  background-color: var(--p-surface-700);
 }
 
 .profile-menu-item i {
