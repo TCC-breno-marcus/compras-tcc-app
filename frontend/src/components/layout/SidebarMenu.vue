@@ -190,9 +190,8 @@ const { itemsMenu } = useMenuStore();
 
 :deep(.p-tieredmenu-submenu .p-tieredmenu-item-link),
 :deep(.p-tieredmenu-submenu .p-tieredmenu-item-icon) {
-    color: var(--p-surface-700);
+    color: var(--p-text-color);
 }
-
 
 :deep(.p-tieredmenu-item-content) {
     background-color: transparent !important;
@@ -227,4 +226,10 @@ const { itemsMenu } = useMenuStore();
 :deep(.p-tieredmenu-separator) {
     border-block-start: 1px solid var(--p-surface-500)
 }
+</style>
+
+<style>
+  html.p-dark .p-tieredmenu-submenu .p-tieredmenu-item-content:hover {
+      background-color: var(--p-surface-700) !important;
+  }
 </style>
