@@ -16,7 +16,8 @@ function toggleSidebar() {
 const items = ref([
     {
         label: 'Solicitações',
-        icon: 'pi pi-shopping-cart',
+        icon: 'shopping_cart',
+        materialIcon: true,
         items: [
             {
                 label: 'Solicitações',
@@ -25,26 +26,30 @@ const items = ref([
             },
             {
                 label: 'Nova Solicitação',
-                icon: 'pi pi-cart-plus',
+                icon: 'add_shopping_cart',
+                materialIcon: true,
                 route: '/solicitacoes/criar'
             },
             {
                 label: 'Minhas Solicitações',
-                icon: 'pi pi-list',
+                icon: 'list_alt',
+                materialIcon: true,
                 route: '/solicitacoes/minhas'
             }
         ]
     },
     {
         label: 'Painel do Gestor',
-        icon: 'pi pi-th-large',
+        icon: 'bar_chart',
+        materialIcon: true,
         command: () => {
             router.push('/painel-gestor');
         }
     },
     {
         label: 'Fale Conosco',
-        icon: 'pi pi-envelope',
+        icon: 'mail',
+        materialIcon: true,
         command: () => {
             router.push('/fale-conosco');
         }
@@ -56,9 +61,11 @@ const items = ref([
 <template>
     <div class="sidebar-container flex flex-column align-items-center p-2 gap-2 h-screen"
         :class="{ 'sidebar-collapsed': isSidebarCollapsed }">
+
         <div class="sidebar-container flex justify-center text-sm gap-1"
             :class="{ 'sidebar-collapsed': isSidebarCollapsed }">
-            <div class="menu-header flex align-items-center gap-1 px-3"
+
+            <div class="menu-header flex align-items-center gap-1 px-2"
                 :class="isSidebarCollapsed ? 'justify-content-center' : 'justify-content-start'">
                 <span class="menu-open-icon material-symbols-outlined px-2 py-1" :style="{
                     transform: isSidebarCollapsed ? 'scaleX(-1)' : 'scaleX(1)',
@@ -67,6 +74,7 @@ const items = ref([
                 </span>
                 <span v-if="!isSidebarCollapsed" class="menu-label text-sm">Menu</span>
             </div>
+
             <TieredMenu :model="items" :pt="{
                 root: {
                     style: {
@@ -79,14 +87,24 @@ const items = ref([
                 <template #item="{ item, props, hasSubmenu }">
                     <router-link v-if="item.route" v-slot="{ href, navigate }" :to="item.route" custom>
                         <a v-ripple :href="href" v-bind="props.action" @click="navigate">
-                            <span :class="item.icon" />
-                            <span class="tieredmenu-subitem-label ml-2">{{ item.label }}</span>
+
+                            <span v-if="item.materialIcon" class="material-symbols-outlined">
+                                {{ item.icon }}
+                            </span>
+                            <span v-else :class="item.icon" />
+
+                            <span class="tieredmenu-subitem-label">{{ item.label }}</span>
                         </a>
                     </router-link>
                     <a v-else v-ripple :href="item.url" :target="item.target" v-bind="props.action"
                         v-tooltip="isSidebarCollapsed ? { value: item.label } : null">
-                        <span :class="item.icon" />
-                        <span class="tieredmenu-item-label ml-2">{{ item.label }}</span>
+
+                        <span v-if="item.materialIcon" class="material-symbols-outlined">
+                            {{ item.icon }}
+                        </span>
+                        <span v-else :class="item.icon" />
+
+                        <span class="tieredmenu-item-label">{{ item.label }}</span>
                         <span v-if="hasSubmenu" class="submenu-icon pi pi-angle-right ml-auto" />
                     </a>
                 </template>
@@ -109,13 +127,21 @@ const items = ref([
     font-weight: 500;
 }
 
+.material-symbols-outlined {
+    font-size: 1.4rem;
+    font-variation-settings:
+        'FILL' 0,
+        'wght' 300,
+        'GRAD' 0,
+        'opsz';
+}
+
 .sidebar-container.sidebar-collapsed {
     width: 60px;
 }
 
 .menu-header {
-    /* padding: 0 1.5rem 1rem 1.5rem; */
-    font-size: 0.8rem;
+    /* padding-left: 1.2rem !important; */
     font-weight: 600;
     color: var(--p-surface-300);
     white-space: nowrap;
@@ -128,12 +154,7 @@ const items = ref([
     cursor: pointer;
     transition: transform 0.3s ease;
     border-radius: 4px;
-
-    font-variation-settings:
-        'FILL' 1,
-        'wght' 300,
-        'GRAD' 0,
-        'opsz' 24;
+    font-size: 1.6rem;
 }
 
 .menu-header {
