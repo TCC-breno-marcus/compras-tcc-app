@@ -58,7 +58,8 @@ const items = ref([
         :class="{ 'sidebar-collapsed': isSidebarCollapsed }">
         <div class="sidebar-container flex justify-center text-sm gap-1"
             :class="{ 'sidebar-collapsed': isSidebarCollapsed }">
-            <div class="menu-header flex justify-content-center align-items-center gap-1">
+            <div class="menu-header flex align-items-center gap-1 px-3"
+                :class="isSidebarCollapsed ? 'justify-content-center' : 'justify-content-start'">
                 <span class="menu-open-icon material-symbols-outlined px-2 py-1" :style="{
                     transform: isSidebarCollapsed ? 'scaleX(-1)' : 'scaleX(1)',
                 }" @click="toggleSidebar" v-tooltip="isSidebarCollapsed ? { value: 'Menu' } : null">
@@ -105,7 +106,7 @@ const items = ref([
     display: flex;
     flex-direction: column;
     width: 220px;
-    /* overflow: hidden;  */
+    font-weight: 600;
 }
 
 .sidebar-container.sidebar-collapsed {
@@ -127,6 +128,12 @@ const items = ref([
     cursor: pointer;
     transition: transform 0.3s ease;
     border-radius: 4px;
+
+    font-variation-settings:
+        'FILL' 1,
+        'wght' 300,
+        'GRAD' 0,
+        'opsz' 24;
 }
 
 .menu-header {
