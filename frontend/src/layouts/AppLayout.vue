@@ -3,19 +3,16 @@ import { RouterView } from 'vue-router'
 import Header from '@/components/layout/Header.vue'
 import SidebarMenu from '@/components/layout/SidebarMenu.vue'
 import Footer from '@/components/layout/Footer.vue'
-import { computed } from 'vue';
-import { useLayoutStore } from '@/stores/layout';
+import { useBreakpoint } from '@/composables/useBreakpoint';
 
-const layoutStore = useLayoutStore();
-const isSidebarCollapsed = computed(() => layoutStore.isSidebarCollapsed);
+const { isLargeScreen } = useBreakpoint();
+
 </script>
 
 <template>
   <div class="flex w-full">
 
-    <!-- <div class="w-14rem"> -->
-      <SidebarMenu />
-    <!-- </div> -->
+    <SidebarMenu v-if="isLargeScreen" />
 
     <div class="flex flex-column justify-content-between align-items-between w-full h-screen">
       <Header />
@@ -28,5 +25,4 @@ const isSidebarCollapsed = computed(() => layoutStore.isSidebarCollapsed);
   </div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

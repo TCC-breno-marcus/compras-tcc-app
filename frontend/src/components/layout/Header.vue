@@ -1,10 +1,15 @@
 <script setup lang="ts">
 import Avatar from 'primevue/avatar';
+import OverlayMenu from './OverlayMenu.vue';
+import { useBreakpoint } from '@/composables/useBreakpoint';
+
+const { isLargeScreen } = useBreakpoint();
 
 </script>
 
 <template>
   <div class="header-container flex align-items-center justify-content-between px-4 py-2">
+    <OverlayMenu v-if="!isLargeScreen"  /> 
     <h2>
       Compras TCC
     </h2>

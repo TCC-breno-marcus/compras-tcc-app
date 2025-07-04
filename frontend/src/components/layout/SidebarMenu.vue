@@ -1,60 +1,17 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, nextTick } from 'vue';
 import { useLayoutStore } from '@/stores/layout';
-import { useRouter } from 'vue-router';
+import { useMenuStore } from '@/stores/menu';
 import TieredMenu from 'primevue/tieredmenu';
 
 const layoutStore = useLayoutStore();
 const isSidebarCollapsed = computed(() => layoutStore.isSidebarCollapsed);
 
-const router = useRouter();
-
 function toggleSidebar() {
     layoutStore.toggleSidebar();
 }
 
-const items = ref([
-    {
-        label: 'Solicitações',
-        icon: 'shopping_cart',
-        materialIcon: true,
-        items: [
-            {
-                label: 'Solicitações',
-                class: 'submenu-title',
-                disabled: true
-            },
-            {
-                label: 'Nova Solicitação',
-                icon: 'add_shopping_cart',
-                materialIcon: true,
-                route: '/solicitacoes/criar'
-            },
-            {
-                label: 'Minhas Solicitações',
-                icon: 'list_alt',
-                materialIcon: true,
-                route: '/solicitacoes/minhas'
-            }
-        ]
-    },
-    {
-        label: 'Painel do Gestor',
-        icon: 'bar_chart',
-        materialIcon: true,
-        command: () => {
-            router.push('/painel-gestor');
-        }
-    },
-    {
-        label: 'Fale Conosco',
-        icon: 'mail',
-        materialIcon: true,
-        command: () => {
-            router.push('/fale-conosco');
-        }
-    }
-]);
+const { itemsMenu } = useMenuStore();
 
 </script>
 
@@ -75,7 +32,7 @@ const items = ref([
                 <span v-if="!isSidebarCollapsed" class="menu-label text-sm">Menu</span>
             </div>
 
-            <TieredMenu :model="items" :pt="{
+            <TieredMenu :model="itemsMenu" :pt="{
                 root: {
                     style: {
                         'background-color': 'transparent',
@@ -127,14 +84,6 @@ const items = ref([
     font-weight: 500;
 }
 
-.material-symbols-outlined {
-    font-size: 1.4rem;
-    font-variation-settings:
-        'FILL' 0,
-        'wght' 300,
-        'GRAD' 0,
-        'opsz';
-}
 
 .sidebar-container.sidebar-collapsed {
     width: 60px;
