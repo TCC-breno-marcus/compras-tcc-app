@@ -106,7 +106,7 @@ const items = ref([
     display: flex;
     flex-direction: column;
     width: 220px;
-    font-weight: 600;
+    font-weight: 500;
 }
 
 .sidebar-container.sidebar-collapsed {
