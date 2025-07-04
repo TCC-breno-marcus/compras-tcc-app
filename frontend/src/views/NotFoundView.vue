@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
+import NotFoundSvg from '@/assets/NotFoundSvg.vue';
 
 const router = useRouter();
 
@@ -30,11 +31,7 @@ const goBack = () => {
       </div>
 
        <div class="illustration-container">
-        <img 
-          src="../assets/not-found.svg" 
-          alt="Ilustração de uma pessoa procurando por uma página não encontrada" 
-          class="illustration"
-        />
+        <NotFoundSvg />
       </div>
 
     </div>
@@ -62,8 +59,8 @@ const goBack = () => {
 
 /* Estilos da ilustração */
 .illustration-container {
-  max-width: 400px;
-  width: 100%;
+  max-width: 600px;
+  width: 35rem;
 }
 
 .illustration {
