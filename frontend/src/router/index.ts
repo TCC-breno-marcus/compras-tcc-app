@@ -1,21 +1,33 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import AppLayout from '@/layouts/AppLayout.vue'
+import NotFoundView from '@/views/NotFoundView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-{
+    {
       path: '/',
       component: AppLayout, // O Layout é o componente da rota pai
-      children: [ // As páginas são "filhas" do layout
+      children: [
+        // As páginas são "filhas" do layout
         {
           path: '', // Rota raiz (ex: dashboard)
           name: 'home',
-          component: HomeView
+          component: HomeView,
+        },
+        {
+          path: '/:pathMatch(.*)*', // Regex que captura qualquer coisa
+          name: 'NotFound',
+          component: NotFoundView,
+        },
+        {
+          path: '/error',
+          name: 'ServerError',
+          component: () => import('../views/ServerErrorView.vue'),
         },
         // ... outras rotas que usam o mesmo layout
-      ]
+      ],
     },
     // {
     //   path: '/login', // Uma rota que NÃO usa o AppLayout
