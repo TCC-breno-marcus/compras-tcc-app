@@ -3,11 +3,11 @@ import './assets/main.css'
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
-import PrimeVue from 'primevue/config';
+import PrimeVue from 'primevue/config'
 import 'primeflex/primeflex.css'
 import MyPreset from './theme'
 import 'primeicons/primeicons.css'
-import Tooltip from 'primevue/tooltip';
+import Tooltip from 'primevue/tooltip'
 
 import App from './App.vue'
 import router from './router'
@@ -23,17 +23,13 @@ app.use(PrimeVue, {
     preset: MyPreset,
     options: {
       prefix: 'p',
-      darkModeSelector: '.p-dark',
-      cssLayer: {
-        name: 'primevue',
-        order: 'app-styles, primevue, another-css-library'
-    }
-    }
-  }
-});
+      darkModeSelector: '.p-dark'
+    },
+  },
+})
 
 app.use(router)
 
-app.directive('tooltip', Tooltip);
+app.directive('tooltip', Tooltip)
 
 app.mount('#app')
