@@ -100,14 +100,15 @@ const toggle = (event: Event) => {
 
 .logo-avancado-wrapper span {
   font-size: 1.8rem;
-  color: #3498db;
+  color: var(--p-primary-500);
+  font-weight: bold;
 }
 
 .logo-gradiente {
   font-family: 'Poppins', sans-serif;
   font-weight: 800;
   margin: 0;
-  background: linear-gradient(45deg, #3498db, #17B287);
+  background: linear-gradient(45deg, var(--p-primary-500), var(--p-surface-800));
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
