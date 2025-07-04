@@ -9,6 +9,10 @@ const isSidebarCollapsed = computed(() => layoutStore.isSidebarCollapsed);
 
 const router = useRouter();
 
+function toggleSidebar() {
+    layoutStore.toggleSidebar();
+}
+
 const items = ref([
     {
         label: 'Solicitações',
@@ -39,9 +43,6 @@ const items = ref([
         }
     },
     {
-        separator: true
-    },
-    {
         label: 'Fale Conosco',
         icon: 'pi pi-envelope',
         command: () => {
@@ -53,13 +54,17 @@ const items = ref([
 </script>
 
 <template>
-    <div class="sidebar-container flex flex-column align-items-center p-2 gap-2 h-screen">
-        <h2>
-            {{ isSidebarCollapsed ? 'LG' : 'LOGO' }}
-        </h2>
-        <div class="sidebar-container flex justify-center text-sm" :class="{ 'sidebar-collapsed': isSidebarCollapsed }">
-            <div class="menu-header" :class="{ 'menu-header-collapsed': isSidebarCollapsed }">
-                <span class="menu-label ">MENU</span>
+    <div class="sidebar-container flex flex-column align-items-center p-2 gap-2 h-screen"
+        :class="{ 'sidebar-collapsed': isSidebarCollapsed }">
+        <div class="sidebar-container flex justify-center text-sm gap-1"
+            :class="{ 'sidebar-collapsed': isSidebarCollapsed }">
+            <div class="menu-header flex justify-content-center align-items-center gap-1">
+                <span class="menu-open-icon material-symbols-outlined px-2 py-1" :style="{
+                    transform: isSidebarCollapsed ? 'scaleX(-1)' : 'scaleX(1)',
+                }" @click="toggleSidebar" v-tooltip="isSidebarCollapsed ? { value: 'Menu' } : null">
+                    menu_open
+                </span>
+                <span v-if="!isSidebarCollapsed" class="menu-label text-sm">Menu</span>
             </div>
             <TieredMenu :model="items" :pt="{
                 root: {
@@ -95,20 +100,47 @@ const items = ref([
     background-color: var(--p-surface-800);
     /* background-color: #1B325F; */
     color: var(--p-surface-100);
-    padding: 1rem 0;
+    /* padding: 1rem 0; */
     transition: width 0.3s ease;
     display: flex;
     flex-direction: column;
+    width: 220px;
+    /* overflow: hidden;  */
+}
+
+.sidebar-container.sidebar-collapsed {
+    width: 60px;
 }
 
 .menu-header {
-    padding: 0 1.5rem 1rem 1.5rem;
+    /* padding: 0 1.5rem 1rem 1.5rem; */
     font-size: 0.8rem;
     font-weight: 600;
     color: var(--p-surface-300);
     white-space: nowrap;
     opacity: 1;
     transition: opacity 0.3s ease;
+}
+
+.menu-open-icon {
+    color: var(--p-surface-300);
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    border-radius: 4px;
+}
+
+.menu-header {
+    position: relative;
+}
+
+.menu-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0%;
+    right: 0%;
+    height: 1px;
+    background: linear-gradient(to right, transparent 0%, var(--p-surface-500) 50%, transparent 100%);
 }
 
 .menu-header-collapsed {
@@ -119,8 +151,31 @@ const items = ref([
     display: none;
 }
 
+.tieredmenu-item-label {
+    transition: opacity 0.3s ease;
+}
+
+.tieredmenu-item-label {
+    transition: opacity 0.3s ease;
+    white-space: nowrap;
+}
+
 .sidebar-collapsed .tieredmenu-item-label {
     display: none;
+}
+
+.menu-label {
+    transition: opacity 0.3s ease;
+    white-space: nowrap;
+}
+
+.sidebar-collapsed .menu-label {
+    display: none;
+}
+
+:deep(.p-tieredmenu) {
+    width: max-content;
+    align-self: center;
 }
 
 :deep(.sidebar-collapsed .p-tieredmenu-submenu .tieredmenu-item-label) {
@@ -173,7 +228,8 @@ const items = ref([
 }
 
 /* Hover states */
-:deep(.p-tieredmenu-item-content:hover) {
+:deep(.p-tieredmenu-item-content:hover),
+.menu-open-icon:hover {
     background-color: var(--p-surface-900) !important;
 }
 
@@ -182,7 +238,8 @@ const items = ref([
 }
 
 /* Focus states */
-:deep(.p-tieredmenu-item-content:focus) {
+:deep(.p-tieredmenu-item-content:focus),
+.menu-open-icon:focus {
     background-color: var(--p-surface-900) !important;
 }
 
