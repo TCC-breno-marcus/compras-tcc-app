@@ -13,7 +13,19 @@
 			},
 			"request": {
 				"method": "GET",
-				"header": []
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5249/api/healthcheck",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5249",
+					"path": [
+						"api",
+						"healthcheck"
+					]
+				}
 			},
 			"response": []
 		}
