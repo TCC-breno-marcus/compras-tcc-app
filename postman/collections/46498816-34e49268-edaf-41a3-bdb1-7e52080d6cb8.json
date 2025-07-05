@@ -9,7 +9,7 @@
 			"name": "Saúde",
 			"item": [
 				{
-					"name": "Healthcheck database",
+					"name": "Wake-up",
 					"id": "46498816-1b278ba4-b8ae-43bd-a642-00ffe3948ab5",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
