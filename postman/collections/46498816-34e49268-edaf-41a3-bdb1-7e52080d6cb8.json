@@ -18,7 +18,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:5249/api/healthcheck/database",
+							"raw": "http://localhost:5249/api/healthcheck",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -26,10 +26,21 @@
 							"port": "5249",
 							"path": [
 								"api",
-								"healthcheck",
-								"database"
+								"healthcheck"
 							]
 						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"id": "46498816-82c77958-94b3-4af8-a77b-94af75657eb2",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": []
 					},
 					"response": []
 				}
