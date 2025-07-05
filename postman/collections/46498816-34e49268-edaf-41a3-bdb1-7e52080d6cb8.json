@@ -9,7 +9,7 @@
 			"name": "Saúde",
 			"item": [
 				{
-					"name": "Wake Up",
+					"name": "Healthcheck database",
 					"id": "46498816-1b278ba4-b8ae-43bd-a642-00ffe3948ab5",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
@@ -18,7 +18,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:5249/api/healthcheck",
+							"raw": "http://localhost:5249/api/healthcheck/database",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -26,7 +26,8 @@
 							"port": "5249",
 							"path": [
 								"api",
-								"healthcheck"
+								"healthcheck",
+								"database"
 							]
 						}
 					},
