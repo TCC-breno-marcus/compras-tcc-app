@@ -18,12 +18,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:5249/api/healthcheck",
-							"protocol": "http",
+							"raw": "{{localhost}}/api/healthcheck",
 							"host": [
-								"localhost"
+								"{{localhost}}"
 							],
-							"port": "5249",
 							"path": [
 								"api",
 								"healthcheck"
@@ -40,7 +38,18 @@
 					},
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "{{localhost}}/api/healthcheck/database",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"healthcheck",
+								"database"
+							]
+						}
 					},
 					"response": []
 				}
