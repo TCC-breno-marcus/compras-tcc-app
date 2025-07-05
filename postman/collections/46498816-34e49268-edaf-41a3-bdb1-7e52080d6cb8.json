@@ -33,7 +33,7 @@
 					"response": []
 				},
 				{
-					"name": "New Request",
+					"name": "Healthcheck database",
 					"id": "46498816-82c77958-94b3-4af8-a77b-94af75657eb2",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
