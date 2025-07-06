@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   # Serviço do Banco de Dados PostgreSQL
@@ -11,32 +11,44 @@ services:
       - POSTGRES_PASSWORD=minhasenha
       - POSTGRES_DB=meudb
     ports:
-      - "5432:5432" # Expõe a porta para o host (sua máquina)
+      - "5432:5432"
     volumes:
-      - postgres-data:/var/lib/postgresql/data # Volume para persistir os dados
+      - postgres-data:/var/lib/postgresql/data
+    # --- SEÇÃO NOVA (HEALTHCHECK) ---
+    # Isso define um teste de saúde para o contêiner do Postgres.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U meuuser -d meudb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # Serviço do Backend .NET
   backend-service:
-    image: mcr.microsoft.com/dotnet/sdk:8.0 # Usamos a imagem do SDK para ter as ferramentas .NET
+    image: mcr.microsoft.com/dotnet/sdk:8.0
     container_name: backend-service-container
     working_dir: /app/backend
     command: dotnet watch run --urls "http://*:8080"
     ports:
-      - "5000:8080" # Mapeia a porta 8080 do container para 5000 no host
-      - "5001:8081" # Mapeia a porta 8081 do container para 5001 no host (para https)
+      - "5000:8080"
+      - "5001:8081"
     volumes:
-      - ./backend:/app/backend # Mapeia a pasta local 'backend' para dentro do container
+      - ./backend:/app/backend
+    environment:
+      - DOTNET_USE_POLLING_FILE_WATCHER=true
+    depends_on:
+      postgres-db:
+        condition: service_healthy
 
-  # Serviço do Frontend Vue.js
+  # Serviço do Frontend Vue.js (sem mudanças)
   frontend-service:
     image: node:20
     container_name: frontend-service-container
     working_dir: /app/frontend
     command: npm run dev -- --host
     ports:
-      - "5173:5173" # Expõe a porta do Vite
+      - "5173:5173"
     volumes:
-      - ./frontend:/app/frontend # Mapeia a pasta local 'frontend' para dentro do container
+      - ./frontend:/app/frontend
 
 volumes:
-  postgres-data: # Declaração do volume de dados do Postgres
+  postgres-data:
