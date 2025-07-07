@@ -4,7 +4,6 @@ import { definePreset } from '@primeuix/themes'
 import Aura from '@primeuix/themes/aura'
 
 const MyPreset = definePreset(Aura, {
-
   semantic: {
     // Cores Semânticas Principais
     primary: {
@@ -97,7 +96,7 @@ const MyPreset = definePreset(Aura, {
     button: {
       root: {
         borderRadius: '8px',
-        paddingY: '4px'
+        paddingY: '4px',
       },
     },
     card: {
@@ -110,20 +109,21 @@ const MyPreset = definePreset(Aura, {
       root: {
         borderRadius: '10px',
         borderColor: '{surface.300}',
-        paddingY: '4px'
+        paddingY: '4px',
       },
     },
     select: {
       root: {
-        paddingY: '4px'
-      }
+        paddingY: '4px',
+        borderRadius: '10px'
+      },
     },
     toolbar: {
       root: {
         padding: '6px',
-        borderColor: 'transparent'
-      }
-    }
+        borderColor: 'transparent',
+      },
+    },
   },
 })
 

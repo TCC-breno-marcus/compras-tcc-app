@@ -16,7 +16,7 @@ const { isLargeScreen } = useBreakpoint();
 
     <div class="flex flex-column justify-content-between align-items-between w-full h-screen">
       <Header />
-      <main class="main-container flex flex-column h-full p-4">
+      <main class="main-container flex flex-column h-full px-4 py-2">
         <RouterView />
       </main>
       <Footer />
@@ -28,6 +28,7 @@ const { isLargeScreen } = useBreakpoint();
 <style scoped>
 .main-container {
   background-color: white;
+  overflow-y: auto;
 }
 
 .p-dark .main-container {

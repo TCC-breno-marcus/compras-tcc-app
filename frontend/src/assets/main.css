@@ -5,8 +5,9 @@
 
 body {
   font-family: 'Inter', 'Roboto', sans-serif;
+  font-size: .875rem;
   color: var(--p-text-color);
-  background-color: var(--p-surface-50);
+  /* background-color: var(--p-surface-50); */
 }
 
 .p-dark body {
