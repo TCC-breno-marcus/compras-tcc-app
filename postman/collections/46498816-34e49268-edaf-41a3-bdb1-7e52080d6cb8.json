@@ -1,0 +1,60 @@
+{
+	"info": {
+		"_postman_id": "46498816-34e49268-edaf-41a3-bdb1-7e52080d6cb8",
+		"name": "Backend - ComprasTCC",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Saúde",
+			"item": [
+				{
+					"name": "Wake-up",
+					"id": "46498816-1b278ba4-b8ae-43bd-a642-00ffe3948ab5",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localhost}}/api/healthcheck",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"healthcheck"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Healthcheck database",
+					"id": "46498816-82c77958-94b3-4af8-a77b-94af75657eb2",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localhost}}/api/healthcheck/database",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"healthcheck",
+								"database"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "46498816-c351ce0f-8239-412c-9df1-a2ab56bc3eed"
+		}
+	]
+}
