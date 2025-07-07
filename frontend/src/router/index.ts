@@ -1,22 +1,45 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import AppLayout from '@/layouts/AppLayout.vue'
+import NotFoundView from '@/views/NotFoundView.vue'
+import NewSolicitation from '@/features/solicitations/views/NewSolicitation.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      name: 'home',
-      component: HomeView,
+      component: AppLayout, // O Layout é o componente da rota pai
+      children: [
+        // As páginas são "filhas" do layout
+        {
+          path: '/solicitacoes/criar',
+          name: 'NewSolicitation',
+          component: NewSolicitation,
+        },
+        {
+          path: '',
+          name: 'Home',
+          component: HomeView,
+        },
+        {
+          path: '/:pathMatch(.*)*', // Regex que captura qualquer coisa
+          name: 'NotFound',
+          component: NotFoundView,
+        },
+        {
+          path: '/error',
+          name: 'ServerError',
+          component: () => import('../views/ServerErrorView.vue'),
+        },
+        // ... outras rotas que usam o mesmo layout
+      ],
     },
-    {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue'),
-    },
+    // {
+    //   path: '/login', // Uma rota que NÃO usa o AppLayout
+    //   name: 'login',
+    //   component: () => import('../views/LoginView.vue')
+    // }
   ],
 })
 
