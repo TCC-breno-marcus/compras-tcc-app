@@ -4,14 +4,31 @@ import ItemsListComponent from '../components/ItemsListComponent.vue';
 </script>
 
 <template>
-  <div class="flex w-full">
-    <div class="flex flex-column w-full p-2">
-      <h3 class="mb-2">Catálogo de Materiais</h3>
-      <ItemsListComponent />
+  <div class="flex flex-column w-full h-full justify-content-between align-items-center">
+
+    <div class="flex p-2">
+
+      <div class="flex flex-column align-content-end w-full">
+        <div class="flex justify-content-between align-items-center mb-2">
+          <h3>Catálogo de Materiais</h3>
+        </div>
+        <ItemsListComponent />
+      </div>
+
+      <Divider layout="vertical" />
+
+      <div class="flex flex-column align-content-end w-full">
+        <h3 class="text-right mb-2">Sua Solicitação</h3>
+      </div>
+
     </div>
-    <Divider layout="vertical" />
-    <div class="flex flex-column align-content-end w-full p-2">
-      <h3 class="text-right mb-2">Sua Solicitação</h3>
+
+    <div class="flex">
+      <p class="text-xs text-center" style="color: var(--p-surface-500);">
+        <i class="pi pi pi-info-circle text-xs"></i>
+        Todas as imagens utilizadas são meramente ilustrativas.
+      </p>
+
     </div>
 
   </div>

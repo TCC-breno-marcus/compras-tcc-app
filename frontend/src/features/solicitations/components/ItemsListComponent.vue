@@ -9,6 +9,7 @@ import Select from 'primevue/select';
 import ItemComponent from './ItemComponent.vue';
 import ItemDetailsDialog from './ItemDetailsDialog.vue';
 import type { ItemCatalogo } from '@/types/itemsCatalogo';
+import { Button } from 'primevue';
 
 const filters = ref([
   {
@@ -79,8 +80,8 @@ const items = ref([
 const isDialogVisible = ref(false);
 const selectedItem = ref<ItemCatalogo | null>(null);
 const handleViewDetails = (item: ItemCatalogo) => {
-  selectedItem.value = item;   
-  isDialogVisible.value = true; 
+  selectedItem.value = item;
+  isDialogVisible.value = true;
 };
 
 
@@ -90,21 +91,25 @@ const handleViewDetails = (item: ItemCatalogo) => {
   <div class="card">
     <Toolbar>
       <template #start>
-        <IconField iconPosition="left">
-          <InputIcon class="pi pi-search"></InputIcon>
-          <InputText placeholder="Nome/Descrição/CATMAT" />
-        </IconField>
-      </template>
-      <template #center>
-        <Select v-model="selectedCategory" :options="categories" optionLabel="name" placeholder="Categoria"
-          class="w-full md:w-56" />
+        <div class="flex align-items-center gap-2">
+          <IconField iconPosition="left">
+            <InputIcon class="pi pi-search "></InputIcon>
+            <InputText size="small" placeholder="Nome/Descrição/CATMAT" />
+          </IconField>
+          <Select v-model="selectedCategory" :options="categories" optionLabel="name" placeholder="Categoria"
+            class="w-full md:w-56" size="small" />
+        </div>
       </template>
       <template #end>
-        <SplitButton label="Ordenar por" :model="filters"></SplitButton>
+        <div class="flex align-items-center gap-2">
+          <SplitButton text size="small" label="Ordenar por" :model="filters" />
+          <Button type="button" label="Filtrar" icon="pi pi-filter" size="small" />
+        </div>
+
       </template>
     </Toolbar>
 
-    <div class="items-grid mt-4">
+    <div class="items-grid mt-2">
       <ItemComponent v-for="item in items" :key="item.code" :item="item" @viewDetails="handleViewDetails" />
     </div>
   </div>

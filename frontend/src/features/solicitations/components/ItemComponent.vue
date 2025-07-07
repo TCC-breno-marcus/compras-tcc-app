@@ -22,31 +22,32 @@ const onShowDetailsClick = () => {
 </script>
 <template>
   <div class="item-card m-2">
-    <div class="image-preview-container flex justify-content-center align-items-center" @click="onShowDetailsClick">
-      <img src="/items_img/img1.png" :alt="item.title" class="item-image"  />
+    <div class="image-preview-container flex justify-content-center align-items-center p-1" @click="onShowDetailsClick">
+      <img src="/items_img/img1.png" :alt="item.title" class="item-image" />
       <div class="preview-overlay">
-        <i class="pi pi-eye preview-icon"></i>
+        <i class="pi pi-eye preview-icon text-3xl"></i>
       </div>
     </div>
-    <div class="item-details p-2">
-      <p class="font-bold">{{ item.title }}</p>
-      <p class="text-sm text-color-secondary">CATMAT {{ item.code }}</p>
-    </div>
-    <div class="item-actions flex justify-content-end pb-3 pr-3">
-      <Button icon="pi pi-plus" severity="success" aria-label="Adicionar ao Carrinho" />
+    <div class="flex align-items-center justify-content-between p-2">
+
+      <div class="item-details">
+        <p class="font-bold text-sm">{{ item.title }}</p>
+        <p class="text-xs text-color-secondary">CATMAT {{ item.code }}</p>
+      </div>
+      <Button icon="pi pi-plus" rounded severity="success" aria-label="Adicionar à Solicitação" v-tooltip="`Adicionar à Solicitação`"
+        size="small" />
     </div>
   </div>
 </template>
 
 <style scoped>
-
 .item-card {
   display: flex;
   flex-direction: column;
   border: 1px solid var(--p-surface-200);
   border-radius: 10px;
   overflow: hidden;
-  width: 250px;
+  width: 220px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   transition: box-shadow 0.3s ease;
 }
@@ -63,7 +64,7 @@ const onShowDetailsClick = () => {
   position: relative;
   cursor: pointer;
   overflow: hidden;
-  height: 180px;
+  /* height: 100px; */
   background-color: var(--p-surface-50);
 }
 
@@ -72,7 +73,8 @@ const onShowDetailsClick = () => {
 }
 
 .item-image {
-  max-width: 6rem;
+  max-width: 5rem;
+  /* max-height: 5rem; */
   object-fit: cover;
   display: block;
   transition: transform 0.4s ease;
@@ -112,11 +114,10 @@ const onShowDetailsClick = () => {
 }
 
 .item-details {
-  text-align: center;
+  text-align: start;
 }
 
 .item-details p {
   margin: 0;
 }
-
 </style>
