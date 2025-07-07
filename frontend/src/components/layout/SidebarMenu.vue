@@ -171,6 +171,7 @@ const { itemsMenu } = useMenuStore();
 
 :deep(.p-tieredmenu-submenu) {
     width: max-content;
+    z-index: 999;
 }
 
 
