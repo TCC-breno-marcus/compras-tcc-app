@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import AppLayout from '@/layouts/AppLayout.vue'
 import NotFoundView from '@/views/NotFoundView.vue'
 import NewSolicitation from '@/features/solicitations/views/NewSolicitation.vue'
+import ManagerPanel from '@/features/management/views/ManagerPanel.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -16,6 +17,11 @@ const router = createRouter({
           path: '/solicitacoes/criar',
           name: 'NewSolicitation',
           component: NewSolicitation,
+        },
+        {
+          path: '/painel-gestor',
+          name: 'ManagerPanel',
+          component: ManagerPanel,
         },
         {
           path: '',

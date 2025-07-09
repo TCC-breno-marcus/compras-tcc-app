@@ -8,7 +8,7 @@ import 'primeflex/primeflex.css'
 import MyPreset from './theme'
 import 'primeicons/primeicons.css'
 import Tooltip from 'primevue/tooltip'
-
+import ToastService from 'primevue/toastservice';
 import App from './App.vue'
 import router from './router'
 
@@ -27,7 +27,7 @@ app.use(PrimeVue, {
     },
   },
 })
-
+app.use(ToastService)
 app.use(router)
 
 app.directive('tooltip', Tooltip)

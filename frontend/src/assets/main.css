@@ -1,13 +1,13 @@
 * {
   box-sizing: border-box;
   margin: 0;
-  font-family: 'Inter', 'Roboto', sans-serif;
 }
 
 body {
   font-size: .875rem;
   color: var(--p-text-color);
   /* background-color: var(--p-surface-50); */
+  font-family: 'Inter', 'Roboto', sans-serif;
 }
 
 .p-dark body {
@@ -25,4 +25,8 @@ a {
         'wght' 300,
         'GRAD' 0,
         'opsz';
+}
+
+.p-tab{
+  font-family: 'Inter', 'Roboto', sans-serif;
 }
