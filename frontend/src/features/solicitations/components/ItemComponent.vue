@@ -23,7 +23,7 @@ const onShowDetailsClick = () => {
 <template>
   <div class="item-card m-2">
     <div class="image-preview-container flex justify-content-center align-items-center p-1" @click="onShowDetailsClick">
-      <img src="/items_img/img1.png" :alt="item.title" class="item-image" />
+      <img :src="item.img" :alt="item.title" class="item-image" />
       <div class="preview-overlay">
         <i class="pi pi-eye preview-icon text-3xl"></i>
       </div>

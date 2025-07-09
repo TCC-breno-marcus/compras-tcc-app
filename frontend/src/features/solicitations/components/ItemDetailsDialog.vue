@@ -46,7 +46,7 @@ const closeModal = () => {
 
 
     <template #footer>
-      <Button label="Fechar" icon="pi pi-times" @click="closeModal" text size="small"/>
+      <Button label="Fechar" severity="danger" icon="pi pi-times" @click="closeModal" text size="small"/>
       <Button label="Adicionar à Solicitação" icon="pi pi-plus" size="small"/>
     </template>
   </Dialog>

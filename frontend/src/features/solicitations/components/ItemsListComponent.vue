@@ -37,42 +37,42 @@ const categories = ref([
 const items = ref([
   {
     title: 'Seringa Descartável',
-    img: './img',
+    img: '/items_img/img1.png',
     code: '214560'
   },
   {
     title: 'Gaze Estéril Pacote',
-    img: './img',
+    img: '/items_img/img1.png',
     code: '348790'
   },
   {
     title: 'Luva Cirúrgica (Par)',
-    img: './img',
+    img: '/items_img/img1.png',
     code: '551230'
   },
   {
     title: 'Álcool Etílico 70% 1L',
-    img: './img',
+    img: '/items_img/img1.png',
     code: '987010'
   },
   {
     title: 'Seringa Descartável',
-    img: './img',
+    img: '/items_img/img1.png',
     code: '214560'
   },
   {
     title: 'Gaze Estéril Pacote',
-    img: './img',
+    img: '/items_img/img1.png',
     code: '348790'
   },
   {
     title: 'Luva Cirúrgica (Par)',
-    img: './img',
+    img: '/items_img/img1.png',
     code: '551230'
   },
   {
     title: 'Álcool Etílico 70% 1L',
-    img: './img',
+    img: '/items_img/img1.png',
     code: '987010'
   }
 ]);

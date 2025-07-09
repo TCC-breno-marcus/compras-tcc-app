@@ -1,10 +1,10 @@
 * {
   box-sizing: border-box;
   margin: 0;
+  font-family: 'Inter', 'Roboto', sans-serif;
 }
 
 body {
-  font-family: 'Inter', 'Roboto', sans-serif;
   font-size: .875rem;
   color: var(--p-text-color);
   /* background-color: var(--p-surface-50); */

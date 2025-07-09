@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Divider from 'primevue/divider';
 import ItemsListComponent from '../components/ItemsListComponent.vue';
+import MySolicitation from '../components/MySolicitation.vue';
 </script>
 
 <template>
@@ -8,7 +9,7 @@ import ItemsListComponent from '../components/ItemsListComponent.vue';
 
     <div class="flex p-2">
 
-      <div class="flex flex-column align-content-end w-full">
+      <div class="flex flex-column align-content-end w-7">
         <div class="flex justify-content-between align-items-center mb-2">
           <h3>Catálogo de Materiais</h3>
         </div>
@@ -17,8 +18,9 @@ import ItemsListComponent from '../components/ItemsListComponent.vue';
 
       <Divider layout="vertical" />
 
-      <div class="flex flex-column align-content-end w-full">
-        <h3 class="text-right mb-2">Sua Solicitação</h3>
+      <div class="flex flex-column align-content-end w-5">
+        <h3 class="mb-3">Sua Solicitação</h3>
+        <MySolicitation />
       </div>
 
     </div>
