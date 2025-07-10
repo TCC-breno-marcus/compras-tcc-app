@@ -179,7 +179,9 @@ const handleFileUpload = async (event: FileUploadUploaderEvent) => {
   <FileUpload mode="basic" name="catalog-upload" @uploader="handleFileUpload" :customUpload="true"
     accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
     chooseLabel="Importar" chooseIcon="pi pi-upload" :maxFileSize="20000000" :auto="true" :disabled="isLoading"
-    cancelLabel="Cancelar" uploadLabel="Carregar">
+    cancelLabel="Cancelar" uploadLabel="Carregar" class="text-sm" style="padding: 6px 10px;">
   </FileUpload>
 
 </template>
+
+<style scoped></style>

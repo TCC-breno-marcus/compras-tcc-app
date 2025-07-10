@@ -124,6 +124,11 @@ const MyPreset = definePreset(Aura, {
         borderColor: 'transparent',
       },
     },
+    tag: {
+      root: {
+        fontSize: '12px'
+      }
+    }
   },
 })
 

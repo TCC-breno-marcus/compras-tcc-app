@@ -109,7 +109,7 @@ const handleViewDetails = (item: ItemCatalogo) => {
       </template>
     </Toolbar>
 
-    <div class="items-grid mt-2 gap-2">
+    <div class="items-grid mt-2">
       <ItemComponent v-for="item in items" :key="item.code" :item="item" @viewDetails="handleViewDetails" />
     </div>
   </div>
@@ -122,6 +122,7 @@ const handleViewDetails = (item: ItemCatalogo) => {
 .items-grid {
   display: flex;
   flex-wrap: wrap;
+  gap: 1rem;
   justify-content: center;
   max-height: calc(100vh - 250px);
   overflow-y: auto;

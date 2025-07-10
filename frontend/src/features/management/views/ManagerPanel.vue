@@ -11,7 +11,7 @@ import ManageItems from '../components/ManageItems.vue';
 import Dashboard from '../components/Dashboard.vue';
 
 const items = ref([
-  { label: 'Dashboard', icon: 'pi pi-th-large', component: shallowRef(Dashboard) },
+  { label: 'Dashboard', icon: 'pi pi-chart-bar', component: shallowRef(Dashboard) },
   // { label: 'Itens por Departamento', icon: 'pi pi-chart-pie', component: shallowRef(DepartmentChartPanel) },
   // { label: 'Solicitações', icon: 'pi pi-file-check', component: shallowRef(RequestsListPanel) },
   { label: 'Gerenciar Catálogo', icon: 'pi pi-book', component: shallowRef(ManageItems) }
@@ -24,7 +24,6 @@ const activeTab = ref(items.value[0].label); // Define a primeira aba como ativa
   <div class="flex flex-column w-full h-full p-2">
     <div class="flex items-center justify-content-between">
       <h3>Painel do Gestor</h3>
-      <Button label="Exportar" icon="pi pi-download" size="small"/>
     </div>
 
     <Tabs v-model:value="activeTab" class="mt-2">
