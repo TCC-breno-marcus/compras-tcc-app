@@ -220,9 +220,12 @@ const materials = ref([
       { name: 'DCC', quantity: 15 },
     ],
   },
-
 ])
 
+const dt = ref()
+const exportCSV = () => {
+  dt.value.exportCSV()
+}
 </script>
 
 <template>
@@ -243,7 +246,13 @@ const materials = ref([
         </div>
       </div>
       <div class="flex align-items-center">
-        <Button type="button" label="Exportar" icon="pi pi-download" size="small" />
+        <Button
+          type="button"
+          label="Exportar"
+          icon="pi pi-download"
+          size="small"
+          @click="exportCSV"
+        />
       </div>
     </div>
 
@@ -259,12 +268,14 @@ const materials = ref([
         :rowsPerPageOptions="[5, 10, 20, 50]"
         scrollable
         scrollHeight="550px"
+        ref="dt"
       >
         <Column :expander="true" style="width: 3rem" />
 
         <Column field="catmat" header="CATMAT"></Column>
         <Column field="description" header="DESCRIÇÃO"></Column>
         <Column field="unit" header="UNIDADE DE MEDIDA"></Column>
+        <Column field="quantity" header="QUANTIDADE"></Column>
         <Column field="unitPrice" header="VALOR UNITÁRIO">
           <template #body="slotProps">
             {{
@@ -274,7 +285,6 @@ const materials = ref([
             }}
           </template>
         </Column>
-        <Column field="quantity" header="QUANTIDADE"></Column>
         <Column field="totalPrice" header="VALOR TOTAL">
           <template #body="slotProps">
             {{

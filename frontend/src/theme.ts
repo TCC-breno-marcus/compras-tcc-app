@@ -115,7 +115,7 @@ const MyPreset = definePreset(Aura, {
     select: {
       root: {
         paddingY: '4px',
-        borderRadius: '10px'
+        borderRadius: '10px',
       },
     },
     toolbar: {
@@ -126,9 +126,9 @@ const MyPreset = definePreset(Aura, {
     },
     tag: {
       root: {
-        fontSize: '12px'
-      }
-    }
+        fontSize: '12px',
+      },
+    },
   },
 })
 
