@@ -9,10 +9,11 @@ import { ref, shallowRef } from "vue";
 import Button from 'primevue/button';
 import ManageItems from '../components/ManageItems.vue';
 import Dashboard from '../components/Dashboard.vue';
+import ItemsPerDepartment from '../components/ItemsPerDepartment.vue';
 
 const items = ref([
   { label: 'Dashboard', icon: 'pi pi-chart-bar', component: shallowRef(Dashboard) },
-  // { label: 'Itens por Departamento', icon: 'pi pi-chart-pie', component: shallowRef(DepartmentChartPanel) },
+  { label: 'Itens por Departamento', icon: 'pi pi-chart-pie', component: shallowRef(ItemsPerDepartment) },
   // { label: 'Solicitações', icon: 'pi pi-file-check', component: shallowRef(RequestsListPanel) },
   { label: 'Gerenciar Catálogo', icon: 'pi pi-book', component: shallowRef(ManageItems) }
 ]);
