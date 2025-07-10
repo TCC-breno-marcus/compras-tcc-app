@@ -26,7 +26,7 @@ const activeTab = ref(items.value[0].label); // Define a primeira aba como ativa
       <h3>Painel do Gestor</h3>
     </div>
 
-    <Tabs v-model:value="activeTab" class="mt-2">
+    <Tabs v-model:value="activeTab" class="mt-2 tabs-container">
       <TabList>
         <Tab v-for="tab in items" :key="tab.label" :value="tab.label">
           <div class="flex items-center gap-2">
@@ -38,9 +38,16 @@ const activeTab = ref(items.value[0].label); // Define a primeira aba como ativa
 
       <TabPanels>
         <TabPanel v-for="tab in items" :key="tab.label" :value="tab.label">
-            <component :is="tab.component" />
+          <component :is="tab.component" />
         </TabPanel>
       </TabPanels>
     </Tabs>
   </div>
 </template>
+
+<style scoped>
+.p-dark .tabs-container :deep(.p-tablist-tab-list),
+.p-dark .tabs-container :deep(.p-tabpanels) {
+  background-color: transparent !important;
+}
+</style>
