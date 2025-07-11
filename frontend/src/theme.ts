@@ -128,7 +128,7 @@ const MyPreset = definePreset(Aura, {
       root: {
         fontSize: '12px',
       },
-    },
+    }
   },
 })
 
