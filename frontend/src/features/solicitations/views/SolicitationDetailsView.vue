@@ -15,6 +15,7 @@ import { InputText } from 'primevue'
 import Message from 'primevue/message'
 import ScrollPanel from 'primevue/scrollpanel'
 import SolicitationList from '../components/SolicitationList.vue'
+import SolicitationAnalysis from '../components/SolicitationAnalysis.vue'
 
 // Seus dados da solicitação
 const solicitation = ref({
@@ -48,10 +49,22 @@ const showDeadlineWarning = computed(() => new Date() < deadline)
     <div class="flex items-center justify-content-between mb-4">
       <h3 class="m-0">Detalhes da Solicitação #{{ solicitation.id }}</h3>
       <div class="flex gap-2">
-        <Message v-if="showDeadlineWarning" icon="pi pi-info-circle" severity="warn" size="small" :closable="false">
+        <Message
+          v-if="showDeadlineWarning"
+          icon="pi pi-info-circle"
+          severity="warn"
+          size="small"
+          :closable="false"
+        >
           Prazo final para ajustes: 31/07/2025
         </Message>
-        <Message v-else="showDeadlineWarning" icon="pi pi-info-circle" severity="warn" size="small" :closable="false">
+        <Message
+          v-else="showDeadlineWarning"
+          icon="pi pi-info-circle"
+          severity="warn"
+          size="small"
+          :closable="false"
+        >
           O prazo final para ajustes foi encerrado.
         </Message>
 
@@ -61,28 +74,34 @@ const showDeadlineWarning = computed(() => new Date() < deadline)
     </div>
 
     <div class="grid">
-      <div class="col-12 md:col-4">
-        <Card>
+      <div class="col-12 lg:col-4">
+        <Card class="h-full">
           <template #content>
             <ul class="list-none p-0 m-0">
-              <li class="flex items-center mb-3">
+              <li class="flex align-items-center mb-4">
                 <i class="pi pi-user text-primary text-xl mr-3"></i>
                 <div>
                   <span class="text-sm text-surface-500">Requisitante</span>
                   <p class="font-bold m-0">{{ solicitation.userRequest }}</p>
                 </div>
               </li>
-              <li class="flex items-center mb-3">
+              <li class="flex items-center">
                 <i class="pi pi-envelope text-primary text-xl mr-3"></i>
                 <div>
                   <span class="text-sm text-surface-500">Contato</span>
-                  <!-- <a :href="`mailto:${solicitation.userContact}`" class="font-bold m-0 no-underline text-color hover:text-primary-500">
-                    {{ solicitation.userContact }}
-                  </a> -->
                   <p class="font-bold m-0">{{ solicitation.userContact }}</p>
                 </div>
               </li>
-              <li class="flex items-center">
+            </ul>
+          </template>
+        </Card>
+      </div>
+
+      <div class="col-12 lg:col-4">
+        <Card class="h-full">
+          <template #content>
+            <ul class="list-none p-0 m-0">
+              <li class="flex align-items-center">
                 <i class="pi pi-calendar text-primary text-xl mr-3"></i>
                 <div>
                   <span class="text-sm text-surface-500">Data da Solicitação</span>
@@ -94,52 +113,18 @@ const showDeadlineWarning = computed(() => new Date() < deadline)
         </Card>
       </div>
 
-      <div class="col-12 md:col-4">
+      <div class="col-12 lg:col-4">
         <Card class="h-full">
-          <template #content>
-            <ul class="list-none p-0 m-0">
-              <li class="flex items-center mb-3">
-                <i class="pi pi-box text-primary text-xl mr-3"></i>
-                <div>
-                  <span class="text-sm text-surface-500">Quantidade de Itens</span>
-                  <p class="font-bold m-0">{{ solicitation.itemsQuantity }}</p>
-                </div>
-              </li>
-              <li class="flex items-center">
-                <i class="pi pi-dollar text-primary text-xl mr-3"></i>
-                <div>
-                  <span class="text-sm text-surface-500">Valor Total Estimado</span>
-                  <p class="font-bold m-0">{{ formattedPrice }}</p>
-                </div>
-              </li>
-            </ul>
+          <template #title>
+            <div class="flex align-items-center">
+              <i class="pi pi-info-circle text-primary text-xl mr-3"></i>
+              <span class="text-sm text-surface-500 font-bold">Justificativa</span>
+            </div>
           </template>
-        </Card>
-      </div>
-
-      <div class="col-12 md:col-4">
-        <Card class="h-full">
           <template #content>
-            <ul class="list-none p-0 m-0">
-              <li class="flex items-center mb-3">
-                <i class="pi pi-info-circle text-primary text-xl mr-3"></i>
-                <div>
-                  <span class="text-sm text-surface-500 font-bold">Justificativa</span>
-                  <ScrollPanel
-                    style="width: 100%; height: 100px"
-                    :dt="{
-                      bar: {
-                        background: 'var(--p-surface-400)',
-                      },
-                    }"
-                  >
-                    <p class="m-0 mt-2">
-                      {{ solicitation.justification }}
-                    </p>
-                  </ScrollPanel>
-                </div>
-              </li>
-            </ul>
+            <p class="m-0">
+              {{ solicitation.justification }}
+            </p>
           </template>
         </Card>
       </div>
@@ -155,7 +140,7 @@ const showDeadlineWarning = computed(() => new Date() < deadline)
           <SolicitationList />
         </TabPanel>
         <TabPanel value="1">
-          <p class="m-0">(Aqui entrarão os gráficos de análise)</p>
+          <SolicitationAnalysis />
         </TabPanel>
       </TabPanels>
     </Tabs>
@@ -163,7 +148,6 @@ const showDeadlineWarning = computed(() => new Date() < deadline)
 </template>
 
 <style scoped>
-/* Estilos para garantir que o card ocupe 100% da altura da coluna no grid */
 .p-card {
   height: 100%;
 }

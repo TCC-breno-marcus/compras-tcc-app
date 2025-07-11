@@ -75,6 +75,6 @@ const justification = ref('')
 
 <style scoped>
 .items-list {
-  max-height: 450px;
+  max-height: 480px;
 }
 </style>
