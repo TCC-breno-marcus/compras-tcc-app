@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useToast } from "primevue/usetoast";
-import FileUpload, { type FileUploadUploaderEvent } from 'primevue/fileupload';
+import { ref } from 'vue'
+import { useToast } from 'primevue/usetoast'
+import FileUpload, { type FileUploadUploaderEvent } from 'primevue/fileupload'
 // @ts-ignore
-import type { Worksheet, Row, Cell } from 'exceljs';
+import type { Worksheet, Row, Cell } from 'exceljs'
 // @ts-ignore
-import * as ExcelJS from 'exceljs';
+import * as ExcelJS from 'exceljs'
 
 interface SearchHeaderResult {
-  headerRowNumber: number;
-  actualHeaders: string[];
+  headerRowNumber: number
+  actualHeaders: string[]
 }
 
-const toast = useToast();
-const isLoading = ref(false);
+const toast = useToast()
+const isLoading = ref(false)
 
 /**
  * Objeto de configuração para especificar o que deve ser ignorado em cada coluna
@@ -30,8 +30,8 @@ const ignoreRules = {
     '24', // TRATORES
     '13', // MUNIÇÕES E EXPLOSIVOS
     '19', // NAVIOS, PEQUENAS EMBARCACOES, PONTOES E DIQUES FLUTUANTES
-  ]
-};
+  ],
+}
 
 /**
  * Verifica se uma linha deve ser ignorada com base em um conjunto de regras.
@@ -39,22 +39,25 @@ const ignoreRules = {
  * @param rules O objeto de configuração com as regras para ignorar.
  * @returns `true` se a linha deve ser ignorada, `false` caso contrário.
  */
-const shouldIgnoreRow = (rowObject: { [key: string]: any }, rules: { [key: string]: string[] }): boolean => {
+const shouldIgnoreRow = (
+  rowObject: { [key: string]: any },
+  rules: { [key: string]: string[] },
+): boolean => {
   // Itera sobre cada regra definida (ex: 'Status', 'Categoria')
   for (const columnName in rules) {
     if (rowObject.hasOwnProperty(columnName)) {
-      const valuesToIgnore = rules[columnName].map(v => v.toLowerCase());
-      const cellValue = String(rowObject[columnName] || '').toLowerCase();
+      const valuesToIgnore = rules[columnName].map((v) => v.toLowerCase())
+      const cellValue = String(rowObject[columnName] || '').toLowerCase()
 
       // Se o valor da célula estiver na lista de valores a serem ignorados para aquela coluna, retorne true.
       if (valuesToIgnore.includes(cellValue)) {
-        return true;
+        return true
       }
     }
   }
   // Se nenhuma regra correspondeu, a linha não deve ser ignorada.
-  return false;
-};
+  return false
+}
 
 /**
  * Procura por uma linha de cabeçalho em uma planilha.
@@ -62,26 +65,49 @@ const shouldIgnoreRow = (rowObject: { [key: string]: any }, rules: { [key: strin
  * @returns Um objeto contendo o número da linha do cabeçalho e os nomes das colunas.
  */
 const searchFileHeader = (worksheet: Worksheet): SearchHeaderResult => {
-  const headerKeywords = ['Nome', 'Código', 'Descrição'];
-  let headerRowNumber = -1;
-  let actualHeaders: string[] = [];
+  const headerKeywords = ['Nome', 'Código', 'Descrição']
+  let headerRowNumber = -1
+  let actualHeaders: string[] = []
 
   for (let i = 1; i <= 10 && i <= worksheet.rowCount; i++) {
-    const row: Row = worksheet.getRow(i);
-    const rowValues: string[] = (row.values as string[] || []).map(v => String(v || '').toLowerCase());
+    const row: Row = worksheet.getRow(i)
+    const rowValues: string[] = ((row.values as string[]) || []).map((v) =>
+      String(v || '').toLowerCase(),
+    )
 
-    const hasAtLeastOneHeader = headerKeywords.some(keyword =>
-      rowValues.some(cellValue => cellValue.includes(keyword.toLowerCase()))
-    );
+    const hasAtLeastOneHeader = headerKeywords.some((keyword) =>
+      rowValues.some((cellValue) => cellValue.includes(keyword.toLowerCase())),
+    )
 
     if (hasAtLeastOneHeader) {
-      headerRowNumber = i;
-      actualHeaders = (row.values as string[]).filter(v => v).map(h => h.trim());
-      break;
+      headerRowNumber = i
+      actualHeaders = (row.values as string[])
+        .filter((v) => v) // Filtra valores nulos/vazios
+        .map((h) => normalizeHeader(h))
+
+      break
     }
   }
-  return { headerRowNumber, actualHeaders };
-};
+  return { headerRowNumber, actualHeaders }
+}
+
+/**
+ * Normaliza o texto de um cabeçalho para ser usado como uma chave de JSON.
+ * Ex: "Itens Procurados" -> "itens_procurados"
+ * @param header O texto do cabeçalho a ser normalizado.
+ * @returns A string normalizada.
+ */
+const normalizeHeader = (header: string | null | undefined): string => {
+  if (!header) return '' // Retorna string vazia se o cabeçalho for nulo
+
+  return header
+    .toString()
+    .trim() // Remove espaços no início e no fim
+    .toLowerCase() // 1. Deixa tudo minúsculo
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // 2. Remove acentos e diacríticos
+    .replace(/\s+/g, '_') // 3. Substitui um ou mais espaços por um único underscore
+}
 
 /**
  * Lida com o upload de arquivos, converte para JSON e envia para a API,
@@ -90,98 +116,112 @@ const searchFileHeader = (worksheet: Worksheet): SearchHeaderResult => {
  */
 const handleFileUpload = async (event: FileUploadUploaderEvent) => {
   // 3. Normalize o 'event.files' para SEMPRE ser um array
-  const files = Array.isArray(event.files) ? event.files : [event.files];
+  const files = Array.isArray(event.files) ? event.files : [event.files]
 
   if (files.length === 0) {
-    toast.add({ severity: 'error', summary: 'Erro', detail: 'Nenhum arquivo selecionado.', life: 3000 });
-    return;
+    toast.add({
+      severity: 'error',
+      summary: 'Erro',
+      detail: 'Nenhum arquivo selecionado.',
+      life: 3000,
+    })
+    return
   }
 
-  const file = files[0];
+  const file = files[0]
 
-  isLoading.value = true;
+  isLoading.value = true
 
   toast.add({
     group: 'loading',
     severity: 'info',
     summary: 'Processando...',
     detail: 'Aguarde enquanto seu arquivo é processado.',
-    closable: false
-  });
+    closable: false,
+  })
 
   try {
-    const buffer = await file.arrayBuffer();
-    const workbook = new ExcelJS.Workbook();
-    await workbook.xlsx.load(buffer);
+    const buffer = await file.arrayBuffer()
+    const workbook = new ExcelJS.Workbook()
+    await workbook.xlsx.load(buffer)
 
-    const worksheet = workbook.worksheets[0];
-    const jsonData: any[] = []; // O tipo final dependerá das suas colunas
+    const worksheet = workbook.worksheets[0]
+    const jsonData: any[] = [] // O tipo final dependerá das suas colunas
 
-    const { headerRowNumber, actualHeaders } = searchFileHeader(worksheet);
+    const { headerRowNumber, actualHeaders } = searchFileHeader(worksheet)
 
     if (headerRowNumber === -1) {
       // A variável 'headerKeywords' não existe neste escopo, vamos usar a string diretamente.
-      throw new Error(`Cabeçalho não identificado. Verifique se a planilha contém colunas como: Nome, Código, Descrição.`);
+      throw new Error(
+        `Cabeçalho não identificado. Verifique se a planilha contém colunas como: Nome, Código, Descrição.`,
+      )
     }
 
     worksheet.eachRow({ includeEmpty: false }, (row: Row, rowNumber: number) => {
       if (rowNumber > headerRowNumber) {
-        const rowObject: { [key: string]: any } = {};
+        const rowObject: { [key: string]: any } = {}
 
         row.eachCell({ includeEmpty: true }, (cell: Cell, colNumber: number) => {
-          const header = actualHeaders[colNumber - 1];
+          const header = actualHeaders[colNumber - 1]
           if (header) {
-            rowObject[header] = cell.value;
+            rowObject[header] = cell.value
           }
-        });
+        })
 
         if (shouldIgnoreRow(rowObject, ignoreRules)) {
-          console.log(`Linha ${rowNumber} ignorada devido a uma regra de filtro.`, rowObject);
-          return; // Pula para a próxima linha
+          console.log(`Linha ${rowNumber} ignorada devido a uma regra de filtro.`, rowObject)
+          return // Pula para a próxima linha
         }
 
-        jsonData.push(rowObject);
+        jsonData.push(rowObject)
       }
-    });
+    })
 
     if (jsonData.length === 0) {
-      throw new Error("Nenhum dado válido encontrado abaixo do cabeçalho.");
+      throw new Error('Nenhum dado válido encontrado abaixo do cabeçalho.')
     }
 
-    console.log('Dados extraídos de forma robusta:', jsonData);
+    console.log('Dados extraídos de forma robusta:', jsonData)
 
     toast.add({
       severity: 'success',
       summary: 'Sucesso!',
       detail: 'Catálogo importado com sucesso.',
-      life: 3000
-    });
-
+      life: 3000,
+    })
   } catch (error: any) {
-    console.error('Erro no processo de upload:', error);
+    console.error('Erro no processo de upload:', error)
     toast.add({
       severity: 'error',
       summary: 'Falha na Importação',
       detail: error.message || 'Não foi possível processar o arquivo.',
-      life: 5000
-    });
+      life: 5000,
+    })
   } finally {
-    isLoading.value = false;
-    toast.removeGroup('loading');
+    isLoading.value = false
+    toast.removeGroup('loading')
   }
-};
-
-
+}
 </script>
 
 <template>
-
-  <FileUpload mode="basic" name="catalog-upload" @uploader="handleFileUpload" :customUpload="true"
+  <FileUpload
+    mode="basic"
+    name="catalog-upload"
+    @uploader="handleFileUpload"
+    :customUpload="true"
     accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
-    chooseLabel="Importar" chooseIcon="pi pi-upload" :maxFileSize="20000000" :auto="true" :disabled="isLoading"
-    cancelLabel="Cancelar" uploadLabel="Carregar" class="text-sm" style="padding: 6px 10px;">
+    chooseLabel="Importar"
+    chooseIcon="pi pi-upload"
+    :maxFileSize="20000000"
+    :auto="true"
+    :disabled="isLoading"
+    cancelLabel="Cancelar"
+    uploadLabel="Carregar"
+    class="text-sm"
+    style="padding: 6px 10px"
+  >
   </FileUpload>
-
 </template>
 
 <style scoped></style>
