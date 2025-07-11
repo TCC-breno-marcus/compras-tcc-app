@@ -4,7 +4,7 @@ import AppLayout from '@/layouts/AppLayout.vue'
 import NotFoundView from '@/views/NotFoundView.vue'
 import NewSolicitation from '@/features/solicitations/views/NewSolicitation.vue'
 import ManagerPanel from '@/features/management/views/ManagerPanelView.vue'
-import SolicitationDetailsView from '@/features/management/views/SolicitationDetailsView.vue'
+import SolicitationDetailsView from '@/features/solicitations/views/SolicitationDetailsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
