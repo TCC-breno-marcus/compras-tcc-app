@@ -6,7 +6,6 @@ import Tab from 'primevue/tab';
 import TabPanels from 'primevue/tabpanels';
 import TabPanel from 'primevue/tabpanel';
 import { ref, shallowRef } from "vue";
-import Button from 'primevue/button';
 import ManageItems from '../components/ManageItems.vue';
 import Dashboard from '../components/Dashboard.vue';
 import ItemsPerDepartment from '../components/ItemsPerDepartment.vue';
@@ -48,8 +47,4 @@ const activeTab = ref(items.value[0].label); // Define a primeira aba como ativa
 </template>
 
 <style scoped>
-.p-dark .tabs-container :deep(.p-tablist-tab-list),
-.p-dark .tabs-container :deep(.p-tabpanels) {
-  background-color: transparent !important;
-}
 </style>

@@ -129,22 +129,4 @@ const handleViewDetails = (item: ItemCatalogo) => {
   scrollbar-width: thin;
   scrollbar-color: var(--p-surface-400) transparent;
 }
-
-/* Para Chrome, Safari, Edge, etc. */
-.items-grid::-webkit-scrollbar {
-  width: 5px;
-}
-
-.items-grid::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.items-grid::-webkit-scrollbar-thumb {
-  background: var(--p-surface-400, #ccc);
-  border-radius: 10px;
-}
-
-.items-grid::-webkit-scrollbar-thumb:hover {
-  background: var(--p-surface-500, #aaa);
-}
 </style>

@@ -163,8 +163,8 @@ const exportCSV = () => {
                 severity="info"
                 text
                 rounded
-                aria-label="Acessar"
-                v-tooltip.top="'Acessar'"
+                aria-label="Ver Detalhes"
+                v-tooltip.top="'Ver Detalhes'"
               />
             </router-link>
           </template>
@@ -182,24 +182,6 @@ const exportCSV = () => {
   /* Para Firefox */
   scrollbar-width: thin;
   scrollbar-color: var(--p-surface-400) transparent;
-}
-
-/* Para Chrome, Safari, Edge, etc. */
-.table-container::-webkit-scrollbar {
-  width: 5px;
-}
-
-.table-container::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.table-container::-webkit-scrollbar-thumb {
-  background: var(--p-surface-400, #ccc);
-  border-radius: 10px;
-}
-
-.table-container::-webkit-scrollbar-thumb:hover {
-  background: var(--p-surface-500, #aaa);
 }
 
 :deep(.p-toolbar-start) {
