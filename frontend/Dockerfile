@@ -1,5 +1,4 @@
-# 1. Use uma imagem base do Node.js (alpine é uma versão mais leve)
-FROM node:20-alpine
+FROM node:20
 
 # 2. Defina o diretório de trabalho dentro do container
 WORKDIR /app/frontend

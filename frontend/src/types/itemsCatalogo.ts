@@ -1,5 +1,7 @@
 export interface ItemCatalogo {
+  id: string;
   title: string;
   code: string;
-  img?: string; // O '?' torna a propriedade opcional
+  img?: string;
+  suggestedUnitPrice: number;
 }

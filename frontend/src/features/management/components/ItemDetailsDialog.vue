@@ -3,19 +3,29 @@ import Dialog from 'primevue/dialog';
 import Button from 'primevue/button';
 import type { ItemCatalogo } from '@/types/itemsCatalogo';
 import { Divider } from 'primevue';
+import { ref } from 'vue';
 
-// 1. Defina as PROPS que este componente vai receber do pai
 defineProps<{
   visible: boolean;
-  item: ItemCatalogo | null; // <-- AQUI ESTÁ A CORREÇÃO!
+  item: ItemCatalogo | null;
 }>();
 
 // 2. Defina os EVENTOS que este componente pode emitir para o pai
 const emit = defineEmits(['update:visible']);
 
-// 3. Função para fechar o dialog, emitindo o evento de volta para o pai
 const closeModal = () => {
   emit('update:visible', false);
+};
+
+const isEditing = ref(false);
+
+const enterEditMode = () => {
+  isEditing.value = true;
+};
+
+const saveChanges = () => {
+  console.log('Lógica para salvar os dados vai aqui...');
+  isEditing.value = false;
 };
 </script>
 
@@ -46,8 +56,12 @@ const closeModal = () => {
 
 
     <template #footer>
-      <Button label="Fechar" severity="danger" icon="pi pi-times" @click="closeModal" text size="small"/>
-      <Button label="Adicionar à Solicitação" icon="pi pi-plus" size="small"/>
+      <Button v-if="!isEditing" label="Fechar" severity="danger" icon="pi pi-times" @click="closeModal" text
+        size="small" />
+      <Button v-else label="Cancelar" severity="danger" icon="pi pi-times" @click="isEditing = false" text size="small" />
+      <Button v-if="!isEditing" label="Editar" icon="pi pi-pencil" size="small" @click="enterEditMode" />
+      <Button v-else label="Salvar" icon="pi pi-save" size="small" @click="saveChanges" severity="success" />
+
     </template>
   </Dialog>
 </template>

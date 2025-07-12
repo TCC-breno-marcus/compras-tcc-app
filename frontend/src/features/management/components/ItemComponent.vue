@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import Button from 'primevue/button';
+import Tag from 'primevue/tag';
 
 // 2. Defina que este componente espera receber uma propriedade chamada "item"
 // que será um objeto com os dados do item.
@@ -34,8 +35,7 @@ const onShowDetailsClick = () => {
         <p class="font-bold text-sm">{{ item.title }}</p>
         <p class="text-xs text-color-secondary">CATMAT {{ item.code }}</p>
       </div>
-      <Button icon="pi pi-plus" rounded severity="success" aria-label="Adicionar à Solicitação" v-tooltip="`Adicionar à Solicitação`"
-        size="small" />
+      <Tag :severity="item.status === 'Ativo' ? 'success' : 'danger'" :value="item.status"></Tag>
     </div>
   </div>
 </template>
@@ -47,7 +47,7 @@ const onShowDetailsClick = () => {
   border: 1px solid var(--p-surface-200);
   border-radius: 10px;
   overflow: hidden;
-  width: 220px;
+  width: 250px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   transition: box-shadow 0.3s ease;
 }

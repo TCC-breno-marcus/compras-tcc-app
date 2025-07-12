@@ -2,12 +2,13 @@
 import { RouterView } from 'vue-router'
 import { watchEffect } from 'vue';
 import { useThemeStore } from './stores/theme';
+import Toast from 'primevue/toast';
 
 const themeStore = useThemeStore();
 
 // 2. Cria um 'observador' que reage a qualquer mudança em themeStore.currentTheme
 watchEffect(() => {
-  const rootElement = document.documentElement; 
+  const rootElement = document.documentElement;
   if (themeStore.currentTheme === 'dark') {
     rootElement.classList.add('p-dark');
   } else {
@@ -17,5 +18,7 @@ watchEffect(() => {
 </script>
 
 <template>
+  <Toast />
+  <Toast group="loading" />
   <RouterView />
 </template>

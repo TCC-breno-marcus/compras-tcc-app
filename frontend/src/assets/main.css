@@ -4,10 +4,10 @@
 }
 
 body {
-  font-family: 'Inter', 'Roboto', sans-serif;
-  font-size: .875rem;
+  font-size: 0.875rem;
   color: var(--p-text-color);
   /* background-color: var(--p-surface-50); */
+  font-family: 'Inter', 'Roboto', sans-serif;
 }
 
 .p-dark body {
@@ -19,10 +19,57 @@ a {
 }
 
 .material-symbols-outlined {
-    font-size: 1.4rem;
-    font-variation-settings:
-        'FILL' 0,
-        'wght' 300,
-        'GRAD' 0,
-        'opsz';
+  font-size: 1.4rem;
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 300,
+    'GRAD' 0,
+    'opsz';
+}
+
+.p-tab {
+  font-family: 'Inter', 'Roboto', sans-serif;
+}
+
+.p-datatable-tbody > tr > td {
+  text-align: center !important;
+}
+
+.p-datatable-column-header-content {
+  justify-content: center !important;
+}
+
+.p-dark .p-tablist-tab-list,
+.p-dark .p-tabpanels {
+  background-color: transparent !important;
+}
+
+/* Para Firefox (boa prática incluir) */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--p-surface-400, #ccc) transparent;
+}
+
+/* Para navegadores WebKit (Chrome, Edge, Safari) */
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px; /* Adicionado para scrollbars horizontais */
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--p-surface-400, #ccc);
+  border-radius: 10px;
+  border: 1px solid transparent; /* Evita sobreposição de cores */
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--p-surface-500, #aaa);
+}
+
+.p-datepicker-panel * {
+  font-size: 14px !important;
 }
