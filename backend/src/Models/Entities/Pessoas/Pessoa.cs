@@ -1,0 +1,24 @@
+using System.ComponentModel.DataAnnotations;
+
+namespace ComprasTccApp.Models.Entities.Pessoas
+{
+    public class Pessoa
+    {
+        public long Id { get; set; }
+
+        [Required, StringLength(120)]
+        public required string Nome { get; set; }
+
+        [Required, StringLength(120)]
+        public required string Email { get; set; }
+
+        [Required, StringLength(20)]
+        public required string Telefone { get; set; }
+
+        [Required, StringLength(20)]
+        public required string CPF { get; set; }
+
+        [Required]
+        public DateTime DataAtualizacao { get; set; }
+    }
+}
