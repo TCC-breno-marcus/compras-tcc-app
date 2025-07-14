@@ -26,6 +26,9 @@ namespace ComprasTccApp.Backend.Models.Entities.Items
         [Required]
         public decimal ValorUnitario { get; set; }
 
+        [Required]
+        public bool IsActive { get; set; }
+
         public List<SolicitacaoItem> SolicitacoesItem { get; set; } = new List<SolicitacaoItem>();
     }
 }
