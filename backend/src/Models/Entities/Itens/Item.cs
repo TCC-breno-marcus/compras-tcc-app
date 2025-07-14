@@ -14,6 +14,9 @@ namespace ComprasTccApp.Backend.Models.Entities.Items
         [Required, StringLength(250)]
         public required string Descricao { get; set; }
 
+        [Required, StringLength(250)]
+        public required string LinkImagem { get; set; }
+
         [Required]
         public decimal Quantidade { get; set; }
 
@@ -22,7 +25,7 @@ namespace ComprasTccApp.Backend.Models.Entities.Items
 
         [Required]
         public decimal ValorUnitario { get; set; }
-        
+
         public List<SolicitacaoItem> SolicitacoesItem { get; set; } = new List<SolicitacaoItem>();
     }
 }
