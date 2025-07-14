@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using ComprasTccApp.Backend.Models.Entities.Items;
 using ComprasTccApp.Models.Entities.Gestores;
+using ComprasTccApp.Models.Entities.Itens;
 using ComprasTccApp.Models.Entities.Solicitantes;
 
 namespace ComprasTccApp.Models.Entities.Solicitacoes
@@ -22,6 +23,6 @@ namespace ComprasTccApp.Models.Entities.Solicitacoes
         public required string JustificativaGeral { get; set; }
 
         [Required]
-        public List<Item> Items { get; set; } = new List<Item>();
+        public List<SolicitacaoItem> ItemSolicitacao { get; set; } = new List<SolicitacaoItem>();
     }
 }
