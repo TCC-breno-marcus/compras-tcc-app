@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using ComprasTccApp.Models.Entities.Itens;
 using ComprasTccApp.Models.Entities.Solicitacoes;
 
 namespace ComprasTccApp.Backend.Models.Entities.Items
@@ -22,6 +23,6 @@ namespace ComprasTccApp.Backend.Models.Entities.Items
         [Required]
         public decimal ValorUnitario { get; set; }
         
-        public List<Solicitacao> Solicitacoes { get; set; } = new List<Solicitacao>();
+        public List<SolicitacaoItem> SolicitacoesItem { get; set; } = new List<SolicitacaoItem>();
     }
 }
