@@ -17,8 +17,8 @@ namespace ComprasTccApp.Backend.Models.Entities.Items
         [Required, StringLength(250)]
         public required string LinkImagem { get; set; }
 
-        [Required]
-        public decimal Quantidade { get; set; }
+        [Required, StringLength(250)]
+        public required string Especificacao { get; set; }
 
         [Required, StringLength(50)]
         public required string UnidadeMedida { get; set; }
