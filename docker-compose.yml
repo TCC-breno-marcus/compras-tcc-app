@@ -22,7 +22,9 @@ services:
 
   # Serviço do Backend .NET
   backend-service:
-    image: mcr.microsoft.com/dotnet/sdk:8.0
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: backend-service-container
     working_dir: /app/backend
     command: dotnet watch run --urls "http://*:8080"
@@ -37,22 +39,19 @@ services:
       postgres-db:
         condition: service_healthy
 
-  # Serviço do Frontend Vue.js (sem mudanças)
+  # Serviço do Frontend Vue.js 
   frontend-service:
     container_name: frontend-service-container
     build:
-      context: ./frontend  # O contexto é a pasta onde o Dockerfile está
+      context: ./frontend 
       dockerfile: Dockerfile
     working_dir: /app/frontend
     ports:
       - "5173:5173"
     environment:
-      - CHOKIDAR_USEPOLLING=true # Melhora o hot-reload do Vite dentro do Docker
+      - CHOKIDAR_USEPOLLING=true
     volumes:
-      # Monte seu código-fonte para que o hot-reload funcione
       - ./frontend:/app/frontend
-      # ESSA LINHA É IMPORTANTE: Impede que a pasta node_modules local (se existir)
-      # sobrescreva a pasta node_modules de dentro do container.
       - /app/frontend/node_modules
 
 volumes:
