@@ -42,5 +42,31 @@ namespace Controllers
                 return StatusCode(500, new { message = "Ocorreu um erro interno no servidor. Por favor, tente novamente mais tarde." });
             }
         }
+
+        [HttpPost("importar")] 
+        [ProducesResponseType(202)] 
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> ImportarItens([FromBody] IEnumerable<ItemImportacaoDto> itensParaImportar)
+        {
+            if (itensParaImportar == null || !itensParaImportar.Any())
+            {
+                return BadRequest(new { message = "A lista de itens para importação não pode ser vazia." });
+            }
+
+            try
+            {
+                _logger.LogInformation("Recebida requisição para importar {Count} itens.", itensParaImportar.Count());
+
+                await _catalogoService.ImportarItensAsync(itensParaImportar);
+
+                return Accepted(new { message = "Itens recebidos e agendados para importação." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ocorreu um erro não tratado no endpoint ImportarItens.");
+                return StatusCode(500, new { message = "Ocorreu um erro interno no servidor ao importar os itens." });
+            }
+        }
     }
 }

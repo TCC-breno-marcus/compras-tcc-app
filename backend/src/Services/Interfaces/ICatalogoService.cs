@@ -5,5 +5,7 @@ namespace Services.Interfaces
     public interface ICatalogoService
     {
         Task<IEnumerable<ItemDto>> GetAllItensAsync();
+
+        Task ImportarItensAsync(IEnumerable<ItemImportacaoDto> itensParaImportar);
     }
 }

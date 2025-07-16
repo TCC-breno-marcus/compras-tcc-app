@@ -2,6 +2,7 @@ using ComprasTccApp.Models.Dtos;
 using Database;
 using Microsoft.EntityFrameworkCore;
 using Services.Interfaces;
+using ComprasTccApp.Backend.Models.Entities.Items;
 
 namespace Services
 {
@@ -35,6 +36,7 @@ namespace Services
                         Descricao = item.Descricao,
                         CatMat = item.CatMat,
                         LinkImagem = item.LinkImagem,
+                        Especificacao = item.LinkImagem,
                         UnidadeMedida = item.UnidadeMedida,
                         IsActive = item.IsActive,
                     })
@@ -49,6 +51,25 @@ namespace Services
                 _logger.LogError(ex, "Ocorreu um erro ao buscar os itens do banco de dados.");
                 throw;
             }
+        }
+
+        public async Task ImportarItensAsync(IEnumerable<ItemImportacaoDto> itensParaImportar)
+        {
+            var novosItens = itensParaImportar.Select(dto => new Item
+            {
+                Descricao = dto.Descricao,
+                CatMat = dto.Codigo,
+                LinkImagem = dto.LinkImagem,
+                Especificacao = dto.Especificacao,
+                UnidadeMedida = dto.UnidadeMedida,
+                IsActive = true
+            });
+
+            await _context.Items.AddRangeAsync(novosItens);
+
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation("{Count} itens foram importados com sucesso para o catálogo.", novosItens.Count());
         }
     }
 }
