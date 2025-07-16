@@ -1,5 +1,7 @@
 using Database;
 using Microsoft.EntityFrameworkCore;
+using Services;
+using Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,7 +18,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 
 // Dependency Injection setup
-// builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>(); <- this example of how to register a repository
+builder.Services.AddScoped<ICatalogoService, CatalogoService>();
+
 var app = builder.Build();
 
 
