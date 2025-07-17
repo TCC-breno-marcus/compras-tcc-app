@@ -34,16 +34,17 @@ namespace Controllers
             [FromQuery] string? catMat,
             [FromQuery] string? nome,
             [FromQuery] string? descricao,
+            [FromQuery] string? especificacao,
             [FromQuery] bool? isActive,
             [FromQuery] int pageNumber = 1,
             [FromQuery] int pageSize = 50
-        )  
+        )
         {
             try
             {
                 _logger.LogInformation("Recebida requisição para buscar itens com filtros.");
 
-                var paginatedResult = await _catalogoService.GetAllItensAsync(id, catMat, nome, descricao, isActive, pageNumber, pageSize);
+                var paginatedResult = await _catalogoService.GetAllItensAsync(id, catMat, nome, descricao, especificacao, isActive, pageNumber, pageSize);
 
                 return Ok(paginatedResult);
             }

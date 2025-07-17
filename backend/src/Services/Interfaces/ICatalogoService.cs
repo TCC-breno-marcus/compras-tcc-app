@@ -10,6 +10,7 @@ namespace Services.Interfaces
             string? catMat,
             string? nome,
             string? descricao,
+            string? especificacao,
             bool? isActive,
             int pageNumber,
             int pageSize

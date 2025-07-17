@@ -27,6 +27,7 @@ namespace Services
             string? catMat,
             string? nome,
             string? descricao,
+            string? especificacao,
             bool? isActive,
             int pageNumber,
             int pageSize
@@ -53,6 +54,10 @@ namespace Services
                 if (!string.IsNullOrWhiteSpace(descricao))
                 {
                     query = query.Where(item => item.Descricao.ToLower().Contains(descricao.ToLower()));
+                }
+                if (!string.IsNullOrWhiteSpace(especificacao))
+                {
+                    query = query.Where(item => item.Descricao.ToLower().Contains(especificacao.ToLower()));
                 }
                 if (isActive.HasValue)
                 {
