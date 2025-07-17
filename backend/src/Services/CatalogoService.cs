@@ -3,8 +3,6 @@ using Database;
 using Microsoft.EntityFrameworkCore;
 using Services.Interfaces;
 using ComprasTccApp.Backend.Models.Entities.Items;
-using Microsoft.AspNetCore.JsonPatch;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Services
 {
@@ -55,59 +53,32 @@ namespace Services
             }
         }
 
-        public async Task<ItemDto?> EditarItemAsync(int id, JsonPatchDocument<ItemUpdateDto> patchDoc)
+        public async Task<ItemDto?> EditarItemAsync(int id, ItemUpdateDto updateDto)
         {
-            // 1. Encontre o item original no banco de dados.
-            var itemDoBanco = await _context.Items.FirstOrDefaultAsync(item => item.Id == id);
+            var itemDoBanco = await _context.Items.FirstOrDefaultAsync(i => i.Id == id);
+
             if (itemDoBanco == null)
             {
                 _logger.LogWarning("Tentativa de editar item com ID {Id} não encontrado.", id);
-                return null; // Retorna nulo se o item não existe
+                return null;
             }
 
-            // 2. Crie um DTO a partir do item do banco para aplicar o patch.
-            var itemParaAtualizar = new ItemUpdateDto
-            {
-                Nome = itemDoBanco.Nome,
-                Descricao = itemDoBanco.Descricao,
-                Especificacao = itemDoBanco.Especificacao,
-                IsActive = itemDoBanco.IsActive
-            };
+            if (!string.IsNullOrEmpty(updateDto.Nome))
+                itemDoBanco.Nome = updateDto.Nome;
 
-            // 3. Aplique as alterações do patch ao DTO.
-            // O ModelState é usado para capturar erros durante a aplicação do patch (ex: tentar alterar um campo que não existe).
-            var modelState = new ModelStateDictionary();
-            patchDoc.ApplyTo(itemParaAtualizar, error =>
-            {
-                modelState.AddModelError(error.Operation?.path ?? string.Empty, error.ErrorMessage);
-            });
+            if (!string.IsNullOrEmpty(updateDto.Descricao))
+                itemDoBanco.Descricao = updateDto.Descricao;
 
-            if (!modelState.IsValid)
-            {
-                // Opcional: log dos erros para debug
-                foreach (var entry in modelState)
-                {
-                    foreach (var error in entry.Value.Errors)
-                    {
-                        _logger.LogWarning("Erro ao aplicar patch: {Path} - {Error}", entry.Key, error.ErrorMessage);
-                    }
-                }
+            if (!string.IsNullOrEmpty(updateDto.Especificacao))
+                itemDoBanco.Especificacao = updateDto.Especificacao;
 
-                throw new InvalidOperationException("O patch document contém erros.");
-            }
-            
-            // 4. Mapeie as alterações do DTO de volta para a entidade do banco.
-            itemDoBanco.Nome = itemParaAtualizar.Nome;
-            itemDoBanco.Descricao = itemParaAtualizar.Descricao;
-            itemDoBanco.Especificacao = itemParaAtualizar.Especificacao;
-            itemDoBanco.IsActive = itemParaAtualizar.IsActive ?? itemDoBanco.IsActive; // Mantém o valor antigo se não for alterado
+            if (updateDto.IsActive.HasValue)
+                itemDoBanco.IsActive = updateDto.IsActive.Value;
 
-            // 5. Salve as mudanças no banco.
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Item com ID {Id} foi atualizado com sucesso.", id);
-            
-            // 6. Retorne o DTO completo do item atualizado.
+            _logger.LogInformation("Item com ID {Id} atualizado.", id);
+
             return new ItemDto
             {
                 Id = itemDoBanco.Id,

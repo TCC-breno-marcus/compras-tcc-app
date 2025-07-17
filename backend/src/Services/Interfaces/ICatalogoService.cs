@@ -1,5 +1,4 @@
 using ComprasTccApp.Models.Dtos;
-using Microsoft.AspNetCore.JsonPatch;
 
 namespace Services.Interfaces
 {
@@ -11,6 +10,6 @@ namespace Services.Interfaces
 
         Task<string> PopularImagensAsync(string caminhoDasImagens);
 
-        Task<ItemDto?> EditarItemAsync(int id, JsonPatchDocument<ItemUpdateDto> patchDoc);
+        Task<ItemDto?> EditarItemAsync(int id, ItemUpdateDto updateDto);
     }
 }
