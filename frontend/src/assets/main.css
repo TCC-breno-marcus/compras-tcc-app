@@ -73,3 +73,7 @@ a {
 .p-datepicker-panel * {
   font-size: 14px !important;
 }
+
+.p-tablist {
+    overflow-x: auto;
+}

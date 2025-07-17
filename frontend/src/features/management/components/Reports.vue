@@ -47,11 +47,11 @@ const generateReport = () => {
 </script>
 
 <template>
-  <div class="p-4">
+  <div>
     <Panel header="Filtros do Relatório" toggleable>
-      <div class="flex flex-column lg:flex-row lg:align-items-center justify-content-between gap-4">
-        <div class="flex flex-column md:flex-row md:flex-wrap align-items-center gap-2">
-          <div class="flex flex-column sm:flex-row gap-2">
+      <div class="flex flex-wrap justify-content-between">
+        <div class="flex flex-wrap align-items-center gap-2">
+          <div class="flex flex-wrap gap-2">
             <IconField iconPosition="left">
               <InputIcon class="pi pi-search"></InputIcon>
               <InputText size="small" placeholder="Nome/Descrição/CATMAT" />
@@ -62,14 +62,13 @@ const generateReport = () => {
               :options="categories"
               optionLabel="name"
               placeholder="Categoria"
-              class="w-full md:w-56"
               size="small"
             />
           </div>
 
           <div class="flex align-items-center gap-2">
             <FloatLabel variant="on">
-              <DatePicker v-model="date" inputId="on_label" showIcon iconDisplay="input" />
+              <DatePicker v-model="date" inputId="on_label" showIcon iconDisplay="input" size="small" />
               <label for="on_label">Período</label>
             </FloatLabel>
           </div>
@@ -79,8 +78,8 @@ const generateReport = () => {
       </div>
       <div class="flex justify-content-end gap-2 mt-4">
         <Button
-          label="Limpar Filtros"
-          icon="pi pi-times"
+          label="Limpar"
+          icon="pi pi-filter-slash"
           severity="secondary"
           outlined
           size="small"

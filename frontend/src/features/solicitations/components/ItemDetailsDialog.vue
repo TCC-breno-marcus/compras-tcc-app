@@ -1,35 +1,40 @@
 <script setup lang="ts">
-import Dialog from 'primevue/dialog';
-import Button from 'primevue/button';
-import type { ItemCatalogo } from '@/types/itemsCatalogo';
-import { Divider } from 'primevue';
+import Dialog from 'primevue/dialog'
+import Button from 'primevue/button'
+import type { ItemCatalogo } from '@/types/itemsCatalogo'
+import { Divider } from 'primevue'
 
-// 1. Defina as PROPS que este componente vai receber do pai
 defineProps<{
-  visible: boolean;
-  item: ItemCatalogo | null; // <-- AQUI ESTÁ A CORREÇÃO!
-}>();
+  visible: boolean
+  item: ItemCatalogo | null
+}>()
 
-// 2. Defina os EVENTOS que este componente pode emitir para o pai
-const emit = defineEmits(['update:visible']);
+const emit = defineEmits(['update:visible'])
 
-// 3. Função para fechar o dialog, emitindo o evento de volta para o pai
 const closeModal = () => {
-  emit('update:visible', false);
-};
+  emit('update:visible', false)
+}
 </script>
 
 <template>
-  <Dialog v-if="item" :visible="visible" @update:visible="closeModal" modal :header="`Detalhes do Material`"
-    :style="{ width: 'clamp(300px, 50vw, 700px)' }">
+  <Dialog
+    v-if="item"
+    :visible="visible"
+    @update:visible="closeModal"
+    modal
+    :header="`Detalhes do Material`"
+    class="w-11 md:w-8 xl:w-6"
+  >
     <div class="dialog-content flex">
       <div class="flex flex-column justify-content-between text-justify">
         <div>
           <p><strong>Título:</strong> {{ item.title }}</p>
           <p><strong>CATMAT:</strong> {{ item.code }}</p>
-          <p><strong>Descrição:</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus.
-            Suspendisse
-            lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor.</p>
+          <p>
+            <strong>Descrição:</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
+            non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed,
+            dolor.
+          </p>
         </div>
         <div>
           <Divider align="left" type="solid">
@@ -44,10 +49,16 @@ const closeModal = () => {
       </div>
     </div>
 
-
     <template #footer>
-      <Button label="Fechar" severity="danger" icon="pi pi-times" @click="closeModal" text size="small"/>
-      <Button label="Adicionar à Solicitação" icon="pi pi-plus" size="small"/>
+      <Button
+        label="Fechar"
+        severity="danger"
+        icon="pi pi-times"
+        @click="closeModal"
+        text
+        size="small"
+      />
+      <Button label="Adicionar à Solicitação" icon="pi pi-plus" size="small" />
     </template>
   </Dialog>
 </template>
