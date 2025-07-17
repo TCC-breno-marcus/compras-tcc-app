@@ -21,17 +21,22 @@ Este projeto utiliza `docker-compose` para orquestrar os serviços de **Backend*
 
 ## ⚙️ Backend
 
+### Acompanhar logs do backend em tempo real
+```bash
+docker compose logs -f backend-service
+```
+
 ### 🗂️ **Quando alterar uma entidade**
 
-1️⃣ Crie uma nova migration:
+1️⃣ Crie uma nova migration (**Container precisa estar parado ou down**):
 ```bash
-docker exec -it backend-service-container sh
+docker-compose run --rm --entrypoint sh backend-service
 export PATH=$PATH:/root/.dotnet/tools
 dotnet tool restore
 dotnet ef migrations add NomeDaMigration
 ```
 
-2️⃣ Rodar as migrations:
+2️⃣ Rodar as migrations (**Container precisa estar parado ou down**):
 ```bash
 docker-compose run --rm --entrypoint sh backend-service
 export PATH=$PATH:/root/.dotnet/tools
