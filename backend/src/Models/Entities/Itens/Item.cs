@@ -14,13 +14,13 @@ namespace ComprasTccApp.Backend.Models.Entities.Items
         [Required, StringLength(50)]
         public required string CatMat { get; set; }
 
-        [Required, StringLength(250)]
+        [Required, MaxLength(2000)]
         public required string Descricao { get; set; }
 
         [Required, StringLength(250)]
         public required string LinkImagem { get; set; }
 
-        [Required, StringLength(250)]
+        [Required, StringLength(500)]
         public required string Especificacao { get; set; }
 
         [Required]
