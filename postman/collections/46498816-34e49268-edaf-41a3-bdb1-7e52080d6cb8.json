@@ -70,6 +70,34 @@
 					"response": []
 				},
 				{
+					"name": "Editar um Item",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    // \"nome\": \"AGULHA BACTERIOLÓGICA\",\r\n    \"descricao\": \"Agulha bacteriológica em platina sem cabo.\"\r\n    // \"catMat\": \"408828\",\r\n    // \"especificacao\": \"5 cm\",\r\n    // \"isActive\": false\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/api/Catalogo/1047",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Catalogo",
+								"1047"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Import Items",
 					"request": {
 						"method": "POST",
