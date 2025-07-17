@@ -30,7 +30,8 @@ namespace Services
             string? especificacao,
             bool? isActive,
             int pageNumber,
-            int pageSize
+            int pageSize,
+            string? sortOrder
         )
         {
             _logger.LogInformation("Iniciando busca avançada de itens com filtros e paginação...");
@@ -63,6 +64,21 @@ namespace Services
                 {
                     query = query.Where(item => item.IsActive == isActive.Value);
                 }
+                if (!string.IsNullOrWhiteSpace(sortOrder))
+                {
+                    if (sortOrder.ToLower() == "asc")
+                    {
+                        query = query.OrderBy(item => item.Nome);
+                    }
+                    else if (sortOrder.ToLower() == "desc")
+                    {
+                        query = query.OrderByDescending(item => item.Nome);
+                    }
+                }
+                else
+                {
+                    query = query.OrderBy(item => item.Id); 
+                }
 
                 var totalCount = await query.CountAsync();
 
@@ -78,6 +94,7 @@ namespace Services
                     Descricao = item.Descricao,
                     CatMat = item.CatMat,
                     LinkImagem = item.LinkImagem,
+                    PrecoSugerido = item.PrecoSugerido,
                     Especificacao = item.Especificacao,
                     IsActive = item.IsActive,
                 }).ToList();
@@ -125,6 +142,7 @@ namespace Services
                 Nome = itemDoBanco.Nome,
                 Descricao = itemDoBanco.Descricao,
                 CatMat = itemDoBanco.CatMat,
+                PrecoSugerido = itemDoBanco.PrecoSugerido,
                 Especificacao = itemDoBanco.Especificacao,
                 LinkImagem = itemDoBanco.LinkImagem,
                 IsActive = itemDoBanco.IsActive

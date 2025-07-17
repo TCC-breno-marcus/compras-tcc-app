@@ -37,14 +37,15 @@ namespace Controllers
             [FromQuery] string? especificacao,
             [FromQuery] bool? isActive,
             [FromQuery] int pageNumber = 1,
-            [FromQuery] int pageSize = 50
+            [FromQuery] int pageSize = 50,
+            [FromQuery] string? sortOrder = "asc"
         )
         {
             try
             {
                 _logger.LogInformation("Recebida requisição para buscar itens com filtros.");
 
-                var paginatedResult = await _catalogoService.GetAllItensAsync(id, catMat, nome, descricao, especificacao, isActive, pageNumber, pageSize);
+                var paginatedResult = await _catalogoService.GetAllItensAsync(id, catMat, nome, descricao, especificacao, isActive, pageNumber, pageSize, sortOrder);
 
                 return Ok(paginatedResult);
             }
@@ -110,7 +111,7 @@ namespace Controllers
                 return StatusCode(500, new { message = "Ocorreu um erro interno no servidor." });
             }
         }
-        
+
         [HttpPut("{id}")]
         [ProducesResponseType(typeof(ItemDto), 200)]
         [ProducesResponseType(400)]

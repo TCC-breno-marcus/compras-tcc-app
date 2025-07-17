@@ -13,7 +13,8 @@ namespace Services.Interfaces
             string? especificacao,
             bool? isActive,
             int pageNumber,
-            int pageSize
+            int pageSize,
+            string? sortOrder
         );
 
         Task ImportarItensAsync(IEnumerable<ItemImportacaoDto> itensParaImportar);
