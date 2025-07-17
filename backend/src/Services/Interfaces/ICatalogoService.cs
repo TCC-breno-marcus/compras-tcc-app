@@ -22,5 +22,6 @@ namespace Services.Interfaces
         Task<string> PopularImagensAsync(string caminhoDasImagens);
 
         Task<ItemDto?> EditarItemAsync(int id, ItemUpdateDto updateDto);
+        Task<ItemDto?> GetItemByIdAsync(long id);
     }
 }

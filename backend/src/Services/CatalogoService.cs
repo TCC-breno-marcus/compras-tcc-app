@@ -252,5 +252,44 @@ namespace Services
             return resumo;
         }
 
+        public async Task<ItemDto?> GetItemByIdAsync(long id)
+        {
+            _logger.LogInformation("Iniciando busca de um item pelo ID...");
+            _logger.LogWarning("ID {Id}", id);
+
+
+            try
+            {
+                var item = await _context.Items
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(i => i.Id == id);
+
+                if (item == null)
+                {
+                    _logger.LogWarning("Item com ID {Id} não encontrado.", id);
+                    return null;
+                }
+
+                _logger.LogInformation("Item com ID {Id} encontrado.", id);
+
+                return new ItemDto
+                {
+                    Id = item.Id,
+                    Nome = item.Nome,
+                    Descricao = item.Descricao,
+                    CatMat = item.CatMat,
+                    LinkImagem = item.LinkImagem,
+                    PrecoSugerido = item.PrecoSugerido,
+                    Especificacao = item.Especificacao,
+                    IsActive = item.IsActive
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro ao buscar item por ID {Id}.", id);
+                throw;
+            }
+        }
+
     }
 }

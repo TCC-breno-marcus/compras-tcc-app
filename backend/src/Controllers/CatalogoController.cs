@@ -130,5 +130,28 @@ namespace Controllers
             return Ok(itemAtualizado);
         }
 
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(ItemDto), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> Get([FromRoute] long id)
+        {
+            try
+            {
+                _logger.LogInformation("Recebida requisição para buscar um item pelo ID.");
+
+                var item = await _catalogoService.GetItemByIdAsync(id);
+
+                return Ok(item);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ocorreu um erro não tratado no endpoint GetItem.");
+                return StatusCode(500, new { message = "Ocorreu um erro interno no servidor. Por favor, tente novamente mais tarde." });
+            }
+        }
+
+
     }
 }
