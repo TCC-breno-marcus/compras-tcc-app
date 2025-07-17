@@ -68,5 +68,35 @@ namespace Controllers
                 return StatusCode(500, new { message = "Ocorreu um erro interno no servidor ao importar os itens." });
             }
         }
+
+        [HttpPost("popular-imagens")]
+        [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(500)]
+        // IMPORTANTE: Adicione segurança a este endpoint!
+        // Exemplo: [Authorize(Roles = "Admin")] 
+        public async Task<IActionResult> PopularImagens()
+        {
+            try
+            {
+                _logger.LogInformation("Recebida requisição para popular imagens do catálogo.");
+
+                // Este é o caminho DENTRO do container, que é mapeado pelo volume do Docker
+                var caminhoDasImagensNoContainer = "/app/uploads"; // Ou o caminho que você configurou no seu Dockerfile/.NET
+
+                var resultado = await _catalogoService.PopularImagensAsync(caminhoDasImagensNoContainer);
+
+                return Ok(new { message = resultado });
+            }
+            catch (DirectoryNotFoundException ex)
+            {
+                _logger.LogError(ex, "Diretório de imagens não encontrado.");
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ocorreu um erro não tratado no endpoint PopularImagens.");
+                return StatusCode(500, new { message = "Ocorreu um erro interno no servidor." });
+            }
+        }
     }
 }

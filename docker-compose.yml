@@ -33,17 +33,18 @@ services:
       - "5001:8081"
     volumes:
       - ./backend:/app/backend
+      - ./imagens_itens:/app/uploads
     environment:
       - DOTNET_USE_POLLING_FILE_WATCHER=true
     depends_on:
       postgres-db:
         condition: service_healthy
 
-  # Serviço do Frontend Vue.js 
+  # Serviço do Frontend Vue.js
   frontend-service:
     container_name: frontend-service-container
     build:
-      context: ./frontend 
+      context: ./frontend
       dockerfile: Dockerfile
     working_dir: /app/frontend
     ports:
@@ -53,6 +54,16 @@ services:
     volumes:
       - ./frontend:/app/frontend
       - /app/frontend/node_modules
+
+  servidor-imagens:
+    image: nginx:alpine
+    container_name: servidor-imagens-container
+    restart: unless-stopped
+    ports:
+      - "8088:80" 
+    volumes:
+      - ./imagens_itens:/usr/share/nginx/html/images
+    read_only: true 
 
 volumes:
   postgres-data:

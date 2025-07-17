@@ -7,5 +7,7 @@ namespace Services.Interfaces
         Task<IEnumerable<ItemDto>> GetAllItensAsync();
 
         Task ImportarItensAsync(IEnumerable<ItemImportacaoDto> itensParaImportar);
+
+        Task<string> PopularImagensAsync(string caminhoDasImagens);
     }
 }
