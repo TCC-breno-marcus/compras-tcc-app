@@ -8,21 +8,27 @@ namespace ComprasTccApp.Backend.Models.Entities.Items
     {
         public long Id { get; set; }
 
+        [Required, StringLength(100)]
+        public required string Nome { get; set; }
+
         [Required, StringLength(50)]
         public required string CatMat { get; set; }
 
-        [Required, StringLength(250)]
+        [Required, MaxLength(2000)]
         public required string Descricao { get; set; }
 
-        [Required]
-        public decimal Quantidade { get; set; }
+        [Required, StringLength(250)]
+        public required string LinkImagem { get; set; }
 
-        [Required, StringLength(50)]
-        public required string UnidadeMedida { get; set; }
+        [Required, StringLength(500)]
+        public required string Especificacao { get; set; }
 
         [Required]
         public decimal ValorUnitario { get; set; }
-        
+
+        [Required]
+        public bool IsActive { get; set; }
+
         public List<SolicitacaoItem> SolicitacoesItem { get; set; } = new List<SolicitacaoItem>();
     }
 }
