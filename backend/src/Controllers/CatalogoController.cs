@@ -28,7 +28,7 @@ namespace Controllers
         [HttpGet]
         [ProducesResponseType(typeof(PaginatedResultDto<ItemDto>), 200)]
         [ProducesResponseType(500)]
-        public async Task<IActionResult> GetAllItens
+        public async Task<IActionResult> Get
         (
             [FromQuery] long? id,
             [FromQuery] string? catMat,
@@ -43,7 +43,6 @@ namespace Controllers
             {
                 _logger.LogInformation("Recebida requisição para buscar itens com filtros.");
 
-                // Simplesmente passa todos os parâmetros recebidos para o serviço
                 var paginatedResult = await _catalogoService.GetAllItensAsync(id, catMat, nome, descricao, isActive, pageNumber, pageSize);
 
                 return Ok(paginatedResult);
