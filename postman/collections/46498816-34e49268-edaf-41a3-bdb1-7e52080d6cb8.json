@@ -1,8 +1,9 @@
 {
 	"info": {
-		"_postman_id": "46498816-34e49268-edaf-41a3-bdb1-7e52080d6cb8",
+		"_postman_id": "582dba30-ca60-4ead-a40e-6f90e0f31aa7",
 		"name": "Backend - ComprasTCC",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "20935999"
 	},
 	"item": [
 		{
@@ -10,10 +11,6 @@
 			"item": [
 				{
 					"name": "Wake-up",
-					"id": "46498816-1b278ba4-b8ae-43bd-a642-00ffe3948ab5",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -32,10 +29,6 @@
 				},
 				{
 					"name": "Healthcheck database",
-					"id": "46498816-82c77958-94b3-4af8-a77b-94af75657eb2",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -53,8 +46,86 @@
 					},
 					"response": []
 				}
-			],
-			"id": "46498816-c351ce0f-8239-412c-9df1-a2ab56bc3eed"
+			]
+		},
+		{
+			"name": "Catálogo",
+			"item": [
+				{
+					"name": "Get All Items",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localhost}}/api/Catalogo",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Catalogo"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Import Items",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"nome\": \"Desumidificador\",\r\n        \"descricao\": \"Desumidificador. Voltagem: 110/220 V. Capacidade: ambiente com 500 m³. Potência do compressor: 780 W. Temperatura de utilização: acima de 16 °C. Características adicionais: condensação de 6 a 8 litros de água/24h, circulação de 500m³/h.\",\r\n        \"codigo\": \"301010\",\r\n        \"especificacao\": \"\",\r\n        \"link_imagem\": \"\"\r\n    }\r\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/api/Catalogo/importar",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Catalogo",
+								"importar"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Popular Imagens",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/api/Catalogo/popular-imagens",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Catalogo",
+								"popular-imagens"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	]
 }
