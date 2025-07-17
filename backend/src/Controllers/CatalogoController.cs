@@ -26,15 +26,27 @@ namespace Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<ItemDto>), 200)]
+        [ProducesResponseType(typeof(PaginatedResultDto<ItemDto>), 200)]
         [ProducesResponseType(500)]
-        public async Task<IActionResult> GetAllItens()
+        public async Task<IActionResult> Get
+        (
+            [FromQuery] long? id,
+            [FromQuery] string? catMat,
+            [FromQuery] string? nome,
+            [FromQuery] string? descricao,
+            [FromQuery] string? especificacao,
+            [FromQuery] bool? isActive,
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 50
+        )
         {
             try
             {
-                _logger.LogInformation("Recebida requisição para buscar todos os itens.");
-                var itensDto = await _catalogoService.GetAllItensAsync();
-                return Ok(itensDto);
+                _logger.LogInformation("Recebida requisição para buscar itens com filtros.");
+
+                var paginatedResult = await _catalogoService.GetAllItensAsync(id, catMat, nome, descricao, especificacao, isActive, pageNumber, pageSize);
+
+                return Ok(paginatedResult);
             }
             catch (Exception ex)
             {
@@ -43,26 +55,8 @@ namespace Controllers
             }
         }
 
-        [HttpPut("{id}")]
-        [ProducesResponseType(typeof(ItemDto), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(500)]
-        public async Task<IActionResult> EditarItem(int id, [FromBody] ItemUpdateDto updateDto)
-        {
-            if (updateDto == null)
-                return BadRequest("Corpo da requisição vazio.");
-
-            var itemAtualizado = await _catalogoService.EditarItemAsync(id, updateDto);
-
-            if (itemAtualizado == null)
-                return NotFound(new { message = $"Item com ID {id} não encontrado." });
-
-            return Ok(itemAtualizado);
-        }
-
-        [HttpPost("importar")] 
-        [ProducesResponseType(202)] 
+        [HttpPost("importar")]
+        [ProducesResponseType(202)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
         public async Task<IActionResult> ImportarItens([FromBody] IEnumerable<ItemImportacaoDto> itensParaImportar)
@@ -116,5 +110,24 @@ namespace Controllers
                 return StatusCode(500, new { message = "Ocorreu um erro interno no servidor." });
             }
         }
+        
+        [HttpPut("{id}")]
+        [ProducesResponseType(typeof(ItemDto), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> EditarItem(int id, [FromBody] ItemUpdateDto updateDto)
+        {
+            if (updateDto == null)
+                return BadRequest("Corpo da requisição vazio.");
+
+            var itemAtualizado = await _catalogoService.EditarItemAsync(id, updateDto);
+
+            if (itemAtualizado == null)
+                return NotFound(new { message = $"Item com ID {id} não encontrado." });
+
+            return Ok(itemAtualizado);
+        }
+
     }
 }
