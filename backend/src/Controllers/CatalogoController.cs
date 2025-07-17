@@ -2,6 +2,7 @@ using ComprasTccApp.Models.Dtos;
 using Database;
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace Controllers
 {
@@ -40,6 +41,42 @@ namespace Controllers
             {
                 _logger.LogError(ex, "Ocorreu um erro não tratado no endpoint GetAllItens.");
                 return StatusCode(500, new { message = "Ocorreu um erro interno no servidor. Por favor, tente novamente mais tarde." });
+            }
+        }
+
+        [HttpPatch("{id}")]
+        [ProducesResponseType(typeof(ItemDto), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> EditarItem(int id, [FromBody] JsonPatchDocument<ItemUpdateDto> patchDoc)
+        {
+            if (patchDoc == null)
+            {
+                return BadRequest("O patch document não pode ser nulo.");
+            }
+
+            try
+            {
+                var itemAtualizadoDto = await _catalogoService.EditarItemAsync(id, patchDoc);
+
+                if (itemAtualizadoDto == null)
+                {
+                    return NotFound(new { message = $"Item com ID {id} não encontrado." });
+                }
+
+                return Ok(itemAtualizadoDto);
+            }
+            catch (InvalidOperationException ex)
+            {
+                // Erro capturado do ModelState no serviço
+                _logger.LogWarning(ex, "Erro ao aplicar o patch para o item {Id}.", id);
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ocorreu um erro não tratado no endpoint EditarItem para o ID {Id}.", id);
+                return StatusCode(500, new { message = "Ocorreu um erro interno no servidor." });
             }
         }
 
