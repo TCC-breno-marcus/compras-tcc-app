@@ -26,15 +26,27 @@ namespace Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<ItemDto>), 200)]
+        [ProducesResponseType(typeof(PaginatedResultDto<ItemDto>), 200)]
         [ProducesResponseType(500)]
-        public async Task<IActionResult> GetAllItens()
+        public async Task<IActionResult> GetAllItens
+        (
+            [FromQuery] long? id,
+            [FromQuery] string? catMat,
+            [FromQuery] string? nome,
+            [FromQuery] string? descricao,
+            [FromQuery] bool? isActive,
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 50
+        )  
         {
             try
             {
-                _logger.LogInformation("Recebida requisição para buscar todos os itens.");
-                var itensDto = await _catalogoService.GetAllItensAsync();
-                return Ok(itensDto);
+                _logger.LogInformation("Recebida requisição para buscar itens com filtros.");
+
+                // Simplesmente passa todos os parâmetros recebidos para o serviço
+                var paginatedResult = await _catalogoService.GetAllItensAsync(id, catMat, nome, descricao, isActive, pageNumber, pageSize);
+
+                return Ok(paginatedResult);
             }
             catch (Exception ex)
             {
@@ -43,8 +55,8 @@ namespace Controllers
             }
         }
 
-        [HttpPost("importar")] 
-        [ProducesResponseType(202)] 
+        [HttpPost("importar")]
+        [ProducesResponseType(202)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
         public async Task<IActionResult> ImportarItens([FromBody] IEnumerable<ItemImportacaoDto> itensParaImportar)
