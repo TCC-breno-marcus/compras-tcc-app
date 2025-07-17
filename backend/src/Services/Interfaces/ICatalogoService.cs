@@ -19,5 +19,7 @@ namespace Services.Interfaces
         Task ImportarItensAsync(IEnumerable<ItemImportacaoDto> itensParaImportar);
 
         Task<string> PopularImagensAsync(string caminhoDasImagens);
+
+        Task<ItemDto?> EditarItemAsync(int id, ItemUpdateDto updateDto);
     }
 }

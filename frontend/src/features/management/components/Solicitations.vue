@@ -91,9 +91,9 @@ const exportCSV = () => {
 <template>
   <div class="flex flex-column w-full h-full">
     <div
-      class="flex flex-column lg:flex-row lg:align-items-center justify-content-between gap-4 mt-2"
+      class="flex flex-wrap align-items-center justify-content-between gap-2 md:gap-4 mt-2"
     >
-      <div class="flex flex-column md:flex-row md:flex-wrap align-items-center gap-2">
+      <div class="flex flex-wrap align-items-center gap-2">
         <div class="flex flex-column sm:flex-row gap-2">
           <IconField iconPosition="left">
             <InputIcon class="pi pi-search"></InputIcon>
@@ -121,7 +121,7 @@ const exportCSV = () => {
         class="table"
         :value="materials"
         dataKey="id"
-        tableStyle="min-width: 60rem"
+        tableStyle="min-width: 30rem"
         size="small"
         paginator
         :rows="50"

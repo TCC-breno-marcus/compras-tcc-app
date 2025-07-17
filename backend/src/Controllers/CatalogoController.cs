@@ -72,7 +72,7 @@ namespace Controllers
 
                 await _catalogoService.ImportarItensAsync(itensParaImportar);
 
-                return Accepted(new { message = "Itens recebidos e agendados para importação." });
+                return Created("", new { message = "Itens importados com sucesso." });
             }
             catch (Exception ex)
             {
@@ -110,5 +110,24 @@ namespace Controllers
                 return StatusCode(500, new { message = "Ocorreu um erro interno no servidor." });
             }
         }
+        
+        [HttpPut("{id}")]
+        [ProducesResponseType(typeof(ItemDto), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> EditarItem(int id, [FromBody] ItemUpdateDto updateDto)
+        {
+            if (updateDto == null)
+                return BadRequest("Corpo da requisição vazio.");
+
+            var itemAtualizado = await _catalogoService.EditarItemAsync(id, updateDto);
+
+            if (itemAtualizado == null)
+                return NotFound(new { message = $"Item com ID {id} não encontrado." });
+
+            return Ok(itemAtualizado);
+        }
+
     }
 }

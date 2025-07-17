@@ -1,22 +1,22 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import Button from 'primevue/button';
-import InputNumber from 'primevue/inputnumber';
-import { FloatLabel } from 'primevue';
+import { ref } from 'vue'
+import Button from 'primevue/button'
+import InputNumber from 'primevue/inputnumber'
+import { FloatLabel } from 'primevue'
 
 const props = defineProps({
   item: {
     type: Object,
-    required: true
-  }
-});
+    required: true,
+  },
+})
 
-const qtde = ref(1);
-
+const qtde = ref(1)
 </script>
 <template>
-  <div class="item-card flex justify-content-between p-2 mb-2 w-full">
-
+  <div
+    class="item-card flex md:flex-column lg:flex-row align-items-center justify-content-between lg:justify-content-between p-2 mb-2 w-full gap-2"
+  >
     <div class="flex justify-content-start align-items-center gap-2 mr-2">
       <img :src="item.img" :alt="item.title" class="item-image" />
       <div>
@@ -27,18 +27,31 @@ const qtde = ref(1);
 
     <div class="flex align-items-center gap-2">
       <FloatLabel variant="on" class="quantity-input">
-        <InputNumber v-model="qtde" inputId="on_label_qtde" :min="1" :max="9999"
-          size="small" fluid />
+        <InputNumber
+          v-model="qtde"
+          inputId="on_label_qtde"
+          :min="1"
+          :max="9999"
+          size="small"
+          fluid
+        />
         <label for="on_label_qtde">Qtde.</label>
       </FloatLabel>
       <FloatLabel variant="on" class="price-input">
-        <InputNumber v-model="item.suggestedUnitPrice" inputId="on_label_price" mode="currency" currency="BRL"
-          locale="pt-BR" fluid :min="0" size="small"  />
+        <InputNumber
+          v-model="item.suggestedUnitPrice"
+          inputId="on_label_price"
+          mode="currency"
+          currency="BRL"
+          locale="pt-BR"
+          fluid
+          :min="0"
+          size="small"
+        />
         <label for="on_label_price">Preço Unitário</label>
       </FloatLabel>
-      <Button icon="pi pi-trash" variant="text" severity="danger" size="small"/>
+      <Button icon="pi pi-trash" variant="text" severity="danger" size="small" />
     </div>
-
   </div>
 </template>
 

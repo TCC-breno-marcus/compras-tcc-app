@@ -42,7 +42,7 @@ const toggle = (event: Event) => {
 </script>
 
 <template>
-  <div class="header-container flex align-items-center justify-content-between px-4 py-2">
+  <div class="header-container flex align-items-center justify-content-between px-2 md:px-4 py-2">
     <OverlayMenu v-if="!isLargeScreen" />
     <router-link to="/" class="logo-link logo-avancado-wrapper">
       <span class="material-symbols-outlined">shopping_cart</span>

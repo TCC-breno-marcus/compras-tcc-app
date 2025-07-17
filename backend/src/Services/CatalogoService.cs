@@ -93,6 +93,44 @@ namespace Services
             }
         }
 
+        public async Task<ItemDto?> EditarItemAsync(int id, ItemUpdateDto updateDto)
+        {
+            var itemDoBanco = await _context.Items.FirstOrDefaultAsync(i => i.Id == id);
+
+            if (itemDoBanco == null)
+            {
+                _logger.LogWarning("Tentativa de editar item com ID {Id} não encontrado.", id);
+                return null;
+            }
+
+            if (!string.IsNullOrEmpty(updateDto.Nome))
+                itemDoBanco.Nome = updateDto.Nome;
+
+            if (!string.IsNullOrEmpty(updateDto.Descricao))
+                itemDoBanco.Descricao = updateDto.Descricao;
+
+            if (!string.IsNullOrEmpty(updateDto.Especificacao))
+                itemDoBanco.Especificacao = updateDto.Especificacao;
+
+            if (updateDto.IsActive.HasValue)
+                itemDoBanco.IsActive = updateDto.IsActive.Value;
+
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation("Item com ID {Id} atualizado.", id);
+
+            return new ItemDto
+            {
+                Id = itemDoBanco.Id,
+                Nome = itemDoBanco.Nome,
+                Descricao = itemDoBanco.Descricao,
+                CatMat = itemDoBanco.CatMat,
+                Especificacao = itemDoBanco.Especificacao,
+                LinkImagem = itemDoBanco.LinkImagem,
+                IsActive = itemDoBanco.IsActive
+            };
+        }
+
         public async Task ImportarItensAsync(IEnumerable<ItemImportacaoDto> itensParaImportar)
         {
             var codigosParaVerificar = itensParaImportar.Select(dto => dto.Codigo).Distinct();
@@ -192,5 +230,6 @@ namespace Services
 
             return resumo;
         }
+
     }
 }
