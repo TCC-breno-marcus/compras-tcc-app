@@ -60,7 +60,7 @@ namespace Controllers
 
                 await _catalogoService.ImportarItensAsync(itensParaImportar);
 
-                return Accepted(new { message = "Itens recebidos e agendados para importação." });
+                return Created("", new { message = "Itens importados com sucesso." });
             }
             catch (Exception ex)
             {
