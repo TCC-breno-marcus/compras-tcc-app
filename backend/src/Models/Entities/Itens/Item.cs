@@ -8,6 +8,9 @@ namespace ComprasTccApp.Backend.Models.Entities.Items
     {
         public long Id { get; set; }
 
+        [Required, StringLength(100)]
+        public required string Nome { get; set; }
+
         [Required, StringLength(50)]
         public required string CatMat { get; set; }
 
@@ -19,9 +22,6 @@ namespace ComprasTccApp.Backend.Models.Entities.Items
 
         [Required, StringLength(250)]
         public required string Especificacao { get; set; }
-
-        [Required, StringLength(50)]
-        public required string UnidadeMedida { get; set; }
 
         [Required]
         public decimal ValorUnitario { get; set; }

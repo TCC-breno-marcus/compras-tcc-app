@@ -33,11 +33,11 @@ namespace Services
                     .Select(item => new ItemDto
                     {
                         Id = item.Id,
+                        Nome = item.Nome,
                         Descricao = item.Descricao,
                         CatMat = item.CatMat,
                         LinkImagem = item.LinkImagem,
                         Especificacao = item.LinkImagem,
-                        UnidadeMedida = item.UnidadeMedida,
                         IsActive = item.IsActive,
                     })
                     .ToList();
@@ -57,11 +57,11 @@ namespace Services
         {
             var novosItens = itensParaImportar.Select(dto => new Item
             {
+                Nome = dto.Nome,
                 Descricao = dto.Descricao,
                 CatMat = dto.Codigo,
                 LinkImagem = dto.LinkImagem,
                 Especificacao = dto.Especificacao,
-                UnidadeMedida = dto.UnidadeMedida,
                 IsActive = true
             });
 
