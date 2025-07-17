@@ -77,7 +77,7 @@ namespace Services
                 }
                 else
                 {
-                    query = query.OrderBy(item => item.Id); 
+                    query = query.OrderBy(item => item.Id);
                 }
 
                 var totalCount = await query.CountAsync();
@@ -128,6 +128,9 @@ namespace Services
 
             if (!string.IsNullOrEmpty(updateDto.Especificacao))
                 itemDoBanco.Especificacao = updateDto.Especificacao;
+
+            if (updateDto.PrecoSugerido.HasValue)
+                itemDoBanco.PrecoSugerido = updateDto.PrecoSugerido.Value;
 
             if (updateDto.IsActive.HasValue)
                 itemDoBanco.IsActive = updateDto.IsActive.Value;
