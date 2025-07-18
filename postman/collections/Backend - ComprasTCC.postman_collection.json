@@ -76,6 +76,112 @@
 							"path": [
 								"api",
 								"Catalogo"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1048",
+									"disabled": true
+								},
+								{
+									"key": "nome",
+									"value": "espátula",
+									"disabled": true
+								},
+								{
+									"key": "catMat",
+									"value": "000000",
+									"disabled": true
+								},
+								{
+									"key": "descricao",
+									"value": "liso",
+									"disabled": true
+								},
+								{
+									"key": "especificacao",
+									"value": "5 cm",
+									"disabled": true
+								},
+								{
+									"key": "pageNumber",
+									"value": "3",
+									"disabled": true
+								},
+								{
+									"key": "pageSize",
+									"value": "100",
+									"disabled": true
+								},
+								{
+									"key": "isActive",
+									"value": "false",
+									"disabled": true
+								},
+								{
+									"key": "sortOrder",
+									"value": "asc",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Item By ID",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/api/Catalogo/1049",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Catalogo",
+								"1049"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Item",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/api/Catalogo/1413",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Catalogo",
+								"1413"
 							]
 						}
 					},
@@ -88,7 +194,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    // \"nome\": \"AGULHA BACTERIOLÓGICA\",\r\n    \"descricao\": \"Agulha bacteriológica em platina sem cabo.\"\r\n    // \"catMat\": \"408828\",\r\n    // \"especificacao\": \"5 cm\",\r\n    // \"isActive\": false\r\n}",
+							"raw": "{\r\n    // \"nome\": \"AGULHA BACTERIOLÓGICA\",\r\n    // \"descricao\": \"Agulha bacteriológica em platina sem cabo.\"\r\n    // \"catMat\": \"408828\",\r\n    // \"especificacao\": \"5 cm\",\r\n    // \"isActive\": true\r\n    \"precoSugerido\": 150.99\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -132,6 +238,33 @@
 								"api",
 								"Catalogo",
 								"importar"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Criar Item",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"Item teste\",\r\n    \"descricao\": \"teste.\",\r\n    \"catMat\": \"000000\",\r\n    \"linkImagem\": \"000000.png\",\r\n    \"especificacao\": \"teste\",\r\n    \"precoSugerido\": 0,\r\n    \"isActive\": false\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/api/Catalogo",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Catalogo"
 							]
 						}
 					},

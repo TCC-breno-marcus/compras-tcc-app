@@ -291,5 +291,60 @@ namespace Services
             }
         }
 
+        public async Task<ItemDto> CriarItemAsync(ItemDto dto)
+        {
+            var itemExistente = await _context.Items
+                .AnyAsync(item => item.CatMat == dto.CatMat);
+
+            if (itemExistente)
+            {
+                throw new InvalidOperationException($"Já existe um item cadastrado com o CATMAT {dto.CatMat}.");
+            }
+
+
+            var novoItem = new Item
+            {
+                Nome = dto.Nome,
+                Descricao = dto.Descricao,
+                CatMat = dto.CatMat,
+                Especificacao = dto.Especificacao,
+                LinkImagem = dto.LinkImagem,
+                PrecoSugerido = dto.PrecoSugerido,
+                IsActive = dto.IsActive
+            };
+
+            await _context.Items.AddAsync(novoItem);
+            await _context.SaveChangesAsync();
+
+            return new ItemDto
+            {
+                Id = novoItem.Id,
+                Nome = novoItem.Nome,
+                Descricao = novoItem.Descricao,
+                CatMat = novoItem.CatMat,
+                Especificacao = novoItem.Especificacao,
+                LinkImagem = novoItem.LinkImagem,
+                PrecoSugerido = novoItem.PrecoSugerido,
+                IsActive = novoItem.IsActive
+            };
+        }
+
+        public async Task<bool> DeleteItemAsync(long id)
+        {
+            var item = await _context.Items.FindAsync(id);
+
+            if (item == null)
+            {
+                _logger.LogWarning("Tentativa de deletar item com ID {Id}, mas não foi encontrado.", id);
+                return false;
+            }
+
+            _context.Items.Remove(item);
+
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation("Item com ID {Id} foi deletado com sucesso.", id);
+            return true;
+        }
     }
 }

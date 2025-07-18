@@ -130,12 +130,12 @@ namespace Controllers
             return Ok(itemAtualizado);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetItemPorId")]
         [ProducesResponseType(typeof(ItemDto), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
-        public async Task<IActionResult> Get([FromRoute] long id)
+        public async Task<IActionResult> GetItemPorId([FromRoute] long id)
         {
             try
             {
@@ -153,5 +153,61 @@ namespace Controllers
         }
 
 
+        [HttpPost]
+        [ProducesResponseType(typeof(ItemDto), 201)]
+        [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(typeof(string), 409)]
+        public async Task<IActionResult> CriarItem([FromBody] ItemDto newItemDto)
+        {
+            if (newItemDto == null)
+            {
+                return BadRequest("O corpo da requisição não pode ser vazio.");
+            }
+
+            try
+            {
+                _logger.LogInformation("Recebida requisição para criar um item.");
+
+                var itemCriadoDto = await _catalogoService.CriarItemAsync(newItemDto);
+
+                return CreatedAtAction("GetItemPorId", new { id = itemCriadoDto.Id }, itemCriadoDto);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogWarning(ex.Message);
+                return Conflict(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro não tratado no endpoint CriarItem.");
+                return StatusCode(500, new { message = "Erro interno ao criar o item." });
+            }
+        }
+
+        [HttpDelete("{id}")]
+        [ProducesResponseType(204)] 
+        [ProducesResponseType(404)] 
+        [ProducesResponseType(500)] 
+        public async Task<IActionResult> DeleteItem(long id)
+        {
+            try
+            {
+                _logger.LogInformation("Recebida requisição para deletar o item com ID: {Id}", id);
+
+                var sucesso = await _catalogoService.DeleteItemAsync(id);
+
+                if (!sucesso)
+                {
+                    return NotFound(new { message = $"Item com ID {id} não encontrado." });
+                }
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro não tratado no endpoint DeleteItem.");
+                return StatusCode(500, new { message = "Erro interno ao deletar o item." });
+            }
+        }
     }
 }

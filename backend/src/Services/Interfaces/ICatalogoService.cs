@@ -23,5 +23,10 @@ namespace Services.Interfaces
 
         Task<ItemDto?> EditarItemAsync(int id, ItemUpdateDto updateDto);
         Task<ItemDto?> GetItemByIdAsync(long id);
+
+        Task<ItemDto> CriarItemAsync(ItemDto dto);
+
+        Task<bool> DeleteItemAsync(long id);
+
     }
 }
