@@ -37,14 +37,15 @@ namespace Controllers
             [FromQuery] string? especificacao,
             [FromQuery] bool? isActive,
             [FromQuery] int pageNumber = 1,
-            [FromQuery] int pageSize = 50
+            [FromQuery] int pageSize = 50,
+            [FromQuery] string? sortOrder = "asc"
         )
         {
             try
             {
                 _logger.LogInformation("Recebida requisição para buscar itens com filtros.");
 
-                var paginatedResult = await _catalogoService.GetAllItensAsync(id, catMat, nome, descricao, especificacao, isActive, pageNumber, pageSize);
+                var paginatedResult = await _catalogoService.GetAllItensAsync(id, catMat, nome, descricao, especificacao, isActive, pageNumber, pageSize, sortOrder);
 
                 return Ok(paginatedResult);
             }
@@ -110,7 +111,7 @@ namespace Controllers
                 return StatusCode(500, new { message = "Ocorreu um erro interno no servidor." });
             }
         }
-        
+
         [HttpPut("{id}")]
         [ProducesResponseType(typeof(ItemDto), 200)]
         [ProducesResponseType(400)]
@@ -129,5 +130,84 @@ namespace Controllers
             return Ok(itemAtualizado);
         }
 
+        [HttpGet("{id}", Name = "GetItemPorId")]
+        [ProducesResponseType(typeof(ItemDto), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> GetItemPorId([FromRoute] long id)
+        {
+            try
+            {
+                _logger.LogInformation("Recebida requisição para buscar um item pelo ID.");
+
+                var item = await _catalogoService.GetItemByIdAsync(id);
+
+                return Ok(item);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ocorreu um erro não tratado no endpoint GetItem.");
+                return StatusCode(500, new { message = "Ocorreu um erro interno no servidor. Por favor, tente novamente mais tarde." });
+            }
+        }
+
+
+        [HttpPost]
+        [ProducesResponseType(typeof(ItemDto), 201)]
+        [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(typeof(string), 409)]
+        public async Task<IActionResult> CriarItem([FromBody] ItemDto newItemDto)
+        {
+            if (newItemDto == null)
+            {
+                return BadRequest("O corpo da requisição não pode ser vazio.");
+            }
+
+            try
+            {
+                _logger.LogInformation("Recebida requisição para criar um item.");
+
+                var itemCriadoDto = await _catalogoService.CriarItemAsync(newItemDto);
+
+                return CreatedAtAction("GetItemPorId", new { id = itemCriadoDto.Id }, itemCriadoDto);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogWarning(ex.Message);
+                return Conflict(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro não tratado no endpoint CriarItem.");
+                return StatusCode(500, new { message = "Erro interno ao criar o item." });
+            }
+        }
+
+        [HttpDelete("{id}")]
+        [ProducesResponseType(204)] 
+        [ProducesResponseType(404)] 
+        [ProducesResponseType(500)] 
+        public async Task<IActionResult> DeleteItem(long id)
+        {
+            try
+            {
+                _logger.LogInformation("Recebida requisição para deletar o item com ID: {Id}", id);
+
+                var sucesso = await _catalogoService.DeleteItemAsync(id);
+
+                if (!sucesso)
+                {
+                    return NotFound(new { message = $"Item com ID {id} não encontrado." });
+                }
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro não tratado no endpoint DeleteItem.");
+                return StatusCode(500, new { message = "Erro interno ao deletar o item." });
+            }
+        }
     }
 }

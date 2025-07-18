@@ -30,7 +30,8 @@ namespace Services
             string? especificacao,
             bool? isActive,
             int pageNumber,
-            int pageSize
+            int pageSize,
+            string? sortOrder
         )
         {
             _logger.LogInformation("Iniciando busca avançada de itens com filtros e paginação...");
@@ -63,6 +64,21 @@ namespace Services
                 {
                     query = query.Where(item => item.IsActive == isActive.Value);
                 }
+                if (!string.IsNullOrWhiteSpace(sortOrder))
+                {
+                    if (sortOrder.ToLower() == "asc")
+                    {
+                        query = query.OrderBy(item => item.Nome);
+                    }
+                    else if (sortOrder.ToLower() == "desc")
+                    {
+                        query = query.OrderByDescending(item => item.Nome);
+                    }
+                }
+                else
+                {
+                    query = query.OrderBy(item => item.Id);
+                }
 
                 var totalCount = await query.CountAsync();
 
@@ -78,6 +94,7 @@ namespace Services
                     Descricao = item.Descricao,
                     CatMat = item.CatMat,
                     LinkImagem = item.LinkImagem,
+                    PrecoSugerido = item.PrecoSugerido,
                     Especificacao = item.Especificacao,
                     IsActive = item.IsActive,
                 }).ToList();
@@ -112,6 +129,9 @@ namespace Services
             if (!string.IsNullOrEmpty(updateDto.Especificacao))
                 itemDoBanco.Especificacao = updateDto.Especificacao;
 
+            if (updateDto.PrecoSugerido.HasValue)
+                itemDoBanco.PrecoSugerido = updateDto.PrecoSugerido.Value;
+
             if (updateDto.IsActive.HasValue)
                 itemDoBanco.IsActive = updateDto.IsActive.Value;
 
@@ -125,6 +145,7 @@ namespace Services
                 Nome = itemDoBanco.Nome,
                 Descricao = itemDoBanco.Descricao,
                 CatMat = itemDoBanco.CatMat,
+                PrecoSugerido = itemDoBanco.PrecoSugerido,
                 Especificacao = itemDoBanco.Especificacao,
                 LinkImagem = itemDoBanco.LinkImagem,
                 IsActive = itemDoBanco.IsActive
@@ -231,5 +252,99 @@ namespace Services
             return resumo;
         }
 
+        public async Task<ItemDto?> GetItemByIdAsync(long id)
+        {
+            _logger.LogInformation("Iniciando busca de um item pelo ID...");
+            _logger.LogWarning("ID {Id}", id);
+
+
+            try
+            {
+                var item = await _context.Items
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(i => i.Id == id);
+
+                if (item == null)
+                {
+                    _logger.LogWarning("Item com ID {Id} não encontrado.", id);
+                    return null;
+                }
+
+                _logger.LogInformation("Item com ID {Id} encontrado.", id);
+
+                return new ItemDto
+                {
+                    Id = item.Id,
+                    Nome = item.Nome,
+                    Descricao = item.Descricao,
+                    CatMat = item.CatMat,
+                    LinkImagem = item.LinkImagem,
+                    PrecoSugerido = item.PrecoSugerido,
+                    Especificacao = item.Especificacao,
+                    IsActive = item.IsActive
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro ao buscar item por ID {Id}.", id);
+                throw;
+            }
+        }
+
+        public async Task<ItemDto> CriarItemAsync(ItemDto dto)
+        {
+            var itemExistente = await _context.Items
+                .AnyAsync(item => item.CatMat == dto.CatMat);
+
+            if (itemExistente)
+            {
+                throw new InvalidOperationException($"Já existe um item cadastrado com o CATMAT {dto.CatMat}.");
+            }
+
+
+            var novoItem = new Item
+            {
+                Nome = dto.Nome,
+                Descricao = dto.Descricao,
+                CatMat = dto.CatMat,
+                Especificacao = dto.Especificacao,
+                LinkImagem = dto.LinkImagem,
+                PrecoSugerido = dto.PrecoSugerido,
+                IsActive = dto.IsActive
+            };
+
+            await _context.Items.AddAsync(novoItem);
+            await _context.SaveChangesAsync();
+
+            return new ItemDto
+            {
+                Id = novoItem.Id,
+                Nome = novoItem.Nome,
+                Descricao = novoItem.Descricao,
+                CatMat = novoItem.CatMat,
+                Especificacao = novoItem.Especificacao,
+                LinkImagem = novoItem.LinkImagem,
+                PrecoSugerido = novoItem.PrecoSugerido,
+                IsActive = novoItem.IsActive
+            };
+        }
+
+        public async Task<bool> DeleteItemAsync(long id)
+        {
+            var item = await _context.Items.FindAsync(id);
+
+            if (item == null)
+            {
+                _logger.LogWarning("Tentativa de deletar item com ID {Id}, mas não foi encontrado.", id);
+                return false;
+            }
+
+            _context.Items.Remove(item);
+
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation("Item com ID {Id} foi deletado com sucesso.", id);
+            return true;
+        }
     }
 }

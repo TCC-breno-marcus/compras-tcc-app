@@ -13,7 +13,8 @@ namespace Services.Interfaces
             string? especificacao,
             bool? isActive,
             int pageNumber,
-            int pageSize
+            int pageSize,
+            string? sortOrder
         );
 
         Task ImportarItensAsync(IEnumerable<ItemImportacaoDto> itensParaImportar);
@@ -21,5 +22,11 @@ namespace Services.Interfaces
         Task<string> PopularImagensAsync(string caminhoDasImagens);
 
         Task<ItemDto?> EditarItemAsync(int id, ItemUpdateDto updateDto);
+        Task<ItemDto?> GetItemByIdAsync(long id);
+
+        Task<ItemDto> CriarItemAsync(ItemDto dto);
+
+        Task<bool> DeleteItemAsync(long id);
+
     }
 }

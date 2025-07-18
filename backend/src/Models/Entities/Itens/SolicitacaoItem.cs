@@ -17,6 +17,6 @@ namespace ComprasTccApp.Models.Entities.Itens
 
         [Required]
         [Column(TypeName = "decimal(18,2)")]
-        public decimal ValorUnitarioNaCompra { get; set; }
+        public decimal ValorUnitario { get; set; }
     }
 }

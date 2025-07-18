@@ -24,7 +24,7 @@ namespace ComprasTccApp.Backend.Models.Entities.Items
         public required string Especificacao { get; set; }
 
         [Required]
-        public decimal ValorUnitario { get; set; }
+        public decimal PrecoSugerido { get; set; }
 
         [Required]
         public bool IsActive { get; set; }
