@@ -35,13 +35,13 @@ builder.Services.AddScoped<ICatalogoService, CatalogoService>();
 
 var app = builder.Build();
 
+app.UseCors(MyAllowSpecificOrigins);
 
 // Middleware setup
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    app.UseCors(MyAllowSpecificOrigins);
 }
 
 app.MapControllers();
