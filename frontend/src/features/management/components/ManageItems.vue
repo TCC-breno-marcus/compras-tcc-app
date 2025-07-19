@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import CatalogUpload from './CatalogUpload.vue'
-import { useRoute } from 'vue-router'
-import { ref } from 'vue'
+import { ref, watch, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
 import SplitButton from 'primevue/splitbutton'
@@ -12,8 +12,13 @@ import ItemDetailsDialog from './ItemDetailsDialog.vue'
 import type { ItemCatalogo } from '@/types/itemsCatalogo'
 import { Button } from 'primevue'
 import CustomPaginator from '@/components/CustomPaginator.vue'
+import OverlayPanel from 'primevue/overlaypanel'
+import { useCatalogoStore } from '../stores/catalogoStore'
+import { storeToRefs } from 'pinia'
 
-const route = useRoute()
+const catalogoStore = useCatalogoStore()
+const { items, loading, error, totalCount, pageNumber, pageSize, totalPages } =
+  storeToRefs(catalogoStore)
 
 const filters = ref([
   {
@@ -38,152 +43,75 @@ const categories = ref([
   { name: 'Componentes Eletrônicos', code: 'componentes-eletronicos' },
 ])
 
-const items = ref([
-  {
-    title: 'Seringa Descartável',
-    img: '/items_img/img1.png',
-    code: '214560',
-    status: 'Ativo',
+const route = useRoute()
+const router = useRouter()
+
+// Estado para a busca simples (já existente)
+const simpleSearch = ref(route.query.search || '')
+// TODO: a logica do simpleSearch ainda nao existe no backend: fazer
+
+// 2. Refs para controlar o painel e os valores dos inputs
+const op = ref() // Ref para o componente OverlayPanel
+const nomeFilter = ref(route.query.nome || '')
+const descricaoFilter = ref(route.query.descricao || '')
+const catmatFilter = ref(route.query.catmat || '')
+const especificacaoFilter = ref(route.query.catmat || '')
+
+// Função para abrir/fechar o painel de filtros
+const toggleAdvancedFilter = (event: MouseEvent) => {
+  if (op.value) {
+    op.value.toggle(event)
+  }
+}
+
+const applyFilters = () => {
+  const currentQuery = { ...route.query }
+
+  // Limpa todos os filtros antigos antes de adicionar os novos
+  delete currentQuery.search
+  delete currentQuery.nome
+  delete currentQuery.descricao
+  delete currentQuery.catmat
+  delete currentQuery.especificacao
+
+  // Adiciona os filtros que estiverem preenchidos
+  if (simpleSearch.value) currentQuery.search = simpleSearch.value
+  if (nomeFilter.value) currentQuery.nome = nomeFilter.value
+  if (descricaoFilter.value) currentQuery.descricao = descricaoFilter.value
+  if (catmatFilter.value) currentQuery.catmat = catmatFilter.value
+  if (especificacaoFilter.value) currentQuery.especificacao = especificacaoFilter.value
+
+  // Reseta para a primeira página
+  currentQuery.page = '1'
+
+  router.push({ query: currentQuery })
+
+  // Se o painel de filtros avançados estiver aberto, feche-o.
+  if (op.value) {
+    op.value.hide()
+  }
+}
+
+const clearAdvancedFilters = () => {
+  nomeFilter.value = ''
+  descricaoFilter.value = ''
+  catmatFilter.value = ''
+  especificacaoFilter.value = ''
+  applyFilters()
+}
+
+watch(
+  () => route.query,
+  (newQuery) => {
+    simpleSearch.value = newQuery.search || ''
+    nomeFilter.value = newQuery.nome || ''
+    descricaoFilter.value = newQuery.descricao || ''
+    catmatFilter.value = newQuery.catmat || ''
+
+    catalogoStore.fetchItems(newQuery)
   },
-  {
-    title: 'Gaze Estéril Pacote',
-    img: '/items_img/img1.png',
-    code: '348790',
-    status: 'Ativo',
-  },
-  {
-    title: 'Luva Cirúrgica (Par)',
-    img: '/items_img/img1.png',
-    code: '551230',
-    status: 'Ativo',
-  },
-  {
-    title: 'Álcool Etílico 70% 1L',
-    img: '/items_img/img1.png',
-    code: '987010',
-    status: 'Inativo',
-  },
-  {
-    title: 'Seringa Descartável',
-    img: '/items_img/img1.png',
-    code: '214560',
-    status: 'Inativo',
-  },
-  {
-    title: 'Gaze Estéril Pacote',
-    img: '/items_img/img1.png',
-    code: '348790',
-    status: 'Ativo',
-  },
-  {
-    title: 'Luva Cirúrgica (Par)',
-    img: '/items_img/img1.png',
-    code: '551230',
-    status: 'Inativo',
-  },
-  {
-    title: 'Álcool Etílico 70% 1L',
-    img: '/items_img/img1.png',
-    code: '987010',
-    status: 'Ativo',
-  },
-  {
-    title: 'Seringa Descartável',
-    img: '/items_img/img1.png',
-    code: '214560',
-    status: 'Ativo',
-  },
-  {
-    title: 'Gaze Estéril Pacote',
-    img: '/items_img/img1.png',
-    code: '348790',
-    status: 'Ativo',
-  },
-  {
-    title: 'Luva Cirúrgica (Par)',
-    img: '/items_img/img1.png',
-    code: '551230',
-    status: 'Ativo',
-  },
-  {
-    title: 'Álcool Etílico 70% 1L',
-    img: '/items_img/img1.png',
-    code: '987010',
-    status: 'Inativo',
-  },
-  {
-    title: 'Seringa Descartável',
-    img: '/items_img/img1.png',
-    code: '214560',
-    status: 'Inativo',
-  },
-  {
-    title: 'Gaze Estéril Pacote',
-    img: '/items_img/img1.png',
-    code: '348790',
-    status: 'Ativo',
-  },
-  {
-    title: 'Luva Cirúrgica (Par)',
-    img: '/items_img/img1.png',
-    code: '551230',
-    status: 'Inativo',
-  },
-  {
-    title: 'Álcool Etílico 70% 1L',
-    img: '/items_img/img1.png',
-    code: '987010',
-    status: 'Ativo',
-  },
-  {
-    title: 'Seringa Descartável',
-    img: '/items_img/img1.png',
-    code: '214560',
-    status: 'Ativo',
-  },
-  {
-    title: 'Gaze Estéril Pacote',
-    img: '/items_img/img1.png',
-    code: '348790',
-    status: 'Ativo',
-  },
-  {
-    title: 'Luva Cirúrgica (Par)',
-    img: '/items_img/img1.png',
-    code: '551230',
-    status: 'Ativo',
-  },
-  {
-    title: 'Álcool Etílico 70% 1L',
-    img: '/items_img/img1.png',
-    code: '987010',
-    status: 'Inativo',
-  },
-  {
-    title: 'Seringa Descartável',
-    img: '/items_img/img1.png',
-    code: '214560',
-    status: 'Inativo',
-  },
-  {
-    title: 'Gaze Estéril Pacote',
-    img: '/items_img/img1.png',
-    code: '348790',
-    status: 'Ativo',
-  },
-  {
-    title: 'Luva Cirúrgica (Par)',
-    img: '/items_img/img1.png',
-    code: '551230',
-    status: 'Inativo',
-  },
-  {
-    title: 'Álcool Etílico 70% 1L',
-    img: '/items_img/img1.png',
-    code: '987010',
-    status: 'Ativo',
-  },
-])
+  { immediate: true },
+)
 
 const isDialogVisible = ref(false)
 const selectedItem = ref<ItemCatalogo | null>(null)
@@ -200,22 +128,85 @@ const handleViewDetails = (item: ItemCatalogo) => {
         <div class="flex flex-column sm:flex-row gap-2">
           <IconField iconPosition="left">
             <InputIcon class="pi pi-search"></InputIcon>
-            <InputText size="small" placeholder="Nome/Descrição/CATMAT" />
+            <InputText
+              v-model="simpleSearch"
+              size="small"
+              placeholder="Nome/Descrição/CATMAT"
+              @keyup.enter="applyFilters"
+            />
           </IconField>
 
-          <Select
+          <Button
+            type="button"
+            label="Filtros Avançados"
+            icon="pi pi-filter"
+            size="small"
+            text
+            @click="toggleAdvancedFilter"
+          />
+
+          <OverlayPanel ref="op">
+            <div class="flex flex-column gap-2 p-2" style="min-width: 250px">
+              <span class="p-text-secondary">Filtros Avançados</span>
+
+              <IconField iconPosition="rigth">
+                <InputIcon class="pi pi-search"></InputIcon>
+                <InputText v-model="nomeFilter" size="small" placeholder="Nome do item" />
+              </IconField>
+
+              <IconField iconPosition="rigth">
+                <InputIcon class="pi pi-search"></InputIcon>
+                <InputText v-model="descricaoFilter" size="small" placeholder="Descrição" />
+              </IconField>
+
+              <IconField iconPosition="rigth">
+                <InputIcon class="pi pi-search"></InputIcon>
+                <InputText v-model="catmatFilter" size="small" placeholder="CatMat" />
+              </IconField>
+
+              <IconField iconPosition="rigth">
+                <InputIcon class="pi pi-search"></InputIcon>
+                <InputText v-model="especificacaoFilter" size="small" placeholder="Especificação" />
+              </IconField>
+
+              <!-- TODO: deve ser um toggle button para alternar entre ativo e inativo -->
+              <IconField iconPosition="rigth">
+                <InputIcon class="pi pi-search"></InputIcon>
+                <InputText v-model="isActiveFilter" size="small" placeholder="Ativo" />
+              </IconField>
+
+              <div class="flex justify-content-end gap-2">
+                <Button
+                  label="Limpar"
+                  icon="pi pi-filter-slash"
+                  severity="danger"
+                  text
+                  @click="clearAdvancedFilters"
+                  size="small"
+                />
+              </div>
+            </div>
+          </OverlayPanel>
+
+          <!-- <Select
             v-model="selectedCategory"
             :options="categories"
             optionLabel="name"
             placeholder="Categoria"
             class="w-full md:w-56"
             size="small"
-          />
+          /> -->
         </div>
 
         <div class="flex align-items-center gap-2">
           <SplitButton text size="small" label="Ordenar por" :model="filters" />
-          <Button type="button" label="Filtrar" icon="pi pi-filter" size="small" />
+          <Button
+            type="button"
+            label="Buscar"
+            icon="pi pi-filter"
+            size="small"
+            @click="applyFilters"
+          />
         </div>
       </div>
 

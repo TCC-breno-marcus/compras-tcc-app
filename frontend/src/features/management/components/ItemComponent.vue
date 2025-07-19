@@ -24,7 +24,9 @@ const onShowDetailsClick = () => {
 <template>
   <div class="item-card m-2">
     <div class="image-preview-container flex justify-content-center align-items-center p-1" @click="onShowDetailsClick">
-      <img :src="item.img" :alt="item.title" class="item-image" />
+      <!-- TODO: a base url das imagens deve ser montada no backend -->
+       <!-- TODO: ajustar tamanho e proporcao da imagem e criar um default para items sem imagem -->
+      <img :src="`http://localhost:8088/images/${item.linkImagem}`" :alt="item.nome" class="item-image" />
       <div class="preview-overlay">
         <i class="pi pi-eye preview-icon text-3xl"></i>
       </div>
@@ -32,10 +34,10 @@ const onShowDetailsClick = () => {
     <div class="flex align-items-center justify-content-between p-2">
 
       <div class="item-details">
-        <p class="font-bold text-sm">{{ item.title }}</p>
-        <p class="text-xs text-color-secondary">CATMAT {{ item.code }}</p>
+        <p class="font-bold text-sm">{{ item.nome }}</p>
+        <p class="text-xs text-color-secondary">CATMAT {{ item.catMat }}</p>
       </div>
-      <Tag :severity="item.status === 'Ativo' ? 'success' : 'danger'" :value="item.status"></Tag>
+      <Tag :severity="item.isActive ? 'success' : 'danger'" :value="item.isActive ? 'Ativo' : 'Inativo'"></Tag>
     </div>
   </div>
 </template>

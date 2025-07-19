@@ -21,13 +21,8 @@ const props = defineProps({
 const router = useRouter()
 const route = useRoute()
 
-const currentParams = computed(() => {
-  const filter = route.query.filter || ''
-  return new URLSearchParams(filter.toString())
-})
-
 const currentPage = computed(() => {
-  return Number(currentParams.value.get('page')) || 1
+  return Number(route.query.pageNumber) || 1
 })
 
 const MAX_PAGE_SIZE = 50
@@ -47,13 +42,14 @@ const handleNavigation = (action) => {
 
   const page = typeof action === 'string' ? actionMap[action] : action
 
-  const newParams = new URLSearchParams(currentParams.value.toString())
-  newParams.set('page', page.toString())
+  // 1. Comece com uma cópia de todos os parâmetros de query existentes
+  const newQuery = { ...route.query }
 
-  router.push({
-    path: props.currentUrl,
-    query: { filter: newParams.toString() },
-  })
+  // 2. Atualize apenas o parâmetro da página
+  newQuery.pageNumber = page.toString()
+
+  // 3. Envie o objeto de query diretamente para o router
+  router.push({ query: newQuery })
 }
 
 const visiblePages = computed(() => {
@@ -78,7 +74,7 @@ const visiblePages = computed(() => {
     <Button
       :pt="{
         root: {
-          class: 'buttonNavigation'
+          class: 'buttonNavigation',
         },
       }"
       type="button"
@@ -92,7 +88,7 @@ const visiblePages = computed(() => {
     <Button
       :pt="{
         root: {
-          class: 'buttonNavigation'
+          class: 'buttonNavigation',
         },
       }"
       type="button"
@@ -123,7 +119,7 @@ const visiblePages = computed(() => {
     <Button
       :pt="{
         root: {
-          class: 'buttonNavigation'
+          class: 'buttonNavigation',
         },
       }"
       type="button"
@@ -137,7 +133,7 @@ const visiblePages = computed(() => {
     <Button
       :pt="{
         root: {
-          class: 'buttonNavigation'
+          class: 'buttonNavigation',
         },
       }"
       type="button"
