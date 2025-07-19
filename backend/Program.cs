@@ -10,6 +10,19 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// CORS
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+                      policy =>
+                      {
+                          policy.WithOrigins("http://localhost:5173") 
+                                .AllowAnyHeader()
+                                .AllowAnyMethod();
+                      });
+});
+
 
 // Database setup
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -22,6 +35,7 @@ builder.Services.AddScoped<ICatalogoService, CatalogoService>();
 
 var app = builder.Build();
 
+app.UseCors(MyAllowSpecificOrigins);
 
 // Middleware setup
 if (app.Environment.IsDevelopment())
