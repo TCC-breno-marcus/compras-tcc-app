@@ -230,6 +230,14 @@ const handleViewDetails = (item: ItemCatalogo) => {
             v-tooltip.top="computedSort.text"
           />
           <Button
+            label="Limpar"
+            icon="pi pi-filter-slash"
+            severity="danger"
+            text
+            @click="clearFilters"
+            size="small"
+          />
+          <Button
             type="button"
             label="Buscar"
             icon="pi pi-filter"
@@ -259,12 +267,7 @@ const handleViewDetails = (item: ItemCatalogo) => {
       </div>
       <h3 class="mb-2">Nenhum resultado encontrado.</h3>
       <p>Tente ajustar seus filtros ou utilize termos de busca diferentes.</p>
-      <Button
-        label="Limpar Filtros"
-        icon="pi pi-filter-slash"
-        @click="clearFilters"
-        size="small"
-      />
+      <Button label="Limpar Filtros" icon="pi pi-filter-slash" @click="clearFilters" size="small" />
     </div>
     <CustomPaginator
       v-if="items.length > 0"
