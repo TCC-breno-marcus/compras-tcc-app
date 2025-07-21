@@ -45,7 +45,7 @@ const closeModal = () => {
         </div>
       </div>
       <div class="dialog-img">
-        <img src="/items_img/img1.png" :alt="item.title" class="dialog-image mb-4" />
+        <!-- <img src="/items_img/img1.png" :alt="item.title" class="dialog-image mb-4" /> -->
       </div>
     </div>
 

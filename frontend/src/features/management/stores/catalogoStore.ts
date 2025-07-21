@@ -25,11 +25,11 @@ export const useCatalogoStore = defineStore('catalogo', () => {
     try {
       const response = await catalogoService.getItens(filters);
       
-      items.value = response.data.items; 
-      totalCount.value = response.data.totalCount;
-      pageNumber.value = response.data.pageNumber;
-      pageSize.value = response.data.pageSize;
-      totalPages.value = Math.ceil(response.data.totalCount / response.data.pageSize) || 1;
+      items.value = response.items; 
+      totalCount.value = response.totalCount;
+      pageNumber.value = response.pageNumber;
+      pageSize.value = response.pageSize;
+      totalPages.value = Math.ceil(response.totalCount / response.pageSize) || 1;
 
     } catch (err) {
       error.value = 'Ocorreu um erro ao buscar os itens.';
