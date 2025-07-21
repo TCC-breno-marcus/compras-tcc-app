@@ -29,6 +29,7 @@ const activeTab = ref(items.value[0].label); // Define a primeira aba como ativa
       <h3>Painel do Gestor</h3>
     </div>
 
+    <!-- TODO: Nao funciona como paginas, aparentemente está tudo carregando ao mesmo tempo, deveria ser subpaginas -->
     <Tabs v-model:value="activeTab" class="mt-2 tabs-container">
       <TabList>
         <Tab v-for="tab in items" :key="tab.label" :value="tab.label">
