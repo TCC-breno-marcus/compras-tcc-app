@@ -4,7 +4,6 @@ import Button from 'primevue/button'
 import { Divider } from 'primevue'
 import { ref, watch } from 'vue'
 import { catalogoService } from '../services/catalogoService'
-import ProgressSpinner from 'primevue/progressspinner'
 import type { Item } from '../types'
 import Skeleton from 'primevue/skeleton'
 
@@ -22,16 +21,15 @@ const error = ref<string | null>(null)
 watch(
   () => props.visible,
   async (isNowVisible) => {
-    if (isNowVisible && props.item && props.item?.linkImagem) {
+    if (isNowVisible && props.item) {
       isLoading.value = true
       error.value = null
       detailedItem.value = null
-
       try {
         const urlDaImagem = `http://localhost:8088/images/${props.item.linkImagem}`
         const promiseDados = catalogoService.getItemById(props.item.id)
         const promiseImagem = props.item.linkImagem
-          ? precarregarImagem(`http://localhost:8088/images/${props.item.linkImagem}`)
+          ? precarregarImagem(urlDaImagem)
           : Promise.resolve()
         const [responseDados] = await Promise.all([promiseDados, promiseImagem])
         detailedItem.value = responseDados
@@ -86,10 +84,6 @@ const saveChanges = () => {
     :header="`Detalhes do Material`"
     :style="{ width: 'clamp(300px, 50vw, 700px)' }"
   >
-    <!-- <div v-if="isLoading" class="flex justify-content-center align-items-center p-5">
-      <ProgressSpinner strokeWidth="4" style="width: 50px; height: 50px" fill="transparent" />
-    </div> -->
-
     <div v-if="isLoading" class="dialog-content flex">
       <div class="flex flex-column flex-grow-1 pr-4">
         <Skeleton width="70%" height="1.5rem" class="mb-3"></Skeleton>
@@ -131,10 +125,14 @@ const saveChanges = () => {
       </div>
       <div class="dialog-img">
         <img
+          v-if="detailedItem.linkImagem"
           :src="`http://localhost:8088/images/${detailedItem.linkImagem}`"
           :alt="detailedItem.nome"
           class="dialog-image mb-4 ml-4"
         />
+        <div v-else class="dialog-image mb-4 ml-4">
+          <span class="material-symbols-outlined placeholder-icon"> hide_image </span>
+        </div>
       </div>
     </div>
 
@@ -186,5 +184,10 @@ const saveChanges = () => {
 
 .dialog-content p {
   line-height: 1.6;
+}
+
+.placeholder-icon {
+  font-size: 4rem;
+  /* color: var(--p-surface-500); */
 }
 </style>

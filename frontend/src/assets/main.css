@@ -74,6 +74,10 @@ a {
   font-size: 14px !important;
 }
 
-.p-tablist {
-    overflow-x: auto;
+.p-tabmenu {
+  min-height: 62px;
+}
+
+.p-tabmenu-item-link {
+  white-space: nowrap;
 }

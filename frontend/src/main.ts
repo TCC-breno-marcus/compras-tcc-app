@@ -11,6 +11,7 @@ import Tooltip from 'primevue/tooltip'
 import ToastService from 'primevue/toastservice';
 import App from './App.vue'
 import router from './router'
+import Ripple from 'primevue/ripple';
 
 const app = createApp(App)
 
@@ -26,10 +27,12 @@ app.use(PrimeVue, {
       darkModeSelector: '.p-dark'
     },
   },
+  ripple: true
 })
 app.use(ToastService)
 app.use(router)
 
+app.directive('ripple', Ripple)
 app.directive('tooltip', Tooltip)
 
 app.mount('#app')

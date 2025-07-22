@@ -1,25 +1,47 @@
 <script setup lang="ts">
-import Tabs from 'primevue/tabs';
-import TabList from 'primevue/tablist';
-import Tab from 'primevue/tab';
-import TabPanels from 'primevue/tabpanels';
-import TabPanel from 'primevue/tabpanel';
-import { ref, shallowRef } from "vue";
-import ManageItems from '../components/ManageItems.vue';
-import Dashboard from '../components/Dashboard.vue';
-import ItemsPerDepartment from '../components/ItemsPerDepartment.vue';
-import Solicitations from '../components/Solicitations.vue';
-import Reports from '../components/Reports.vue';
+import { ref, computed } from 'vue'
+import TabMenu from 'primevue/tabmenu'
+import { useRoute, useRouter } from 'vue-router'
+
+const router = useRouter()
+const route = useRoute()
 
 const items = ref([
-  { label: 'Dashboard', icon: 'pi pi-chart-bar', component: shallowRef(Dashboard) },
-  { label: 'Itens por Departamento', icon: 'pi pi-chart-pie', component: shallowRef(ItemsPerDepartment) },
-  { label: 'Solicitações', icon: 'pi pi-list', component: shallowRef(Solicitations) },
-  { label: 'Gerenciar Catálogo', icon: 'pi pi-book', component: shallowRef(ManageItems) },
-  { label: 'Relatórios', icon: 'pi pi-book', component: shallowRef(Reports) }
-]);
+  {
+    label: 'Dashboard',
+    icon: 'pi pi-chart-bar',
+    command: () => router.push('/gestor/dashboard'),
+    path: '/gestor/dashboard',
+  },
+  {
+    label: 'Itens por Departamento',
+    icon: 'pi pi-chart-pie',
+    command: () => router.push('/gestor/departamento'),
+    path: '/gestor/departamento',
+  },
+  {
+    label: 'Solicitações',
+    icon: 'pi pi-list',
+    command: () => router.push('/gestor/solicitacoes'),
+    path: '/gestor/solicitacoes',
+  },
+  {
+    label: 'Gerenciar Catálogo',
+    icon: 'pi pi-book',
+    command: () => router.push('/gestor/catalogo'),
+    path: '/gestor/catalogo',
+  },
+  {
+    label: 'Relatórios',
+    icon: 'pi pi-book',
+    command: () => router.push('/gestor/relatorios'),
+    path: '/gestor/relatorios',
+  },
+])
 
-const activeTab = ref(items.value[0].label); // Define a primeira aba como ativa
+const activeRoute = computed(() => {
+  return items.value.findIndex((item) => item.path === route.path)
+})
 </script>
 
 <template>
@@ -27,26 +49,9 @@ const activeTab = ref(items.value[0].label); // Define a primeira aba como ativa
     <div class="flex items-center justify-content-between">
       <h3>Painel do Gestor</h3>
     </div>
-
-    <!-- TODO: Nao funciona como paginas, aparentemente está tudo carregando ao mesmo tempo, deveria ser subpaginas -->
-    <Tabs v-model:value="activeTab" class="mt-2 tabs-container">
-      <TabList>
-        <Tab v-for="tab in items" :key="tab.label" :value="tab.label">
-          <div class="flex items-center gap-2">
-            <i :class="tab.icon" />
-            <span>{{ tab.label }}</span>
-          </div>
-        </Tab>
-      </TabList>
-
-      <TabPanels>
-        <TabPanel v-for="tab in items" :key="tab.label" :value="tab.label">
-          <component :is="tab.component" />
-        </TabPanel>
-      </TabPanels>
-    </Tabs>
+    <TabMenu :model="items" :activeIndex="activeRoute" />
+    <RouterView class="mt-2" />
   </div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

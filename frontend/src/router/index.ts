@@ -22,12 +22,33 @@ const router = createRouter({
         {
           path: '/solicitacoes/:id',
           name: 'SolicitationDetails', // Dê um nome à rota
-          component: SolicitationDetailsView
+          component: SolicitationDetailsView,
         },
         {
-          path: '/painel-gestor',
-          name: 'ManagerPanel',
+          path: '/gestor',
           component: ManagerPanel,
+          children: [
+            {
+              path: 'dashboard',
+              component: () => import('@/features/management/components/Dashboard.vue'),
+            },
+            {
+              path: 'departamento',
+              component: () => import('@/features/management/components/ItemsPerDepartment.vue'),
+            },
+            {
+              path: 'solicitacoes',
+              component: () => import('@/features/management/components/Solicitations.vue'),
+            },
+            {
+              path: 'catalogo',
+              component: () => import('@/features/management/components/ManageItems.vue'),
+            },
+            {
+              path: 'relatorios',
+              component: () => import('@/features/management/components/Reports.vue'),
+            },
+          ],
         },
         {
           path: '',

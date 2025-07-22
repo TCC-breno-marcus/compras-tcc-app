@@ -21,12 +21,16 @@ const onShowDetailsClick = () => {
       @click="onShowDetailsClick"
     >
       <!-- TODO: a base url das imagens deve ser montada no backend -->
-      <!-- TODO: criar um default para items sem imagem. Pode ser um geral pra todos ou uma imagem default por categoria -->
       <img
+        v-if="item.linkImagem"
         :src="`http://localhost:8088/images/${item.linkImagem}`"
         :alt="item.nome"
         class="item-image"
       />
+      <div v-else class="image-placeholder">
+        <span class="material-symbols-outlined placeholder-icon"> hide_image </span>
+      </div>
+
       <div class="preview-overlay">
         <i class="pi pi-eye preview-icon text-3xl"></i>
       </div>
@@ -54,7 +58,7 @@ const onShowDetailsClick = () => {
   width: 250px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   transition: box-shadow 0.3s ease;
-  height: 100%;
+  /* height: 100%; */
 }
 
 .p-dark .item-card {
@@ -129,5 +133,19 @@ const onShowDetailsClick = () => {
 
 .item-details p {
   margin: 0;
+}
+
+.image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 6px;
+}
+
+.placeholder-icon {
+  font-size: 3rem; 
+  /* color: var(--p-surface-500);  */
 }
 </style>
