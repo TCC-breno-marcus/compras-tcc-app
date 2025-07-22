@@ -36,6 +36,7 @@ namespace Controllers
             [FromQuery] string? descricao,
             [FromQuery] string? especificacao,
             [FromQuery] bool? isActive,
+            [FromQuery] string? searchTerm,
             [FromQuery] int pageNumber = 1,
             [FromQuery] int pageSize = 50,
             [FromQuery] string? sortOrder = "asc"
@@ -45,7 +46,7 @@ namespace Controllers
             {
                 _logger.LogInformation("Recebida requisição para buscar itens com filtros.");
 
-                var paginatedResult = await _catalogoService.GetAllItensAsync(id, catMat, nome, descricao, especificacao, isActive, pageNumber, pageSize, sortOrder);
+                var paginatedResult = await _catalogoService.GetAllItensAsync(id, catMat, nome, descricao, especificacao, isActive, searchTerm, pageNumber, pageSize, sortOrder);
 
                 return Ok(paginatedResult);
             }
@@ -143,6 +144,9 @@ namespace Controllers
 
                 var item = await _catalogoService.GetItemByIdAsync(id);
 
+                if (item == null)
+                    return NotFound(new { message = $"Item com ID {id} não encontrado." });
+
                 return Ok(item);
             }
             catch (Exception ex)
@@ -185,9 +189,9 @@ namespace Controllers
         }
 
         [HttpDelete("{id}")]
-        [ProducesResponseType(204)] 
-        [ProducesResponseType(404)] 
-        [ProducesResponseType(500)] 
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
         public async Task<IActionResult> DeleteItem(long id)
         {
             try

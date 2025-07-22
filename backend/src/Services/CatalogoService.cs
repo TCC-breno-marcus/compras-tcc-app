@@ -29,6 +29,7 @@ namespace Services
             string? descricao,
             string? especificacao,
             bool? isActive,
+            string? searchTerm,
             int pageNumber,
             int pageSize,
             string? sortOrder
@@ -40,44 +41,62 @@ namespace Services
             {
                 var query = _context.Items.AsQueryable();
 
-                if (id.HasValue)
+                if (!string.IsNullOrWhiteSpace(searchTerm))
                 {
-                    query = query.Where(item => item.Id == id.Value);
-                }
-                if (!string.IsNullOrWhiteSpace(catMat))
-                {
-                    query = query.Where(item => item.CatMat.Contains(catMat));
-                }
-                if (!string.IsNullOrWhiteSpace(nome))
-                {
-                    query = query.Where(item => item.Nome.ToLower().Contains(nome.ToLower()));
-                }
-                if (!string.IsNullOrWhiteSpace(descricao))
-                {
-                    query = query.Where(item => item.Descricao.ToLower().Contains(descricao.ToLower()));
-                }
-                if (!string.IsNullOrWhiteSpace(especificacao))
-                {
-                    query = query.Where(item => item.Descricao.ToLower().Contains(especificacao.ToLower()));
-                }
-                if (isActive.HasValue)
-                {
-                    query = query.Where(item => item.IsActive == isActive.Value);
-                }
-                if (!string.IsNullOrWhiteSpace(sortOrder))
-                {
-                    if (sortOrder.ToLower() == "asc")
+                    query = query.Where(item =>
+                        item.Nome.ToLower().Contains(searchTerm.ToLower()) ||
+                        item.Descricao.ToLower().Contains(searchTerm.ToLower()) ||
+                        item.CatMat.Contains(searchTerm.ToLower()) ||
+                        item.Especificacao.ToLower().Contains(searchTerm.ToLower())
+                    );
+ 
+                    if (isActive.HasValue)
                     {
-                        query = query.OrderBy(item => item.Nome);
-                    }
-                    else if (sortOrder.ToLower() == "desc")
-                    {
-                        query = query.OrderByDescending(item => item.Nome);
+                        query = query.Where(item => item.IsActive == isActive.Value);
                     }
                 }
                 else
                 {
-                    query = query.OrderBy(item => item.Id);
+                    if (id.HasValue)
+                    {
+                        query = query.Where(item => item.Id == id.Value);
+                    }
+                    if (!string.IsNullOrWhiteSpace(catMat))
+                    {
+                        query = query.Where(item => item.CatMat.Contains(catMat));
+                    }
+                    if (!string.IsNullOrWhiteSpace(nome))
+                    {
+                        query = query.Where(item => item.Nome.ToLower().Contains(nome.ToLower()));
+                    }
+                    if (!string.IsNullOrWhiteSpace(descricao))
+                    {
+                        query = query.Where(item => item.Descricao.ToLower().Contains(descricao.ToLower()));
+                    }
+                    if (!string.IsNullOrWhiteSpace(especificacao))
+                    {
+                        query = query.Where(item => item.Especificacao.ToLower().Contains(especificacao.ToLower()));
+                    }
+                    if (isActive.HasValue)
+                    {
+                        query = query.Where(item => item.IsActive == isActive.Value);
+                    }
+                    if (!string.IsNullOrWhiteSpace(sortOrder))
+                    {
+                        if (sortOrder.ToLower() == "asc")
+                        {
+                            query = query.OrderBy(item => item.Nome);
+                        }
+                        else if (sortOrder.ToLower() == "desc")
+                        {
+                            query = query.OrderByDescending(item => item.Nome);
+                        }
+                    }
+                    else
+                    {
+                        query = query.OrderBy(item => item.Id);
+                    }
+
                 }
 
                 var totalCount = await query.CountAsync();
@@ -93,7 +112,8 @@ namespace Services
                     Nome = item.Nome,
                     Descricao = item.Descricao,
                     CatMat = item.CatMat,
-                    LinkImagem = item.LinkImagem,
+                    // TODO: o link abaixo deve estar em variável de ambiente
+                    LinkImagem = $"http://localhost:8088/images/{item.LinkImagem}",
                     PrecoSugerido = item.PrecoSugerido,
                     Especificacao = item.Especificacao,
                     IsActive = item.IsActive,
@@ -278,7 +298,8 @@ namespace Services
                     Nome = item.Nome,
                     Descricao = item.Descricao,
                     CatMat = item.CatMat,
-                    LinkImagem = item.LinkImagem,
+                    // TODO: o link abaixo deve estar em variável de ambiente
+                    LinkImagem = $"http://localhost:8088/images/{item.LinkImagem}",
                     PrecoSugerido = item.PrecoSugerido,
                     Especificacao = item.Especificacao,
                     IsActive = item.IsActive
