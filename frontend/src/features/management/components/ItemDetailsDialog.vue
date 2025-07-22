@@ -134,6 +134,7 @@ const saveChanges = () => {
         <p><strong>Nome:</strong> {{ detailedItem.nome }}</p>
         <p><strong>CATMAT:</strong> {{ detailedItem.catMat }}</p>
         <p><strong>Descrição:</strong> {{ detailedItem.descricao }}</p>
+        <p v-if="detailedItem.especificacao"><strong>Especificação:</strong> {{ detailedItem.especificacao }}</p>
 
         <Divider align="left" type="solid" class="mt-4">
           <b>Materiais Semelhantes</b>

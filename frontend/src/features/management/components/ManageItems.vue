@@ -25,7 +25,7 @@ const { items, loading, error, totalCount, pageNumber, pageSize, totalPages } =
   storeToRefs(catalogoStore)
 
 // TODO: a logica do simpleSearch ainda nao existe no backend: fazer
-const simpleSearch = ref(route.query.search || '')
+const simpleSearch = ref(route.query.searchTerm || '')
 
 const op = ref() // Ref para o componente OverlayPanel
 const nomeFilter = ref(route.query.nome || '')
@@ -68,7 +68,7 @@ const applyFilters = () => {
   const currentQuery = { ...route.query }
 
   // Limpa todos os filtros antigos antes de adicionar os novos
-  delete currentQuery.search
+  delete currentQuery.searchTerm
   delete currentQuery.nome
   delete currentQuery.descricao
   delete currentQuery.catmat
@@ -77,7 +77,7 @@ const applyFilters = () => {
   delete currentQuery.sortOrder
 
   // Adiciona os filtros que estiverem preenchidos
-  if (simpleSearch.value) currentQuery.search = simpleSearch.value
+  if (simpleSearch.value) currentQuery.searchTerm = simpleSearch.value
   if (nomeFilter.value) currentQuery.nome = nomeFilter.value
   if (descricaoFilter.value) currentQuery.descricao = descricaoFilter.value
   if (catmatFilter.value) currentQuery.catmat = catmatFilter.value
@@ -113,7 +113,7 @@ const clearFilters = () => {
 watch(
   () => route.query,
   (newQuery) => {
-    simpleSearch.value = newQuery.search || ''
+    simpleSearch.value = newQuery.searchTerm || ''
     nomeFilter.value = newQuery.nome || ''
     descricaoFilter.value = newQuery.descricao || ''
     catmatFilter.value = newQuery.catmat || ''
