@@ -29,5 +29,8 @@ namespace Services.Interfaces
 
         Task<bool> DeleteItemAsync(long id);
 
+        Task<IEnumerable<ItemDto>?> GetItensSemelhantesAsync(long id);
+
+
     }
 }

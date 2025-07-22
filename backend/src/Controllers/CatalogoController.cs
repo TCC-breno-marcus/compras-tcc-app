@@ -156,6 +156,33 @@ namespace Controllers
             }
         }
 
+        [HttpGet("{id}/itens-semelhantes")]
+        [ProducesResponseType(typeof(IEnumerable<ItemDto>), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> GetItensSemelhantes([FromRoute] long id)
+        {
+            try
+            {
+                _logger.LogInformation("Recebida requisição para buscar itens semelhantes ao item ID {Id}.", id);
+
+                var itensSemelhantes = await _catalogoService.GetItensSemelhantesAsync(id);
+
+                if (itensSemelhantes == null)
+                {
+                    return NotFound(new { message = $"Item com ID {id} não encontrado para basear a busca." });
+                }
+
+                return Ok(itensSemelhantes);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ocorreu um erro não tratado no endpoint GetItensSemelhantes.");
+                return StatusCode(500, new { message = "Ocorreu um erro interno no servidor. Por favor, tente novamente mais tarde." });
+            }
+        }
+
 
         [HttpPost]
         [ProducesResponseType(typeof(ItemDto), 201)]

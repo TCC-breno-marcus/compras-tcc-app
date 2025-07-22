@@ -49,7 +49,7 @@ namespace Services
                         item.CatMat.Contains(searchTerm.ToLower()) ||
                         item.Especificacao.ToLower().Contains(searchTerm.ToLower())
                     );
- 
+
                     if (isActive.HasValue)
                     {
                         query = query.Where(item => item.IsActive == isActive.Value);
@@ -367,5 +367,51 @@ namespace Services
             _logger.LogInformation("Item com ID {Id} foi deletado com sucesso.", id);
             return true;
         }
+
+        public async Task<IEnumerable<ItemDto>?> GetItensSemelhantesAsync(long id)
+        {
+            _logger.LogInformation("Iniciando busca de itens semelhantes ao item de ID {Id}", id);
+
+            try
+            {
+                var itemOriginal = await _context.Items.FindAsync(id);
+
+                if (itemOriginal == null)
+                {
+                    _logger.LogWarning("Item original com ID {Id} não encontrado.", id);
+                    return null; 
+                }
+
+                var nomeParaBusca = itemOriginal.Nome;
+                _logger.LogInformation("Item original encontrado: '{Nome}'. Buscando por semelhantes.", nomeParaBusca);
+
+                var itensSemelhantes = await _context.Items
+                    .AsNoTracking()
+                    .Where(item => item.Nome == nomeParaBusca && item.Id != id) 
+                    .ToListAsync();
+
+                _logger.LogInformation("Encontrados {Count} itens semelhantes.", itensSemelhantes.Count);
+
+                var itensDto = itensSemelhantes.Select(item => new ItemDto
+                {
+                    Id = item.Id,
+                    Nome = item.Nome,
+                    Descricao = item.Descricao,
+                    CatMat = item.CatMat,
+                    LinkImagem = $"http://localhost:8088/images/{item.LinkImagem}", // Usar variável de ambiente
+                    PrecoSugerido = item.PrecoSugerido,
+                    Especificacao = item.Especificacao,
+                    IsActive = item.IsActive
+                }).ToList();
+
+                return itensDto;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro ao buscar itens semelhantes para o ID {Id}.", id);
+                throw;
+            }
+        }
+
     }
 }
