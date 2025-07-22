@@ -12,6 +12,7 @@ namespace Services.Interfaces
             string? descricao,
             string? especificacao,
             bool? isActive,
+            string? searchTerm,
             int pageNumber,
             int pageSize,
             string? sortOrder
@@ -27,6 +28,9 @@ namespace Services.Interfaces
         Task<ItemDto> CriarItemAsync(ItemDto dto);
 
         Task<bool> DeleteItemAsync(long id);
+
+        Task<IEnumerable<ItemDto>?> GetItensSemelhantesAsync(long id);
+
 
     }
 }
