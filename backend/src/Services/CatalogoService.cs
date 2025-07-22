@@ -113,7 +113,9 @@ namespace Services
                     Descricao = item.Descricao,
                     CatMat = item.CatMat,
                     // TODO: o link abaixo deve estar em variável de ambiente
-                    LinkImagem = $"http://localhost:8088/images/{item.LinkImagem}",
+                    LinkImagem = string.IsNullOrWhiteSpace(item.LinkImagem)
+                        ? item.LinkImagem
+                        : $"http://localhost:8088/images/{item.LinkImagem}",
                     PrecoSugerido = item.PrecoSugerido,
                     Especificacao = item.Especificacao,
                     IsActive = item.IsActive,
@@ -299,7 +301,9 @@ namespace Services
                     Descricao = item.Descricao,
                     CatMat = item.CatMat,
                     // TODO: o link abaixo deve estar em variável de ambiente
-                    LinkImagem = $"http://localhost:8088/images/{item.LinkImagem}",
+                    LinkImagem = string.IsNullOrWhiteSpace(item.LinkImagem)
+                        ? item.LinkImagem
+                        : $"http://localhost:8088/images/{item.LinkImagem}",
                     PrecoSugerido = item.PrecoSugerido,
                     Especificacao = item.Especificacao,
                     IsActive = item.IsActive
@@ -379,7 +383,7 @@ namespace Services
                 if (itemOriginal == null)
                 {
                     _logger.LogWarning("Item original com ID {Id} não encontrado.", id);
-                    return null; 
+                    return null;
                 }
 
                 var nomeParaBusca = itemOriginal.Nome;
@@ -387,7 +391,7 @@ namespace Services
 
                 var itensSemelhantes = await _context.Items
                     .AsNoTracking()
-                    .Where(item => item.Nome == nomeParaBusca && item.Id != id) 
+                    .Where(item => item.Nome == nomeParaBusca && item.Id != id)
                     .ToListAsync();
 
                 _logger.LogInformation("Encontrados {Count} itens semelhantes.", itensSemelhantes.Count);
@@ -398,7 +402,10 @@ namespace Services
                     Nome = item.Nome,
                     Descricao = item.Descricao,
                     CatMat = item.CatMat,
-                    LinkImagem = $"http://localhost:8088/images/{item.LinkImagem}", // Usar variável de ambiente
+                    // TODO: o link abaixo deve estar em variável de ambiente
+                    LinkImagem = string.IsNullOrWhiteSpace(item.LinkImagem)
+                        ? item.LinkImagem
+                        : $"http://localhost:8088/images/{item.LinkImagem}",
                     PrecoSugerido = item.PrecoSugerido,
                     Especificacao = item.Especificacao,
                     IsActive = item.IsActive
