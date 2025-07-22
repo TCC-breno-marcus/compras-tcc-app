@@ -6,6 +6,7 @@ import type { CatalogoParams, Item, PaginatedResponse } from '@/features/managem
 interface ICatalogoService {
   getItens(params?: CatalogoParams): Promise<PaginatedResponse<Item>>;
   getItemById(id: number): Promise<Item>;
+  getItensSemelhantes(id: number): Promise<Item[]>;
   // createItem(data: Partial<Item>): Promise<AxiosResponse<Item>>; <-- Exemplo para o futuro
 }
 
@@ -25,6 +26,15 @@ export const catalogoService: ICatalogoService = {
    */
   async getItemById(id) {
     const response = await apiClient.get<Item>(`/catalogo/${id}`);
+    return response.data;
+  },
+
+  /**
+   * Busca items com mesmo nome do item com ID informado.
+   * @param id ID do item.
+   */
+  async getItensSemelhantes(id) {
+    const response = await apiClient.get<Item[]>(`/catalogo/${id}/itens-semelhantes`);
     return response.data;
   }
 };

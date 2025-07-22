@@ -23,7 +23,7 @@ const onShowDetailsClick = () => {
       <!-- TODO: a base url das imagens deve ser montada no backend -->
       <img
         v-if="item.linkImagem"
-        :src="`http://localhost:8088/images/${item.linkImagem}`"
+        :src="item.linkImagem"
         :alt="item.nome"
         class="item-image"
       />

@@ -138,10 +138,14 @@ const handleViewDetails = (item: ItemCatalogo) => {
   selectedItem.value = item
   isDialogVisible.value = true
 }
+const handleUpdateDialog = (newItem: ItemCatalogo) => {
+  selectedItem.value = newItem
+}
 </script>
 
 <template>
   <div class="flex flex-column w-full h-full">
+    <!-- TODO: ESSES BOTOES DE FILTRO NÃO ESTAO LEGAL PRA TELA PEQUENA -->
     <div class="flex flex-wrap align-items-center justify-content-between gap-2 md:gap-4 mt-2">
       <div class="flex flex-wrap align-items-center gap-2">
         <div class="flex flex-column sm:flex-row gap-2">
@@ -273,7 +277,12 @@ const handleViewDetails = (item: ItemCatalogo) => {
       :page-number="pageNumber"
     />
 
-    <ItemDetailsDialog v-model:visible="isDialogVisible" :item="selectedItem" />
+    <ItemDetailsDialog
+      v-model:visible="isDialogVisible"
+      :item="selectedItem"
+      @update:visible="isDialogVisible = false"
+      @update-dialog="handleUpdateDialog"
+    />
   </div>
 </template>
 
