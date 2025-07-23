@@ -12,6 +12,11 @@ import InputNumber from 'primevue/inputnumber'
 import ToggleSwitch from 'primevue/toggleswitch'
 import Textarea from 'primevue/textarea'
 import Tag from 'primevue/tag'
+import { useToast } from 'primevue/usetoast'
+import { useConfirm } from 'primevue/useconfirm'
+
+const confirm = useConfirm()
+const toast = useToast()
 
 const props = defineProps<{
   visible: boolean
@@ -19,10 +24,6 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits(['update:visible', 'update-dialog'])
-const abrirDetalhes = (item: Item) => {
-  //TODO: perguntar ao usuário se ele tem certeza se estiver em modo de edição
-  emit('update-dialog', item)
-}
 
 const detailedItem = ref<Item | null>(null)
 const itensSemelhantes = ref<Item[]>([])
@@ -61,10 +62,6 @@ watch([() => props.item, () => props.visible], async ([currentItem, isVisible]) 
   }
 })
 
-/**
- * Função auxiliar que pré-carrega uma imagem e retorna uma Promise.
- * A Promise resolve quando a imagem termina de carregar.
- */
 const precarregarImagem = (url: string): Promise<void> => {
   return new Promise((resolve, reject) => {
     const img = new Image()
@@ -77,8 +74,63 @@ const precarregarImagem = (url: string): Promise<void> => {
   })
 }
 
+const abrirDetalhes = (item: Item) => {
+  if (isEditing.value) {
+    confirm.require({
+      message: `Você possui alterações não salvas neste item. Se prosseguir, elas serão perdidas.`,
+      header: 'Descartar Alterações?',
+      icon: 'pi pi-exclamation-triangle',
+      rejectProps: {
+        label: 'Continuar Editando',
+        severity: 'secondary',
+        text: true,
+        icon: 'pi pi-arrow-left',
+        size: 'small',
+      },
+      acceptProps: {
+        label: 'Descartar e Abrir',
+        icon: 'pi pi-trash',
+        size: 'small',
+        severity: 'danger',
+      },
+      accept: () => {
+        formData.value = {}
+        isEditing.value = false
+        emit('update-dialog', item)
+      },
+    })
+    return
+  }
+  emit('update-dialog', item)
+}
+
 const closeModal = () => {
-  //TODO: perguntar ao usuário se ele tem certeza se estiver em modo de edição
+  if (isEditing.value) {
+    confirm.require({
+      message: `As alterações feitas serão descartadas. Deseja continuar?`,
+      header: 'Descartar Alterações?',
+      icon: 'pi pi-exclamation-triangle',
+      rejectProps: {
+        label: 'Continuar Editando',
+        severity: 'secondary',
+        text: true,
+        icon: 'pi pi-arrow-left',
+        size: 'small',
+      },
+      acceptProps: {
+        label: 'Descartar',
+        icon: 'pi pi-trash',
+        size: 'small',
+        severity: 'danger',
+      },
+      accept: () => {
+        formData.value = {}
+        isEditing.value = false
+        emit('update:visible', false)
+      },
+    })
+    return
+  }
   emit('update:visible', false)
 }
 
@@ -94,15 +146,89 @@ const enterEditMode = () => {
 }
 
 const cancelEdit = () => {
-  //TODO: perguntar ao usuário se ele tem certeza
-  formData.value = {}
-  isEditing.value = false
+  confirm.require({
+    message: `As alterações feitas serão descartadas. Deseja continuar?`,
+    header: 'Descartar Alterações?',
+    icon: 'pi pi-exclamation-triangle',
+    rejectProps: {
+      label: 'Continuar Editando',
+      severity: 'secondary',
+      text: true,
+      icon: 'pi pi-arrow-left',
+      size: 'small',
+    },
+    acceptProps: {
+      label: 'Descartar',
+      icon: 'pi pi-trash',
+      size: 'small',
+      severity: 'danger',
+    },
+    accept: () => {
+      formData.value = {}
+      isEditing.value = false
+    },
+  })
 }
 
-const saveChanges = () => {
-  //TODO: perguntar ao usuário se ele tem certeza
-  console.log('Lógica para salvar os dados vai aqui...')
-  isEditing.value = false
+const saveChanges = (item: Item) => {
+  confirm.require({
+    message: `As alterações serão salvas. Deseja continuar?`,
+    header: 'Salvar Alterações?',
+    icon: 'pi pi-exclamation-triangle',
+    rejectProps: {
+      label: 'Cancelar',
+      severity: 'danger',
+      text: true,
+      icon: 'pi pi-times',
+      size: 'small',
+    },
+    acceptProps: {
+      label: 'Salvar',
+      icon: 'pi pi-check',
+      size: 'small',
+    },
+    accept: async () => {
+      if (detailedItem.value) {
+        isLoading.value = true
+        toast.add({
+          severity: 'info',
+          summary: 'Atualizando',
+          detail: 'O Item está sendo atualizado.',
+        })
+        try {
+          const newData = {
+            nome: formData.value?.nome,
+            catMat: formData.value?.catMat,
+            descricao: formData.value?.descricao,
+            especificacao: formData.value?.especificacao,
+            precoSugerido: formData.value?.precoSugerido,
+            isActive: formData.value?.isActive,
+          }
+          const updatedItem = await catalogoService.editarItem(detailedItem.value.id, newData)
+          toast.removeAllGroups()
+          toast.add({
+            severity: 'success',
+            summary: 'Sucesso',
+            detail: 'O item foi editado com sucesso.',
+            life: 3000,
+          })
+          isEditing.value = false
+          emit('update-dialog', updatedItem)
+        } catch (err) {
+          console.error('Erro ao tentar editar o item:', err)
+          error.value = 'Não foi possível editar o item.'
+          toast.add({
+            severity: 'error',
+            summary: 'Erro',
+            detail: 'Não foi possível editar o item.',
+            life: 3000,
+          })
+        } finally {
+          isLoading.value = false
+        }
+      }
+    },
+  })
 }
 </script>
 
@@ -311,7 +437,7 @@ const saveChanges = () => {
         label="Salvar"
         icon="pi pi-save"
         size="small"
-        @click="saveChanges"
+        @click="saveChanges()"
         severity="success"
       />
     </template>
@@ -354,6 +480,10 @@ const saveChanges = () => {
 
 .semelhante-item:hover {
   background-color: var(--p-surface-100) !important;
+}
+
+.p-dark .semelhante-item:hover {
+  background-color: var(--p-surface-800) !important;
 }
 
 .semelhante-item .nome {

@@ -12,6 +12,7 @@ import ToastService from 'primevue/toastservice';
 import App from './App.vue'
 import router from './router'
 import Ripple from 'primevue/ripple';
+import ConfirmationService from 'primevue/confirmationservice';
 
 const app = createApp(App)
 
@@ -30,6 +31,7 @@ app.use(PrimeVue, {
   ripple: true
 })
 app.use(ToastService)
+app.use(ConfirmationService);
 app.use(router)
 
 app.directive('ripple', Ripple)

@@ -1,16 +1,30 @@
 /**
- * Representa a estrutura de um único item do catálogo, 
+ * Representa a estrutura de um único item do catálogo,
  * como ele vem da API.
  */
 export interface Item {
-  id: number;
-  nome: string;
-  catMat: string;
-  descricao: string;
-  especificacao: string;
-  linkImagem: string;
-  precoSugerido: number;
-  isActive: boolean;
+  id: number
+  nome: string
+  catMat: string
+  descricao: string
+  especificacao: string
+  linkImagem: string
+  precoSugerido: number
+  isActive: boolean
+}
+
+/**
+ * Define todos os campos possíveis para editar um item.
+ * Todas as propriedades são opcionais.
+ */
+export interface ItemParams {
+  nome?: string
+  catMat?: string
+  descricao?: string
+  especificacao?: string
+  linkImagem?: string
+  precoSugerido?: number
+  isActive?: boolean
 }
 
 /**
@@ -18,16 +32,16 @@ export interface Item {
  * Todas as propriedades são opcionais.
  */
 export interface CatalogoParams {
-  id?: string;
-  nome?: string;
-  catMat?: string;
-  descricao?: string;
-  especificacao?: string;
-  isActive?: boolean;
-  pageNumber?: number;
-  pageSize?: number;
-  sortOrder?: string;
-  search?: string;
+  id?: string
+  nome?: string
+  catMat?: string
+  descricao?: string
+  especificacao?: string
+  isActive?: boolean
+  pageNumber?: number
+  pageSize?: number
+  sortOrder?: string
+  search?: string
 }
 
 /**
@@ -35,9 +49,9 @@ export interface CatalogoParams {
  * É genérica para poder ser reutilizada com outros tipos de dados (ex: Solicitações).
  */
 export interface PaginatedResponse<T> {
-  pageNumber: number;
-  pageSize: number;
-  totalCount: number,
-  totalPages: number,
-  items: T[];
+  pageNumber: number
+  pageSize: number
+  totalCount: number
+  totalPages: number
+  items: T[]
 }

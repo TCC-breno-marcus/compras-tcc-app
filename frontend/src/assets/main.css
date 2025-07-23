@@ -81,3 +81,7 @@ a {
 .p-tabmenu-item-link {
   white-space: nowrap;
 }
+
+.p-toast {
+  z-index: 2000 !important;
+}
