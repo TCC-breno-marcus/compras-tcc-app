@@ -22,9 +22,6 @@ namespace ComprasTccApp.Models.Entities.Pessoas
         public DateTime DataAtualizacao { get; set; }
 
         [Required]
-        public required byte[] PasswordHash { get; set; }
-
-        [Required]
-        public required byte[] PasswordSalt { get; set; }
+        public required string PasswordHash { get; set; }
     }
 }

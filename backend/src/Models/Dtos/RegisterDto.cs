@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace ComprasTccApp.Backend.DTOs
+namespace ComprasTccApp.  Backend.DTOs
 {
     public class RegisterDto
     {
