@@ -15,6 +15,7 @@ import Tag from 'primevue/tag'
 import { useToast } from 'primevue/usetoast'
 import { useConfirm } from 'primevue/useconfirm'
 import FileUpload, { type FileUploadSelectEvent } from 'primevue/fileupload'
+import imageCompression from 'browser-image-compression'
 
 const confirm = useConfirm()
 const toast = useToast()
@@ -34,8 +35,31 @@ const isEditing = ref(false)
 const formData = ref<Partial<Item>>({})
 const arquivoDeImagem = ref<File | null>(null)
 
-const onFileSelect = (event: FileUploadSelectEvent) => {
-  arquivoDeImagem.value = event.files[0]
+const onFileSelect = async (event: FileUploadSelectEvent) => {
+  const arquivoOriginal = event.files[0]
+  if (!arquivoOriginal) return
+
+  console.log(`Tamanho original: ${(arquivoOriginal.size / 1024 / 1024).toFixed(2)} MB`)
+
+  const options = {
+    maxSizeMB: 1,
+    maxWidthOrHeight: 480,
+    useWebWorker: true,
+    fileType: 'image/webp',  // Converter para formato mais leve
+  }
+
+  try {
+    const arquivoComprimido = await imageCompression(arquivoOriginal, options)
+    console.log(`Tamanho comprimido: ${(arquivoComprimido.size / 1024 / 1024).toFixed(2)} MB`)
+    arquivoDeImagem.value = arquivoComprimido
+  } catch (error) {
+    console.error('Erro ao comprimir a imagem:', error)
+    toast.add({
+      severity: 'error',
+      summary: 'Erro',
+      detail: 'Não foi possível comprimir a imagem.',
+    })
+  }
 }
 
 watch([() => props.item, () => props.visible], async ([currentItem, isVisible]) => {
@@ -296,14 +320,14 @@ const removerImagem = () => {
             severity: 'success',
             summary: 'Sucesso',
             detail: 'Imagem removida.',
-            life: 3000
+            life: 3000,
           })
         } catch (error) {
           toast.add({
             severity: 'error',
             summary: 'Erro',
             detail: 'Não foi possível remover a imagem.',
-            life: 3000
+            life: 3000,
           })
         }
       }
@@ -347,7 +371,6 @@ const removerImagem = () => {
       <div
         class="w-10rem flex-shrink-0 align-self-center md:align-self-start mb-4 md:mb-0 mr-0 md:mr-4"
       >
-        <!-- TODO: ativar modo de edição (substituir imagem) -->
         <img
           v-if="detailedItem.linkImagem"
           :src="detailedItem.linkImagem"
@@ -374,15 +397,17 @@ const removerImagem = () => {
             :showUploadButton="false"
             :showCancelButton="false"
             accept="image/*"
-            chooseLabel="Escolher"
+            chooseLabel="Selecionar"
             chooseIcon="pi pi-plus"
-            :maxFileSize="1000000"
-            invalidFileSizeMessage="O tamanho do arquivo não pode exceder 1 MB."
+            :maxFileSize="10000000"
+            invalidFileSizeMessage="O tamanho do arquivo não pode exceder 10 MB."
             :previewWidth="85"
             class="upload-button text-sm"
           >
             <template #empty>
-              <p class="text-justify">Arraste e solte uma imagem aqui ou clique para selecionar.</p>
+              <small class="text-color-secondary text-center"
+                >Arraste e solte uma imagem aqui ou clique para selecionar.</small
+              >
             </template>
           </FileUpload>
         </div>
@@ -620,4 +645,5 @@ const removerImagem = () => {
   color: var(--text-color-secondary);
   pointer-events: none;
 }
+
 </style>
