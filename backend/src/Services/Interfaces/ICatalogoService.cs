@@ -33,5 +33,6 @@ namespace Services.Interfaces
 
         Task<ItemDto> AtualizarImagemAsync(long id, IFormFile imagem);
 
+        Task<bool> RemoverImagemAsync(long id);
     }
 }

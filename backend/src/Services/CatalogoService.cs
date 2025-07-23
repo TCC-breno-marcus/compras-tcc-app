@@ -464,5 +464,30 @@ namespace Services
                 IsActive = item.IsActive
             };
         }
+
+        public async Task<bool> RemoverImagemAsync(long id)
+        {
+            var item = await _context.Items.FindAsync(id);
+            if (item == null)
+            {
+                return false; 
+            }
+
+            if (!string.IsNullOrEmpty(item.LinkImagem))
+            {
+                var caminhoDoArquivo = Path.Combine("/app/uploads", item.LinkImagem);
+                if (File.Exists(caminhoDoArquivo))
+                {
+                    File.Delete(caminhoDoArquivo);
+                    _logger.LogInformation("Arquivo físico '{FileName}' deletado.", item.LinkImagem);
+                }
+            }
+
+            item.LinkImagem = null;
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation("Link da imagem para o item ID {Id} removido do banco.", id);
+            return true;
+        }
     }
 }
