@@ -85,3 +85,11 @@ a {
 .p-toast {
   z-index: 2000 !important;
 }
+
+.upload-button {
+  padding: 6px 10px !important;
+}
+
+.upload-button .pi {
+  font-size: 0.875rem !important;
+}

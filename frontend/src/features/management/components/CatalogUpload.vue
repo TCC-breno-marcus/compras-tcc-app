@@ -218,8 +218,7 @@ const handleFileUpload = async (event: FileUploadUploaderEvent) => {
     :disabled="isLoading"
     cancelLabel="Cancelar"
     uploadLabel="Carregar"
-    class="text-sm"
-    style="padding: 6px 10px"
+    class="upload-button text-sm"
   >
   </FileUpload>
 </template>

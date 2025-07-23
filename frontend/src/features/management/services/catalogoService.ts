@@ -13,6 +13,8 @@ interface ICatalogoService {
   getItemById(id: number): Promise<Item>
   getItensSemelhantes(id: number): Promise<Item[]>
   editarItem(id: number, params: ItemParams): Promise<Item>
+  atualizarImagemItem(id: number, arquivo: File): Promise<Item>
+  removerImagemItem(id: number): Promise<void>
   // createItem(data: Partial<Item>): Promise<AxiosResponse<Item>>; <-- Exemplo para o futuro
 }
 
@@ -52,5 +54,31 @@ export const catalogoService: ICatalogoService = {
   async editarItem(id, params) {
     const response = await apiClient.put<Item>(`/catalogo/${id}`, params)
     return response.data
+  },
+
+  /**
+   * Atualiza a imagem de um item.
+   * @param id ID do item.
+   * @param arquivo Arquivo de imagem.
+   */
+  async atualizarImagemItem(id, arquivo) {
+    const formData = new FormData()
+    formData.append('imagem', arquivo) // 'imagem' deve ser o mesmo nome do parâmetro no controller .NET
+
+    // Envia a requisição com o cabeçalho 'multipart/form-data'
+    const response = await apiClient.post<Item>(`/catalogo/${id}/imagem`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+    return response.data
+  },
+
+  /**
+   * Remove a imagem de um item.
+   * @param id ID do item.
+   */
+  async removerImagemItem(id) {
+    await apiClient.delete(`/catalogo/${id}/imagem`)
   },
 }

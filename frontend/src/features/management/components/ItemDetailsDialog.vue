@@ -14,6 +14,7 @@ import Textarea from 'primevue/textarea'
 import Tag from 'primevue/tag'
 import { useToast } from 'primevue/usetoast'
 import { useConfirm } from 'primevue/useconfirm'
+import FileUpload, { type FileUploadSelectEvent } from 'primevue/fileupload'
 
 const confirm = useConfirm()
 const toast = useToast()
@@ -31,6 +32,11 @@ const isLoading = ref(false)
 const error = ref<string | null>(null)
 const isEditing = ref(false)
 const formData = ref<Partial<Item>>({})
+const arquivoDeImagem = ref<File | null>(null)
+
+const onFileSelect = (event: FileUploadSelectEvent) => {
+  arquivoDeImagem.value = event.files[0]
+}
 
 watch([() => props.item, () => props.visible], async ([currentItem, isVisible]) => {
   if (currentItem && props.item && isVisible) {
@@ -170,7 +176,7 @@ const cancelEdit = () => {
   })
 }
 
-const saveChanges = (item: Item) => {
+const saveChanges = () => {
   confirm.require({
     message: `As alterações serão salvas. Deseja continuar?`,
     header: 'Salvar Alterações?',
@@ -190,6 +196,31 @@ const saveChanges = (item: Item) => {
     accept: async () => {
       if (detailedItem.value) {
         isLoading.value = true
+
+        if (arquivoDeImagem.value) {
+          try {
+            await catalogoService.atualizarImagemItem(detailedItem.value.id, arquivoDeImagem.value)
+            toast.add({
+              severity: 'success',
+              summary: 'Sucesso',
+              detail: 'A imagem do item foi atualizada com sucesso.',
+            })
+          } catch (error) {
+            console.error('Falha ao fazer upload da imagem', error)
+            toast.add({
+              severity: 'error',
+              summary: 'Erro',
+              detail: 'Não foi possível enviar a nova imagem.',
+              life: 3000,
+            })
+            return
+          } finally {
+            isLoading.value = false
+          }
+        }
+
+        toast.removeAllGroups()
+
         toast.add({
           severity: 'info',
           summary: 'Atualizando',
@@ -230,6 +261,55 @@ const saveChanges = (item: Item) => {
     },
   })
 }
+
+const removerImagem = () => {
+  confirm.require({
+    message: 'Tem certeza que deseja remover a imagem atual? O item ficará sem imagem.',
+    header: 'Remover Imagem?',
+    icon: 'pi pi-trash',
+    acceptProps: {
+      label: 'Remover',
+      icon: 'pi pi-trash',
+      size: 'small',
+      severity: 'danger',
+    },
+    rejectProps: {
+      label: 'Cancelar',
+      severity: 'secondary',
+      text: true,
+      icon: 'pi pi-times',
+      size: 'small',
+    },
+    accept: async () => {
+      if (detailedItem.value) {
+        try {
+          await catalogoService.removerImagemItem(detailedItem.value.id)
+
+          if (formData.value) {
+            formData.value.linkImagem = ''
+          }
+          if (detailedItem.value) {
+            detailedItem.value.linkImagem = ''
+          }
+
+          toast.add({
+            severity: 'success',
+            summary: 'Sucesso',
+            detail: 'Imagem removida.',
+            life: 3000
+          })
+        } catch (error) {
+          toast.add({
+            severity: 'error',
+            summary: 'Erro',
+            detail: 'Não foi possível remover a imagem.',
+            life: 3000
+          })
+        }
+      }
+    },
+  })
+}
 </script>
 
 <template>
@@ -242,7 +322,10 @@ const saveChanges = (item: Item) => {
     :style="{ width: '90vw', maxWidth: '800px' }"
   >
     <div v-if="isLoading" class="dialog-content flex">
-      <div class="flex flex-column flex-grow-1 pr-4">
+      <div class="dialog-img">
+        <Skeleton width="8rem" height="8rem" borderRadius="8px"></Skeleton>
+      </div>
+      <div class="flex flex-column flex-grow-1 pl-4">
         <Skeleton width="70%" height="1.5rem" class="mb-3"></Skeleton>
         <Skeleton width="40%" height="1rem" class="mb-4"></Skeleton>
         <Skeleton width="100%" height="1rem" class="mb-2"></Skeleton>
@@ -252,10 +335,6 @@ const saveChanges = (item: Item) => {
         <Skeleton width="50%" height="1.2rem" class="mb-3"></Skeleton>
         <Skeleton width="60%" height="1rem" class="mb-2"></Skeleton>
         <Skeleton width="65%" height="1rem"></Skeleton>
-      </div>
-
-      <div class="dialog-img">
-        <Skeleton width="8rem" height="8rem" borderRadius="8px"></Skeleton>
       </div>
     </div>
 
@@ -275,8 +354,37 @@ const saveChanges = (item: Item) => {
           :alt="detailedItem.nome"
           class="dialog-image"
         />
-        <div v-else class="image-placeholder">
+        <div v-else class="image-placeholder mb-2">
           <span class="material-symbols-outlined placeholder-icon"> hide_image </span>
+        </div>
+        <div v-if="isEditing" class="field flex flex-column align-items-center">
+          <Button
+            v-if="formData.linkImagem"
+            label="Remover"
+            icon="pi pi-trash"
+            severity="danger"
+            text
+            size="small"
+            @click="removerImagem"
+            class="mb-2"
+          />
+          <FileUpload
+            name="imagem"
+            @select="onFileSelect"
+            :showUploadButton="false"
+            :showCancelButton="false"
+            accept="image/*"
+            chooseLabel="Escolher"
+            chooseIcon="pi pi-plus"
+            :maxFileSize="1000000"
+            invalidFileSizeMessage="O tamanho do arquivo não pode exceder 1 MB."
+            :previewWidth="85"
+            class="upload-button text-sm"
+          >
+            <template #empty>
+              <p class="text-justify">Arraste e solte uma imagem aqui ou clique para selecionar.</p>
+            </template>
+          </FileUpload>
         </div>
       </div>
 
@@ -302,7 +410,6 @@ const saveChanges = (item: Item) => {
           </p>
           <p>
             <strong>Status:</strong>
-            <!-- {{ detailedItem.isActive ? 'Ativo' : 'Inativo' }} -->
             <Tag
               :severity="item.isActive ? 'success' : 'danger'"
               :value="item.isActive ? 'Ativo' : 'Inativo'"
@@ -513,8 +620,4 @@ const saveChanges = (item: Item) => {
   color: var(--text-color-secondary);
   pointer-events: none;
 }
-
-/* :deep(.p-textarea) {
-  padding-bottom: 1.75rem;
-} */
 </style>
