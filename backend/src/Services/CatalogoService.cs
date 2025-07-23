@@ -483,7 +483,7 @@ namespace Services
                 }
             }
 
-            item.LinkImagem = null;
+            item.LinkImagem = "";
             await _context.SaveChangesAsync();
 
             _logger.LogInformation("Link da imagem para o item ID {Id} removido do banco.", id);
