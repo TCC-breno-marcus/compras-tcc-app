@@ -36,13 +36,14 @@ namespace ComprasTccApp.Backend.Services
                 Telefone = registerDto.Telefone,
                 CPF = registerDto.CPF,
                 DataAtualizacao = DateTime.UtcNow,
-                PasswordHash = passwordHash
+                PasswordHash = passwordHash,
+                Role = "Solicitante"
             };
 
             await _context.Pessoas.AddAsync(novaPessoa);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Usuário {Email} registrado com sucesso.", registerDto.Email);
+            _logger.LogInformation("Usuário {Email} registrado com sucesso com a role 'Solicitante'.", registerDto.Email);
             return novaPessoa;
         }
 

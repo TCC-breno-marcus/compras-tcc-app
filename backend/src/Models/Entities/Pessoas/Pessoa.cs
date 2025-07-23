@@ -23,5 +23,8 @@ namespace ComprasTccApp.Models.Entities.Pessoas
 
         [Required]
         public required string PasswordHash { get; set; }
+
+        [Required, StringLength(50)]
+        public required string Role { get; set; }
     }
 }

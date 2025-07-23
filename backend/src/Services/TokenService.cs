@@ -23,6 +23,7 @@ namespace Services
                 new Claim(ClaimTypes.NameIdentifier, pessoa.Id.ToString()),
                 new Claim(ClaimTypes.Name, pessoa.Nome),
                 new Claim(ClaimTypes.Email, pessoa.Email),
+                new Claim(ClaimTypes.Role, pessoa.Role)
                 // Futuramente, podemos adicionar perfis (Roles) aqui
             };
 
