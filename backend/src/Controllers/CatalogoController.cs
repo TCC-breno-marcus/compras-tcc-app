@@ -267,5 +267,27 @@ namespace Controllers
                 return StatusCode(500, new { message = "Ocorreu um erro interno no servidor." });
             }
         }
+
+        [HttpDelete("{id}/imagem")]
+        [ProducesResponseType(204)] 
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> RemoverImagem([FromRoute] long id)
+        {
+            try
+            {
+                var sucesso = await _catalogoService.RemoverImagemAsync(id);
+                if (!sucesso)
+                {
+                    return NotFound(new { message = $"Item com ID {id} não encontrado." });
+                }
+                return NoContent(); 
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ocorreu um erro ao remover a imagem do item {Id}.", id);
+                return StatusCode(500, new { message = "Ocorreu um erro interno no servidor." });
+            }
+        }
     }
 }
