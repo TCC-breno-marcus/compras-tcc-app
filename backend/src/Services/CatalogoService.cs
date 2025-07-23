@@ -420,5 +420,49 @@ namespace Services
             }
         }
 
+        public async Task<ItemDto> AtualizarImagemAsync(long id, IFormFile imagem)
+        {
+            var item = await _context.Items.FindAsync(id);
+            if (item == null)
+            {
+                return null;
+            }
+
+            var extensao = Path.GetExtension(imagem.FileName);
+            var novoNomeArquivo = $"{item.CatMat}{extensao}";
+            var caminhoParaSalvar = Path.Combine("/app/uploads", novoNomeArquivo);
+
+            if (!string.IsNullOrEmpty(item.LinkImagem))
+            {
+                var caminhoImagemAntiga = Path.Combine("/app/uploads", item.LinkImagem);
+                if (File.Exists(caminhoImagemAntiga))
+                {
+                    File.Delete(caminhoImagemAntiga);
+                }
+            }
+
+            await using (var stream = new FileStream(caminhoParaSalvar, FileMode.Create))
+            {
+                await imagem.CopyToAsync(stream);
+            }
+
+            item.LinkImagem = novoNomeArquivo;
+            await _context.SaveChangesAsync();
+
+            return new ItemDto
+            {
+                Id = item.Id,
+                Nome = item.Nome,
+                Descricao = item.Descricao,
+                CatMat = item.CatMat,
+                // TODO: o link abaixo deve estar em variável de ambiente
+                LinkImagem = string.IsNullOrWhiteSpace(item.LinkImagem)
+                        ? item.LinkImagem
+                        : $"http://localhost:8088/images/{item.LinkImagem}",
+                PrecoSugerido = item.PrecoSugerido,
+                Especificacao = item.Especificacao,
+                IsActive = item.IsActive
+            };
+        }
     }
 }

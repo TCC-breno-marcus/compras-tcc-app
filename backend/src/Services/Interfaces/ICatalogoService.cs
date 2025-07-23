@@ -31,6 +31,7 @@ namespace Services.Interfaces
 
         Task<IEnumerable<ItemDto>?> GetItensSemelhantesAsync(long id);
 
+        Task<ItemDto> AtualizarImagemAsync(long id, IFormFile imagem);
 
     }
 }
