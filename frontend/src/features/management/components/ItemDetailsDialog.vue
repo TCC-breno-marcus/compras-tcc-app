@@ -14,18 +14,26 @@ import Textarea from 'primevue/textarea'
 import Tag from 'primevue/tag'
 import { useToast } from 'primevue/usetoast'
 import { useConfirm } from 'primevue/useconfirm'
-import FileUpload, { FileUploadRemoveEvent, type FileUploadSelectEvent } from 'primevue/fileupload'
+import FileUpload, {
+  type FileUploadRemoveEvent,
+  type FileUploadSelectEvent,
+} from 'primevue/fileupload'
 import { dataHasBeenChanged } from '@/utils/objectUtils'
-
-const confirm = useConfirm()
-const toast = useToast()
+import {
+  ACCESS_ITEM_CONFIRMATION,
+  CANCEL_CONFIRMATION,
+  CLOSE_CONFIRMATION,
+  DEL_IMAGE_CONFIRMATION,
+  SAVE_CONFIRMATION,
+} from '@/utils/confirmationFactory'
 
 const props = defineProps<{
   visible: boolean
   item: Item | null
 }>()
 
-const emit = defineEmits(['update:visible', 'update-dialog'])
+const confirm = useConfirm()
+const toast = useToast()
 
 const detailedItem = ref<Item | null>(null)
 const itensSemelhantes = ref<Item[]>([])
@@ -34,6 +42,9 @@ const error = ref<string | null>(null)
 const isEditing = ref(false)
 const formData = ref<Partial<Item>>({})
 const arquivoDeImagem = ref<File | null>(null)
+const isImageMarkedForRemoval = ref(false)
+
+const emit = defineEmits(['update:visible', 'update-dialog'])
 
 const onFileSelect = async (event: FileUploadSelectEvent) => {
   const file = event.files[0]
@@ -54,6 +65,7 @@ watch([() => props.item, () => props.visible], async ([currentItem, isVisible]) 
     itensSemelhantes.value = []
     isEditing.value = false
     formData.value = {}
+    isImageMarkedForRemoval.value = false
     try {
       const promiseDados = catalogoService.getItemById(props.item.id)
       const promiseSemelhantes = catalogoService.getItensSemelhantes(props.item.id)
@@ -67,6 +79,7 @@ watch([() => props.item, () => props.visible], async ([currentItem, isVisible]) 
       ])
       detailedItem.value = responseDados
       itensSemelhantes.value = responseSemelhantes
+      arquivoDeImagem.value = null
     } catch (err) {
       console.error('Erro ao buscar detalhes ou pré-carregar imagem:', err)
       error.value = 'Não foi possível carregar os detalhes do item.'
@@ -88,25 +101,10 @@ const precarregarImagem = (url: string): Promise<void> => {
   })
 }
 
-const abrirDetalhes = (item: Item) => {
+const accessOtherItem = (item: Item) => {
   if (isEditing.value) {
     confirm.require({
-      message: `Você possui alterações não salvas neste item. Se prosseguir, elas serão perdidas.`,
-      header: 'Descartar Alterações?',
-      icon: 'pi pi-exclamation-triangle',
-      rejectProps: {
-        label: 'Continuar Editando',
-        severity: 'secondary',
-        text: true,
-        icon: 'pi pi-arrow-left',
-        size: 'small',
-      },
-      acceptProps: {
-        label: 'Descartar e Abrir',
-        icon: 'pi pi-trash',
-        size: 'small',
-        severity: 'danger',
-      },
+      ...ACCESS_ITEM_CONFIRMATION,
       accept: () => {
         formData.value = {}
         isEditing.value = false
@@ -127,22 +125,7 @@ const wasChanged = computed(() => {
 const closeModal = () => {
   if (isEditing.value && wasChanged.value) {
     confirm.require({
-      message: `As alterações feitas serão descartadas. Deseja continuar?`,
-      header: 'Descartar Alterações?',
-      icon: 'pi pi-exclamation-triangle',
-      rejectProps: {
-        label: 'Continuar Editando',
-        severity: 'secondary',
-        text: true,
-        icon: 'pi pi-arrow-left',
-        size: 'small',
-      },
-      acceptProps: {
-        label: 'Descartar',
-        icon: 'pi pi-trash',
-        size: 'small',
-        severity: 'danger',
-      },
+      ...CLOSE_CONFIRMATION,
       accept: () => {
         formData.value = {}
         isEditing.value = false
@@ -174,22 +157,7 @@ const resetAndExitEditMode = () => {
 const cancelEdit = () => {
   if (wasChanged.value) {
     confirm.require({
-      message: `As alterações feitas serão descartadas. Deseja continuar?`,
-      header: 'Descartar Alterações?',
-      icon: 'pi pi-exclamation-triangle',
-      rejectProps: {
-        label: 'Continuar Editando',
-        severity: 'secondary',
-        text: true,
-        icon: 'pi pi-arrow-left',
-        size: 'small',
-      },
-      acceptProps: {
-        label: 'Descartar',
-        icon: 'pi pi-trash',
-        size: 'small',
-        severity: 'danger',
-      },
+      ...CANCEL_CONFIRMATION,
       accept: resetAndExitEditMode,
     })
     return
@@ -197,137 +165,79 @@ const cancelEdit = () => {
   resetAndExitEditMode()
 }
 
+const acceptSaveChanges = async () => {
+  if (!detailedItem.value) return
+
+  isLoading.value = true
+  try {
+    if (arquivoDeImagem.value) {
+      await catalogoService.atualizarImagemItem(detailedItem.value.id, arquivoDeImagem.value)
+    } else if (isImageMarkedForRemoval.value) {
+      await catalogoService.removerImagemItem(detailedItem.value.id)
+    }
+    // TODO: se eu tentar editar o campo especificacao pra deixar sem nenhum texto, ele nn atualiza. Verificar isso e tbm pra os outros campos de texto
+    const newData = {
+      nome: formData.value?.nome,
+      catMat: formData.value?.catMat,
+      descricao: formData.value?.descricao,
+      especificacao: formData.value?.especificacao,
+      precoSugerido: formData.value?.precoSugerido,
+      isActive: formData.value?.isActive,
+    }
+    const updatedItem = await catalogoService.editarItem(detailedItem.value.id, newData)
+
+    toast.add({
+      severity: 'success',
+      summary: 'Sucesso',
+      detail: 'O item foi salvo com sucesso.',
+      life: 3000,
+    })
+
+    isEditing.value = false
+    emit('update-dialog', updatedItem)
+  } catch (err) {
+    console.error('Erro ao salvar as alterações:', err)
+    toast.add({
+      severity: 'error',
+      summary: 'Erro',
+      detail: 'Não foi possível salvar as alterações.',
+      life: 3000,
+    })
+  } finally {
+    isLoading.value = false
+  }
+}
+
 const saveChanges = () => {
   confirm.require({
-    message: `As alterações serão salvas. Deseja continuar?`,
-    header: 'Salvar Alterações?',
-    icon: 'pi pi-exclamation-triangle',
-    rejectProps: {
-      label: 'Cancelar',
-      severity: 'danger',
-      text: true,
-      icon: 'pi pi-times',
-      size: 'small',
-    },
-    acceptProps: {
-      label: 'Salvar',
-      icon: 'pi pi-check',
-      size: 'small',
-      severity: 'success',
-    },
-    accept: async () => {
-      if (detailedItem.value) {
-        isLoading.value = true
-
-        if (arquivoDeImagem.value) {
-          try {
-            await catalogoService.atualizarImagemItem(detailedItem.value.id, arquivoDeImagem.value)
-            toast.add({
-              severity: 'success',
-              summary: 'Sucesso',
-              detail: 'A imagem do item foi atualizada com sucesso.',
-            })
-          } catch (error) {
-            console.error('Falha ao fazer upload da imagem', error)
-            toast.add({
-              severity: 'error',
-              summary: 'Erro',
-              detail: 'Não foi possível enviar a nova imagem.',
-              life: 3000,
-            })
-            return
-          } finally {
-            isLoading.value = false
-          }
-        }
-
-        toast.removeAllGroups()
-
-        toast.add({
-          severity: 'info',
-          summary: 'Atualizando',
-          detail: 'O Item está sendo atualizado.',
-        })
-        try {
-          const newData = {
-            nome: formData.value?.nome,
-            catMat: formData.value?.catMat,
-            descricao: formData.value?.descricao,
-            especificacao: formData.value?.especificacao,
-            precoSugerido: formData.value?.precoSugerido,
-            isActive: formData.value?.isActive,
-          }
-          const updatedItem = await catalogoService.editarItem(detailedItem.value.id, newData)
-          toast.removeAllGroups()
-          toast.add({
-            severity: 'success',
-            summary: 'Sucesso',
-            detail: 'O item foi editado com sucesso.',
-            life: 3000,
-          })
-          isEditing.value = false
-          emit('update-dialog', updatedItem)
-        } catch (err) {
-          console.error('Erro ao tentar editar o item:', err)
-          error.value = 'Não foi possível editar o item.'
-          toast.add({
-            severity: 'error',
-            summary: 'Erro',
-            detail: 'Não foi possível editar o item.',
-            life: 3000,
-          })
-        } finally {
-          isLoading.value = false
-        }
-      }
-    },
+    ...SAVE_CONFIRMATION,
+    accept: async () => acceptSaveChanges(),
   })
 }
 
+const previewUrl = computed(() => {
+  if (isEditing.value) {
+    if (arquivoDeImagem.value) {
+      return URL.createObjectURL(arquivoDeImagem.value)
+    }
+    if (formData.value?.linkImagem) {
+      return formData.value.linkImagem
+    }
+  } else {
+    if (detailedItem.value?.linkImagem) {
+      return detailedItem.value.linkImagem
+    }
+  }
+  return null
+})
+
 const removerImagem = () => {
   confirm.require({
-    message: 'Tem certeza que deseja remover a imagem atual? O item ficará sem imagem.',
-    header: 'Remover Imagem?',
-    icon: 'pi pi-trash',
-    acceptProps: {
-      label: 'Remover',
-      icon: 'pi pi-trash',
-      size: 'small',
-      severity: 'danger',
-    },
-    rejectProps: {
-      label: 'Cancelar',
-      severity: 'secondary',
-      text: true,
-      icon: 'pi pi-times',
-      size: 'small',
-    },
+    ...DEL_IMAGE_CONFIRMATION,
     accept: async () => {
-      if (detailedItem.value) {
-        try {
-          await catalogoService.removerImagemItem(detailedItem.value.id)
-
-          if (formData.value) {
-            formData.value.linkImagem = ''
-          }
-          if (detailedItem.value) {
-            detailedItem.value.linkImagem = ''
-          }
-
-          toast.add({
-            severity: 'success',
-            summary: 'Sucesso',
-            detail: 'Imagem removida.',
-            life: 3000,
-          })
-        } catch (error) {
-          toast.add({
-            severity: 'error',
-            summary: 'Erro',
-            detail: 'Não foi possível remover a imagem.',
-            life: 3000,
-          })
-        }
+      isImageMarkedForRemoval.value = true
+      if (formData.value) {
+        formData.value.linkImagem = ''
       }
     },
   })
@@ -370,10 +280,10 @@ const removerImagem = () => {
         class="w-10rem flex-shrink-0 align-self-center md:align-self-start mb-4 md:mb-0 mr-0 md:mr-4"
       >
         <img
-          v-if="detailedItem.linkImagem"
-          :src="detailedItem.linkImagem"
+          v-if="previewUrl"
+          :src="previewUrl"
           :alt="detailedItem.nome"
-          class="dialog-image"
+          class="dialog-image mb-2"
         />
         <div v-else class="image-placeholder mb-3">
           <span class="material-symbols-outlined placeholder-icon"> hide_image </span>
@@ -435,8 +345,8 @@ const removerImagem = () => {
           <p>
             <strong>Status:</strong>
             <Tag
-              :severity="item.isActive ? 'success' : 'danger'"
-              :value="item.isActive ? 'Ativo' : 'Inativo'"
+              :severity="item?.isActive ? 'success' : 'danger'"
+              :value="item?.isActive ? 'Ativo' : 'Inativo'"
               class="ml-2"
             ></Tag>
           </p>
@@ -526,7 +436,7 @@ const removerImagem = () => {
           <a
             v-for="item in itensSemelhantes"
             :key="item.id"
-            @click="abrirDetalhes(item)"
+            @click="accessOtherItem(item)"
             class="semelhante-item flex flex-column p-2"
             v-tooltip.bottom="'Acessar Item'"
           >
@@ -629,7 +539,7 @@ const removerImagem = () => {
 
 .texto-padrao {
   font-style: italic;
-  color: var(--text-color-secondary);
+  color: var(--p-surface-500);
 }
 
 .status-container {

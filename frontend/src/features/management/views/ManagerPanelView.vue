@@ -49,6 +49,7 @@ const activeRoute = computed(() => {
     <div class="flex items-center justify-content-between">
       <h3>Painel do Gestor</h3>
     </div>
+    <!-- TODO: no modo dark precisa deixar o background transparente, tem algo já la no main.css -->
     <TabMenu :model="items" :activeIndex="activeRoute" />
     <RouterView class="mt-2" />
   </div>
