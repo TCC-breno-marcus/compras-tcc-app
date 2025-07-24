@@ -7,6 +7,7 @@ import type {
   ItemParams,
   PaginatedResponse,
 } from '@/features/management/types'
+import imageCompression from 'browser-image-compression'
 
 interface ICatalogoService {
   getItens(params?: CatalogoParams): Promise<PaginatedResponse<Item>>
@@ -16,6 +17,31 @@ interface ICatalogoService {
   atualizarImagemItem(id: number, arquivo: File): Promise<Item>
   removerImagemItem(id: number): Promise<void>
   // createItem(data: Partial<Item>): Promise<AxiosResponse<Item>>; <-- Exemplo para o futuro
+}
+
+/**
+ * Comprimir imagem para melhor otimização de espaço
+ * @param arquivoOriginal Arquivo original
+ */
+async function _processarImagem(arquivoOriginal: File): Promise<File> {
+  // console.log(`Tamanho original: ${(arquivoOriginal.size / 1024 / 1024).toFixed(2)} MB`)
+
+  const options = {
+    maxSizeMB: 1,
+    maxWidthOrHeight: 720,
+    useWebWorker: true,
+    fileType: 'image/webp',
+  }
+
+  const arquivoComprimido = await imageCompression(arquivoOriginal, options)
+  // console.log(`Tamanho comprimido: ${(arquivoComprimido.size / 1024 / 1024).toFixed(2)} MB`)
+
+  const nomeOriginal = arquivoOriginal.name
+  const ultimoPonto = nomeOriginal.lastIndexOf('.')
+  const nomeBase = ultimoPonto > 0 ? nomeOriginal.substring(0, ultimoPonto) : nomeOriginal
+  const nomeFinalWebp = `${nomeBase}.webp`
+
+  return new File([arquivoComprimido], nomeFinalWebp, { type: 'image/webp' })
 }
 
 export const catalogoService: ICatalogoService = {
@@ -62,10 +88,11 @@ export const catalogoService: ICatalogoService = {
    * @param arquivo Arquivo de imagem.
    */
   async atualizarImagemItem(id, arquivo) {
-    const formData = new FormData()
-    formData.append('imagem', arquivo) // 'imagem' deve ser o mesmo nome do parâmetro no controller .NET
+    const arquivoFinal = await _processarImagem(arquivo)
 
-    // Envia a requisição com o cabeçalho 'multipart/form-data'
+    const formData = new FormData()
+    formData.append('imagem', arquivoFinal, arquivoFinal.name || 'upload.jpg')
+
     const response = await apiClient.post<Item>(`/catalogo/${id}/imagem`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',

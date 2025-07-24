@@ -15,7 +15,6 @@ import Tag from 'primevue/tag'
 import { useToast } from 'primevue/usetoast'
 import { useConfirm } from 'primevue/useconfirm'
 import FileUpload, { FileUploadRemoveEvent, type FileUploadSelectEvent } from 'primevue/fileupload'
-import imageCompression from 'browser-image-compression'
 import { dataHasBeenChanged } from '@/utils/objectUtils'
 
 const confirm = useConfirm()
@@ -37,35 +36,13 @@ const formData = ref<Partial<Item>>({})
 const arquivoDeImagem = ref<File | null>(null)
 
 const onFileSelect = async (event: FileUploadSelectEvent) => {
-  const arquivoOriginal = event.files[0]
-  if (!arquivoOriginal) return
-
-  console.log(`Tamanho original: ${(arquivoOriginal.size / 1024 / 1024).toFixed(2)} MB`)
-
-  const options = {
-    maxSizeMB: 1,
-    maxWidthOrHeight: 480,
-    useWebWorker: true,
-    fileType: 'image/webp', // Converter para formato mais leve
-  }
-
-  try {
-    const arquivoComprimido = await imageCompression(arquivoOriginal, options)
-    console.log({ arquivoComprimido })
-    console.log(`Tamanho comprimido: ${(arquivoComprimido.size / 1024 / 1024).toFixed(2)} MB`)
-    arquivoDeImagem.value = arquivoComprimido
-  } catch (error) {
-    console.error('Erro ao comprimir a imagem:', error)
-    toast.add({
-      severity: 'error',
-      summary: 'Erro',
-      detail: 'Não foi possível comprimir a imagem.',
-    })
-  }
+  const file = event.files[0]
+  if (!file) return
+  arquivoDeImagem.value = file
 }
 
 const onFileRemove = (event: FileUploadRemoveEvent) => {
-  console.log('Arquivo removido da pré-visualização:', event.file.name)
+  // console.log('Arquivo removido da pré-visualização:', event.file.name)
   arquivoDeImagem.value = null
 }
 
@@ -236,6 +213,7 @@ const saveChanges = () => {
       label: 'Salvar',
       icon: 'pi pi-check',
       size: 'small',
+      severity: 'success',
     },
     accept: async () => {
       if (detailedItem.value) {
@@ -544,7 +522,7 @@ const removerImagem = () => {
         <p v-if="itensSemelhantes.length === 0" class="text-sm text-color-secondary">
           Nenhum material semelhante encontrado.
         </p>
-        <div v-else class="semelhantes-list flex flex-column">
+        <div v-else class="semelhantes-list flex flex-column max-h-16rem overflow-auto">
           <a
             v-for="item in itensSemelhantes"
             :key="item.id"
