@@ -2,7 +2,7 @@
 import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
 import { Divider } from 'primevue'
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { catalogoService } from '../services/catalogoService'
 import type { Item } from '../types'
 import Skeleton from 'primevue/skeleton'
@@ -14,8 +14,9 @@ import Textarea from 'primevue/textarea'
 import Tag from 'primevue/tag'
 import { useToast } from 'primevue/usetoast'
 import { useConfirm } from 'primevue/useconfirm'
-import FileUpload, { type FileUploadSelectEvent } from 'primevue/fileupload'
+import FileUpload, { FileUploadRemoveEvent, type FileUploadSelectEvent } from 'primevue/fileupload'
 import imageCompression from 'browser-image-compression'
+import { dataHasBeenChanged } from '@/utils/objectUtils'
 
 const confirm = useConfirm()
 const toast = useToast()
@@ -45,11 +46,12 @@ const onFileSelect = async (event: FileUploadSelectEvent) => {
     maxSizeMB: 1,
     maxWidthOrHeight: 480,
     useWebWorker: true,
-    fileType: 'image/webp',  // Converter para formato mais leve
+    fileType: 'image/webp', // Converter para formato mais leve
   }
 
   try {
     const arquivoComprimido = await imageCompression(arquivoOriginal, options)
+    console.log({ arquivoComprimido })
     console.log(`Tamanho comprimido: ${(arquivoComprimido.size / 1024 / 1024).toFixed(2)} MB`)
     arquivoDeImagem.value = arquivoComprimido
   } catch (error) {
@@ -60,6 +62,11 @@ const onFileSelect = async (event: FileUploadSelectEvent) => {
       detail: 'Não foi possível comprimir a imagem.',
     })
   }
+}
+
+const onFileRemove = (event: FileUploadRemoveEvent) => {
+  console.log('Arquivo removido da pré-visualização:', event.file.name)
+  arquivoDeImagem.value = null
 }
 
 watch([() => props.item, () => props.visible], async ([currentItem, isVisible]) => {
@@ -134,8 +141,14 @@ const abrirDetalhes = (item: Item) => {
   emit('update-dialog', item)
 }
 
+const wasChanged = computed(() => {
+  const textDataChanged = dataHasBeenChanged(detailedItem.value, formData.value)
+  const newImageSelected = arquivoDeImagem.value !== null
+  return textDataChanged || newImageSelected
+})
+
 const closeModal = () => {
-  if (isEditing.value) {
+  if (isEditing.value && wasChanged.value) {
     confirm.require({
       message: `As alterações feitas serão descartadas. Deseja continuar?`,
       header: 'Descartar Alterações?',
@@ -175,29 +188,36 @@ const enterEditMode = () => {
   isEditing.value = true
 }
 
+const resetAndExitEditMode = () => {
+  formData.value = {}
+  arquivoDeImagem.value = null
+  isEditing.value = false
+}
+
 const cancelEdit = () => {
-  confirm.require({
-    message: `As alterações feitas serão descartadas. Deseja continuar?`,
-    header: 'Descartar Alterações?',
-    icon: 'pi pi-exclamation-triangle',
-    rejectProps: {
-      label: 'Continuar Editando',
-      severity: 'secondary',
-      text: true,
-      icon: 'pi pi-arrow-left',
-      size: 'small',
-    },
-    acceptProps: {
-      label: 'Descartar',
-      icon: 'pi pi-trash',
-      size: 'small',
-      severity: 'danger',
-    },
-    accept: () => {
-      formData.value = {}
-      isEditing.value = false
-    },
-  })
+  if (wasChanged.value) {
+    confirm.require({
+      message: `As alterações feitas serão descartadas. Deseja continuar?`,
+      header: 'Descartar Alterações?',
+      icon: 'pi pi-exclamation-triangle',
+      rejectProps: {
+        label: 'Continuar Editando',
+        severity: 'secondary',
+        text: true,
+        icon: 'pi pi-arrow-left',
+        size: 'small',
+      },
+      acceptProps: {
+        label: 'Descartar',
+        icon: 'pi pi-trash',
+        size: 'small',
+        severity: 'danger',
+      },
+      accept: resetAndExitEditMode,
+    })
+    return
+  }
+  resetAndExitEditMode()
 }
 
 const saveChanges = () => {
@@ -377,7 +397,7 @@ const removerImagem = () => {
           :alt="detailedItem.nome"
           class="dialog-image"
         />
-        <div v-else class="image-placeholder mb-2">
+        <div v-else class="image-placeholder mb-3">
           <span class="material-symbols-outlined placeholder-icon"> hide_image </span>
         </div>
         <div v-if="isEditing" class="field flex flex-column align-items-center">
@@ -394,6 +414,7 @@ const removerImagem = () => {
           <FileUpload
             name="imagem"
             @select="onFileSelect"
+            @remove="onFileRemove"
             :showUploadButton="false"
             :showCancelButton="false"
             accept="image/*"
@@ -571,6 +592,7 @@ const removerImagem = () => {
         size="small"
         @click="saveChanges()"
         severity="success"
+        :disabled="!wasChanged"
       />
     </template>
   </Dialog>
@@ -645,5 +667,4 @@ const removerImagem = () => {
   color: var(--text-color-secondary);
   pointer-events: none;
 }
-
 </style>
