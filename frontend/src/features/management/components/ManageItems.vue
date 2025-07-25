@@ -17,6 +17,7 @@ import { useCatalogoStore } from '../stores/catalogoStore'
 import { storeToRefs } from 'pinia'
 import FloatLabel from 'primevue/floatlabel'
 import NotFoundSvg from '@/assets/NotFoundSvg.vue'
+import ItemComponentSkeleton from './ItemComponentSkeleton.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -24,7 +25,6 @@ const catalogoStore = useCatalogoStore()
 const { items, loading, error, totalCount, pageNumber, pageSize, totalPages } =
   storeToRefs(catalogoStore)
 
-// TODO: a logica do simpleSearch ainda nao existe no backend: fazer
 const simpleSearch = ref(route.query.searchTerm || '')
 
 const op = ref() // Ref para o componente OverlayPanel
@@ -109,7 +109,6 @@ const clearFilters = () => {
   applyFilters()
 }
 
-// TODO: Implementar logica de loading pra tudo que precisa de carregamento
 watch(
   () => route.query,
   (newQuery) => {
@@ -126,7 +125,6 @@ watch(
     } else {
       statusFilter.value = 'todos'
     }
-
     catalogoStore.fetchItems(newQuery)
   },
   { immediate: true },
@@ -134,12 +132,21 @@ watch(
 
 const isDialogVisible = ref(false)
 const selectedItem = ref<ItemCatalogo | null>(null)
+const itemWasSaveChanged = ref(false)
+
 const handleViewDetails = (item: ItemCatalogo) => {
   selectedItem.value = item
   isDialogVisible.value = true
 }
-const handleUpdateDialog = (newItem: ItemCatalogo) => {
+const handleUpdateDialog = (newItem: ItemCatalogo, action: string) => {
   selectedItem.value = newItem
+  if (action === 'itemSave') {
+    catalogoStore.fetchItems(route.query)
+  }
+}
+
+const closeDialog = () => {
+  isDialogVisible.value = false
 }
 </script>
 
@@ -252,7 +259,11 @@ const handleUpdateDialog = (newItem: ItemCatalogo) => {
       </div>
     </div>
 
-    <div v-if="items.length > 0" class="items-grid mt-4 gap-2">
+    <div v-if="loading" class="items-grid mt-4 gap-2">
+      <ItemComponentSkeleton v-for="n in 10" :key="n" />
+    </div>
+
+    <div v-if="items.length > 0 && !loading" class="items-grid mt-4 gap-2">
       <ItemComponent
         v-for="item in items"
         :key="item.code"
@@ -260,7 +271,10 @@ const handleUpdateDialog = (newItem: ItemCatalogo) => {
         @viewDetails="handleViewDetails"
       />
     </div>
-    <div v-else class="flex flex-column align-items-center mt-6 gap-2">
+    <div
+      v-if="items.length === 0 && !loading"
+      class="flex flex-column align-items-center mt-6 gap-2"
+    >
       <div class="w-18rem sm:w-24rem md:w-30rem">
         <NotFoundSvg />
       </div>
@@ -269,7 +283,7 @@ const handleUpdateDialog = (newItem: ItemCatalogo) => {
       <Button label="Limpar Filtros" icon="pi pi-filter-slash" @click="clearFilters" size="small" />
     </div>
     <CustomPaginator
-      v-if="items.length > 0"
+      v-if="items.length > 0 && !loading"
       :current-url="route.path"
       :total-count="totalCount"
       :has-next-page="pageNumber < totalPages"
@@ -280,8 +294,9 @@ const handleUpdateDialog = (newItem: ItemCatalogo) => {
     <ItemDetailsDialog
       v-model:visible="isDialogVisible"
       :item="selectedItem"
-      @update:visible="isDialogVisible = false"
+      @update:visible="closeDialog"
       @update-dialog="handleUpdateDialog"
+      @item-saved="itemWasSaveChanged = true"
     />
   </div>
 </template>

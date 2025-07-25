@@ -14,13 +14,13 @@ const onShowDetailsClick = () => {
   emit('viewDetails', props.item)
 }
 </script>
+
 <template>
   <div class="item-card m-2">
     <div
       class="image-preview-container flex justify-content-center align-items-center p-1"
       @click="onShowDetailsClick"
     >
-      <!-- TODO: a base url das imagens deve ser montada no backend -->
       <img
         v-if="item.linkImagem"
         :src="item.linkImagem"

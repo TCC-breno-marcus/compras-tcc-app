@@ -5,7 +5,6 @@ import { Divider } from 'primevue'
 import { ref, watch, computed } from 'vue'
 import { catalogoService } from '../services/catalogoService'
 import type { Item } from '../types'
-import Skeleton from 'primevue/skeleton'
 import InputText from 'primevue/inputtext'
 import FloatLabel from 'primevue/floatlabel'
 import InputNumber from 'primevue/inputnumber'
@@ -25,7 +24,8 @@ import {
   CLOSE_CONFIRMATION,
   DEL_IMAGE_CONFIRMATION,
   SAVE_CONFIRMATION,
-} from '@/utils/confirmationFactory'
+} from '@/utils/confirmationFactoryUtils'
+import ItemDetailsDialogSkeleton from './ItemDetailsDialogSkeleton.vue'
 
 const props = defineProps<{
   visible: boolean
@@ -37,7 +37,7 @@ const toast = useToast()
 
 const detailedItem = ref<Item | null>(null)
 const itensSemelhantes = ref<Item[]>([])
-const isLoading = ref(false)
+const isLoading = ref(true)
 const error = ref<string | null>(null)
 const isEditing = ref(false)
 const formData = ref<Partial<Item>>({})
@@ -57,37 +57,44 @@ const onFileRemove = (event: FileUploadRemoveEvent) => {
   arquivoDeImagem.value = null
 }
 
-watch([() => props.item, () => props.visible], async ([currentItem, isVisible]) => {
-  if (currentItem && props.item && isVisible) {
-    isLoading.value = true
-    error.value = null
-    detailedItem.value = null
-    itensSemelhantes.value = []
-    isEditing.value = false
-    formData.value = {}
-    isImageMarkedForRemoval.value = false
-    try {
-      const promiseDados = catalogoService.getItemById(props.item.id)
-      const promiseSemelhantes = catalogoService.getItensSemelhantes(props.item.id)
-      const promiseImagem = props.item.linkImagem
-        ? precarregarImagem(props.item.linkImagem)
-        : Promise.resolve()
-      const [responseDados, _, responseSemelhantes] = await Promise.all([
-        promiseDados,
-        promiseImagem,
-        promiseSemelhantes,
-      ])
-      detailedItem.value = responseDados
-      itensSemelhantes.value = responseSemelhantes
-      arquivoDeImagem.value = null
-    } catch (err) {
-      console.error('Erro ao buscar detalhes ou pré-carregar imagem:', err)
-      error.value = 'Não foi possível carregar os detalhes do item.'
-    } finally {
-      isLoading.value = false
+const resetAllStates = (resetAll?: boolean) => {
+  error.value = null
+  if (resetAll) detailedItem.value = null
+  itensSemelhantes.value = []
+  isEditing.value = false
+  formData.value = {}
+  isImageMarkedForRemoval.value = false
+  arquivoDeImagem.value = null
+}
+
+watch(
+  () => props.item,
+  async (currentItem) => {
+    if (currentItem && props.item) {
+      isLoading.value = true
+      resetAllStates(true)
+      try {
+        const promiseDados = catalogoService.getItemById(props.item.id)
+        const promiseSemelhantes = catalogoService.getItensSemelhantes(props.item.id)
+        const promiseImagem = props.item.linkImagem
+          ? precarregarImagem(props.item.linkImagem)
+          : Promise.resolve()
+        const [responseDados, _, responseSemelhantes] = await Promise.all([
+          promiseDados,
+          promiseImagem,
+          promiseSemelhantes,
+        ])
+        detailedItem.value = responseDados
+        itensSemelhantes.value = responseSemelhantes
+      } catch (err) {
+        console.error('Erro ao buscar detalhes ou pré-carregar imagem:', err)
+        error.value = 'Não foi possível carregar os detalhes do item.'
+      } finally {
+        isLoading.value = false
+      }
     }
-  }
-})
+  },
+)
 
 const precarregarImagem = (url: string): Promise<void> => {
   return new Promise((resolve, reject) => {
@@ -106,14 +113,13 @@ const accessOtherItem = (item: Item) => {
     confirm.require({
       ...ACCESS_ITEM_CONFIRMATION,
       accept: () => {
-        formData.value = {}
-        isEditing.value = false
-        emit('update-dialog', item)
+        resetAllStates(false)
+        emit('update-dialog', item, 'changeItem')
       },
     })
     return
   }
-  emit('update-dialog', item)
+  emit('update-dialog', item, 'changeItem')
 }
 
 const wasChanged = computed(() => {
@@ -127,13 +133,13 @@ const closeModal = () => {
     confirm.require({
       ...CLOSE_CONFIRMATION,
       accept: () => {
-        formData.value = {}
-        isEditing.value = false
+        resetAllStates(false)
         emit('update:visible', false)
       },
     })
     return
   }
+  resetAllStates(false)
   emit('update:visible', false)
 }
 
@@ -148,21 +154,15 @@ const enterEditMode = () => {
   isEditing.value = true
 }
 
-const resetAndExitEditMode = () => {
-  formData.value = {}
-  arquivoDeImagem.value = null
-  isEditing.value = false
-}
-
 const cancelEdit = () => {
   if (wasChanged.value) {
     confirm.require({
       ...CANCEL_CONFIRMATION,
-      accept: resetAndExitEditMode,
+      accept: () => resetAllStates(false),
     })
     return
   }
-  resetAndExitEditMode()
+  resetAllStates(false)
 }
 
 const acceptSaveChanges = async () => {
@@ -194,7 +194,7 @@ const acceptSaveChanges = async () => {
     })
 
     isEditing.value = false
-    emit('update-dialog', updatedItem)
+    emit('update-dialog', updatedItem, 'saveItem')
   } catch (err) {
     console.error('Erro ao salvar as alterações:', err)
     toast.add({
@@ -209,6 +209,7 @@ const acceptSaveChanges = async () => {
 }
 
 const saveChanges = () => {
+  if (!isFormValid()) return
   confirm.require({
     ...SAVE_CONFIRMATION,
     accept: async () => acceptSaveChanges(),
@@ -242,32 +243,50 @@ const removerImagem = () => {
     },
   })
 }
+
+const isFormValid = (): boolean => {
+  let isValid = true
+  if (!formData.value?.nome) {
+    toast.add({
+      severity: 'error',
+      summary: 'Campo Obrigatório',
+      detail: 'O campo "Nome" não pode ser vazio.',
+      life: 3000,
+    })
+    isValid = false
+  }
+  if (!formData.value?.catMat) {
+    toast.add({
+      severity: 'error',
+      summary: 'Campo Obrigatório',
+      detail: 'O campo "Catmat" não pode ser vazio.',
+      life: 3000,
+    })
+    isValid = false
+  }
+  if (!formData.value?.descricao) {
+    toast.add({
+      severity: 'error',
+      summary: 'Campo Obrigatório',
+      detail: 'O campo "Descrição" não pode ser vazio.',
+      life: 3000,
+    })
+    isValid = false
+  }
+  return isValid
+}
 </script>
 
 <template>
   <Dialog
-    v-if="detailedItem"
     :visible="visible"
     @update:visible="closeModal"
     modal
-    :header="`Detalhes do Material ${detailedItem.catMat}`"
+    :header="`Detalhes do Material ${detailedItem?.catMat || ''}`"
     :style="{ width: '90vw', maxWidth: '800px' }"
   >
     <div v-if="isLoading" class="dialog-content flex">
-      <div class="dialog-img">
-        <Skeleton width="8rem" height="8rem" borderRadius="8px"></Skeleton>
-      </div>
-      <div class="flex flex-column flex-grow-1 pl-4">
-        <Skeleton width="70%" height="1.5rem" class="mb-3"></Skeleton>
-        <Skeleton width="40%" height="1rem" class="mb-4"></Skeleton>
-        <Skeleton width="100%" height="1rem" class="mb-2"></Skeleton>
-        <Skeleton width="100%" height="1rem" class="mb-2"></Skeleton>
-        <Skeleton width="85%" height="1rem" class="mb-5"></Skeleton>
-
-        <Skeleton width="50%" height="1.2rem" class="mb-3"></Skeleton>
-        <Skeleton width="60%" height="1rem" class="mb-2"></Skeleton>
-        <Skeleton width="65%" height="1rem"></Skeleton>
-      </div>
+      <ItemDetailsDialogSkeleton />
     </div>
 
     <div v-else-if="error" class="flex flex-column align-items-center p-5">

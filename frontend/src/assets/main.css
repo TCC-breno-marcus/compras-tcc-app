@@ -39,8 +39,7 @@ a {
   justify-content: center !important;
 }
 
-.p-dark .p-tablist-tab-list,
-.p-dark .p-tabpanels {
+.p-dark .p-tabmenu-tablist {
   background-color: transparent !important;
 }
 
