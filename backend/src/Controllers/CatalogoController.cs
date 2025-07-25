@@ -240,5 +240,54 @@ namespace Controllers
                 return StatusCode(500, new { message = "Erro interno ao deletar o item." });
             }
         }
+
+        [HttpPost("{id}/imagem")]
+        [ProducesResponseType(typeof(ItemDto), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> AtualizarImagem([FromRoute] long id, IFormFile imagem)
+        {
+            if (imagem == null || imagem.Length == 0)
+            {
+                return BadRequest(new { message = "Nenhum arquivo de imagem foi enviado." });
+            }
+
+            try
+            {
+                var itemAtualizado = await _catalogoService.AtualizarImagemAsync(id, imagem);
+                if (itemAtualizado == null)
+                {
+                    return NotFound(new { message = $"Item com ID {id} não encontrado." });
+                }
+                return Ok(itemAtualizado);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ocorreu um erro ao atualizar a imagem do item {Id}.", id);
+                return StatusCode(500, new { message = "Ocorreu um erro interno no servidor." });
+            }
+        }
+
+        [HttpDelete("{id}/imagem")]
+        [ProducesResponseType(204)] 
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> RemoverImagem([FromRoute] long id)
+        {
+            try
+            {
+                var sucesso = await _catalogoService.RemoverImagemAsync(id);
+                if (!sucesso)
+                {
+                    return NotFound(new { message = $"Item com ID {id} não encontrado." });
+                }
+                return NoContent(); 
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ocorreu um erro ao remover a imagem do item {Id}.", id);
+                return StatusCode(500, new { message = "Ocorreu um erro interno no servidor." });
+            }
+        }
     }
 }
