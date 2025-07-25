@@ -121,7 +121,7 @@ namespace Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Gestor")]
         public async Task<IActionResult> EditarItem(int id, [FromBody] ItemUpdateDto updateDto)
         {
             if (updateDto == null)
@@ -166,6 +166,7 @@ namespace Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
+        [Authorize(Roles = "Admin,Gestor,Solicitante")]
         public async Task<IActionResult> GetItensSemelhantes([FromRoute] long id)
         {
             try
@@ -193,7 +194,7 @@ namespace Controllers
         [ProducesResponseType(typeof(ItemDto), 201)]
         [ProducesResponseType(typeof(string), 400)]
         [ProducesResponseType(typeof(string), 409)]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Gestor")]
         public async Task<IActionResult> CriarItem([FromBody] ItemDto newItemDto)
         {
             if (newItemDto == null)
@@ -212,9 +213,9 @@ namespace Controllers
             catch (InvalidOperationException ex)
             {
                 _logger.LogWarning(ex.Message);
-                return Conflict(new { message = ex.Message });
+                return Conflict(new { message = ex.Message }); 
             }
-            catch (Exception ex)
+            catch (Exception ex) 
             {
                 _logger.LogError(ex, "Erro não tratado no endpoint CriarItem.");
                 return StatusCode(500, new { message = "Erro interno ao criar o item." });
@@ -225,7 +226,7 @@ namespace Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Gestor")]
         public async Task<IActionResult> DeleteItem(long id)
         {
             try

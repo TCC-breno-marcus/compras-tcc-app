@@ -15,7 +15,7 @@ var config = builder.Configuration;
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
+ 
 // Authentication setup
 builder.Services.AddAuthentication(options =>
 {
@@ -25,7 +25,7 @@ builder.Services.AddAuthentication(options =>
 .AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
-    {
+    { 
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidateLifetime = true,
@@ -34,6 +34,10 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = config["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]!))
     };
+});
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
 });
 
 // CORS
@@ -69,6 +73,23 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
+    app.MapGet("/seed-database", async (AppDbContext context, ILogger<Program> logger) =>
+    {
+        try
+        {
+            logger.LogInformation("Iniciando o seeding do banco de dados via endpoint...");
+            await DataSeeder.SeedUsers(context);
+            return Results.Ok("Banco de dados populado com sucesso!");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Erro ao popular o banco de dados.");
+            return Results.Problem("Ocorreu um erro durante o seeding do banco de dados.");
+        }
+    })
+    .WithTags("Database")
+    .RequireAuthorization("RequireAdminRole");
 }
 
 app.UseAuthentication();
