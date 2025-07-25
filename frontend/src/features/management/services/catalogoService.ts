@@ -17,6 +17,7 @@ interface ICatalogoService {
   atualizarImagemItem(id: number, arquivo: File): Promise<Item>
   removerImagemItem(id: number): Promise<void>
   criarItem(params: ItemParams): Promise<Item>
+  deletarItem(id: number): Promise<void>
 }
 
 /**
@@ -92,6 +93,14 @@ export const catalogoService: ICatalogoService = {
       linkImagem: ''
     })
     return response.data
+  },
+
+  /**
+   * Deleta um item.
+   * @param id ID do item.
+   */
+  async deletarItem(id) {
+    await apiClient.delete(`/catalogo/${id}`)
   },
 
   /**

@@ -46,6 +46,28 @@ export const DEL_IMAGE_CONFIRMATION: ConfirmationOptions = {
 }
 
 /**
+ * Configuração padrão para um diálogo de confirmação de DELETAR ITEM.
+ */
+export const DEL_ITEM_CONFIRMATION: ConfirmationOptions = {
+  message: 'Tem certeza que deseja excluir este item?',
+  header: 'Excluir Item?',
+  icon: 'pi pi-trash',
+  acceptProps: {
+    label: 'Excluir',
+    icon: 'pi pi-trash',
+    size: 'small',
+    severity: 'danger',
+  },
+  rejectProps: {
+    label: 'Cancelar',
+    severity: 'secondary',
+    text: true,
+    icon: 'pi pi-times',
+    size: 'small',
+  },
+}
+
+/**
  * Configuração padrão para um diálogo de confirmação de CANCELAR EDIÇÂO.
  */
 export const CANCEL_CONFIRMATION: ConfirmationOptions = {

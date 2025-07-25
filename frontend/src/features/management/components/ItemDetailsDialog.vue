@@ -23,6 +23,7 @@ import {
   CANCEL_CONFIRMATION,
   CLOSE_CONFIRMATION,
   DEL_IMAGE_CONFIRMATION,
+  DEL_ITEM_CONFIRMATION,
   SAVE_CONFIRMATION,
 } from '@/utils/confirmationFactoryUtils'
 import ItemDetailsDialogSkeleton from './ItemDetailsDialogSkeleton.vue'
@@ -193,7 +194,7 @@ const acceptSaveChanges = async () => {
     })
 
     isEditing.value = false
-    emit('update-dialog', updatedItem, 'saveItem')
+    emit('update-dialog', 'updateItems', updatedItem)
   } catch (err) {
     console.error('Erro ao salvar as alterações:', err)
     toast.add({
@@ -273,6 +274,43 @@ const isFormValid = (): boolean => {
     isValid = false
   }
   return isValid
+}
+
+const acceptDeleteItem = async () => {
+  if (!detailedItem.value) return
+
+  isLoading.value = true
+  try {
+    await catalogoService.deletarItem(detailedItem.value.id)
+
+    toast.add({
+      severity: 'success',
+      summary: 'Sucesso',
+      detail: 'O item foi excluído com sucesso.',
+      life: 3000,
+    })
+
+    isEditing.value = false
+    emit('update:visible', false)
+    emit('update-dialog', 'updateItems')
+  } catch (err) {
+    console.error('Erro ao excluir o item:', err)
+    toast.add({
+      severity: 'error',
+      summary: 'Erro',
+      detail: 'Não foi possível excluir o item.',
+      life: 3000,
+    })
+  } finally {
+    isLoading.value = false
+  }
+}
+
+const deleteItem = () => {
+  confirm.require({
+    ...DEL_ITEM_CONFIRMATION,
+    accept: async () => acceptDeleteItem(),
+  })
 }
 </script>
 
@@ -447,7 +485,7 @@ const isFormValid = (): boolean => {
         <Divider align="left" type="solid" class="mt-4">
           <b>Materiais Semelhantes</b>
         </Divider>
-        <p v-if="itensSemelhantes.length === 0" class="text-sm text-color-secondary">
+        <p v-if="itensSemelhantes.length === 0" class="text-sm text-color-secondary font-italic">
           Nenhum material semelhante encontrado.
         </p>
         <div v-else class="semelhantes-list flex flex-column max-h-16rem overflow-auto">
@@ -470,40 +508,56 @@ const isFormValid = (): boolean => {
     </div>
 
     <template #footer>
-      <Button
-        v-if="!isEditing"
-        label="Fechar"
-        severity="danger"
-        icon="pi pi-times"
-        @click="closeModal"
-        text
-        size="small"
-      />
-      <Button
-        v-else
-        label="Cancelar"
-        severity="danger"
-        icon="pi pi-times"
-        @click="cancelEdit"
-        text
-        size="small"
-      />
-      <Button
-        v-if="!isEditing"
-        label="Editar"
-        icon="pi pi-pencil"
-        size="small"
-        @click="enterEditMode"
-      />
-      <Button
-        v-else
-        label="Salvar"
-        icon="pi pi-save"
-        size="small"
-        @click="saveChanges()"
-        severity="success"
-        :disabled="!wasChanged"
-      />
+      <div class="flex justify-content-between w-full">
+        <div>
+          <!-- SOMENTE SE O USER FOR GESTOR OU ADMIN -->
+          <Button
+            v-if="isEditing"
+            label="Excluir"
+            icon="pi pi-trash"
+            severity="danger"
+            text
+            @click="deleteItem"
+            size="small"
+          />
+        </div>
+        <div class="flex gap-2">
+          <Button
+            v-if="!isEditing"
+            label="Fechar"
+            severity="danger"
+            icon="pi pi-times"
+            @click="closeModal"
+            text
+            size="small"
+          />
+          <Button
+            v-else
+            label="Cancelar"
+            severity="danger"
+            icon="pi pi-times"
+            @click="cancelEdit"
+            text
+            size="small"
+          />
+          <Button
+            v-if="!isEditing"
+            label="Editar"
+            icon="pi pi-pencil"
+            size="small"
+            @click="enterEditMode"
+          />
+          <Button
+            v-else
+            label="Salvar"
+            icon="pi pi-save"
+            size="small"
+            @click="saveChanges()"
+            severity="success"
+            :disabled="!wasChanged"
+          />
+        </div>
+      </div>
     </template>
   </Dialog>
 </template>

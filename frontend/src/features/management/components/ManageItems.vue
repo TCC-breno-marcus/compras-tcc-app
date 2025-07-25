@@ -148,9 +148,11 @@ const handleViewDetails = (item: Item) => {
   selectedItem.value = item
   isDialogVisible.value = true
 }
-const handleUpdateDialog = (newItem: Item, action: string) => {
-  selectedItem.value = newItem
-  if (action === 'itemSave') {
+const handleUpdateDialog = (action: string, newItem?: Item) => {
+  if (newItem) {
+    selectedItem.value = newItem
+  }
+  if (action === 'updateItems') {
     catalogoStore.fetchItems(route.query)
   }
 }
@@ -264,7 +266,14 @@ const closeDialog = () => {
       </div>
 
       <div class="flex align-items-center gap-2">
-        <Button type="button" label="Criar" icon="pi pi-plus" size="small" text @click="isCreateDialogVisible = true" />
+        <Button
+          type="button"
+          label="Criar"
+          icon="pi pi-plus"
+          size="small"
+          text
+          @click="isCreateDialogVisible = true"
+        />
         <CatalogUpload />
       </div>
     </div>

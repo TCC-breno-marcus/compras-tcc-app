@@ -16,9 +16,9 @@ export function dataHasBeenChanged(origin: Item | Partial<Item> | null, edited: 
       const typedKey = key as keyof Item
 
       if (edited[typedKey] !== origin[typedKey]) {
-        console.log(
-          `Diferença encontrada na chave '${typedKey}': Original='${origin[typedKey]}', Editado='${edited[typedKey]}'`,
-        )
+        // console.log(
+        //   `Diferença encontrada na chave '${typedKey}': Original='${origin[typedKey]}', Editado='${edited[typedKey]}'`,
+        // )
         return true
       }
     }
