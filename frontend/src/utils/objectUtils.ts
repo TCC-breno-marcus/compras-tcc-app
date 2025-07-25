@@ -6,7 +6,7 @@ import type { Item } from '@/features/management/types'
  * @param origin O objeto original completo (ex: detailedItem).
  * @param edited O objeto com os dados do formulário (ex: formData).
  */
-export function dataHasBeenChanged(origin: Item | null, edited: Partial<Item>): boolean {
+export function dataHasBeenChanged(origin: Item | Partial<Item> | null, edited: Partial<Item>): boolean {
   if (!origin) {
     return false
   }

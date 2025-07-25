@@ -16,7 +16,7 @@ interface ICatalogoService {
   editarItem(id: number, params: ItemParams): Promise<Item>
   atualizarImagemItem(id: number, arquivo: File): Promise<Item>
   removerImagemItem(id: number): Promise<void>
-  // createItem(data: Partial<Item>): Promise<AxiosResponse<Item>>; <-- Exemplo para o futuro
+  criarItem(params: ItemParams): Promise<Item>
 }
 
 /**
@@ -79,6 +79,18 @@ export const catalogoService: ICatalogoService = {
    */
   async editarItem(id, params) {
     const response = await apiClient.put<Item>(`/catalogo/${id}`, params)
+    return response.data
+  },
+
+  /**
+   * Cria um item.
+   * @param params Objeto com os dados do novo item.
+   */
+  async criarItem(params) {
+    const response = await apiClient.post<Item>(`/catalogo`, {
+      ...params,
+      linkImagem: ''
+    })
     return response.data
   },
 

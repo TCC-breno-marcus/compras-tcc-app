@@ -175,7 +175,6 @@ const acceptSaveChanges = async () => {
     } else if (isImageMarkedForRemoval.value) {
       await catalogoService.removerImagemItem(detailedItem.value.id)
     }
-    // TODO: se eu tentar editar o campo especificacao pra deixar sem nenhum texto, ele nn atualiza. Verificar isso e tbm pra os outros campos de texto
     const newData = {
       nome: formData.value?.nome,
       catMat: formData.value?.catMat,
@@ -459,7 +458,11 @@ const isFormValid = (): boolean => {
             class="semelhante-item flex flex-column p-2"
             v-tooltip.bottom="'Acessar Item'"
           >
-            <span class="nome">{{ item.nome }} - {{ item.especificacao }}</span>
+            <span class="nome">
+              {{ item.nome }}
+              <span v-if="item.especificacao"> - {{ item.especificacao }}</span>
+            </span>
+
             <span class="catmat text-xs">CATMAT: {{ item.catMat }}</span>
           </a>
         </div>

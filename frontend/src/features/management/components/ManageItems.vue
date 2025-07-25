@@ -18,6 +18,7 @@ import { storeToRefs } from 'pinia'
 import FloatLabel from 'primevue/floatlabel'
 import NotFoundSvg from '@/assets/NotFoundSvg.vue'
 import ItemComponentSkeleton from './ItemComponentSkeleton.vue'
+import CreateItemDialog from './CreateItemDialog.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -138,6 +139,7 @@ watch(
   { immediate: true },
 )
 
+const isCreateDialogVisible = ref(false)
 const isDialogVisible = ref(false)
 const selectedItem = ref<Item | null>(null)
 const itemWasSaveChanged = ref(false)
@@ -262,7 +264,7 @@ const closeDialog = () => {
       </div>
 
       <div class="flex align-items-center gap-2">
-        <Button type="button" label="Criar" icon="pi pi-plus" size="small" text />
+        <Button type="button" label="Criar" icon="pi pi-plus" size="small" text @click="isCreateDialogVisible = true" />
         <CatalogUpload />
       </div>
     </div>
@@ -305,6 +307,11 @@ const closeDialog = () => {
       @update:visible="closeDialog"
       @update-dialog="handleUpdateDialog"
       @item-saved="itemWasSaveChanged = true"
+    />
+
+    <CreateItemDialog
+      v-model:visible="isCreateDialogVisible"
+      @update:visible="isCreateDialogVisible = false"
     />
   </div>
 </template>
