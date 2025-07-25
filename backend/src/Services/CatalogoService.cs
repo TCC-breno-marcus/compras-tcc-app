@@ -145,10 +145,13 @@ namespace Services
             if (!string.IsNullOrEmpty(updateDto.Nome))
                 itemDoBanco.Nome = updateDto.Nome;
 
+            if (!string.IsNullOrEmpty(updateDto.CatMat))
+                itemDoBanco.CatMat = updateDto.CatMat;
+
             if (!string.IsNullOrEmpty(updateDto.Descricao))
                 itemDoBanco.Descricao = updateDto.Descricao;
 
-            if (!string.IsNullOrEmpty(updateDto.Especificacao))
+            if (updateDto.Especificacao != null)
                 itemDoBanco.Especificacao = updateDto.Especificacao;
 
             if (updateDto.PrecoSugerido.HasValue)
@@ -470,7 +473,7 @@ namespace Services
             var item = await _context.Items.FindAsync(id);
             if (item == null)
             {
-                return false; 
+                return false;
             }
 
             if (!string.IsNullOrEmpty(item.LinkImagem))
