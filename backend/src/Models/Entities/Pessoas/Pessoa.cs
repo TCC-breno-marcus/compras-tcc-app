@@ -20,5 +20,11 @@ namespace ComprasTccApp.Models.Entities.Pessoas
 
         [Required]
         public DateTime DataAtualizacao { get; set; }
+
+        [Required]
+        public required string PasswordHash { get; set; }
+
+        [Required, StringLength(50)]
+        public required string Role { get; set; }
     }
 }
