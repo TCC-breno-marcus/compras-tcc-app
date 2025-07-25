@@ -39,6 +39,7 @@ namespace Controllers
             [FromQuery] string? descricao,
             [FromQuery] string? especificacao,
             [FromQuery] bool? isActive,
+            [FromQuery] string? searchTerm,
             [FromQuery] int pageNumber = 1,
             [FromQuery] int pageSize = 50,
             [FromQuery] string? sortOrder = "asc"
@@ -48,7 +49,7 @@ namespace Controllers
             {
                 _logger.LogInformation("Recebida requisição para buscar itens com filtros.");
 
-                var paginatedResult = await _catalogoService.GetAllItensAsync(id, catMat, nome, descricao, especificacao, isActive, pageNumber, pageSize, sortOrder);
+                var paginatedResult = await _catalogoService.GetAllItensAsync(id, catMat, nome, descricao, especificacao, isActive, searchTerm, pageNumber, pageSize, sortOrder);
 
                 return Ok(paginatedResult);
             }
@@ -148,11 +149,41 @@ namespace Controllers
 
                 var item = await _catalogoService.GetItemByIdAsync(id);
 
+                if (item == null)
+                    return NotFound(new { message = $"Item com ID {id} não encontrado." });
+
                 return Ok(item);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Ocorreu um erro não tratado no endpoint GetItem.");
+                return StatusCode(500, new { message = "Ocorreu um erro interno no servidor. Por favor, tente novamente mais tarde." });
+            }
+        }
+
+        [HttpGet("{id}/itens-semelhantes")]
+        [ProducesResponseType(typeof(IEnumerable<ItemDto>), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> GetItensSemelhantes([FromRoute] long id)
+        {
+            try
+            {
+                _logger.LogInformation("Recebida requisição para buscar itens semelhantes ao item ID {Id}.", id);
+
+                var itensSemelhantes = await _catalogoService.GetItensSemelhantesAsync(id);
+
+                if (itensSemelhantes == null)
+                {
+                    return NotFound(new { message = $"Item com ID {id} não encontrado para basear a busca." });
+                }
+
+                return Ok(itensSemelhantes);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ocorreu um erro não tratado no endpoint GetItensSemelhantes.");
                 return StatusCode(500, new { message = "Ocorreu um erro interno no servidor. Por favor, tente novamente mais tarde." });
             }
         }

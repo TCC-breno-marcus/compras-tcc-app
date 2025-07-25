@@ -29,6 +29,7 @@ namespace Services
             string? descricao,
             string? especificacao,
             bool? isActive,
+            string? searchTerm,
             int pageNumber,
             int pageSize,
             string? sortOrder
@@ -40,44 +41,62 @@ namespace Services
             {
                 var query = _context.Items.AsQueryable();
 
-                if (id.HasValue)
+                if (!string.IsNullOrWhiteSpace(searchTerm))
                 {
-                    query = query.Where(item => item.Id == id.Value);
-                }
-                if (!string.IsNullOrWhiteSpace(catMat))
-                {
-                    query = query.Where(item => item.CatMat.Contains(catMat));
-                }
-                if (!string.IsNullOrWhiteSpace(nome))
-                {
-                    query = query.Where(item => item.Nome.ToLower().Contains(nome.ToLower()));
-                }
-                if (!string.IsNullOrWhiteSpace(descricao))
-                {
-                    query = query.Where(item => item.Descricao.ToLower().Contains(descricao.ToLower()));
-                }
-                if (!string.IsNullOrWhiteSpace(especificacao))
-                {
-                    query = query.Where(item => item.Descricao.ToLower().Contains(especificacao.ToLower()));
-                }
-                if (isActive.HasValue)
-                {
-                    query = query.Where(item => item.IsActive == isActive.Value);
-                }
-                if (!string.IsNullOrWhiteSpace(sortOrder))
-                {
-                    if (sortOrder.ToLower() == "asc")
+                    query = query.Where(item =>
+                        item.Nome.ToLower().Contains(searchTerm.ToLower()) ||
+                        item.Descricao.ToLower().Contains(searchTerm.ToLower()) ||
+                        item.CatMat.Contains(searchTerm.ToLower()) ||
+                        item.Especificacao.ToLower().Contains(searchTerm.ToLower())
+                    );
+
+                    if (isActive.HasValue)
                     {
-                        query = query.OrderBy(item => item.Nome);
-                    }
-                    else if (sortOrder.ToLower() == "desc")
-                    {
-                        query = query.OrderByDescending(item => item.Nome);
+                        query = query.Where(item => item.IsActive == isActive.Value);
                     }
                 }
                 else
                 {
-                    query = query.OrderBy(item => item.Id);
+                    if (id.HasValue)
+                    {
+                        query = query.Where(item => item.Id == id.Value);
+                    }
+                    if (!string.IsNullOrWhiteSpace(catMat))
+                    {
+                        query = query.Where(item => item.CatMat.Contains(catMat));
+                    }
+                    if (!string.IsNullOrWhiteSpace(nome))
+                    {
+                        query = query.Where(item => item.Nome.ToLower().Contains(nome.ToLower()));
+                    }
+                    if (!string.IsNullOrWhiteSpace(descricao))
+                    {
+                        query = query.Where(item => item.Descricao.ToLower().Contains(descricao.ToLower()));
+                    }
+                    if (!string.IsNullOrWhiteSpace(especificacao))
+                    {
+                        query = query.Where(item => item.Especificacao.ToLower().Contains(especificacao.ToLower()));
+                    }
+                    if (isActive.HasValue)
+                    {
+                        query = query.Where(item => item.IsActive == isActive.Value);
+                    }
+                    if (!string.IsNullOrWhiteSpace(sortOrder))
+                    {
+                        if (sortOrder.ToLower() == "asc")
+                        {
+                            query = query.OrderBy(item => item.Nome);
+                        }
+                        else if (sortOrder.ToLower() == "desc")
+                        {
+                            query = query.OrderByDescending(item => item.Nome);
+                        }
+                    }
+                    else
+                    {
+                        query = query.OrderBy(item => item.Id);
+                    }
+
                 }
 
                 var totalCount = await query.CountAsync();
@@ -93,7 +112,10 @@ namespace Services
                     Nome = item.Nome,
                     Descricao = item.Descricao,
                     CatMat = item.CatMat,
-                    LinkImagem = item.LinkImagem,
+                    // TODO: o link abaixo deve estar em variável de ambiente
+                    LinkImagem = string.IsNullOrWhiteSpace(item.LinkImagem)
+                        ? item.LinkImagem
+                        : $"http://localhost:8088/images/{item.LinkImagem}",
                     PrecoSugerido = item.PrecoSugerido,
                     Especificacao = item.Especificacao,
                     IsActive = item.IsActive,
@@ -278,7 +300,10 @@ namespace Services
                     Nome = item.Nome,
                     Descricao = item.Descricao,
                     CatMat = item.CatMat,
-                    LinkImagem = item.LinkImagem,
+                    // TODO: o link abaixo deve estar em variável de ambiente
+                    LinkImagem = string.IsNullOrWhiteSpace(item.LinkImagem)
+                        ? item.LinkImagem
+                        : $"http://localhost:8088/images/{item.LinkImagem}",
                     PrecoSugerido = item.PrecoSugerido,
                     Especificacao = item.Especificacao,
                     IsActive = item.IsActive
@@ -346,5 +371,54 @@ namespace Services
             _logger.LogInformation("Item com ID {Id} foi deletado com sucesso.", id);
             return true;
         }
+
+        public async Task<IEnumerable<ItemDto>?> GetItensSemelhantesAsync(long id)
+        {
+            _logger.LogInformation("Iniciando busca de itens semelhantes ao item de ID {Id}", id);
+
+            try
+            {
+                var itemOriginal = await _context.Items.FindAsync(id);
+
+                if (itemOriginal == null)
+                {
+                    _logger.LogWarning("Item original com ID {Id} não encontrado.", id);
+                    return null;
+                }
+
+                var nomeParaBusca = itemOriginal.Nome;
+                _logger.LogInformation("Item original encontrado: '{Nome}'. Buscando por semelhantes.", nomeParaBusca);
+
+                var itensSemelhantes = await _context.Items
+                    .AsNoTracking()
+                    .Where(item => item.Nome == nomeParaBusca && item.Id != id)
+                    .ToListAsync();
+
+                _logger.LogInformation("Encontrados {Count} itens semelhantes.", itensSemelhantes.Count);
+
+                var itensDto = itensSemelhantes.Select(item => new ItemDto
+                {
+                    Id = item.Id,
+                    Nome = item.Nome,
+                    Descricao = item.Descricao,
+                    CatMat = item.CatMat,
+                    // TODO: o link abaixo deve estar em variável de ambiente
+                    LinkImagem = string.IsNullOrWhiteSpace(item.LinkImagem)
+                        ? item.LinkImagem
+                        : $"http://localhost:8088/images/{item.LinkImagem}",
+                    PrecoSugerido = item.PrecoSugerido,
+                    Especificacao = item.Especificacao,
+                    IsActive = item.IsActive
+                }).ToList();
+
+                return itensDto;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro ao buscar itens semelhantes para o ID {Id}.", id);
+                throw;
+            }
+        }
+
     }
 }
