@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import CatalogUpload from './CatalogUpload.vue'
 import { ref, watch, computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute, useRouter, type LocationQueryValue } from 'vue-router'
 import type { Ref } from 'vue'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
@@ -9,7 +9,7 @@ import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
 import ItemComponent from './ItemComponent.vue'
 import ItemDetailsDialog from './ItemDetailsDialog.vue'
-import type { ItemCatalogo } from '@/types/itemsCatalogo'
+import type { Item } from '../types'
 import { Button } from 'primevue'
 import CustomPaginator from '@/components/CustomPaginator.vue'
 import OverlayPanel from 'primevue/overlaypanel'
@@ -25,13 +25,19 @@ const catalogoStore = useCatalogoStore()
 const { items, loading, error, totalCount, pageNumber, pageSize, totalPages } =
   storeToRefs(catalogoStore)
 
-const simpleSearch = ref(route.query.searchTerm || '')
+const getFirstQueryValue = (value: LocationQueryValue | LocationQueryValue[]): string => {
+  if (Array.isArray(value)) {
+    return value[0] || ''
+  }
+  return value || ''
+}
 
-const op = ref() // Ref para o componente OverlayPanel
-const nomeFilter = ref(route.query.nome || '')
-const descricaoFilter = ref(route.query.descricao || '')
-const catmatFilter = ref(route.query.catmat || '')
-const especificacaoFilter = ref(route.query.catmat || '')
+const op = ref()
+const simpleSearch = ref(getFirstQueryValue(route.query.searchTerm))
+const nomeFilter = ref(getFirstQueryValue(route.query.nome))
+const descricaoFilter = ref(getFirstQueryValue(route.query.descricao))
+const catmatFilter = ref(getFirstQueryValue(route.query.catmat))
+const especificacaoFilter = ref(getFirstQueryValue(route.query.especificacao))
 const statusFilter = ref('todos')
 const opcoesStatus = ref([
   { name: 'Todos', code: 'todos' },
@@ -39,6 +45,7 @@ const opcoesStatus = ref([
   { name: 'Inativo', code: 'inativo' },
 ])
 const sortOrder: Ref<'asc' | 'desc' | null> = ref(null)
+
 const toggleSortDirection = () => {
   if (sortOrder.value === null) {
     sortOrder.value = 'asc'
@@ -48,6 +55,7 @@ const toggleSortDirection = () => {
     sortOrder.value = null // Volta para o padrão
   }
 }
+
 const computedSort = computed(() => {
   if (sortOrder.value === 'asc') {
     return { text: 'Ordenar de A-Z', icon: 'pi pi-sort-alpha-down' }
@@ -112,11 +120,11 @@ const clearFilters = () => {
 watch(
   () => route.query,
   (newQuery) => {
-    simpleSearch.value = newQuery.searchTerm || ''
-    nomeFilter.value = newQuery.nome || ''
-    descricaoFilter.value = newQuery.descricao || ''
-    catmatFilter.value = newQuery.catmat || ''
-    especificacaoFilter.value = newQuery.especificacao || ''
+    simpleSearch.value = getFirstQueryValue(newQuery.searchTerm)
+    nomeFilter.value = getFirstQueryValue(newQuery.nome)
+    descricaoFilter.value = getFirstQueryValue(newQuery.descricao)
+    catmatFilter.value = getFirstQueryValue(newQuery.catmat)
+    especificacaoFilter.value = getFirstQueryValue(newQuery.especificacao)
 
     if (newQuery.isActive === 'true') {
       statusFilter.value = 'ativo'
@@ -131,14 +139,14 @@ watch(
 )
 
 const isDialogVisible = ref(false)
-const selectedItem = ref<ItemCatalogo | null>(null)
+const selectedItem = ref<Item | null>(null)
 const itemWasSaveChanged = ref(false)
 
-const handleViewDetails = (item: ItemCatalogo) => {
+const handleViewDetails = (item: Item) => {
   selectedItem.value = item
   isDialogVisible.value = true
 }
-const handleUpdateDialog = (newItem: ItemCatalogo, action: string) => {
+const handleUpdateDialog = (newItem: Item, action: string) => {
   selectedItem.value = newItem
   if (action === 'itemSave') {
     catalogoStore.fetchItems(route.query)
@@ -266,7 +274,7 @@ const closeDialog = () => {
     <div v-if="items.length > 0 && !loading" class="items-grid mt-4 gap-2">
       <ItemComponent
         v-for="item in items"
-        :key="item.code"
+        :key="item.catMat"
         :item="item"
         @viewDetails="handleViewDetails"
       />
