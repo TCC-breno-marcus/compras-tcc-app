@@ -1,5 +1,6 @@
 using ComprasTccApp.Models.Dtos;
 using Database;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
 
@@ -7,6 +8,7 @@ namespace Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class CatalogoController : ControllerBase
     {
         private readonly ILogger<CatalogoController> _logger;
@@ -28,6 +30,7 @@ namespace Controllers
         [HttpGet]
         [ProducesResponseType(typeof(PaginatedResultDto<ItemDto>), 200)]
         [ProducesResponseType(500)]
+        [Authorize(Roles = "Admin,Gestor,Solicitante")]
         public async Task<IActionResult> Get
         (
             [FromQuery] long? id,
@@ -61,6 +64,7 @@ namespace Controllers
         [ProducesResponseType(202)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> ImportarItens([FromBody] IEnumerable<ItemImportacaoDto> itensParaImportar)
         {
             if (itensParaImportar == null || !itensParaImportar.Any())
@@ -86,8 +90,7 @@ namespace Controllers
         [HttpPost("popular-imagens")]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(500)]
-        // IMPORTANTE: Adicione segurança a este endpoint!
-        // Exemplo: [Authorize(Roles = "Admin")] 
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> PopularImagens()
         {
             try
@@ -118,6 +121,7 @@ namespace Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
+        [Authorize(Roles = "Admin, Gestor")]
         public async Task<IActionResult> EditarItem(int id, [FromBody] ItemUpdateDto updateDto)
         {
             if (updateDto == null)
@@ -136,6 +140,7 @@ namespace Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
+        [Authorize(Roles = "Admin,Gestor,Solicitante")]
         public async Task<IActionResult> GetItemPorId([FromRoute] long id)
         {
             try
@@ -161,6 +166,7 @@ namespace Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
+        [Authorize(Roles = "Admin,Gestor,Solicitante")]
         public async Task<IActionResult> GetItensSemelhantes([FromRoute] long id)
         {
             try
@@ -188,6 +194,7 @@ namespace Controllers
         [ProducesResponseType(typeof(ItemDto), 201)]
         [ProducesResponseType(typeof(string), 400)]
         [ProducesResponseType(typeof(string), 409)]
+        [Authorize(Roles = "Admin, Gestor")]
         public async Task<IActionResult> CriarItem([FromBody] ItemDto newItemDto)
         {
             if (newItemDto == null)
@@ -206,9 +213,9 @@ namespace Controllers
             catch (InvalidOperationException ex)
             {
                 _logger.LogWarning(ex.Message);
-                return Conflict(new { message = ex.Message });
+                return Conflict(new { message = ex.Message }); 
             }
-            catch (Exception ex)
+            catch (Exception ex) 
             {
                 _logger.LogError(ex, "Erro não tratado no endpoint CriarItem.");
                 return StatusCode(500, new { message = "Erro interno ao criar o item." });
@@ -219,6 +226,7 @@ namespace Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
+        [Authorize(Roles = "Admin, Gestor")]
         public async Task<IActionResult> DeleteItem(long id)
         {
             try

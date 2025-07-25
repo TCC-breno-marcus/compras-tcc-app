@@ -3,6 +3,7 @@ using System;
 using Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250721220828_AddPasswordFieldsToPessoa")]
+    partial class AddPasswordFieldsToPessoa
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -135,14 +138,13 @@ namespace backend.Migrations
                         .HasMaxLength(120)
                         .HasColumnType("character varying(120)");
 
-                    b.Property<string>("PasswordHash")
+                    b.Property<byte[]>("PasswordHash")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("bytea");
 
-                    b.Property<string>("Role")
+                    b.Property<byte[]>("PasswordSalt")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("bytea");
 
                     b.Property<string>("Telefone")
                         .IsRequired()
