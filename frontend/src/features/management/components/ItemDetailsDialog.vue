@@ -115,12 +115,12 @@ const accessOtherItem = (item: Item) => {
       ...ACCESS_ITEM_CONFIRMATION,
       accept: () => {
         resetAllStates(false)
-        emit('update-dialog', item, 'changeItem')
+        emit('update-dialog', { item: item, action: 'changeItem' })
       },
     })
     return
   }
-  emit('update-dialog', item, 'changeItem')
+  emit('update-dialog', { item: item, action: 'changeItem' })
 }
 
 const wasChanged = computed(() => {
@@ -194,7 +194,7 @@ const acceptSaveChanges = async () => {
     })
 
     isEditing.value = false
-    emit('update-dialog', 'updateItems', updatedItem)
+    emit('update-dialog', { item: updatedItem, action: 'updateItems' })
   } catch (err) {
     console.error('Erro ao salvar as alterações:', err)
     toast.add({
@@ -293,6 +293,7 @@ const acceptDeleteItem = async () => {
     isEditing.value = false
     emit('update:visible', false)
     emit('update-dialog', 'updateItems')
+
   } catch (err) {
     console.error('Erro ao excluir o item:', err)
     toast.add({
