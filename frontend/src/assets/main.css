@@ -39,8 +39,7 @@ a {
   justify-content: center !important;
 }
 
-.p-dark .p-tablist-tab-list,
-.p-dark .p-tabpanels {
+.p-dark .p-tabmenu-tablist {
   background-color: transparent !important;
 }
 
@@ -74,6 +73,26 @@ a {
   font-size: 14px !important;
 }
 
-.p-tablist {
-    overflow-x: auto;
+.p-tabmenu {
+  min-height: 62px;
+}
+
+.p-tabmenu-item-link {
+  white-space: nowrap;
+}
+
+.p-toast {
+  z-index: 2000 !important;
+}
+
+.upload-button {
+  padding: 6px 10px !important;
+}
+
+.upload-button .pi {
+  font-size: 0.875rem !important;
+}
+
+.p-message-text {
+  font-size: 0.875rem !important;
 }

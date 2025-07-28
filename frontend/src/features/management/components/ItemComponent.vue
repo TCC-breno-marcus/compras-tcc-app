@@ -1,41 +1,49 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import Button from 'primevue/button';
-import Tag from 'primevue/tag';
+import Tag from 'primevue/tag'
 
-// 2. Defina que este componente espera receber uma propriedade chamada "item"
-// que será um objeto com os dados do item.
 const props = defineProps({
   item: {
     type: Object,
-    required: true
-  }
-});
+    required: true,
+  },
+})
 
-// 2. Defina o evento customizado que ele vai emitir
-const emit = defineEmits(['viewDetails']);
+const emit = defineEmits(['viewDetails'])
 
-// 3. Função que é chamada no clique e emite o evento com os dados do item
 const onShowDetailsClick = () => {
-  emit('viewDetails', props.item);
-};
-
+  emit('viewDetails', props.item)
+}
 </script>
+
 <template>
   <div class="item-card m-2">
-    <div class="image-preview-container flex justify-content-center align-items-center p-1" @click="onShowDetailsClick">
-      <img :src="item.img" :alt="item.title" class="item-image" />
+    <div
+      class="image-preview-container flex justify-content-center align-items-center p-1"
+      @click="onShowDetailsClick"
+    >
+      <img
+        v-if="item.linkImagem"
+        :src="item.linkImagem"
+        :alt="item.nome"
+        class="item-image"
+      />
+      <div v-else class="image-placeholder">
+        <span class="material-symbols-outlined placeholder-icon"> hide_image </span>
+      </div>
+
       <div class="preview-overlay">
         <i class="pi pi-eye preview-icon text-3xl"></i>
       </div>
     </div>
-    <div class="flex align-items-center justify-content-between p-2">
-
+    <div class="item-details-container flex align-items-center justify-content-between p-2">
       <div class="item-details">
-        <p class="font-bold text-sm">{{ item.title }}</p>
-        <p class="text-xs text-color-secondary">CATMAT {{ item.code }}</p>
+        <p class="font-bold text-sm">{{ item.nome }}</p>
+        <p class="text-xs text-color-secondary">CATMAT {{ item.catMat }}</p>
       </div>
-      <Tag :severity="item.status === 'Ativo' ? 'success' : 'danger'" :value="item.status"></Tag>
+      <Tag
+        :severity="item.isActive ? 'success' : 'danger'"
+        :value="item.isActive ? 'Ativo' : 'Inativo'"
+      ></Tag>
     </div>
   </div>
 </template>
@@ -50,6 +58,7 @@ const onShowDetailsClick = () => {
   width: 250px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   transition: box-shadow 0.3s ease;
+  /* height: 100%; */
 }
 
 .p-dark .item-card {
@@ -64,8 +73,8 @@ const onShowDetailsClick = () => {
   position: relative;
   cursor: pointer;
   overflow: hidden;
-  /* height: 100px; */
-  background-color: var(--p-surface-50);
+  height: 160px;
+  /* background-color: var(--p-surface-50); */
 }
 
 .p-dark .image-preview-container {
@@ -73,8 +82,8 @@ const onShowDetailsClick = () => {
 }
 
 .item-image {
-  max-width: 5rem;
-  /* max-height: 5rem; */
+  /* width: 100%; */
+  height: 100%;
   object-fit: cover;
   display: block;
   transition: transform 0.4s ease;
@@ -113,11 +122,30 @@ const onShowDetailsClick = () => {
   transform: scale(1);
 }
 
+.item-details-container {
+  margin-top: auto;
+}
+
 .item-details {
   text-align: start;
+  /* min-height: 70px;   */
 }
 
 .item-details p {
   margin: 0;
+}
+
+.image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 6px;
+}
+
+.placeholder-icon {
+  font-size: 3rem; 
+  /* color: var(--p-surface-500);  */
 }
 </style>

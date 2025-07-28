@@ -35,7 +35,7 @@ export const useMenuStore = defineStore('menu', () => {
       icon: 'bar_chart',
       materialIcon: true,
       command: () => {
-        router.push('/painel-gestor')
+        router.push('/gestor/dashboard')
       },
     },
     {
@@ -71,7 +71,7 @@ export const useMenuStore = defineStore('menu', () => {
           label: 'Painel do Gestor',
           icon: 'bar_chart',
           command: () => {
-            router.push('/painel-gestor')
+            router.push('/gestor/dashboard')
           },
         }
       ],

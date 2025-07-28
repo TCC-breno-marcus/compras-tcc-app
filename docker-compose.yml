@@ -72,6 +72,10 @@ services:
     volumes:
       - ./imagens_itens:/usr/share/nginx/html/images
     read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+      - /tmp
 
 volumes:
   postgres-data:
