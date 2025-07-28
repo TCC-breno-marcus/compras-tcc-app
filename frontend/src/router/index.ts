@@ -5,6 +5,14 @@ import NotFoundView from '@/views/NotFoundView.vue'
 import NewSolicitation from '@/features/solicitations/views/NewSolicitation.vue'
 import ManagerPanel from '@/features/management/views/ManagerPanelView.vue'
 import SolicitationDetailsView from '@/features/solicitations/views/SolicitationDetailsView.vue'
+import { useAuthStore } from '@/stores/authStore'
+
+declare module 'vue-router' {
+  interface RouteMeta {
+    requiresAuth: boolean
+    roles?: string[]
+  }
+}
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -17,15 +25,18 @@ const router = createRouter({
         {
           path: '/solicitacoes/criar',
           name: 'NewSolicitation',
+          meta: { requiresAuth: true, roles: ['Solicitante', 'Admin'] },
           component: NewSolicitation,
         },
         {
           path: '/solicitacoes/:id',
-          name: 'SolicitationDetails', // Dê um nome à rota
+          name: 'SolicitationDetails',
+          meta: { requiresAuth: true, roles: ['Solicitante', 'Gestor', 'Admin'] },
           component: SolicitationDetailsView,
         },
         {
           path: '/gestor',
+          meta: { requiresAuth: true, roles: ['Gestor', 'Admin'] },
           component: ManagerPanel,
           children: [
             {
@@ -53,6 +64,7 @@ const router = createRouter({
         {
           path: '',
           name: 'Home',
+          meta: { requiresAuth: true, roles: ['Solicitante', 'Gestor', 'Admin'] },
           component: HomeView,
         },
         {
@@ -65,15 +77,39 @@ const router = createRouter({
           name: 'ServerError',
           component: () => import('../views/ServerErrorView.vue'),
         },
-        // ... outras rotas que usam o mesmo layout
+        {
+          path: '/unauthorized',
+          name: 'Unauthorized',
+          component: () => import('../views/UnauthorizedView.vue'),
+        },
       ],
     },
-    // {
-    //   path: '/login', // Uma rota que NÃO usa o AppLayout
-    //   name: 'login',
-    //   component: () => import('../views/LoginView.vue')
-    // }
+    {
+      path: '/login',
+      name: 'Login',
+      component: () => import('../views/LoginView.vue'),
+    },
+    {
+      path: '/register',
+      name: 'Register',
+      component: () => import('../views/RegisterView.vue'),
+    },
   ],
+})
+
+// 2. Navigation Guard Global
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore()
+
+  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+    return next({ name: 'Login', query: { redirect: to.fullPath } })
+  }
+
+  if (to.meta.roles && !to.meta.roles.includes(authStore.user?.role ?? '')) {
+    return next({ name: 'Unauthorized' })
+  }
+
+  return next()
 })
 
 export default router

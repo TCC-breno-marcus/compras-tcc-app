@@ -8,11 +8,11 @@ import 'primeflex/primeflex.css'
 import MyPreset from './theme'
 import 'primeicons/primeicons.css'
 import Tooltip from 'primevue/tooltip'
-import ToastService from 'primevue/toastservice';
+import ToastService from 'primevue/toastservice'
 import App from './App.vue'
+import Ripple from 'primevue/ripple'
+import ConfirmationService from 'primevue/confirmationservice'
 import router from './router'
-import Ripple from 'primevue/ripple';
-import ConfirmationService from 'primevue/confirmationservice';
 
 const app = createApp(App)
 
@@ -25,13 +25,13 @@ app.use(PrimeVue, {
     preset: MyPreset,
     options: {
       prefix: 'p',
-      darkModeSelector: '.p-dark'
+      darkModeSelector: '.p-dark',
     },
   },
-  ripple: true
+  ripple: true,
 })
 app.use(ToastService)
-app.use(ConfirmationService);
+app.use(ConfirmationService)
 app.use(router)
 
 app.directive('ripple', Ripple)
