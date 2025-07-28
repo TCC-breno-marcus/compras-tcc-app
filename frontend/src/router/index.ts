@@ -2,10 +2,12 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import AppLayout from '@/layouts/AppLayout.vue'
 import NotFoundView from '@/views/NotFoundView.vue'
-import NewSolicitation from '@/features/solicitations/views/NewSolicitation.vue'
+import NewGeneralSolicitationView from '@/features/solicitations/views/NewGeneralSolicitationView.vue'
+import NewPatrimonialSolicitationView from '@/features/solicitations/views/NewPatrimonialSolicitationView.vue'
 import ManagerPanel from '@/features/management/views/ManagerPanelView.vue'
 import SolicitationDetailsView from '@/features/solicitations/views/SolicitationDetailsView.vue'
 import { useAuthStore } from '@/stores/authStore'
+import MySolicitationsView from '@/features/solicitations/views/MySolicitationsView.vue'
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -19,20 +21,33 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      component: AppLayout, // O Layout é o componente da rota pai
+      component: AppLayout,
       children: [
-        // As páginas são "filhas" do layout
         {
-          path: '/solicitacoes/criar',
-          name: 'NewSolicitation',
-          meta: { requiresAuth: true, roles: ['Solicitante', 'Admin'] },
-          component: NewSolicitation,
-        },
-        {
-          path: '/solicitacoes/:id',
-          name: 'SolicitationDetails',
-          meta: { requiresAuth: true, roles: ['Solicitante', 'Gestor', 'Admin'] },
-          component: SolicitationDetailsView,
+          path: '/solicitacoes',
+          children: [
+            {
+              path: 'criar/geral',
+              component: NewGeneralSolicitationView,
+              meta: { requiresAuth: true, roles: ['Solicitante', 'Admin'] },
+            },
+            {
+              path: 'criar/patrimonial',
+              component: NewPatrimonialSolicitationView,
+              meta: { requiresAuth: true, roles: ['Solicitante', 'Admin'] },
+            },
+            {
+              path: ':id',
+              component: SolicitationDetailsView,
+              meta: { requiresAuth: true, roles: ['Solicitante', 'Gestor', 'Admin'] },
+            },
+            {
+              path: '',
+              name: 'MySolicitations',
+              component: MySolicitationsView,
+              meta: { requiresAuth: true, roles: ['Solicitante', 'Gestor', 'Admin'] },
+            },
+          ],
         },
         {
           path: '/gestor',

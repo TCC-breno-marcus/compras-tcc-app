@@ -176,7 +176,6 @@ const { itemsMenu } = useMenuStore();
 
 
 .sidebar-container :deep(.submenu-title) a {
-    display: none;
     font-weight: 700 !important;
 }
 

@@ -12,21 +12,38 @@ export const useMenuStore = defineStore('menu', () => {
       materialIcon: true,
       items: [
         {
-          label: 'Solicitações',
-          class: 'submenu-title',
+          label: 'Criar Solicitação',
           disabled: true,
+          class: 'submenu-title',
         },
         {
-          label: 'Nova Solicitação',
-          icon: 'add',
+          label: 'Geral',
+          icon: 'assignment',
           materialIcon: true,
-          route: '/solicitacoes/criar',
+          command: () => {
+            router.push('/solicitacoes/criar/geral')
+          },
+        },
+        {
+          label: 'Bens Patrimoniais',
+          icon: 'chair',
+          materialIcon: true,
+          command: () => {
+            router.push('/solicitacoes/criar/patrimonial')
+          },
+        },
+        {
+          label: 'Solicitações',
+          disabled: true,
+          class: 'submenu-title',
         },
         {
           label: 'Minhas Solicitações',
           icon: 'assignment_ind',
           materialIcon: true,
-          route: '/solicitacoes/minhas',
+          command: () => {
+            router.push('/solicitacoes')
+          },
         },
       ],
     },
@@ -53,14 +70,25 @@ export const useMenuStore = defineStore('menu', () => {
       label: 'Solicitações',
       items: [
         {
-          label: 'Nova Solicitação',
-          icon: 'add_shopping_cart',
-          route: '/solicitacoes/criar',
+          label: 'Solicitação Geral',
+          icon: 'assignment',
+          command: () => {
+            router.push('/solicitacoes/criar/geral')
+          },
+        },
+        {
+          label: 'Bens Patrimoniais',
+          icon: 'chair',
+          command: () => {
+            router.push('/solicitacoes/criar/patrimonial')
+          },
         },
         {
           label: 'Minhas Solicitações',
-          icon: 'list_alt',
-          route: '/solicitacoes/minhas',
+          icon: 'assignment_ind',
+          command: () => {
+            router.push('/solicitacoes')
+          },
         },
       ],
     },
@@ -73,7 +101,7 @@ export const useMenuStore = defineStore('menu', () => {
           command: () => {
             router.push('/gestor/dashboard')
           },
-        }
+        },
       ],
     },
     {
