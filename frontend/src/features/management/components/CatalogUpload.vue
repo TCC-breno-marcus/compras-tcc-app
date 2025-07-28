@@ -204,6 +204,7 @@ const handleFileUpload = async (event: FileUploadUploaderEvent) => {
 }
 </script>
 
+<!-- TODO: ajustar esse componente para pegar uma planilha com items e importar em lote -->
 <template>
   <FileUpload
     mode="basic"
@@ -218,7 +219,7 @@ const handleFileUpload = async (event: FileUploadUploaderEvent) => {
     :disabled="isLoading"
     cancelLabel="Cancelar"
     uploadLabel="Carregar"
-    class="upload-button text-sm"
+    class="upload-button text-sm p-button-text"
   >
   </FileUpload>
 </template>

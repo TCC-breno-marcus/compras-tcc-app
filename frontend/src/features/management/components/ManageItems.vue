@@ -148,15 +148,15 @@ const handleViewDetails = (item: Item) => {
   selectedItem.value = item
   isDialogVisible.value = true
 }
-const handleUpdateDialog = (action: string, newItem?: Item) => {
-  if (newItem) {
-    selectedItem.value = newItem
-  }
-  if (action === 'updateItems') {
+
+const handleUpdateDialog = (payload: { item: Item; action: string }) => {
+  if (payload.action === 'updateItems') {
     catalogoStore.fetchItems(route.query)
   }
+  if (payload.item) {
+    selectedItem.value = payload.item
+  }
 }
-
 const closeDialog = () => {
   isDialogVisible.value = false
 }
@@ -164,40 +164,71 @@ const closeDialog = () => {
 
 <template>
   <div class="flex flex-column w-full h-full">
-    <!-- TODO: ESSES BOTOES DE FILTRO NÃO ESTAO LEGAL PRA TELA PEQUENA -->
-    <div class="flex flex-wrap align-items-center justify-content-between gap-2 md:gap-4 mt-2">
-      <div class="flex flex-wrap align-items-center gap-2">
-        <div class="flex flex-column sm:flex-row gap-2">
-          <FloatLabel class="w-16rem" variant="on">
-            <IconField iconPosition="left">
-              <InputIcon class="pi pi-search"></InputIcon>
-              <InputText v-model="simpleSearch" size="small" @keyup.enter="applyFilters" />
-            </IconField>
-            <label for="status-filter">Pesquisar item</label>
-          </FloatLabel>
+    <!-- TODO: ESSES BOTOES DE FILTRO NÃO ESTAO LEGAL PRA TELA media -->
 
-          <FloatLabel class="w-7rem" variant="on">
-            <Select
-              v-model="statusFilter"
-              :options="opcoesStatus"
-              optionLabel="name"
-              optionValue="code"
-              inputId="status-filter"
+    <div
+      class="flex flex-column lg:flex-row lg:align-items-center justify-content-between mt-2 w-full"
+    >
+      <!-- TODO: essa div de criar e importar ainda parece jogada no layout -->
+      <div class="flex lg:flex-order-2 w-full sm:w-auto justify-content-end gap-2">
+        <Button
+          type="button"
+          label="Criar"
+          icon="pi pi-plus"
+          size="small"
+          text
+          @click="isCreateDialogVisible = true"
+        />
+        <CatalogUpload />
+      </div>
+      <div
+        class="filters flex lg:flex-order-1 flex-column sm:flex-wrap sm:flex-row align-items-center sm:w-full lg:w-auto gap-2 p-3 xl:p-0"
+      >
+        <FloatLabel class="w-full sm:w-18rem" variant="on">
+          <IconField iconPosition="left">
+            <InputIcon class="pi pi-search"></InputIcon>
+            <InputText
+              v-model="simpleSearch"
               size="small"
               class="w-full"
+              @keyup.enter="applyFilters"
             />
-            <label for="status-filter">Status</label>
-          </FloatLabel>
+          </IconField>
+          <label for="status-filter">Pesquisar item</label>
+        </FloatLabel>
 
+        <FloatLabel class="w-full sm:w-7rem mt-1 sm:mt-0" variant="on">
+          <Select
+            v-model="statusFilter"
+            :options="opcoesStatus"
+            optionLabel="name"
+            optionValue="code"
+            inputId="status-filter"
+            size="small"
+            class="w-full sm:w-7rem"
+          />
+          <label for="status-filter">Status</label>
+        </FloatLabel>
+
+        <div class="flex sm:flex-wrap w-full sm:w-auto gap-2">
+          <Button
+            :icon="computedSort.icon"
+            @click="toggleSortDirection"
+            label="Ordem"
+            outlined
+            size="small"
+            aria-label="Ordem"
+            v-tooltip.top="computedSort.text"
+          />
           <Button
             type="button"
             label="Filtros Avançados"
             icon="pi pi-filter"
             size="small"
-            text
+            outlined
+            class="w-12rem"
             @click="toggleAdvancedFilter"
           />
-
           <OverlayPanel ref="op">
             <div class="flex flex-column gap-2 p-2" style="min-width: 250px">
               <span class="p-text-secondary"><strong>Filtros Avançados</strong></span>
@@ -236,17 +267,7 @@ const closeDialog = () => {
           </OverlayPanel>
         </div>
 
-        <div class="flex align-items-center gap-2">
-          <Button
-            :icon="computedSort.icon"
-            @click="toggleSortDirection"
-            label="Ordem"
-            text
-            rounded
-            size="small"
-            aria-label="Ordem"
-            v-tooltip.top="computedSort.text"
-          />
+        <div class="flex sm:flex-wrap w-full sm:w-auto gap-2 justify-content-end">
           <Button
             label="Limpar"
             icon="pi pi-filter-slash"
@@ -263,18 +284,6 @@ const closeDialog = () => {
             @click="applyFilters"
           />
         </div>
-      </div>
-
-      <div class="flex align-items-center gap-2">
-        <Button
-          type="button"
-          label="Criar"
-          icon="pi pi-plus"
-          size="small"
-          text
-          @click="isCreateDialogVisible = true"
-        />
-        <CatalogUpload />
       </div>
     </div>
 
