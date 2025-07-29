@@ -15,8 +15,7 @@ namespace Controllers
         private readonly AppDbContext _context;
         private readonly ICatalogoService _catalogoService;
 
-        public CatalogoController
-        (
+        public CatalogoController(
             ILogger<CatalogoController> logger,
             AppDbContext context,
             ICatalogoService catalogoService
@@ -31,12 +30,12 @@ namespace Controllers
         [ProducesResponseType(typeof(PaginatedResultDto<ItemDto>), 200)]
         [ProducesResponseType(500)]
         [Authorize(Roles = "Admin,Gestor,Solicitante")]
-        public async Task<IActionResult> Get
-        (
+        public async Task<IActionResult> Get(
             [FromQuery] long? id,
             [FromQuery] string? catMat,
             [FromQuery] string? nome,
             [FromQuery] string? descricao,
+            [FromQuery] long? categoriaId,
             [FromQuery] string? especificacao,
             [FromQuery] bool? isActive,
             [FromQuery] string? searchTerm,
@@ -49,14 +48,32 @@ namespace Controllers
             {
                 _logger.LogInformation("Recebida requisição para buscar itens com filtros.");
 
-                var paginatedResult = await _catalogoService.GetAllItensAsync(id, catMat, nome, descricao, especificacao, isActive, searchTerm, pageNumber, pageSize, sortOrder);
+                var paginatedResult = await _catalogoService.GetAllItensAsync(
+                    id,
+                    catMat,
+                    nome,
+                    descricao,
+                    categoriaId,
+                    especificacao,
+                    isActive,
+                    searchTerm,
+                    pageNumber,
+                    pageSize,
+                    sortOrder
+                );
 
                 return Ok(paginatedResult);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Ocorreu um erro não tratado no endpoint GetAllItens.");
-                return StatusCode(500, new { message = "Ocorreu um erro interno no servidor. Por favor, tente novamente mais tarde." });
+                return StatusCode(
+                    500,
+                    new
+                    {
+                        message = "Ocorreu um erro interno no servidor. Por favor, tente novamente mais tarde.",
+                    }
+                );
             }
         }
 
@@ -65,16 +82,23 @@ namespace Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> ImportarItens([FromBody] IEnumerable<ItemImportacaoDto> itensParaImportar)
+        public async Task<IActionResult> ImportarItens(
+            [FromBody] IEnumerable<ItemImportacaoDto> itensParaImportar
+        )
         {
             if (itensParaImportar == null || !itensParaImportar.Any())
             {
-                return BadRequest(new { message = "A lista de itens para importação não pode ser vazia." });
+                return BadRequest(
+                    new { message = "A lista de itens para importação não pode ser vazia." }
+                );
             }
 
             try
             {
-                _logger.LogInformation("Recebida requisição para importar {Count} itens.", itensParaImportar.Count());
+                _logger.LogInformation(
+                    "Recebida requisição para importar {Count} itens.",
+                    itensParaImportar.Count()
+                );
 
                 await _catalogoService.ImportarItensAsync(itensParaImportar);
 
@@ -83,7 +107,10 @@ namespace Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Ocorreu um erro não tratado no endpoint ImportarItens.");
-                return StatusCode(500, new { message = "Ocorreu um erro interno no servidor ao importar os itens." });
+                return StatusCode(
+                    500,
+                    new { message = "Ocorreu um erro interno no servidor ao importar os itens." }
+                );
             }
         }
 
@@ -100,7 +127,9 @@ namespace Controllers
                 // Este é o caminho DENTRO do container, que é mapeado pelo volume do Docker
                 var caminhoDasImagensNoContainer = "/app/uploads"; // Ou o caminho que você configurou no seu Dockerfile/.NET
 
-                var resultado = await _catalogoService.PopularImagensAsync(caminhoDasImagensNoContainer);
+                var resultado = await _catalogoService.PopularImagensAsync(
+                    caminhoDasImagensNoContainer
+                );
 
                 return Ok(new { message = resultado });
             }
@@ -157,7 +186,13 @@ namespace Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Ocorreu um erro não tratado no endpoint GetItem.");
-                return StatusCode(500, new { message = "Ocorreu um erro interno no servidor. Por favor, tente novamente mais tarde." });
+                return StatusCode(
+                    500,
+                    new
+                    {
+                        message = "Ocorreu um erro interno no servidor. Por favor, tente novamente mais tarde.",
+                    }
+                );
             }
         }
 
@@ -171,35 +206,48 @@ namespace Controllers
         {
             try
             {
-                _logger.LogInformation("Recebida requisição para buscar itens semelhantes ao item ID {Id}.", id);
+                _logger.LogInformation(
+                    "Recebida requisição para buscar itens semelhantes ao item ID {Id}.",
+                    id
+                );
 
                 var itensSemelhantes = await _catalogoService.GetItensSemelhantesAsync(id);
 
                 if (itensSemelhantes == null)
                 {
-                    return NotFound(new { message = $"Item com ID {id} não encontrado para basear a busca." });
+                    return NotFound(
+                        new { message = $"Item com ID {id} não encontrado para basear a busca." }
+                    );
                 }
 
                 return Ok(itensSemelhantes);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ocorreu um erro não tratado no endpoint GetItensSemelhantes.");
-                return StatusCode(500, new { message = "Ocorreu um erro interno no servidor. Por favor, tente novamente mais tarde." });
+                _logger.LogError(
+                    ex,
+                    "Ocorreu um erro não tratado no endpoint GetItensSemelhantes."
+                );
+                return StatusCode(
+                    500,
+                    new
+                    {
+                        message = "Ocorreu um erro interno no servidor. Por favor, tente novamente mais tarde.",
+                    }
+                );
             }
         }
-
 
         [HttpPost]
         [ProducesResponseType(typeof(ItemDto), 201)]
         [ProducesResponseType(typeof(string), 400)]
         [ProducesResponseType(typeof(string), 409)]
         [Authorize(Roles = "Admin, Gestor")]
-        public async Task<IActionResult> CriarItem([FromBody] ItemDto newItemDto)
+        public async Task<IActionResult> CriarItem([FromBody] CreateItemDto newItemDto)
         {
             if (newItemDto == null)
             {
-                return BadRequest("O corpo da requisição não pode ser vazio.");
+                return BadRequest("O corpo da requisição não pode ser vazio."); 
             }
 
             try
@@ -208,14 +256,18 @@ namespace Controllers
 
                 var itemCriadoDto = await _catalogoService.CriarItemAsync(newItemDto);
 
-                return CreatedAtAction("GetItemPorId", new { id = itemCriadoDto.Id }, itemCriadoDto);
+                return CreatedAtAction(
+                    "GetItemPorId",
+                    new { id = itemCriadoDto.Id }, 
+                    itemCriadoDto
+                );
             }
             catch (InvalidOperationException ex)
             {
                 _logger.LogWarning(ex.Message);
-                return Conflict(new { message = ex.Message }); 
+                return Conflict(new { message = ex.Message });
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 _logger.LogError(ex, "Erro não tratado no endpoint CriarItem.");
                 return StatusCode(500, new { message = "Erro interno ao criar o item." });
@@ -277,7 +329,7 @@ namespace Controllers
         }
 
         [HttpDelete("{id}/imagem")]
-        [ProducesResponseType(204)] 
+        [ProducesResponseType(204)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
         public async Task<IActionResult> RemoverImagem([FromRoute] long id)
@@ -289,7 +341,7 @@ namespace Controllers
                 {
                     return NotFound(new { message = $"Item com ID {id} não encontrado." });
                 }
-                return NoContent(); 
+                return NoContent();
             }
             catch (Exception ex)
             {
