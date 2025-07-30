@@ -247,7 +247,7 @@ namespace Controllers
         {
             if (newItemDto == null)
             {
-                return BadRequest("O corpo da requisição não pode ser vazio."); 
+                return BadRequest("O corpo da requisição não pode ser vazio.");
             }
 
             try
@@ -258,7 +258,7 @@ namespace Controllers
 
                 return CreatedAtAction(
                     "GetItemPorId",
-                    new { id = itemCriadoDto.Id }, 
+                    new { id = itemCriadoDto.Id },
                     itemCriadoDto
                 );
             }

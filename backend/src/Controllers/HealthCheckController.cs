@@ -1,20 +1,13 @@
-using Microsoft.AspNetCore.Mvc;
 using Database;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class HealthCheckController : ControllerBase
+    public class HealthCheckController(AppDbContext context) : ControllerBase
     {
-        private readonly AppDbContext _context;
-        public HealthCheckController
-        (
-            AppDbContext context
-        )
-        {
-            _context = context;
-        }
+        private readonly AppDbContext _context = context;
 
         [HttpGet]
         public IActionResult GetAppHealth()
@@ -35,16 +28,21 @@ namespace Controllers
                 }
                 else
                 {
-                    return StatusCode(503, new { status = "Database connection is Unhealthy (CanConnectAsync returned false)" });
+                    return StatusCode(
+                        503,
+                        new
+                        {
+                            status = "Database connection is Unhealthy (CanConnectAsync returned false)",
+                        }
+                    );
                 }
             }
             catch (Exception ex)
             {
-                return StatusCode(503, new
-                {
-                    status = "Database connection has failed",
-                    error = ex.Message
-                });
+                return StatusCode(
+                    503,
+                    new { status = "Database connection has failed", error = ex.Message }
+                );
             }
         }
     }

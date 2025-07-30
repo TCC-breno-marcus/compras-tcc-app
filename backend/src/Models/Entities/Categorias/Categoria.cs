@@ -18,9 +18,9 @@ namespace ComprasTccApp.Models.Entities.Categorias
 
         public List<Item> Itens { get; set; } = new List<Item>();
 
-    public static implicit operator Categoria(CategoriaDto v)
-    {
-      throw new NotImplementedException();
+        public static implicit operator Categoria(CategoriaDto v)
+        {
+            throw new NotImplementedException();
+        }
     }
-  }
 }

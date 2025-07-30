@@ -4,8 +4,7 @@ namespace Services.Interfaces
 {
     public interface ICatalogoService
     {
-        Task<PaginatedResultDto<ItemDto>> GetAllItensAsync
-        (
+        Task<PaginatedResultDto<ItemDto>> GetAllItensAsync(
             long? id,
             string? catMat,
             string? nome,
