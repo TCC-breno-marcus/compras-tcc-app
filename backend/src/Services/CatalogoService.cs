@@ -1,8 +1,8 @@
+using ComprasTccApp.Backend.Models.Entities.Items;
 using ComprasTccApp.Models.Dtos;
 using Database;
 using Microsoft.EntityFrameworkCore;
 using Services.Interfaces;
-using ComprasTccApp.Backend.Models.Entities.Items;
 
 namespace Services
 {
@@ -11,22 +11,18 @@ namespace Services
         private readonly AppDbContext _context;
         private readonly ILogger<CatalogoService> _logger;
 
-        public CatalogoService
-        (
-            AppDbContext context,
-             ILogger<CatalogoService> logger
-        )
+        public CatalogoService(AppDbContext context, ILogger<CatalogoService> logger)
         {
             _context = context;
             _logger = logger;
         }
 
-        public async Task<PaginatedResultDto<ItemDto>> GetAllItensAsync
-        (
+        public async Task<PaginatedResultDto<ItemDto>> GetAllItensAsync(
             long? id,
             string? catMat,
             string? nome,
             string? descricao,
+            long? categoriaId,
             string? especificacao,
             bool? isActive,
             string? searchTerm,
@@ -39,15 +35,15 @@ namespace Services
 
             try
             {
-                var query = _context.Items.AsQueryable();
+                var query = _context.Items.Include(item => item.Categoria).AsQueryable();
 
                 if (!string.IsNullOrWhiteSpace(searchTerm))
                 {
                     query = query.Where(item =>
-                        item.Nome.ToLower().Contains(searchTerm.ToLower()) ||
-                        item.Descricao.ToLower().Contains(searchTerm.ToLower()) ||
-                        item.CatMat.Contains(searchTerm.ToLower()) ||
-                        item.Especificacao.ToLower().Contains(searchTerm.ToLower())
+                        item.Nome.ToLower().Contains(searchTerm.ToLower())
+                        || item.Descricao.ToLower().Contains(searchTerm.ToLower())
+                        || item.CatMat.Contains(searchTerm.ToLower())
+                        || item.Especificacao.ToLower().Contains(searchTerm.ToLower())
                     );
 
                     if (isActive.HasValue)
@@ -71,11 +67,19 @@ namespace Services
                     }
                     if (!string.IsNullOrWhiteSpace(descricao))
                     {
-                        query = query.Where(item => item.Descricao.ToLower().Contains(descricao.ToLower()));
+                        query = query.Where(item =>
+                            item.Descricao.ToLower().Contains(descricao.ToLower())
+                        );
+                    }
+                    if (categoriaId.HasValue)
+                    {
+                        query = query.Where(item => item.CategoriaId == categoriaId.Value);
                     }
                     if (!string.IsNullOrWhiteSpace(especificacao))
                     {
-                        query = query.Where(item => item.Especificacao.ToLower().Contains(especificacao.ToLower()));
+                        query = query.Where(item =>
+                            item.Especificacao.ToLower().Contains(especificacao.ToLower())
+                        );
                     }
                     if (isActive.HasValue)
                     {
@@ -96,7 +100,6 @@ namespace Services
                     {
                         query = query.OrderBy(item => item.Id);
                     }
-
                 }
 
                 var totalCount = await query.CountAsync();
@@ -106,35 +109,53 @@ namespace Services
                     .Take(pageSize)
                     .ToListAsync();
 
-                var itensDto = itensPaginados.Select(item => new ItemDto
-                {
-                    Id = item.Id,
-                    Nome = item.Nome,
-                    Descricao = item.Descricao,
-                    CatMat = item.CatMat,
-                    // TODO: o link abaixo deve estar em variável de ambiente
-                    LinkImagem = string.IsNullOrWhiteSpace(item.LinkImagem)
-                        ? item.LinkImagem
-                        : $"http://localhost:8088/images/{item.LinkImagem}",
-                    PrecoSugerido = item.PrecoSugerido,
-                    Especificacao = item.Especificacao,
-                    IsActive = item.IsActive,
-                }).ToList();
+                var itensDto = itensPaginados
+                    .Select(item => new ItemDto
+                    {
+                        Id = item.Id,
+                        Nome = item.Nome,
+                        Descricao = item.Descricao,
+                        CatMat = item.CatMat,
+                        Categoria = new CategoriaDto
+                        {
+                            Id = item.Categoria.Id,
+                            Nome = item.Categoria.Nome,
+                            Descricao = item.Categoria.Descricao,
+                            IsActive = item.Categoria.IsActive,
+                        },
+                        // TODO: o link abaixo deve estar em variável de ambiente
+                        LinkImagem = string.IsNullOrWhiteSpace(item.LinkImagem)
+                            ? item.LinkImagem
+                            : $"http://localhost:8088/images/{item.LinkImagem}",
+                        PrecoSugerido = item.PrecoSugerido,
+                        Especificacao = item.Especificacao,
+                        IsActive = item.IsActive,
+                    })
+                    .ToList();
 
-                _logger.LogInformation("Busca concluída. Retornando {Count} de um total de {Total} itens.", itensDto.Count, totalCount);
+                _logger.LogInformation(
+                    "Busca concluída. Retornando {Count} de um total de {Total} itens.",
+                    itensDto.Count,
+                    totalCount
+                );
 
                 return new PaginatedResultDto<ItemDto>(itensDto, totalCount, pageNumber, pageSize);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ocorreu um erro ao buscar os itens do banco de dados com filtros.");
+                _logger.LogError(
+                    ex,
+                    "Ocorreu um erro ao buscar os itens do banco de dados com filtros."
+                );
                 throw;
             }
         }
 
         public async Task<ItemDto?> EditarItemAsync(int id, ItemUpdateDto updateDto)
         {
-            var itemDoBanco = await _context.Items.FirstOrDefaultAsync(i => i.Id == id);
+            var itemDoBanco = await _context
+                .Items.Include(item => item.Categoria)
+                .FirstOrDefaultAsync(i => i.Id == id);
 
             if (itemDoBanco == null)
             {
@@ -150,6 +171,11 @@ namespace Services
 
             if (!string.IsNullOrEmpty(updateDto.Descricao))
                 itemDoBanco.Descricao = updateDto.Descricao;
+
+            if (updateDto.CategoriaId.HasValue)
+            {
+                itemDoBanco.CategoriaId = updateDto.CategoriaId.Value;
+            }
 
             if (updateDto.Especificacao != null)
                 itemDoBanco.Especificacao = updateDto.Especificacao;
@@ -170,10 +196,17 @@ namespace Services
                 Nome = itemDoBanco.Nome,
                 Descricao = itemDoBanco.Descricao,
                 CatMat = itemDoBanco.CatMat,
+                Categoria = new CategoriaDto
+                {
+                    Id = itemDoBanco.Categoria.Id,
+                    Nome = itemDoBanco.Categoria.Nome,
+                    Descricao = itemDoBanco.Categoria.Descricao,
+                    IsActive = itemDoBanco.Categoria.IsActive,
+                },
                 PrecoSugerido = itemDoBanco.PrecoSugerido,
                 Especificacao = itemDoBanco.Especificacao,
                 LinkImagem = itemDoBanco.LinkImagem,
-                IsActive = itemDoBanco.IsActive
+                IsActive = itemDoBanco.IsActive,
             };
         }
 
@@ -181,12 +214,15 @@ namespace Services
         {
             var codigosParaVerificar = itensParaImportar.Select(dto => dto.Codigo).Distinct();
 
-            var itensExistentes = await _context.Items
-                                        .Where(item => codigosParaVerificar.Contains(item.CatMat))
-                                        .ToDictionaryAsync(item => item.CatMat, item => item);
+            var itensExistentes = await _context
+                .Items.Where(item => codigosParaVerificar.Contains(item.CatMat))
+                .ToDictionaryAsync(item => item.CatMat, item => item);
 
-            _logger.LogInformation("Verificando {Count} itens. {ExistingCount} já existem no banco e serão atualizados.",
-                itensParaImportar.Count(), itensExistentes.Count);
+            _logger.LogInformation(
+                "Verificando {Count} itens. {ExistingCount} já existem no banco e serão atualizados.",
+                itensParaImportar.Count(),
+                itensExistentes.Count
+            );
 
             foreach (var dto in itensParaImportar)
             {
@@ -205,8 +241,9 @@ namespace Services
                         Descricao = dto.Descricao,
                         CatMat = dto.Codigo,
                         Especificacao = dto.Especificacao,
+                        CategoriaId = dto.CategoriaId,
                         LinkImagem = dto.LinkImagem,
-                        IsActive = true
+                        IsActive = true,
                     };
                     await _context.Items.AddAsync(novoItem);
                 }
@@ -214,16 +251,23 @@ namespace Services
 
             var registrosAfetados = await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Importação concluída. {Count} registros foram afetados no banco de dados.", registrosAfetados);
+            _logger.LogInformation(
+                "Importação concluída. {Count} registros foram afetados no banco de dados.",
+                registrosAfetados
+            );
         }
 
         public async Task<string> PopularImagensAsync(string caminhoDasImagens)
         {
-            _logger.LogInformation("Iniciando rotina para popular imagens a partir do caminho: {Caminho}", caminhoDasImagens);
+            _logger.LogInformation(
+                "Iniciando rotina para popular imagens a partir do caminho: {Caminho}",
+                caminhoDasImagens
+            );
 
             if (!Directory.Exists(caminhoDasImagens))
             {
-                var erroMsg = $"ERRO: O diretório de imagens não foi encontrado em '{caminhoDasImagens}'.";
+                var erroMsg =
+                    $"ERRO: O diretório de imagens não foi encontrado em '{caminhoDasImagens}'.";
                 _logger.LogError(erroMsg);
                 throw new DirectoryNotFoundException(erroMsg);
             }
@@ -232,7 +276,10 @@ namespace Services
             int produtosAtualizados = 0;
             int produtosNaoEncontrados = 0;
 
-            _logger.LogInformation("Encontrados {Count} arquivos de imagem para processar.", arquivosDeImagem.Length);
+            _logger.LogInformation(
+                "Encontrados {Count} arquivos de imagem para processar.",
+                arquivosDeImagem.Length
+            );
 
             var todosOsItens = await _context.Items.ToListAsync(); // Carrega todos os itens para otimizar a busca
 
@@ -259,19 +306,25 @@ namespace Services
             if (produtosAtualizados > 0)
             {
                 await _context.SaveChangesAsync();
-                resumo = $"SUCESSO! {produtosAtualizados} produtos foram atualizados no banco de dados.";
+                resumo =
+                    $"SUCESSO! {produtosAtualizados} produtos foram atualizados no banco de dados.";
                 _logger.LogInformation(resumo);
             }
             else
             {
-                resumo = "Nenhum produto foi atualizado. Verifique se os nomes dos arquivos correspondem aos códigos dos itens.";
+                resumo =
+                    "Nenhum produto foi atualizado. Verifique se os nomes dos arquivos correspondem aos códigos dos itens.";
                 _logger.LogWarning(resumo);
             }
 
             if (produtosNaoEncontrados > 0)
             {
-                resumo += $" {produtosNaoEncontrados} imagens não encontraram um produto correspondente.";
-                _logger.LogWarning("{Count} imagens não encontraram um produto correspondente.", produtosNaoEncontrados);
+                resumo +=
+                    $" {produtosNaoEncontrados} imagens não encontraram um produto correspondente.";
+                _logger.LogWarning(
+                    "{Count} imagens não encontraram um produto correspondente.",
+                    produtosNaoEncontrados
+                );
             }
 
             return resumo;
@@ -282,10 +335,10 @@ namespace Services
             _logger.LogInformation("Iniciando busca de um item pelo ID...");
             _logger.LogWarning("ID {Id}", id);
 
-
             try
             {
-                var item = await _context.Items
+                var item = await _context
+                    .Items.Include(item => item.Categoria)
                     .AsNoTracking()
                     .FirstOrDefaultAsync(i => i.Id == id);
 
@@ -303,13 +356,20 @@ namespace Services
                     Nome = item.Nome,
                     Descricao = item.Descricao,
                     CatMat = item.CatMat,
+                    Categoria = new CategoriaDto
+                    {
+                        Id = item.Categoria.Id,
+                        Nome = item.Categoria.Nome,
+                        Descricao = item.Categoria.Descricao,
+                        IsActive = item.Categoria.IsActive,
+                    },
                     // TODO: o link abaixo deve estar em variável de ambiente
                     LinkImagem = string.IsNullOrWhiteSpace(item.LinkImagem)
                         ? item.LinkImagem
                         : $"http://localhost:8088/images/{item.LinkImagem}",
                     PrecoSugerido = item.PrecoSugerido,
                     Especificacao = item.Especificacao,
-                    IsActive = item.IsActive
+                    IsActive = item.IsActive,
                 };
             }
             catch (Exception ex)
@@ -319,16 +379,18 @@ namespace Services
             }
         }
 
-        public async Task<ItemDto> CriarItemAsync(ItemDto dto)
+        public async Task<ItemDto> CriarItemAsync(CreateItemDto dto)
         {
-            var itemExistente = await _context.Items
+            var itemExistente = await _context
+                .Items.Include(item => item.Categoria)
                 .AnyAsync(item => item.CatMat == dto.CatMat);
 
             if (itemExistente)
             {
-                throw new InvalidOperationException($"Já existe um item cadastrado com o CATMAT {dto.CatMat}.");
+                throw new InvalidOperationException(
+                    $"Já existe um item cadastrado com o CATMAT {dto.CatMat}."
+                );
             }
-
 
             var novoItem = new Item
             {
@@ -336,13 +398,25 @@ namespace Services
                 Descricao = dto.Descricao,
                 CatMat = dto.CatMat,
                 Especificacao = dto.Especificacao,
+                CategoriaId = dto.CategoriaId,
                 LinkImagem = dto.LinkImagem,
                 PrecoSugerido = dto.PrecoSugerido,
-                IsActive = dto.IsActive
+                IsActive = dto.IsActive,
             };
 
             await _context.Items.AddAsync(novoItem);
             await _context.SaveChangesAsync();
+
+            var categoriaDoItem = await _context
+                .Categorias.AsNoTracking()
+                .FirstOrDefaultAsync(c => c.Id == novoItem.CategoriaId);
+
+            if (categoriaDoItem == null)
+            {
+                throw new InvalidOperationException(
+                    "A categoria associada ao item não foi encontrada após a criação."
+                );
+            }
 
             return new ItemDto
             {
@@ -353,17 +427,29 @@ namespace Services
                 Especificacao = novoItem.Especificacao,
                 LinkImagem = novoItem.LinkImagem,
                 PrecoSugerido = novoItem.PrecoSugerido,
-                IsActive = novoItem.IsActive
+                IsActive = novoItem.IsActive,
+                Categoria = new CategoriaDto
+                {
+                    Id = categoriaDoItem.Id,
+                    Nome = categoriaDoItem.Nome,
+                    Descricao = categoriaDoItem.Descricao,
+                    IsActive = categoriaDoItem.IsActive,
+                },
             };
         }
 
         public async Task<bool> DeleteItemAsync(long id)
         {
+            // TODO: deve validar se o item não está presente em uma solicitação, só poderá remover se não estiver contido
+            // em nenhuma solicitação ativa
             var item = await _context.Items.FindAsync(id);
 
             if (item == null)
             {
-                _logger.LogWarning("Tentativa de deletar item com ID {Id}, mas não foi encontrado.", id);
+                _logger.LogWarning(
+                    "Tentativa de deletar item com ID {Id}, mas não foi encontrado.",
+                    id
+                );
                 return false;
             }
 
@@ -390,29 +476,44 @@ namespace Services
                 }
 
                 var nomeParaBusca = itemOriginal.Nome;
-                _logger.LogInformation("Item original encontrado: '{Nome}'. Buscando por semelhantes.", nomeParaBusca);
+                _logger.LogInformation(
+                    "Item original encontrado: '{Nome}'. Buscando por semelhantes.",
+                    nomeParaBusca
+                );
 
-                var itensSemelhantes = await _context.Items
-                    .AsNoTracking()
+                var itensSemelhantes = await _context
+                    .Items.AsNoTracking()
                     .Where(item => item.Nome == nomeParaBusca && item.Id != id)
                     .ToListAsync();
 
-                _logger.LogInformation("Encontrados {Count} itens semelhantes.", itensSemelhantes.Count);
+                _logger.LogInformation(
+                    "Encontrados {Count} itens semelhantes.",
+                    itensSemelhantes.Count
+                );
 
-                var itensDto = itensSemelhantes.Select(item => new ItemDto
-                {
-                    Id = item.Id,
-                    Nome = item.Nome,
-                    Descricao = item.Descricao,
-                    CatMat = item.CatMat,
-                    // TODO: o link abaixo deve estar em variável de ambiente
-                    LinkImagem = string.IsNullOrWhiteSpace(item.LinkImagem)
-                        ? item.LinkImagem
-                        : $"http://localhost:8088/images/{item.LinkImagem}",
-                    PrecoSugerido = item.PrecoSugerido,
-                    Especificacao = item.Especificacao,
-                    IsActive = item.IsActive
-                }).ToList();
+                var itensDto = itensSemelhantes
+                    .Select(item => new ItemDto
+                    {
+                        Id = item.Id,
+                        Nome = item.Nome,
+                        Descricao = item.Descricao,
+                        CatMat = item.CatMat,
+                        Categoria = new CategoriaDto
+                        {
+                            Id = item.Categoria.Id,
+                            Nome = item.Categoria.Nome,
+                            Descricao = item.Categoria.Descricao,
+                            IsActive = item.Categoria.IsActive,
+                        },
+                        // TODO: o link abaixo deve estar em variável de ambiente
+                        LinkImagem = string.IsNullOrWhiteSpace(item.LinkImagem)
+                            ? item.LinkImagem
+                            : $"http://localhost:8088/images/{item.LinkImagem}",
+                        PrecoSugerido = item.PrecoSugerido,
+                        Especificacao = item.Especificacao,
+                        IsActive = item.IsActive,
+                    })
+                    .ToList();
 
                 return itensDto;
             }
@@ -423,7 +524,7 @@ namespace Services
             }
         }
 
-        public async Task<ItemDto> AtualizarImagemAsync(long id, IFormFile imagem)
+        public async Task<ItemDto?> AtualizarImagemAsync(long id, IFormFile imagem)
         {
             var item = await _context.Items.FindAsync(id);
             if (item == null)
@@ -458,13 +559,20 @@ namespace Services
                 Nome = item.Nome,
                 Descricao = item.Descricao,
                 CatMat = item.CatMat,
+                Categoria = new CategoriaDto
+                {
+                    Id = item.Categoria.Id,
+                    Nome = item.Categoria.Nome,
+                    Descricao = item.Categoria.Descricao,
+                    IsActive = item.Categoria.IsActive,
+                },
                 // TODO: o link abaixo deve estar em variável de ambiente
                 LinkImagem = string.IsNullOrWhiteSpace(item.LinkImagem)
-                        ? item.LinkImagem
-                        : $"http://localhost:8088/images/{item.LinkImagem}",
+                    ? item.LinkImagem
+                    : $"http://localhost:8088/images/{item.LinkImagem}",
                 PrecoSugerido = item.PrecoSugerido,
                 Especificacao = item.Especificacao,
-                IsActive = item.IsActive
+                IsActive = item.IsActive,
             };
         }
 
@@ -482,7 +590,10 @@ namespace Services
                 if (File.Exists(caminhoDoArquivo))
                 {
                     File.Delete(caminhoDoArquivo);
-                    _logger.LogInformation("Arquivo físico '{FileName}' deletado.", item.LinkImagem);
+                    _logger.LogInformation(
+                        "Arquivo físico '{FileName}' deletado.",
+                        item.LinkImagem
+                    );
                 }
             }
 

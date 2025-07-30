@@ -25,7 +25,12 @@ namespace Controllers
             {
                 return NotFound(new { message = "Usuário não encontrado ou role inválida." });
             }
-            return Ok(new { message = $"Role '{dto.Role}' atribuída com sucesso para o usuário '{dto.Email}'." });
+            return Ok(
+                new
+                {
+                    message = $"Role '{dto.Role}' atribuída com sucesso para o usuário '{dto.Email}'.",
+                }
+            );
         }
     }
 }

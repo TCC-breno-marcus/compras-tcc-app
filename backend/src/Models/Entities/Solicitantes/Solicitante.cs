@@ -19,7 +19,6 @@ namespace ComprasTccApp.Models.Entities.Solicitantes
         [Required]
         public DateTime DataUltimaSolicitacao { get; set; }
 
-
         [Required]
         public required string Unidade { get; set; }
     }

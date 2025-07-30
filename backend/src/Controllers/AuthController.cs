@@ -21,7 +21,11 @@ namespace ComprasTccApp.Backend.Controllers
             try
             {
                 var novaPessoa = await _authService.RegisterAsync(registerDto);
-                return CreatedAtAction(nameof(Register), new { id = novaPessoa.Id }, new { message = "Usuário criado com sucesso!" });
+                return CreatedAtAction(
+                    nameof(Register),
+                    new { id = novaPessoa.Id },
+                    new { message = "Usuário criado com sucesso!" }
+                );
             }
             catch (Exception ex)
             {
@@ -37,7 +41,7 @@ namespace ComprasTccApp.Backend.Controllers
             {
                 return Unauthorized(new { message = "Credenciais inválidas." });
             }
-            
+
             return Ok(new { token, message = "Login bem-sucedido!" });
         }
     }
