@@ -153,9 +153,7 @@ namespace Services
 
         public async Task<ItemDto?> EditarItemAsync(int id, ItemUpdateDto updateDto)
         {
-            var itemDoBanco = await _context
-                .Items.Include(item => item.Categoria)
-                .FirstOrDefaultAsync(i => i.Id == id);
+            var itemDoBanco = await _context.Items.FirstOrDefaultAsync(i => i.Id == id);
 
             if (itemDoBanco == null)
             {
@@ -190,6 +188,17 @@ namespace Services
 
             _logger.LogInformation("Item com ID {Id} atualizado.", id);
 
+            var categoriaDoItem = await _context
+                .Categorias.AsNoTracking()
+                .FirstOrDefaultAsync(c => c.Id == itemDoBanco.CategoriaId);
+
+            if (categoriaDoItem == null)
+            {
+                throw new InvalidOperationException(
+                    "A categoria associada ao item não foi encontrada após a criação."
+                );
+            }
+
             return new ItemDto
             {
                 Id = itemDoBanco.Id,
@@ -198,10 +207,10 @@ namespace Services
                 CatMat = itemDoBanco.CatMat,
                 Categoria = new CategoriaDto
                 {
-                    Id = itemDoBanco.Categoria.Id,
-                    Nome = itemDoBanco.Categoria.Nome,
-                    Descricao = itemDoBanco.Categoria.Descricao,
-                    IsActive = itemDoBanco.Categoria.IsActive,
+                    Id = categoriaDoItem.Id,
+                    Nome = categoriaDoItem.Nome,
+                    Descricao = categoriaDoItem.Descricao,
+                    IsActive = categoriaDoItem.IsActive,
                 },
                 PrecoSugerido = itemDoBanco.PrecoSugerido,
                 Especificacao = itemDoBanco.Especificacao,
@@ -381,9 +390,7 @@ namespace Services
 
         public async Task<ItemDto> CriarItemAsync(CreateItemDto dto)
         {
-            var itemExistente = await _context
-                .Items.Include(item => item.Categoria)
-                .AnyAsync(item => item.CatMat == dto.CatMat);
+            var itemExistente = await _context.Items.AnyAsync(item => item.CatMat == dto.CatMat);
 
             if (itemExistente)
             {
