@@ -1,4 +1,6 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using ComprasTccApp.Models.Entities.Categorias;
 using ComprasTccApp.Models.Entities.Itens;
 using ComprasTccApp.Models.Entities.Solicitacoes;
 
@@ -28,6 +30,11 @@ namespace ComprasTccApp.Backend.Models.Entities.Items
 
         [Required]
         public bool IsActive { get; set; }
+
+        public long CategoriaId { get; set; }
+
+        [ForeignKey("CategoriaId")]
+        public Categoria Categoria { get; set; } = null!;
 
         public List<SolicitacaoItem> SolicitacoesItem { get; set; } = new List<SolicitacaoItem>();
     }

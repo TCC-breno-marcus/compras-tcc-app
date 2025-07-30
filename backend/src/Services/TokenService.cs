@@ -23,7 +23,7 @@ namespace Services
                 new Claim(ClaimTypes.NameIdentifier, pessoa.Id.ToString()),
                 new Claim(ClaimTypes.Name, pessoa.Nome),
                 new Claim(ClaimTypes.Email, pessoa.Email),
-                new Claim(ClaimTypes.Role, pessoa.Role)
+                new Claim(ClaimTypes.Role, pessoa.Role),
                 // Futuramente, podemos adicionar perfis (Roles) aqui
             };
 
@@ -36,7 +36,7 @@ namespace Services
                 Expires = DateTime.UtcNow.AddHours(8),
                 Issuer = _config["Jwt:Issuer"],
                 Audience = _config["Jwt:Audience"],
-                SigningCredentials = creds
+                SigningCredentials = creds,
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();

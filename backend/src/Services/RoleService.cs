@@ -17,7 +17,11 @@ namespace Services
 
         public async Task<bool> AtribuirRoleAsync(string emailUsuario, string novaRole)
         {
-            _logger.LogInformation("Tentando atribuir a role '{NovaRole}' para o usuário '{Email}'", novaRole, emailUsuario);
+            _logger.LogInformation(
+                "Tentando atribuir a role '{NovaRole}' para o usuário '{Email}'",
+                novaRole,
+                emailUsuario
+            );
 
             var usuario = await _context.Pessoas.FirstOrDefaultAsync(p => p.Email == emailUsuario);
             if (usuario == null)
@@ -30,14 +34,21 @@ namespace Services
             var rolesPermitidas = new[] { "Admin", "Gestor", "Solicitante" };
             if (!rolesPermitidas.Contains(novaRole))
             {
-                _logger.LogWarning("Tentativa de atribuir uma role inválida '{NovaRole}'.", novaRole);
+                _logger.LogWarning(
+                    "Tentativa de atribuir uma role inválida '{NovaRole}'.",
+                    novaRole
+                );
                 return false;
             }
 
             usuario.Role = novaRole;
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Role '{NovaRole}' atribuída com sucesso para '{Email}'.", novaRole, emailUsuario);
+            _logger.LogInformation(
+                "Role '{NovaRole}' atribuída com sucesso para '{Email}'.",
+                novaRole,
+                emailUsuario
+            );
             return true;
         }
     }

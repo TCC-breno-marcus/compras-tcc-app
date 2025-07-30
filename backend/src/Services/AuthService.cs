@@ -12,7 +12,11 @@ namespace ComprasTccApp.Backend.Services
         private readonly ITokenService _tokenService;
         private readonly ILogger<AuthService> _logger;
 
-        public AuthService(AppDbContext context, ITokenService tokenService, ILogger<AuthService> logger)
+        public AuthService(
+            AppDbContext context,
+            ITokenService tokenService,
+            ILogger<AuthService> logger
+        )
         {
             _context = context;
             _tokenService = tokenService;
@@ -23,7 +27,10 @@ namespace ComprasTccApp.Backend.Services
         {
             if (await _context.Pessoas.AnyAsync(p => p.Email == registerDto.Email))
             {
-                _logger.LogWarning("Tentativa de registro com email já existente: {Email}", registerDto.Email);
+                _logger.LogWarning(
+                    "Tentativa de registro com email já existente: {Email}",
+                    registerDto.Email
+                );
                 throw new Exception("Este email já está em uso.");
             }
 
@@ -37,13 +44,16 @@ namespace ComprasTccApp.Backend.Services
                 CPF = registerDto.CPF,
                 DataAtualizacao = DateTime.UtcNow,
                 PasswordHash = passwordHash,
-                Role = "Solicitante"
+                Role = "Solicitante",
             };
 
             await _context.Pessoas.AddAsync(novaPessoa);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Usuário {Email} registrado com sucesso com a role 'Solicitante'.", registerDto.Email);
+            _logger.LogInformation(
+                "Usuário {Email} registrado com sucesso com a role 'Solicitante'.",
+                registerDto.Email
+            );
             return novaPessoa;
         }
 
@@ -52,7 +62,10 @@ namespace ComprasTccApp.Backend.Services
             var pessoa = await _context.Pessoas.FirstOrDefaultAsync(p => p.Email == loginDto.Email);
             if (pessoa == null)
             {
-                _logger.LogWarning("Tentativa de login para email não encontrado: {Email}", loginDto.Email);
+                _logger.LogWarning(
+                    "Tentativa de login para email não encontrado: {Email}",
+                    loginDto.Email
+                );
                 return null;
             }
 
@@ -60,11 +73,17 @@ namespace ComprasTccApp.Backend.Services
 
             if (!passwordIsValid)
             {
-                _logger.LogWarning("Tentativa de login com senha inválida para o email: {Email}", loginDto.Email);
+                _logger.LogWarning(
+                    "Tentativa de login com senha inválida para o email: {Email}",
+                    loginDto.Email
+                );
                 return null;
             }
 
-            _logger.LogInformation("Login bem-sucedido para {Email}. Gerando token.", loginDto.Email);
+            _logger.LogInformation(
+                "Login bem-sucedido para {Email}. Gerando token.",
+                loginDto.Email
+            );
             return _tokenService.GenerateJwtToken(pessoa);
         }
     }

@@ -6,6 +6,3 @@ namespace Models.Dtos
         public required string Role { get; set; }
     }
 }
-
-
-
