@@ -44,6 +44,7 @@ namespace Services
                         || item.Descricao.ToLower().Contains(searchTerm.ToLower())
                         || item.CatMat.Contains(searchTerm.ToLower())
                         || item.Especificacao.ToLower().Contains(searchTerm.ToLower())
+                        || item.Categoria.Nome.ToLower().Contains(searchTerm.ToLower()) // validar e fzr esse commit na outra branch
                     );
 
                     if (isActive.HasValue)
@@ -490,6 +491,7 @@ namespace Services
 
                 var itensSemelhantes = await _context
                     .Items.AsNoTracking()
+                    .Include(item => item.Categoria)
                     .Where(item => item.Nome == nomeParaBusca && item.Id != id)
                     .ToListAsync();
 
@@ -533,7 +535,7 @@ namespace Services
 
         public async Task<ItemDto?> AtualizarImagemAsync(long id, IFormFile imagem)
         {
-            var item = await _context.Items.FindAsync(id);
+            var item = await _context.Items.Include(item => item.Categoria).FindAsync(id);
             if (item == null)
             {
                 return null;
