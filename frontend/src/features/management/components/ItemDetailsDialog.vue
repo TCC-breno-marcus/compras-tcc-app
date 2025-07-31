@@ -27,6 +27,9 @@ import {
   SAVE_CONFIRMATION,
 } from '@/utils/confirmationFactoryUtils'
 import ItemDetailsDialogSkeleton from './ItemDetailsDialogSkeleton.vue'
+import { useCategoriaStore } from '../stores/categoriaStore'
+import { storeToRefs } from 'pinia'
+import Select from 'primevue/select'
 
 const props = defineProps<{
   visible: boolean
@@ -41,9 +44,16 @@ const itensSemelhantes = ref<Item[]>([])
 const isLoading = ref(true)
 const error = ref<string | null>(null)
 const isEditing = ref(false)
-const formData = ref<Partial<Item>>({})
+const formData = ref<Partial<Item & { categoriaId?: number }>>({})
+const originalFormData = ref<Partial<Item & { categoriaId?: number }>>({})
 const arquivoDeImagem = ref<File | null>(null)
 const isImageMarkedForRemoval = ref(false)
+const categoriaStore = useCategoriaStore()
+const {
+  categorias,
+  loading: categoriasLoading,
+  error: categoriasError,
+} = storeToRefs(categoriaStore)
 
 const emit = defineEmits(['update:visible', 'update-dialog'])
 
@@ -64,6 +74,7 @@ const resetAllStates = (resetAll?: boolean) => {
   itensSemelhantes.value = []
   isEditing.value = false
   formData.value = {}
+  originalFormData.value = {}
   isImageMarkedForRemoval.value = false
   arquivoDeImagem.value = null
 }
@@ -124,7 +135,7 @@ const accessOtherItem = (item: Item) => {
 }
 
 const wasChanged = computed(() => {
-  const textDataChanged = dataHasBeenChanged(detailedItem.value, formData.value)
+  const textDataChanged = dataHasBeenChanged(originalFormData.value, formData.value)
   const newImageSelected = arquivoDeImagem.value !== null
   return textDataChanged || newImageSelected
 })
@@ -146,11 +157,14 @@ const closeModal = () => {
 
 const enterEditMode = () => {
   if (detailedItem.value) {
-    // Copia os dados atuais do item para o formulário de edição
-    formData.value = {
+    const initialFormState = {
       ...detailedItem.value,
+      categoriaId: detailedItem.value.categoria?.id,
       precoSugerido: Number(detailedItem.value.precoSugerido),
     }
+
+    formData.value = { ...initialFormState }
+    originalFormData.value = { ...initialFormState }
   }
   isEditing.value = true
 }
@@ -176,11 +190,13 @@ const acceptSaveChanges = async () => {
     } else if (isImageMarkedForRemoval.value) {
       await catalogoService.removerImagemItem(detailedItem.value.id)
     }
+
     const newData = {
       nome: formData.value?.nome,
       catMat: formData.value?.catMat,
       descricao: formData.value?.descricao,
       especificacao: formData.value?.especificacao,
+      categoriaId: formData.value?.categoriaId,
       precoSugerido: formData.value?.precoSugerido,
       isActive: formData.value?.isActive,
     }
@@ -292,8 +308,7 @@ const acceptDeleteItem = async () => {
 
     isEditing.value = false
     emit('update:visible', false)
-    emit('update-dialog', 'updateItems')
-
+    emit('update-dialog', { action: 'updateItems' })
   } catch (err) {
     console.error('Erro ao excluir o item:', err)
     toast.add({
@@ -313,6 +328,18 @@ const deleteItem = () => {
     accept: async () => acceptDeleteItem(),
   })
 }
+
+const fileUploadPT = ref({
+  root: {
+    class: 'sm:flex sm:flex-row sm:align-items-center md:flex-column',
+  },
+  header: {
+    class: 'p-4',
+  },
+  content: {
+    class: 'w-16rem sm:w-22rem md:w-full sm:p-0 md:px-4 md:pb-4',
+  },
+})
 </script>
 
 <template>
@@ -369,6 +396,7 @@ const deleteItem = () => {
             invalidFileSizeMessage="O tamanho do arquivo não pode exceder 10 MB."
             :previewWidth="85"
             class="upload-button text-sm"
+            :pt="fileUploadPT"
           >
             <template #empty>
               <small class="text-color-secondary text-center"
@@ -390,6 +418,7 @@ const deleteItem = () => {
               {{ detailedItem.especificacao || 'Não informada.' }}
             </span>
           </p>
+          <p><strong>Categoria:</strong> {{ detailedItem.categoria.nome }}</p>
           <p v-if="detailedItem.precoSugerido != null">
             <strong>Preço Sugerido:</strong>
             {{
@@ -410,8 +439,8 @@ const deleteItem = () => {
         </div>
 
         <div v-else class="flex flex-column gap-3">
-          <div class="flex flex-column md:flex-row w-full gap-2">
-            <FloatLabel variant="on" class="w-9">
+          <div class="flex flex-column sm:flex-row w-full gap-3 sm:gap-2">
+            <FloatLabel variant="on" class="w-full sm:w-9">
               <InputText
                 id="nome"
                 v-model="formData.nome"
@@ -422,7 +451,7 @@ const deleteItem = () => {
               />
               <label for="nome">Nome</label>
             </FloatLabel>
-            <FloatLabel variant="on" class="w-3">
+            <FloatLabel variant="on" class="w-full sm:w-3">
               <InputText
                 id="catMat"
                 v-model="formData.catMat"
@@ -459,8 +488,20 @@ const deleteItem = () => {
             />
             <label for="especificacao">Especificação</label>
           </FloatLabel>
-          <div class="flex flex-column md:flex-row w-full gap-2">
-            <FloatLabel variant="on" class="price-input w-6">
+          <div class="flex flex-column sm:flex-row w-full gap-3 sm:gap-2">
+            <FloatLabel class="w-full sm:w-6 mt-1 sm:mt-0" variant="on">
+              <Select
+                v-model="formData.categoriaId"
+                :options="categorias"
+                optionLabel="nome"
+                optionValue="id"
+                inputId="categoria-filter"
+                size="small"
+                class="w-full"
+              />
+              <label for="categoria-filter">Categoria</label>
+            </FloatLabel>
+            <FloatLabel variant="on" class="price-input w-full sm:w-3">
               <InputNumber
                 v-model="formData.precoSugerido"
                 inputId="precoSugerido"
@@ -470,13 +511,14 @@ const deleteItem = () => {
                 :min="0"
                 size="small"
                 class="w-full"
+                inputClass="w-full"
               />
               <label for="precoSugerido">Preço Sugerido</label>
             </FloatLabel>
 
-            <div class="status-container border-1 border-round-xl w-6">
+            <div class="status-container border-1 border-round-xl w-full sm:w-3">
               <div class="flex justify-content-between align-items-center">
-                <label for="isActive">Status Ativo</label>
+                <label for="isActive">Status</label>
                 <ToggleSwitch v-model="formData.isActive" id="isActive" />
               </div>
             </div>
@@ -520,6 +562,7 @@ const deleteItem = () => {
             text
             @click="deleteItem"
             size="small"
+            :disabled="isLoading"
           />
         </div>
         <div class="flex gap-2">
@@ -531,6 +574,7 @@ const deleteItem = () => {
             @click="closeModal"
             text
             size="small"
+            :disabled="isLoading"
           />
           <Button
             v-else
@@ -540,6 +584,7 @@ const deleteItem = () => {
             @click="cancelEdit"
             text
             size="small"
+            :disabled="isLoading"
           />
           <Button
             v-if="!isEditing"
@@ -547,6 +592,7 @@ const deleteItem = () => {
             icon="pi pi-pencil"
             size="small"
             @click="enterEditMode"
+            :disabled="isLoading"
           />
           <Button
             v-else
@@ -555,7 +601,7 @@ const deleteItem = () => {
             size="small"
             @click="saveChanges()"
             severity="success"
-            :disabled="!wasChanged"
+            :disabled="!wasChanged || isLoading"
           />
         </div>
       </div>

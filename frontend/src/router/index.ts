@@ -83,11 +83,6 @@ const router = createRouter({
           component: HomeView,
         },
         {
-          path: '/:pathMatch(.*)*', // Regex que captura qualquer coisa
-          name: 'NotFound',
-          component: NotFoundView,
-        },
-        {
           path: '/error',
           name: 'ServerError',
           component: () => import('../views/ServerErrorView.vue'),
@@ -108,6 +103,11 @@ const router = createRouter({
       path: '/register',
       name: 'Register',
       component: () => import('../views/RegisterView.vue'),
+    },
+    {
+      path: '/:pathMatch(.*)*', // Regex que captura qualquer coisa
+      name: 'NotFound',
+      component: NotFoundView,
     },
   ],
 })

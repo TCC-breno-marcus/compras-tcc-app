@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import CatalogUpload from './CatalogUpload.vue'
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, onMounted } from 'vue'
 import { useRoute, useRouter, type LocationQueryValue } from 'vue-router'
 import type { Ref } from 'vue'
 import IconField from 'primevue/iconfield'
@@ -19,12 +19,21 @@ import FloatLabel from 'primevue/floatlabel'
 import NotFoundSvg from '@/assets/NotFoundSvg.vue'
 import ItemComponentSkeleton from './ItemComponentSkeleton.vue'
 import CreateItemDialog from './CreateItemDialog.vue'
+import { useCategoriaStore } from '../stores/categoriaStore'
 
 const route = useRoute()
 const router = useRouter()
+
 const catalogoStore = useCatalogoStore()
 const { items, loading, error, totalCount, pageNumber, pageSize, totalPages } =
   storeToRefs(catalogoStore)
+
+const categoriaStore = useCategoriaStore()
+const {
+  categorias,
+  loading: categoriasLoading,
+  error: categoriasError,
+} = storeToRefs(categoriaStore)
 
 const getFirstQueryValue = (value: LocationQueryValue | LocationQueryValue[]): string => {
   if (Array.isArray(value)) {
@@ -39,9 +48,9 @@ const nomeFilter = ref(getFirstQueryValue(route.query.nome))
 const descricaoFilter = ref(getFirstQueryValue(route.query.descricao))
 const catmatFilter = ref(getFirstQueryValue(route.query.catmat))
 const especificacaoFilter = ref(getFirstQueryValue(route.query.especificacao))
-const statusFilter = ref('todos')
+const categoriaIdFilter = ref(getFirstQueryValue(route.query.categoriaId))
+const statusFilter = ref('')
 const opcoesStatus = ref([
-  { name: 'Todos', code: 'todos' },
   { name: 'Ativo', code: 'ativo' },
   { name: 'Inativo', code: 'inativo' },
 ])
@@ -82,6 +91,7 @@ const applyFilters = () => {
   delete currentQuery.descricao
   delete currentQuery.catmat
   delete currentQuery.especificacao
+  delete currentQuery.categoriaId
   delete currentQuery.isActive
   delete currentQuery.sortOrder
 
@@ -91,7 +101,8 @@ const applyFilters = () => {
   if (descricaoFilter.value) currentQuery.descricao = descricaoFilter.value
   if (catmatFilter.value) currentQuery.catmat = catmatFilter.value
   if (especificacaoFilter.value) currentQuery.especificacao = especificacaoFilter.value
-  if (statusFilter.value && statusFilter.value !== 'todos') {
+  if (categoriaIdFilter.value) currentQuery.categoriaId = categoriaIdFilter.value
+  if (statusFilter.value) {
     currentQuery.isActive = (statusFilter.value === 'ativo').toString()
   }
   if (sortOrder.value) currentQuery.sortOrder = sortOrder.value
@@ -112,7 +123,8 @@ const clearFilters = () => {
   descricaoFilter.value = ''
   catmatFilter.value = ''
   especificacaoFilter.value = ''
-  statusFilter.value = 'todos'
+  categoriaIdFilter.value = ''
+  statusFilter.value = ''
   simpleSearch.value = ''
   sortOrder.value = null
   applyFilters()
@@ -126,18 +138,23 @@ watch(
     descricaoFilter.value = getFirstQueryValue(newQuery.descricao)
     catmatFilter.value = getFirstQueryValue(newQuery.catmat)
     especificacaoFilter.value = getFirstQueryValue(newQuery.especificacao)
+    categoriaIdFilter.value = getFirstQueryValue(newQuery.categoriaId)
 
     if (newQuery.isActive === 'true') {
       statusFilter.value = 'ativo'
     } else if (newQuery.isActive === 'false') {
       statusFilter.value = 'inativo'
     } else {
-      statusFilter.value = 'todos'
+      statusFilter.value = ''
     }
     catalogoStore.fetchItems(newQuery)
   },
   { immediate: true },
 )
+
+onMounted(() => {
+  categoriaStore.fetch()
+})
 
 const isCreateDialogVisible = ref(false)
 const isDialogVisible = ref(false)
@@ -149,7 +166,7 @@ const handleViewDetails = (item: Item) => {
   isDialogVisible.value = true
 }
 
-const handleUpdateDialog = (payload: { item: Item; action: string }) => {
+const handleUpdateDialog = (payload: { item?: Item; action: string }) => {
   if (payload.action === 'updateItems') {
     catalogoStore.fetchItems(route.query)
   }
@@ -191,13 +208,28 @@ const closeDialog = () => {
               v-model="simpleSearch"
               size="small"
               class="w-full"
+              inputId="simple-search"
               @keyup.enter="applyFilters"
             />
           </IconField>
-          <label for="status-filter">Pesquisar item</label>
+          <label for="simple-search">Pesquisar item</label>
         </FloatLabel>
 
-        <FloatLabel class="w-full sm:w-7rem mt-1 sm:mt-0" variant="on">
+        <FloatLabel class="w-full sm:w-16rem mt-1 sm:mt-0" variant="on">
+          <Select
+            v-model="categoriaIdFilter"
+            :options="categorias"
+            optionLabel="nome"
+            optionValue="id"
+            inputId="categoria-filter"
+            size="small"
+            class="w-full sm:w-16rem"
+            :showClear="true"
+          />
+          <label for="categoria-filter">Categoria</label>
+        </FloatLabel>
+
+        <FloatLabel class="w-full sm:w-8rem mt-1 sm:mt-0" variant="on">
           <Select
             v-model="statusFilter"
             :options="opcoesStatus"
@@ -205,7 +237,8 @@ const closeDialog = () => {
             optionValue="code"
             inputId="status-filter"
             size="small"
-            class="w-full sm:w-7rem"
+            class="w-full sm:w-8rem"
+            :showClear="true"
           />
           <label for="status-filter">Status</label>
         </FloatLabel>
@@ -330,6 +363,7 @@ const closeDialog = () => {
     <CreateItemDialog
       v-model:visible="isCreateDialogVisible"
       @update:visible="isCreateDialogVisible = false"
+      @update-dialog="handleUpdateDialog"
     />
   </div>
 </template>

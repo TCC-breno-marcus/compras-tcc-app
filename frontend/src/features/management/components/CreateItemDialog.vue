@@ -18,6 +18,9 @@ import FileUpload, {
 import { dataHasBeenChanged } from '@/utils/objectUtils'
 import { CLOSE_CONFIRMATION, SAVE_CONFIRMATION } from '@/utils/confirmationFactoryUtils'
 import axios from 'axios'
+import { Select } from 'primevue'
+import { useCategoriaStore } from '../stores/categoriaStore'
+import { storeToRefs } from 'pinia'
 
 const props = defineProps<{
   visible: boolean
@@ -26,17 +29,25 @@ const props = defineProps<{
 const confirm = useConfirm()
 const toast = useToast()
 
-const isLoading = ref(true)
+const categoriaStore = useCategoriaStore()
+const {
+  categorias,
+  loading: categoriasLoading,
+  error: categoriasError,
+} = storeToRefs(categoriaStore)
+
+const isLoading = ref(false)
 const error = ref<string | null>(null)
 const formDataInitial = {
   nome: '',
   descricao: '',
   catMat: '',
   especificacao: '',
+  categoriaId: null,
   precoSugerido: 0,
   isActive: false,
 }
-const formData = ref<Partial<Item>>(formDataInitial)
+const formData = ref<Partial<Item & { categoriaId?: number | null }>>({})
 const dirtyFieldsInitial = {
   nome: false,
   descricao: false,
@@ -50,7 +61,7 @@ const onBlur = (fieldName: keyof typeof dirtyFieldsInitial) => {
 
 const arquivoDeImagem = ref<File | null>(null)
 
-const emit = defineEmits(['update:visible'])
+const emit = defineEmits(['update:visible', 'update-dialog'])
 
 const onFileSelect = async (event: FileUploadSelectEvent) => {
   const file = event.files[0]
@@ -87,45 +98,47 @@ const closeModal = () => {
 
 const createItem = async () => {
   isLoading.value = true
-  try {
-    const newData = {
-      nome: formData.value?.nome,
-      catMat: formData.value?.catMat,
-      descricao: formData.value?.descricao,
-      especificacao: formData.value?.especificacao,
-      precoSugerido: formData.value?.precoSugerido,
-      isActive: formData.value?.isActive,
-    }
-    const createdItem = await catalogoService.criarItem(newData)
-    console.log({ createdItem })
+  if (formData.value.categoriaId) {
+    try {
+      const newData = {
+        nome: formData.value?.nome,
+        catMat: formData.value?.catMat,
+        descricao: formData.value?.descricao,
+        especificacao: formData.value?.especificacao,
+        categoriaId: formData.value?.categoriaId,
+        precoSugerido: formData.value?.precoSugerido,
+        isActive: formData.value?.isActive,
+      }
+      const createdItem = await catalogoService.criarItem(newData)
 
-    if (arquivoDeImagem.value) {
-      await catalogoService.atualizarImagemItem(createdItem.id, arquivoDeImagem.value)
-    }
+      if (arquivoDeImagem.value) {
+        await catalogoService.atualizarImagemItem(createdItem.id, arquivoDeImagem.value)
+      }
 
-    toast.add({
-      severity: 'success',
-      summary: 'Sucesso',
-      detail: 'O item foi criado com sucesso.',
-      life: 3000,
-    })
-    emit('update:visible', false)
-
-  } catch (err) {
-    if (axios.isAxiosError(err)) {
-      const mensagem = err.response?.data?.message || 'Erro desconhecido'
-      console.error('Erro ao criar item:', mensagem)
       toast.add({
-        severity: 'error',
-        summary: 'Erro',
-        detail: mensagem,
+        severity: 'success',
+        summary: 'Sucesso',
+        detail: 'O item foi criado com sucesso.',
         life: 3000,
       })
-    } else {
-      console.error('Erro inesperado:', err)
+      emit('update:visible', false)
+      emit('update-dialog', { action: 'updateItems' })
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        const mensagem = err.response?.data?.message || 'Erro desconhecido'
+        console.error('Erro ao criar item:', mensagem)
+        toast.add({
+          severity: 'error',
+          summary: 'Erro',
+          detail: mensagem,
+          life: 3000,
+        })
+      } else {
+        console.error('Erro inesperado:', err)
+      }
+    } finally {
+      isLoading.value = false
     }
-  } finally {
-    isLoading.value = false
   }
 }
 
@@ -141,7 +154,8 @@ const allRequiredFieldFilled = (): boolean => {
   return !!(
     formData.value.nome?.trim() &&
     formData.value.descricao?.trim() &&
-    formData.value.catMat?.trim()
+    formData.value.catMat?.trim() &&
+    formData.value.categoriaId
   )
 }
 
@@ -202,8 +216,8 @@ watch(
 
       <div class="flex-grow-1 md:pr-4 text-justify mt-2 mb-2 md:mb-0">
         <div class="flex flex-column gap-3">
-          <div class="flex flex-column md:flex-row w-full gap-2">
-            <FloatLabel variant="on" class="w-9">
+          <div class="flex flex-column sm:flex-row w-full gap-3 sm:gap-2">
+            <FloatLabel variant="on" class="w-full sm:w-9">
               <InputText
                 id="nome"
                 v-model="formData.nome"
@@ -215,7 +229,7 @@ watch(
               />
               <label for="nome">Nome *</label>
             </FloatLabel>
-            <FloatLabel variant="on" class="w-3">
+            <FloatLabel variant="on" class="w-full sm:w-3">
               <InputText
                 id="catMat"
                 v-model="formData.catMat"
@@ -254,8 +268,20 @@ watch(
             />
             <label for="especificacao">Especificação</label>
           </FloatLabel>
-          <div class="flex flex-column md:flex-row w-full gap-2">
-            <FloatLabel variant="on" class="price-input w-6">
+          <div class="flex flex-column sm:flex-row w-full gap-3 sm:gap-2">
+            <FloatLabel class="w-full sm:w-6 mt-1 sm:mt-0" variant="on">
+              <Select
+                v-model="formData.categoriaId"
+                :options="categorias"
+                optionLabel="nome"
+                optionValue="id"
+                inputId="categoria-filter"
+                size="small"
+                class="w-full"
+              />
+              <label for="categoria-filter">Categoria</label>
+            </FloatLabel>
+            <FloatLabel variant="on" class="price-input w-full sm:w-3">
               <InputNumber
                 v-model="formData.precoSugerido"
                 inputId="precoSugerido"
@@ -265,13 +291,14 @@ watch(
                 :min="0"
                 size="small"
                 class="w-full"
+                inputClass="w-full"
               />
               <label for="precoSugerido">Preço Sugerido</label>
             </FloatLabel>
 
-            <div class="status-container border-1 border-round-xl w-6">
+            <div class="status-container border-1 border-round-xl w-full sm:w-3">
               <div class="flex justify-content-between align-items-center">
-                <label for="isActive">Status Ativo</label>
+                <label for="isActive">Status</label>
                 <ToggleSwitch v-model="formData.isActive" id="isActive" />
               </div>
             </div>
@@ -288,6 +315,7 @@ watch(
         @click="closeModal"
         text
         size="small"
+        :disabled="isLoading"
       />
       <Button
         label="Criar"
@@ -296,6 +324,7 @@ watch(
         @click="createItem()"
         severity="success"
         :disabled="!allRequiredFieldFilled()"
+        :loading="isLoading"
       />
     </template>
   </Dialog>

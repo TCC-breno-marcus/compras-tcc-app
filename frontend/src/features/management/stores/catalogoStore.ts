@@ -3,7 +3,7 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { catalogoService } from '../services/catalogoService';
-import type { Item, CatalogoParams } from '../types'; // Importando os tipos que criamos
+import type { Item, CatalogoParams } from '../types';
 
 export const useCatalogoStore = defineStore('catalogo', () => {
   const items = ref<Item[]>([]);
@@ -33,7 +33,7 @@ export const useCatalogoStore = defineStore('catalogo', () => {
 
     } catch (err) {
       error.value = 'Ocorreu um erro ao buscar os itens.';
-      items.value = []; // Limpa os itens em caso de erro para evitar mostrar dados antigos.
+      items.value = []; // Limpa em caso de erro para evitar mostrar dados antigos.
       console.error(err);
     } finally {
       loading.value = false;

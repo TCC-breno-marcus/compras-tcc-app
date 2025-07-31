@@ -1,5 +1,3 @@
-// src/features/management/services/catalogoService.ts
-
 import { apiClient } from '@/services/apiClient'
 import type {
   CatalogoParams,
