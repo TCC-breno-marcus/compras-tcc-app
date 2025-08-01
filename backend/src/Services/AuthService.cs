@@ -68,7 +68,7 @@ namespace ComprasTccApp.Backend.Services
                 DataUltimaSolicitacao = DateTime.UtcNow
             };
 
-            await _context.Pessoas.AddAsync(novaPessoa);
+            await _context.Solicitantes.AddAsync(novoSolicitante);
             await _context.SaveChangesAsync();
 
             _logger.LogInformation(
