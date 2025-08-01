@@ -23,6 +23,6 @@ namespace ComprasTccApp.Backend.DTOs
         public required string Password { get; set; }
 
         [Required]
-        public DepartamentoEnum Departamento { get; set; }
+        public required string Departamento { get; set; }
     }
 }

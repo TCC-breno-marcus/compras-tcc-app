@@ -1,6 +1,10 @@
 using System.Security.Claims;
 using ComprasTccApp.Backend.DTOs;
+using ComprasTccApp.Backend.Enums;
+using ComprasTccApp.Backend.Extensions;
 using ComprasTccApp.Models.Entities.Pessoas;
+using ComprasTccApp.Models.Entities.Servidores;
+using ComprasTccApp.Models.Entities.Solicitantes;
 using ComprasTccApp.Services.Interfaces;
 using Database;
 using Microsoft.EntityFrameworkCore;
@@ -46,6 +50,22 @@ namespace ComprasTccApp.Backend.Services
                 DataAtualizacao = DateTime.UtcNow,
                 PasswordHash = passwordHash,
                 Role = "Solicitante",
+            };
+
+            var departamentoEnum = registerDto.Departamento.FromString<DepartamentoEnum>();
+
+            var novoServidor = new Servidor
+            {
+                Pessoa = novaPessoa,
+                IdentificadorInterno = "TEMP-" + registerDto.CPF,
+                IsGestor = false
+            };
+
+            var novoSolicitante = new Solicitante
+            {
+                Servidor = novoServidor,
+                Unidade = departamentoEnum,
+                DataUltimaSolicitacao = DateTime.UtcNow
             };
 
             await _context.Pessoas.AddAsync(novaPessoa);
@@ -108,7 +128,7 @@ namespace ComprasTccApp.Backend.Services
                     .Solicitantes
                     .FirstOrDefaultAsync(sol => sol.ServidorId == servidor.Id);
 
-                if (solicitante != null) unidadeDoSolicitante = solicitante.Unidade;
+                if (solicitante != null) unidadeDoSolicitante = solicitante.Unidade.ToFriendlyString();
             }
 
             var userProfile = new UserProfileDto
