@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using ComprasTccApp.Backend.DTOs;
 using ComprasTccApp.Models.Entities.Pessoas;
 using ComprasTccApp.Services.Interfaces;
@@ -85,6 +86,43 @@ namespace ComprasTccApp.Backend.Services
                 loginDto.Email
             );
             return _tokenService.GenerateJwtToken(pessoa);
+        }
+
+        public async Task<UserProfileDto?> GetMyProfileAsync(ClaimsPrincipal user)
+        {
+            var userIdString = user.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userIdString) || !long.TryParse(userIdString, out var userId)) return null;
+
+            var pessoa = await _context.Pessoas.FindAsync(userId);
+            if (pessoa == null) return null;
+
+            var servidor = await _context
+                .Servidores
+                .FirstOrDefaultAsync(s => s.PessoaId == userId);
+
+            string? unidadeDoSolicitante = null;
+            if (servidor != null)
+            {
+                var solicitante = await _context
+                    .Solicitantes
+                    .FirstOrDefaultAsync(sol => sol.ServidorId == servidor.Id);
+
+                if (solicitante != null) unidadeDoSolicitante = solicitante.Unidade;
+            }
+
+            var userProfile = new UserProfileDto
+            {
+                Id = pessoa.Id,
+                Nome = pessoa.Nome,
+                Email = pessoa.Email,
+                Telefone = pessoa.Telefone,
+                CPF = pessoa.CPF,
+                Role = pessoa.Role,
+                Departamento = unidadeDoSolicitante ?? "não disponível"
+            };
+
+            return userProfile;
         }
     }
 }
