@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using ComprasTccApp.Backend.Enums;
 using ComprasTccApp.Models.Entities.Servidores;
 using ComprasTccApp.Models.Entities.Solicitacoes;
 
@@ -20,6 +21,6 @@ namespace ComprasTccApp.Models.Entities.Solicitantes
         public DateTime DataUltimaSolicitacao { get; set; }
 
         [Required]
-        public required string Unidade { get; set; }
+        public required DepartamentoEnum Unidade { get; set; }
     }
 }

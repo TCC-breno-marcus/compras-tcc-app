@@ -98,6 +98,57 @@ namespace backend.Migrations
                         .IsUnique();
 
                     b.ToTable("Categorias");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            Descricao = "Componentes discretos e integrados para montagem e prototipagem de circuitos. Inclui resistores, capacitores, transistores, MCUs, LEDs e PCBs.",
+                            IsActive = true,
+                            Nome = "Componentes Eletrônicos"
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            Descricao = "Equipamentos elétricos de uso doméstico, em cozinhas ou escritórios. Abrange linha branca, portáteis e aparelhos de climatização.",
+                            IsActive = true,
+                            Nome = "Eletrodomésticos"
+                        },
+                        new
+                        {
+                            Id = 3L,
+                            Descricao = "Instrumentos manuais e elétricos para manutenção, montagem, reparos e medições. Inclui chaves de fenda, alicates, furadeiras e multímetros.",
+                            IsActive = true,
+                            Nome = "Ferramentas"
+                        },
+                        new
+                        {
+                            Id = 4L,
+                            Descricao = "Substâncias e compostos químicos utilizados em análises e sínteses. Inclui ácidos, bases, solventes, sais e padrões analíticos.",
+                            IsActive = true,
+                            Nome = "Reagentes Químicos"
+                        },
+                        new
+                        {
+                            Id = 5L,
+                            Descricao = "Utensílios, consumíveis e pequenos equipamentos para uso geral em laboratório que não são vidrarias ou reagentes.",
+                            IsActive = true,
+                            Nome = "Materiais de Laboratório"
+                        },
+                        new
+                        {
+                            Id = 6L,
+                            Descricao = "Móveis para ambientes de escritório, laboratórios ou áreas comuns, como mesas, cadeiras, armários e bancadas de trabalho.",
+                            IsActive = true,
+                            Nome = "Mobiliário"
+                        },
+                        new
+                        {
+                            Id = 7L,
+                            Descricao = "Categoria residual para itens que não se enquadram claramente em nenhuma outra classificação. Ideal para materiais de escritório ou de consumo geral.",
+                            IsActive = true,
+                            Nome = "Diversos"
+                        });
                 });
 
             modelBuilder.Entity("ComprasTccApp.Models.Entities.Gestores.Gestor", b =>
@@ -260,9 +311,8 @@ namespace backend.Migrations
                     b.Property<long>("ServidorId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("Unidade")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("Unidade")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
