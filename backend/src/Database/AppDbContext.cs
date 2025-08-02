@@ -23,12 +23,23 @@ public class AppDbContext : DbContext
     public DbSet<Categoria> Categorias { get; set; }
     public DbSet<Solicitacao> Solicitacoes { get; set; }
     public DbSet<SolicitacaoItem> SolicitacaoItens { get; set; }
+    public DbSet<SolicitacaoGeral> SolicitacoesGerais { get; set; }
+    public DbSet<SolicitacaoPatrimonial> SolicitacoesPatrimoniais { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.Entity<SolicitacaoItem>().HasKey(si => new { si.SolicitacaoId, si.ItemId });
+
+        modelBuilder.Entity<Solicitacao>()
+            .HasDiscriminator<string>("TipoSolicitacao")
+            .HasValue<SolicitacaoGeral>("GERAL")
+            .HasValue<SolicitacaoPatrimonial>("PATRIMONIAL");
+
+        modelBuilder.Entity<Solicitacao>()
+            .Property("TipoSolicitacao")
+            .HasMaxLength(20);
 
         modelBuilder
             .Entity<Servidor>()
