@@ -1,6 +1,8 @@
 using System.Security.Claims;
+using Database;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -8,15 +10,21 @@ using Microsoft.AspNetCore.Mvc;
 public class SolicitacaoController : ControllerBase
 {
   private readonly ISolicitacaoService _solicitacaoService;
+  private readonly AppDbContext _context;
 
-  public SolicitacaoController(ISolicitacaoService solicitacaoService)
+  public SolicitacaoController
+  (
+    ISolicitacaoService solicitacaoService,
+    AppDbContext context
+  )
   {
     _solicitacaoService = solicitacaoService;
+    _context = context;
   }
 
   [HttpPost("geral")]
   [Authorize(Roles = "Solicitante,Admin")]
-  public async Task<IActionResult> CreateSolicitacaoGeral(CreateSolicitacaoGeralDto dto)
+  public async Task<IActionResult> CreateSolicitacaoGeral([FromBody] CreateSolicitacaoGeralDto dto)
   {
     var solicitanteId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
@@ -32,10 +40,12 @@ public class SolicitacaoController : ControllerBase
   }
 
   [HttpGet("{id}")]
-  public async Task<IActionResult> GetSolicitacaoById(long id)
+  public async Task<IActionResult> GetSolicitacaoById([FromRoute] long id)
   {
-    var solicitacao = await _context.Solicitacoes.Include(s => s.ItemSolicitacao).ThenInclude(si => si.Item).FirstOrDefaultAsync(s => s.Id == id);
-    if (solicitacao == null) return NotFound();
+    var solicitacao = await _solicitacaoService.GetByIdAsync(id);
+    
+    if (solicitacao == null) return NotFound(new { message = "Solicitação não encontrada." });
+
     return Ok(solicitacao);
   }
 }

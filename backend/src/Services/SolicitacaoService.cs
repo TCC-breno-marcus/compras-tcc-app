@@ -1,6 +1,7 @@
-// Local: Services/SolicitacaoService.cs
 using ComprasTccApp.Models.Entities.Itens;
+using ComprasTccApp.Models.Entities.Solicitacoes;
 using Database;
+using Microsoft.EntityFrameworkCore;
 
 public class SolicitacaoService : ISolicitacaoService
 {
@@ -13,15 +14,28 @@ public class SolicitacaoService : ISolicitacaoService
     _logger = logger;
   }
 
-  public async Task<SolicitacaoGeral> CreateGeralAsync(CreateSolicitacaoGeralDto dto, long solicitanteId)
+  public async Task<SolicitacaoGeral> CreateGeralAsync(
+    CreateSolicitacaoGeralDto dto,
+    long solicitanteId
+)
   {
     await using var transaction = await _context.Database.BeginTransactionAsync();
     try
     {
+      var solicitante = await _context.Solicitantes.FindAsync(solicitanteId);
+      var gestor = await _context.Gestores.FindAsync(dto.GestorId);
+
+      if (solicitante == null)
+        throw new Exception($"Solicitante com ID {solicitanteId} não encontrado.");
+      if (gestor == null)
+        throw new Exception($"Gestor com ID {dto.GestorId} não encontrado.");
+
       var novaSolicitacao = new SolicitacaoGeral
       {
         SolicitanteId = solicitanteId,
         GestorId = dto.GestorId,
+        Solicitante = solicitante,
+        Gestor = gestor,
         DataCriacao = DateTime.UtcNow,
         JustificativaGeral = dto.JustificativaGeral
       };
@@ -37,6 +51,7 @@ public class SolicitacaoService : ISolicitacaoService
         var solicitacaoItem = new SolicitacaoItem
         {
           Solicitacao = novaSolicitacao,
+          Item = itemDoCatalogo,
           ItemId = itemDto.ItemId,
           Quantidade = itemDto.Quantidade,
           ValorUnitario = itemDoCatalogo.PrecoSugerido,
@@ -57,5 +72,20 @@ public class SolicitacaoService : ISolicitacaoService
       await transaction.RollbackAsync();
       throw;
     }
+  }
+
+  public async Task<Solicitacao?> GetByIdAsync(long id)
+  {
+    _logger.LogInformation("Buscando solicitação com ID: {Id}", id);
+    var solicitacao = await _context.Solicitacoes
+        .Include("ItemSolicitacao.Item")
+        .FirstOrDefaultAsync(s => s.Id == id);
+
+    if (solicitacao == null)
+    {
+      _logger.LogWarning("Solicitação com ID: {Id} não encontrada.", id);
+    }
+
+    return solicitacao;
   }
 }
