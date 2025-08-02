@@ -88,4 +88,60 @@ public class SolicitacaoService : ISolicitacaoService
 
     return solicitacao;
   }
+
+  public async Task<SolicitacaoPatrimonial> CreatePatrimonialAsync(CreateSolicitacaoPatrimonialDto dto, long solicitanteId)
+  {
+    await using var transaction = await _context.Database.BeginTransactionAsync();
+    try
+    {
+      var solicitante = await _context.Solicitantes.FindAsync(solicitanteId);
+      var gestor = await _context.Gestores.FindAsync(dto.GestorId);
+
+      if (solicitante == null || gestor == null)
+      {
+        throw new Exception("Solicitante ou Gestor não encontrado.");
+      }
+
+      var novaSolicitacao = new SolicitacaoPatrimonial
+      {
+        SolicitanteId = solicitanteId,
+        GestorId = dto.GestorId,
+        Solicitante = solicitante,
+        Gestor = gestor,
+        DataCriacao = DateTime.UtcNow
+      };
+
+      foreach (var itemDto in dto.Itens)
+      {
+        var itemDoCatalogo = await _context.Items.FindAsync(itemDto.ItemId);
+        if (itemDoCatalogo == null || !itemDoCatalogo.IsActive)
+        {
+          throw new Exception($"Item com ID {itemDto.ItemId} não existe ou está inativo.");
+        }
+
+        var solicitacaoItem = new SolicitacaoItem
+        {
+          Solicitacao = novaSolicitacao,
+          Item = itemDoCatalogo,
+          ItemId = itemDto.ItemId,
+          Quantidade = itemDto.Quantidade,
+          ValorUnitario = itemDoCatalogo.PrecoSugerido,
+          Justificativa = itemDto.Justificativa
+        };
+        novaSolicitacao.ItemSolicitacao.Add(solicitacaoItem);
+      }
+
+      await _context.SolicitacoesPatrimoniais.AddAsync(novaSolicitacao);
+      await _context.SaveChangesAsync();
+
+      await transaction.CommitAsync();
+      return novaSolicitacao;
+    }
+    catch (Exception ex)
+    {
+      _logger.LogError(ex, "Erro ao criar solicitação patrimonial.");
+      await transaction.RollbackAsync();
+      throw;
+    }
+  }
 }

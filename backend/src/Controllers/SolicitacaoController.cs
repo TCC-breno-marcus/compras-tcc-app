@@ -43,9 +43,26 @@ public class SolicitacaoController : ControllerBase
   public async Task<IActionResult> GetSolicitacaoById([FromRoute] long id)
   {
     var solicitacao = await _solicitacaoService.GetByIdAsync(id);
-    
+
     if (solicitacao == null) return NotFound(new { message = "Solicitação não encontrada." });
 
     return Ok(solicitacao);
+  }
+
+  [HttpPost("patrimonial")]
+  [Authorize(Roles = "Solicitante,Admin")]
+  public async Task<IActionResult> CreateSolicitacaoPatrimonial(CreateSolicitacaoPatrimonialDto dto)
+  {
+    var solicitanteId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+    try
+    {
+      var novaSolicitacao = await _solicitacaoService.CreatePatrimonialAsync(dto, solicitanteId);
+      return CreatedAtAction(nameof(GetSolicitacaoById), new { id = novaSolicitacao.Id }, novaSolicitacao);
+    }
+    catch (Exception ex)
+    {
+      return BadRequest(new { message = ex.Message });
+    }
   }
 }
