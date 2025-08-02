@@ -12,17 +12,14 @@ namespace Controllers
     public class CatalogoController : ControllerBase
     {
         private readonly ILogger<CatalogoController> _logger;
-        private readonly AppDbContext _context;
         private readonly ICatalogoService _catalogoService;
 
         public CatalogoController(
             ILogger<CatalogoController> logger,
-            AppDbContext context,
             ICatalogoService catalogoService
         )
         {
             _logger = logger;
-            _context = context;
             _catalogoService = catalogoService;
         }
 
@@ -124,8 +121,7 @@ namespace Controllers
             {
                 _logger.LogInformation("Recebida requisição para popular imagens do catálogo.");
 
-                // Este é o caminho DENTRO do container, que é mapeado pelo volume do Docker
-                var caminhoDasImagensNoContainer = "/app/uploads"; // Ou o caminho que você configurou no seu Dockerfile/.NET
+                var caminhoDasImagensNoContainer = "/app/uploads";
 
                 var resultado = await _catalogoService.PopularImagensAsync(
                     caminhoDasImagensNoContainer
@@ -151,7 +147,7 @@ namespace Controllers
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
         [Authorize(Roles = "Admin, Gestor")]
-        public async Task<IActionResult> EditarItem(int id, [FromBody] ItemUpdateDto updateDto)
+        public async Task<IActionResult> EditarItem([FromRoute] int id, [FromBody] ItemUpdateDto updateDto)
         {
             if (updateDto == null)
                 return BadRequest("Corpo da requisição vazio.");
@@ -279,7 +275,7 @@ namespace Controllers
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
         [Authorize(Roles = "Admin, Gestor")]
-        public async Task<IActionResult> DeleteItem(long id)
+        public async Task<IActionResult> DeleteItem([FromRoute] long id)
         {
             try
             {
