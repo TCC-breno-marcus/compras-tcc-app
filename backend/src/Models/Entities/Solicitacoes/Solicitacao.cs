@@ -22,7 +22,6 @@ namespace ComprasTccApp.Models.Entities.Solicitacoes
         [Required, StringLength(500)]
         public required string JustificativaGeral { get; set; }
 
-        [Required]
         public List<SolicitacaoItem> ItemSolicitacao { get; set; } = new List<SolicitacaoItem>();
     }
 }

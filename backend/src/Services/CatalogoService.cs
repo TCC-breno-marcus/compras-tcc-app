@@ -535,7 +535,9 @@ namespace Services
 
         public async Task<ItemDto?> AtualizarImagemAsync(long id, IFormFile imagem)
         {
-            var item = await _context.Items.Include(item => item.Categoria).FindAsync(id);
+            var item = await _context
+                .Items.Include(item => item.Categoria)
+                .FirstOrDefaultAsync(item => item.Id == id);
             if (item == null)
             {
                 return null;
