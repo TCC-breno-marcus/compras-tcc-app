@@ -311,9 +311,8 @@ namespace backend.Migrations
                     b.Property<long>("ServidorId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("Unidade")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("Unidade")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
