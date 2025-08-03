@@ -4,6 +4,7 @@ import ItemsListComponent from '../components/ItemsListComponent.vue'
 import MySolicitation from '../components/MySolicitation.vue'
 import { useLayoutStore } from '@/stores/layout'
 import { ref, computed } from 'vue'
+import CatalogoBrowser from '@/features/catalogo/components/CatalogoBrowser.vue'
 
 const layoutStore = useLayoutStore()
 const isMobileView = computed(() => ['xs', 'sm'].includes(layoutStore.currentBreakpoint))
@@ -16,7 +17,8 @@ const isMobileView = computed(() => ['xs', 'sm'].includes(layoutStore.currentBre
         <div class="flex justify-content-between align-items-center mb-2">
           <h3>Catálogo de Materiais</h3>
         </div>
-        <ItemsListComponent />
+        <!-- <ItemsListComponent /> -->
+         <CatalogoBrowser />
       </div>
 
       <Divider :layout="isMobileView ? 'horizontal' : 'vertical'" />
