@@ -7,54 +7,54 @@ import Textarea from 'primevue/textarea';
 
 const items = ref([
   {
-    title: 'Seringa Descartável',
-    img: '/items_img/img1.png',
-    code: '214560',
-    suggestedUnitPrice: 17.99
+    title: 'ALCOÔMETRO',
+    img: '/items_img/408548.png',
+    code: '408548',
+    suggestedUnitPrice: 17.99,
   },
   {
-    title: 'Gaze Estéril Pacote',
-    img: '/items_img/img1.png',
-    code: '348790',
-    suggestedUnitPrice: 17.99
+    title: 'ANEL COM MUFA',
+    img: '/items_img/421658.png',
+    code: '421658',
+    suggestedUnitPrice: 17.99,
   },
   {
-    title: 'Luva Cirúrgica (Par)',
-    img: '/items_img/img1.png',
-    code: '551230',
-    suggestedUnitPrice: 17.99
+    title: 'BALÃO FUNDO CHATO',
+    img: '/items_img/409255.png',
+    code: '409255',
+    suggestedUnitPrice: 17.99,
   },
   {
-    title: 'Álcool Etílico 70% 1L',
-    img: '/items_img/img1.png',
-    code: '987010',
-    suggestedUnitPrice: 17.99
+    title: 'BALÃO VOLUMÉTRICO',
+    img: '/items_img/409415.png',
+    code: '409415',
+    suggestedUnitPrice: 17.99,
   },
   {
-    title: 'Seringa Descartável',
-    img: '/items_img/img1.png',
-    code: '214560',
-    suggestedUnitPrice: 17.99
+    title: 'FRASCO DE VIDRO ÂMBAR',
+    img: '/items_img/409441.png',
+    code: '409441',
+    suggestedUnitPrice: 17.99,
   },
   {
-    title: 'Gaze Estéril Pacote',
-    img: '/items_img/img1.png',
-    code: '348790',
-    suggestedUnitPrice: 17.99
+    title: 'FUNIL ANALÍTICO LISO HASTE CURTA',
+    img: '/items_img/410110.png',
+    code: '410110',
+    suggestedUnitPrice: 17.99,
   },
   {
-    title: 'Luva Cirúrgica (Par)',
-    img: '/items_img/img1.png',
-    code: '551230',
-    suggestedUnitPrice: 17.99
+    title: 'GARRA PARA CONDENSADOR',
+    img: '/items_img/426234.png',
+    code: '426234',
+    suggestedUnitPrice: 17.99,
   },
   {
-    title: 'Álcool Etílico 70% 1L',
-    img: '/items_img/img1.png',
-    code: '987010',
-    suggestedUnitPrice: 17.99
-  }
-]);
+    title: 'GRAL COM PISTILO',
+    img: '/items_img/421491.png',
+    code: '421491',
+    suggestedUnitPrice: 17.99,
+  },
+])
 
 const justification = ref("");
 

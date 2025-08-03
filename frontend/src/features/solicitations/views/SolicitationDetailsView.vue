@@ -40,7 +40,7 @@ const formattedPrice = new Intl.NumberFormat('pt-BR', {
   currency: 'BRL',
 }).format(solicitation.value.totalPrice)
 
-const deadline = new Date('2025-07-31T23:59:59')
+const deadline = new Date('2025-08-31T23:59:59')
 const showDeadlineWarning = computed(() => new Date() < deadline)
 </script>
 
@@ -56,7 +56,7 @@ const showDeadlineWarning = computed(() => new Date() < deadline)
           size="small"
           :closable="false"
         >
-          Prazo final para ajustes: 31/07/2025
+          Prazo final para ajustes: 31/08/2025
         </Message>
         <Message
           v-else="showDeadlineWarning"

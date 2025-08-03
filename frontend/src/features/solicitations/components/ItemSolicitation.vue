@@ -25,8 +25,8 @@ const qtde = ref(1)
       </div>
     </div>
 
-    <div class="flex align-items-center gap-2">
-      <FloatLabel variant="on" class="quantity-input">
+    <div class="flex align-items-center gap-2 justify-content-end">
+      <FloatLabel variant="on" class="quantity-input w-full sm:w-3">
         <InputNumber
           v-model="qtde"
           inputId="on_label_qtde"
@@ -34,6 +34,8 @@ const qtde = ref(1)
           :max="9999"
           size="small"
           fluid
+          class="w-full"
+          inputClass="w-full"
         />
         <label for="on_label_qtde">Qtde.</label>
       </FloatLabel>
