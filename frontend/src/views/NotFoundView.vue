@@ -10,17 +10,17 @@ const goBack = () => {
 </script>
 
 <template>
-  <div class="page-container">
-    <div class="content-wrapper">
+  <div class="flex align-items-center justify-content-center p-8" style="min-height: 100vh;">
+    <div class="flex flex-column lg:flex-row align-items-center lg:justify-content-center text-center lg:text-left gap-2">
 
-      <div class="text-content">
-        <h1 class="error-code">404</h1>
-        <h2 class="error-title">Oops! Parece que você se perdeu.</h2>
-        <p class="error-description">
+      <div class="flex flex-column align-items-center lg:align-items-start gap-2">
+        <h1 class="error-code text-8xl font-bold line-height-1 m-0">404</h1>
+        <h2 class="error-title font-3xl sm:font-5xl font-bold m-0">Oops! Parece que você se perdeu.</h2>
+        <p class="error-description text-base">
           A página que você está procurando pode ter sido removida, renomeada ou nunca existiu.
         </p>
 
-        <div class="actions-container">
+        <div class="flex gap-2 mt-1 sm:justify-content-start">
           <router-link to="/" class="button primary">
             Ir para a Home
           </router-link>
@@ -30,7 +30,7 @@ const goBack = () => {
         </div>
       </div>
 
-       <div class="illustration-container">
+       <div class="w-20rem sm:w-30rem">
         <NotFoundSvg />
       </div>
 
@@ -40,70 +40,25 @@ const goBack = () => {
 
 <style scoped>
 
-.page-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 80vh; /* Ocupa quase toda a altura da tela */
-  padding: 2rem;
-  font-family: 'Inter', sans-serif; /* Use uma fonte moderna, se disponível no seu projeto */
-}
-
-.content-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 2rem;
-}
-
-/* Estilos da ilustração */
-.illustration-container {
-  max-width: 600px;
-  width: 35rem;
-}
 
 .illustration {
   width: 100%;
   height: auto;
 }
 
-/* Estilos da área de texto */
-.text-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.75rem;
-}
-
 .error-code {
-  font-size: 6rem; /* Tamanho grande para o "404" */
-  font-weight: 800; /* Super bold */
-  line-height: 1;
-  color: var(--p-primary-color, #4a90e2); /* Cor primária do seu tema */
+  color: var(--p-primary-color, #4a90e2); 
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-  margin: 0;
 }
 
 .error-title {
-  font-size: 1.75rem;
-  font-weight: 700;
   color: var(--p-text-color, #333);
-  margin: 0;
 }
 
 .error-description {
   max-width: 450px;
-  font-size: 1rem;
   color: var(--p-text-secondary-color, #6c757d);
   line-height: 1.6;
-}
-
-/* Estilos dos botões de ação */
-.actions-container {
-  display: flex;
-  gap: 1rem;
-  margin-top: 1.5rem;
 }
 
 .button {
@@ -116,7 +71,7 @@ const goBack = () => {
   cursor: pointer;
   border: 2px solid transparent;
   transition: all 0.3s ease;
-  user-select: none; /* Impede a seleção de texto do botão */
+  user-select: none; 
 }
 
 .button.primary {
@@ -142,28 +97,4 @@ const goBack = () => {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* Design Responsivo para telas maiores (desktop) */
-@media (min-width: 768px) {
-  .content-wrapper {
-    flex-direction: row; /* Lado a lado no desktop */
-    text-align: left;
-    gap: 4rem;
-  }
-  
-  .text-content {
-    align-items: flex-start;
-  }
-
-  .actions-container {
-    justify-content: flex-start;
-  }
-
-  .error-code {
-    font-size: 8rem;
-  }
-
-  .error-title {
-    font-size: 2.25rem;
-  }
-}
 </style>

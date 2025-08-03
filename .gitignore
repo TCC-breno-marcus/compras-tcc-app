@@ -44,6 +44,7 @@ lerna-debug.log*
 
 # Items Images
 imagens_itens/
+items_img/
 
 #.env files
 .env

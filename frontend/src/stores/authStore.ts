@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { authService } from '@/features/auth/services/authService'
 import type { UserCredentials, UserRegistration } from '@/features/auth/types'
+import { isTokenExpired } from '@/utils/jwtHelper';
 
 interface AuthState {
   user: { id: number; name: string; email: string; role: string } | null
@@ -13,9 +14,11 @@ export const useAuthStore = defineStore('auth', {
     token: null,
   }),
   getters: {
-    isAuthenticated: (state) => !!state.token,
+    isAuthenticated: (state): boolean => {
+      return !!state.token && !isTokenExpired(state.token)
+    },
     isAdmin: (state) => state.user?.role === 'Admin',
-    // Adicione outros getters de role conforme necessário
+    isGestor: (state) => state.user?.role === 'Gestor',
   },
   actions: {
     async login(credentials: UserCredentials) {

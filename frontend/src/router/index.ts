@@ -38,6 +38,7 @@ const router = createRouter({
             },
             {
               path: ':id',
+              name: 'SolicitationDetails',
               component: SolicitationDetailsView,
               meta: { requiresAuth: true, roles: ['Solicitante', 'Gestor', 'Admin'] },
             },
@@ -105,7 +106,7 @@ const router = createRouter({
       component: () => import('../views/RegisterView.vue'),
     },
     {
-      path: '/:pathMatch(.*)*', // Regex que captura qualquer coisa
+      path: '/:pathMatch(.*)*',
       name: 'NotFound',
       component: NotFoundView,
     },
@@ -115,7 +116,6 @@ const router = createRouter({
 // 2. Navigation Guard Global
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
-
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     return next({ name: 'Login', query: { redirect: to.fullPath } })
   }
