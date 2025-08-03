@@ -6,7 +6,7 @@ import NewGeneralSolicitationView from '@/features/solicitations/views/NewGenera
 import NewPatrimonialSolicitationView from '@/features/solicitations/views/NewPatrimonialSolicitationView.vue'
 import ManagerPanel from '@/features/management/views/ManagerPanelView.vue'
 import SolicitationDetailsView from '@/features/solicitations/views/SolicitationDetailsView.vue'
-import { useAuthStore } from '@/stores/authStore'
+import { useAuthStore } from '@/features/autentication/stores/authStore'
 import MySolicitationsView from '@/features/solicitations/views/MySolicitationsView.vue'
 
 declare module 'vue-router' {
@@ -91,19 +91,19 @@ const router = createRouter({
         {
           path: '/unauthorized',
           name: 'Unauthorized',
-          component: () => import('../views/UnauthorizedView.vue'),
+          component: () => import('../features/autentication/views/UnauthorizedView.vue'),
         },
       ],
     },
     {
       path: '/login',
       name: 'Login',
-      component: () => import('../views/LoginView.vue'),
+      component: () => import('../features/autentication/views/LoginView.vue'),
     },
     {
       path: '/register',
       name: 'Register',
-      component: () => import('../views/RegisterView.vue'),
+      component: () => import('../features/autentication/views/RegisterView.vue'),
     },
     {
       path: '/:pathMatch(.*)*',

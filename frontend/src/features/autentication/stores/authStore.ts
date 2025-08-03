@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
-import { authService } from '@/features/auth/services/authService'
-import type { UserCredentials, UserRegistration } from '@/features/auth/types'
-import { isTokenExpired } from '@/utils/jwtHelper';
+import { authService } from '@/features/autentication/services/authService'
+import type { UserCredentials, UserRegistration } from '@/features/autentication/types'
+import { isTokenExpired } from '@/utils/jwtHelper'
 
 interface AuthState {
   user: { id: number; name: string; email: string; role: string } | null

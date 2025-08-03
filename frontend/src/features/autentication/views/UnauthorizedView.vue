@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import Button from 'primevue/button';
-import { useRouter } from 'vue-router';
-import { useAuthStore } from '@/stores/authStore';
+import Button from 'primevue/button'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/features/autentication/stores/authStore'
 
-const router = useRouter();
-const authStore = useAuthStore();
+const router = useRouter()
+const authStore = useAuthStore()
 
 const goToDashboard = () => {
   // Envia para uma rota segura, como o dashboard
-  router.push('/gestor/dashboard');
-};
+  router.push('/gestor/dashboard')
+}
 
 const handleLogout = () => {
-  authStore.logout();
-};
+  authStore.logout()
+}
 </script>
 
 <template>
@@ -30,8 +30,20 @@ const handleLogout = () => {
         Se você acredita que isso é um erro, entre em contato com o administrador do sistema.
       </p>
       <div class="flex justify-content-center gap-2">
-        <Button size="small" label="Voltar ao Painel" icon="pi pi-arrow-left" @click="goToDashboard"></Button>
-        <Button size="small" label="Fazer Logout" icon="pi pi-sign-out" severity="secondary" outlined @click="handleLogout"></Button>
+        <Button
+          size="small"
+          label="Voltar ao Painel"
+          icon="pi pi-arrow-left"
+          @click="goToDashboard"
+        ></Button>
+        <Button
+          size="small"
+          label="Fazer Logout"
+          icon="pi pi-sign-out"
+          severity="secondary"
+          outlined
+          @click="handleLogout"
+        ></Button>
       </div>
     </div>
   </div>

@@ -7,7 +7,7 @@ import { ref, computed } from 'vue'
 import Popover from 'primevue/popover'
 import { Divider } from 'primevue'
 import { useThemeStore } from '@/stores/theme'
-import { useAuthStore } from '@/stores/authStore'
+import { useAuthStore } from '@/features/autentication/stores/authStore'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import Logo from '../Logo.vue'
@@ -114,7 +114,6 @@ const userInitial = computed(() => {
 </template>
 
 <style scoped>
-
 /* .header-container {
   background: linear-gradient(to bottom, transparent 0%, var(--p-surface-50) 100%);
 } */
