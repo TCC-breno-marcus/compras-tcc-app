@@ -9,6 +9,8 @@ namespace ComprasTccApp.Models.Entities.Solicitacoes
     public class Solicitacao
     {
         public long Id { get; set; }
+        public long SolicitanteId { get; set; }
+        public long GestorId { get; set; }
 
         [Required]
         public required Solicitante Solicitante { get; set; }
@@ -18,10 +20,5 @@ namespace ComprasTccApp.Models.Entities.Solicitacoes
 
         [Required]
         public DateTime DataCriacao { get; set; }
-
-        [Required, StringLength(500)]
-        public required string JustificativaGeral { get; set; }
-
-        public List<SolicitacaoItem> ItemSolicitacao { get; set; } = new List<SolicitacaoItem>();
     }
 }
