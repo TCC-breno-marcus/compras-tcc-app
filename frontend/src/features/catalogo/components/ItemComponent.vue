@@ -1,18 +1,17 @@
 <script setup lang="ts">
-import Tag from 'primevue/tag'
+import type { Item } from '../types'
 
-const props = defineProps({
-  item: {
-    type: Object,
-    required: true,
-  },
-})
+const props = defineProps<{
+  item: Item
+}>()
 
 const emit = defineEmits(['viewDetails'])
 
 const onShowDetailsClick = () => {
   emit('viewDetails', props.item)
 }
+
+
 </script>
 
 <template>
@@ -21,12 +20,7 @@ const onShowDetailsClick = () => {
       class="image-preview-container flex justify-content-center align-items-center p-1"
       @click="onShowDetailsClick"
     >
-      <img
-        v-if="item.linkImagem"
-        :src="item.linkImagem"
-        :alt="item.nome"
-        class="item-image"
-      />
+      <img v-if="item.linkImagem" :src="item.linkImagem" :alt="item.nome" class="item-image" />
       <div v-else class="image-placeholder">
         <span class="material-symbols-outlined placeholder-icon"> hide_image </span>
       </div>
@@ -40,10 +34,9 @@ const onShowDetailsClick = () => {
         <p class="font-bold text-sm">{{ item.nome }}</p>
         <p class="text-xs text-color-secondary">CATMAT {{ item.catMat }}</p>
       </div>
-      <Tag
-        :severity="item.isActive ? 'success' : 'danger'"
-        :value="item.isActive ? 'Ativo' : 'Inativo'"
-      ></Tag>
+      <div class="item-actions">
+        <slot name="actions"></slot>
+      </div>
     </div>
   </div>
 </template>
@@ -145,7 +138,7 @@ const onShowDetailsClick = () => {
 }
 
 .placeholder-icon {
-  font-size: 3rem; 
+  font-size: 3rem;
   /* color: var(--p-surface-500);  */
 }
 </style>

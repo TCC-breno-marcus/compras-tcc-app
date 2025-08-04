@@ -1,84 +1,40 @@
 import { defineStore } from 'pinia';
-import type { ItemCatalogo } from '@/types/itemsCatalogo'; // Reutilize sua interface de Item
+import { ref } from 'vue';
+import type { Item } from '@/features/catalogo/types';
+import type { SolicitationItem } from '@/features/solicitations/types'; 
 
-// Defina a "forma" de um item dentro da solicitação (pode ter quantidade)
-interface SolicitationItem extends ItemCatalogo {
-  quantity: number;
-  price: number;
-}
+export const useSolicitationStore = defineStore('solicitation', () => {
 
-export const useSolicitationStore = defineStore('solicitation', {
-  // STATE: Onde os dados vivem
-  state: () => ({
-    items: [] as SolicitationItem[],
-    justification: '',
-    isLoading: false,
-  }),
+  const solicitationItems = ref<SolicitationItem[]>([]);
+  const justification = ref<string>('');
 
-  // GETTERS: Propriedades computadas, como totais.
-  getters: {
-    totalItems: (state) => state.items.length,
-    totalPrice: (state) => {
-      return state.items.reduce((total, item) => total + (item.price * item.quantity), 0);
-    },
-    isCartEmpty: (state) => state.items.length === 0,
-  },
+  function addItem(item: Item) {
+    const itemExistente = solicitationItems.value.find((i) => i.id === item.id);
 
-  // ACTIONS: Funções que modificam o estado.
-  actions: {
-    addItem(itemToAdd: ItemCatalogo) {
-      const existingItem = this.items.find((item) => item.id === itemToAdd.id);
-
-      if (existingItem) {
-        existingItem.quantity++;
-      } else {
-        this.items.push({ ...itemToAdd, quantity: 1, price: itemToAdd.suggestedUnitPrice});
-      }
-    },
-
-    removeItem(itemId: string) {
-      this.items = this.items.filter((item) => item.id !== itemId);
-    },
-
-    updateQuantity(itemId: string, quantity: number) {
-      const item = this.items.find((item) => item.id === itemId);
-      if (item) {
-        if (quantity > 0) {
-          item.quantity = quantity;
-        } else {
-          this.removeItem(itemId); // Remove o item se a quantidade for zero ou menos
-        }
-      }
-    },
-
-    setJustification(text: string) {
-      this.justification = text;
-    },
-
-    async submitSolicitation() {
-      this.isLoading = true;
-      try {
-        // Aqui você faria a chamada de API (ex: com Axios) para enviar os dados
-        // const response = await api.post('/solicitations', {
-        //   items: this.items,
-        //   justification: this.justification,
-        // });
-        console.log('Enviando solicitação:', {
-          items: this.items,
-          justification: this.justification
-        });
-        this.clearSolicitation(); // Limpa o carrinho após o sucesso
-      } catch (error) {
-        console.error('Falha ao enviar solicitação:', error);
-        // Tratar o erro (ex: mostrar um toast de erro)
-      } finally {
-        this.isLoading = false;
-      }
-    },
-    
-    clearSolicitation() {
-        this.items = [];
-        this.justification = '';
+    if (itemExistente) {
+      itemExistente.quantity++;
+      return 'incremented'
+    } else {
+      solicitationItems.value.push({ ...item, quantity: 1 });
+      return 'added'
     }
-  },
+  }
+
+  function removeItem(itemId: number) {
+    solicitationItems.value = solicitationItems.value.filter(i => i.id !== itemId);
+    return 'removed'
+  }
+
+  function clearSolicitation() {
+    solicitationItems.value = []
+    justification.value = ''
+  }
+
+  return {
+    solicitationItems,
+    justification,
+    addItem,
+    removeItem,
+    clearSolicitation
+  };
 });

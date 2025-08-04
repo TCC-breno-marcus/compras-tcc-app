@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import Divider from 'primevue/divider'
-import ItemsListComponent from '../components/ItemsListComponent.vue'
-import MySolicitation from '../components/MySolicitation.vue'
+import MyCurrentSolicitation from '../components/MyCurrentSolicitation.vue'
 import { useLayoutStore } from '@/stores/layout'
 import { ref, computed } from 'vue'
 
@@ -23,7 +22,7 @@ const isMobileView = computed(() => ['xs', 'sm'].includes(layoutStore.currentBre
 
       <div class="flex flex-column align-content-end w-full md:w-5">
         <h3 class="mb-3">Sua Solicitação</h3>
-        <MySolicitation />
+        <MyCurrentSolicitation />
       </div>
     </div>
 

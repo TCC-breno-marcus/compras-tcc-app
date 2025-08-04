@@ -94,9 +94,9 @@ watch(itensPorPagina, () => {
 </script>
 
 <template>
-  <div class="flex align-items-center justify-content-between w-full">
-    <div class="caption-list">
-      Exibindo {{ itemInicial }} - {{ itemFinal }} de {{ totalCount }} resultados
+  <div class="flex flex-column xl:flex-row align-items-center justify-content-between w-full">
+    <div class="caption-list text-center">
+      <small> Exibindo {{ itemInicial }} - {{ itemFinal }} de {{ totalCount }} resultados </small>
     </div>
 
     <div class="flex align-items-center justify-content-center gap-1 mt-2">
@@ -175,8 +175,8 @@ watch(itensPorPagina, () => {
       />
     </div>
 
-    <div class="caption-list">
-      Itens por página:
+    <div class="caption-list text-center">
+      <small> Itens por página: </small>
       <Select
         v-model="itensPorPagina"
         :options="opcoesItens"

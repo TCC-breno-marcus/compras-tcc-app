@@ -111,6 +111,10 @@ const handleUpdateDialog = (payload: { item?: Item; action: string }) => {
 const closeDialog = () => {
   isDialogVisible.value = false
 }
+
+defineExpose({
+  closeDialog,
+})
 </script>
 
 <template>
@@ -121,15 +125,15 @@ const closeDialog = () => {
       @clear-filters="clearFilters"
     />
 
-    <div v-if="loading" class="items-grid mt-4 gap-2">
-      <ItemComponentSkeleton v-for="n in 10" :key="n" />
+    <div v-if="loading" class="items-grid mt-2 gap-2">
+      <ItemComponentSkeleton v-for="n in 50" :key="n" />
     </div>
 
-    <ItemList
-      v-if="items.length > 0 && !loading"
-      :items="items"
-      @view-details="handleViewDetails"
-    />
+    <ItemList v-if="items.length > 0 && !loading" :items="items" @view-details="handleViewDetails">
+      <template #actions="{ item }">
+        <slot name="actions" :item="item"></slot>
+      </template>
+    </ItemList>
 
     <div
       v-if="items.length === 0 && !loading"
@@ -158,8 +162,27 @@ const closeDialog = () => {
       @update:visible="closeDialog"
       @update-dialog="handleUpdateDialog"
       @item-saved="itemWasSaveChanged = true"
-    />
+    >
+      <template #dialog-actions="{ item }">
+        <slot name="dialog-actions" :item="item"></slot>
+      </template>
+    </ItemDetailsDialog>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.items-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-height: calc(100vh - 320px);
+  overflow-y: auto;
+  /* Para Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: var(--p-surface-400) transparent;
+}
+
+:deep(.p-toolbar-start) {
+  flex: 1 1 auto;
+}
+</style>

@@ -132,3 +132,25 @@ export const ACCESS_ITEM_CONFIRMATION: ConfirmationOptions = {
     severity: 'danger',
   },
 }
+
+/**
+ * Configuração padrão para um diálogo de confirmação de descartar alterações numa página.
+ */
+export const DISCARD_SOLICITATION_CONFIRMATION: ConfirmationOptions = {
+  message: 'Você possui alterações não salvas. Se sair agora, elas serão perdidas. Deseja continuar?',
+  header: 'Descartar Solicitação?',
+  icon: 'pi pi-exclamation-triangle',
+  rejectProps: {
+    label: 'Continuar Solicitação',
+    severity: 'secondary',
+    text: true,
+    icon: 'pi pi-arrow-left',
+    size: 'small',
+  },
+  acceptProps: {
+    label: 'Descartar',
+    icon: 'pi pi-trash',
+    size: 'small',
+    severity: 'danger',
+  },
+}

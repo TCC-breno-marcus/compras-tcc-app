@@ -2,7 +2,7 @@
 import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
 import { Divider } from 'primevue'
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, inject } from 'vue'
 import { catalogoService } from '../services/catalogoService'
 import type { Item } from '../types'
 import InputText from 'primevue/inputtext'
@@ -35,6 +35,8 @@ const props = defineProps<{
   visible: boolean
   item: Item | null
 }>()
+
+const mode = inject<'management' | 'selection'>('dialogMode', 'selection')
 
 const confirm = useConfirm()
 const toast = useToast()
@@ -577,7 +579,7 @@ const fileUploadPT = ref({
             :disabled="isLoading"
           />
           <Button
-            v-if="!isEditing"
+            v-if="!isEditing && mode === 'management'"
             label="Editar"
             icon="pi pi-pencil"
             size="small"
@@ -585,7 +587,7 @@ const fileUploadPT = ref({
             :disabled="isLoading"
           />
           <Button
-            v-else
+            v-if="isEditing"
             label="Salvar"
             icon="pi pi-save"
             size="small"
@@ -593,6 +595,7 @@ const fileUploadPT = ref({
             severity="success"
             :disabled="!wasChanged || isLoading"
           />
+          <slot name="dialog-actions" :item="detailedItem"></slot>
         </div>
       </div>
     </template>
