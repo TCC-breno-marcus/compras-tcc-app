@@ -6,6 +6,7 @@ import type {
   PaginatedResponse,
 } from '@/features/management/types'
 import imageCompression from 'browser-image-compression'
+import { transformItem } from '../utils/itemTransformer'
 
 interface ICatalogoService {
   getItens(params?: CatalogoParams): Promise<PaginatedResponse<Item>>
@@ -50,6 +51,7 @@ export const catalogoService: ICatalogoService = {
    */
   async getItens(params) {
     const response = await apiClient.get<PaginatedResponse<Item>>('/catalogo', { params })
+    response.data.items = response.data.items.map(transformItem)
     return response.data
   },
 
@@ -59,7 +61,8 @@ export const catalogoService: ICatalogoService = {
    */
   async getItemById(id) {
     const response = await apiClient.get<Item>(`/catalogo/${id}`)
-    return response.data
+    const itemTransformed = transformItem(response.data)
+    return itemTransformed
   },
 
   /**
@@ -68,6 +71,7 @@ export const catalogoService: ICatalogoService = {
    */
   async getItensSemelhantes(id) {
     const response = await apiClient.get<Item[]>(`/catalogo/${id}/itens-semelhantes`)
+    response.data = response.data.map(transformItem)
     return response.data
   },
 
@@ -78,7 +82,8 @@ export const catalogoService: ICatalogoService = {
    */
   async editarItem(id, params) {
     const response = await apiClient.put<Item>(`/catalogo/${id}`, params)
-    return response.data
+    const itemTransformed = transformItem(response.data)
+    return itemTransformed
   },
 
   /**
@@ -88,9 +93,10 @@ export const catalogoService: ICatalogoService = {
   async criarItem(params) {
     const response = await apiClient.post<Item>(`/catalogo`, {
       ...params,
-      linkImagem: ''
+      linkImagem: '',
     })
-    return response.data
+    const itemTransformed = transformItem(response.data)
+    return itemTransformed
   },
 
   /**
@@ -117,7 +123,8 @@ export const catalogoService: ICatalogoService = {
         'Content-Type': 'multipart/form-data',
       },
     })
-    return response.data
+    const itemTransformed = transformItem(response.data)
+    return itemTransformed
   },
 
   /**

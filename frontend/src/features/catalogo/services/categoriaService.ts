@@ -1,5 +1,6 @@
 import { apiClient } from '@/services/apiClient'
 import type { Categoria, CategoriaParams } from '@/features/management/types'
+import { transformCategory } from '../utils/categoriaTransformer'
 
 interface ICategoriaService {
   getAll(params?: CategoriaParams): Promise<Categoria[]>
@@ -13,6 +14,7 @@ export const categoriaService: ICategoriaService = {
    */
   async getAll(params) {
     const response = await apiClient.get<Categoria[]>('/categoria', { params })
+    response.data = response.data.map(transformCategory)
     return response.data
   },
 
@@ -22,6 +24,7 @@ export const categoriaService: ICategoriaService = {
    */
   async getById(id) {
     const response = await apiClient.get<Categoria>(`/categoria/${id}`)
-    return response.data
+    const categoryTransformed = transformCategory(response.data)
+    return categoryTransformed
   },
 }
