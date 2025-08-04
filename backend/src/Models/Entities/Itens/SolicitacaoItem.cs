@@ -18,5 +18,8 @@ namespace ComprasTccApp.Models.Entities.Itens
         [Required]
         [Column(TypeName = "decimal(18,2)")]
         public decimal ValorUnitario { get; set; }
+
+        [StringLength(500)]
+        public string? Justificativa { get; set; }
     }
 }

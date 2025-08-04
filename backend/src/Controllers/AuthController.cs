@@ -17,7 +17,7 @@ namespace ComprasTccApp.Backend.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register(RegisterDto registerDto)
+        public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
         {
             try
             {
@@ -35,7 +35,7 @@ namespace ComprasTccApp.Backend.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginDto loginDto)
+        public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
             var token = await _authService.LoginAsync(loginDto);
             if (token == null)
