@@ -10,7 +10,7 @@ import { useThemeStore } from '@/stores/theme'
 import { useAuthStore } from '@/features/autentication/stores/authStore'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import Logo from '../Logo.vue'
+import Logo from '../ui/Logo.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
