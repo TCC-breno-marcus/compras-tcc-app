@@ -2,7 +2,7 @@
 import Divider from 'primevue/divider'
 import MyCurrentSolicitation from '../components/MyCurrentSolicitation.vue'
 import { useLayoutStore } from '@/stores/layout'
-import { ref, computed, provide } from 'vue'
+import { ref, computed, provide, reactive, readonly } from 'vue'
 import CatalogoBrowser from '@/features/catalogo/components/CatalogoBrowser.vue'
 import type { Item } from '@/features/catalogo/types'
 import { useSolicitationStore } from '../stores/solicitationStore'
@@ -11,6 +11,13 @@ import { useToast } from 'primevue/usetoast'
 import { storeToRefs } from 'pinia'
 import { useLeaveConfirmation } from '@/composables/useLeaveConfirmation'
 import { DISCARD_SOLICITATION_CONFIRMATION } from '@/utils/confirmationFactoryUtils'
+
+const solicitationContext = reactive({
+  dialogMode: 'selection',
+  isGeneral: true
+});
+
+provide('solicitationContext', readonly(solicitationContext));
 
 const layoutStore = useLayoutStore()
 const isMobileView = computed(() => ['xs', 'sm'].includes(layoutStore.currentBreakpoint))
@@ -59,7 +66,6 @@ const isSolicitationDirty = computed(() => {
 
 useLeaveConfirmation(isSolicitationDirty)
 
-provide('dialogMode', 'selection')
 </script>
 
 <template>

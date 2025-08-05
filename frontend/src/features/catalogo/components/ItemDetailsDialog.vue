@@ -36,7 +36,9 @@ const props = defineProps<{
   item: Item | null
 }>()
 
-const mode = inject<'management' | 'selection'>('dialogMode', 'selection')
+const solicitationContext = inject('solicitationContext', { 
+    dialogMode: 'selection', 
+});
 
 const confirm = useConfirm()
 const toast = useToast()
@@ -579,7 +581,7 @@ const fileUploadPT = ref({
             :disabled="isLoading"
           />
           <Button
-            v-if="!isEditing && mode === 'management'"
+            v-if="!isEditing && solicitationContext.dialogMode === 'management'"
             label="Editar"
             icon="pi pi-pencil"
             size="small"

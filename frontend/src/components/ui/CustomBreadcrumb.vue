@@ -1,0 +1,66 @@
+<script setup lang="ts">
+import Breadcrumb from 'primevue/breadcrumb'
+import { ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
+
+interface BreadcrumbItem {
+  label: string
+  route?: string
+  isLast: boolean
+}
+
+const route = useRoute()
+
+const home = ref({
+  icon: 'pi pi-home',
+  route: '/',
+})
+const items = ref<BreadcrumbItem[]>([])
+
+const routeNamesMap: { [key: string]: { label: string; route?: string } } = {
+  gestor: { label: 'Painel do Gestor', route: '/gestor' },
+  catalogo: { label: 'Gerenciar Catálogo', route: '/gestor/gerenciar-catalogo' },
+  solicitacoes: { label: 'Solicitações', route: '/solicitacoes' },
+  criar: { label: 'Criar' },
+  patrimonial: { label: 'Patrimonial', route: '/solicitacoes/criar/patrimonial' },
+}
+
+watch(
+  () => route.path,
+  (newPath) => {
+    const pathSegments = newPath.split('/').filter((p) => p)
+    items.value = pathSegments.map((segment, index) => {
+      const mapping = routeNamesMap[segment]
+      const isLast = index === pathSegments.length - 1
+      return {
+        label: mapping ? mapping.label : segment,
+        route: mapping && mapping.route ? mapping.route : undefined,
+        isLast,
+      }
+    })
+  },
+  { immediate: true },
+)
+</script>
+
+<template>
+  <div class="card flex justify-center">
+    <Breadcrumb :home="home" :model="items">
+      <template #item="{ item, props }">
+        <router-link v-if="item.route" v-slot="{ href, navigate }" :to="item.route" custom>
+          <a :href="href" v-bind="props.action" @click="navigate">
+            <span :class="[item.icon, 'text-color']" />
+            <span class="font-semibold" :class="item.isLast ? 'text-primary' : ''">{{
+              item.label
+            }}</span>
+          </a>
+        </router-link>
+        <a v-else :href="item.url" :target="item.target" v-bind="props.action">
+          <span class="font-semibold">{{ item.label }}</span>
+        </a>
+      </template>
+    </Breadcrumb>
+  </div>
+</template>
+
+<style scoped></style>

@@ -128,6 +128,12 @@ const MyPreset = definePreset(Aura, {
       root: {
         fontSize: '12px',
       },
+    },
+    breadcrumb: {
+      root: {
+        padding: '8px',
+        background: 'transparent'
+      }
     }
   },
 })
