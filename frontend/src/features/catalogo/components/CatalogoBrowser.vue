@@ -125,7 +125,7 @@ defineExpose({
       @clear-filters="clearFilters"
     />
 
-    <div v-if="loading" class="items-grid mt-2 gap-2">
+    <div v-if="loading" class="items-grid mt-2 mb-6 gap-2">
       <ItemComponentSkeleton v-for="n in 50" :key="n" />
     </div>
 

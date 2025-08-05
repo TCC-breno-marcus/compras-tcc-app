@@ -70,7 +70,7 @@ useLeaveConfirmation(isSolicitationDirty)
 </script>
 
 <template>
-  <div class="flex flex-column w-full h-full align-items-center">
+  <div class="flex flex-column w-full h-full align-items-center justify-content-between">
     <div class="w-full">
       <!-- <h2>Criar Solicitação de Bens Patrimoniais</h2> -->
        <CustomBreadcrumb />
