@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { inject, ref } from 'vue'
 import { Button } from 'primevue'
 import ItemSolicitation from './ItemSolicitation.vue'
 import { IftaLabel } from 'primevue'
 import Textarea from 'primevue/textarea'
 import { useSolicitationStore } from '../stores/solicitationStore'
 import { storeToRefs } from 'pinia'
+import type { SolicitationContext } from '../types'
+
+const solicitationContext = inject<SolicitationContext>('solicitationContext')
 
 const solicitationStore = useSolicitationStore()
 const { solicitationItems, justification } = storeToRefs(solicitationStore)
@@ -25,6 +28,7 @@ const createSolicitation = () => {
 <template>
   <div class="flex flex-column justify-content-between w-full h-full">
     <div v-if="solicitationItems.length > 0" class="items-list overflow-y-auto">
+      <!--  TODO: deve pegar o context da solicitacao para exibir um inputfield pra cada item se isGeneral for false-->
       <ItemSolicitation v-for="item in solicitationItems" :key="item.catMat" :item="item" />
     </div>
     <div v-else class="flex flex-column align-items-center text-center p-4">
@@ -34,8 +38,8 @@ const createSolicitation = () => {
         Navegue pelo catálogo para encontrar e adicionar os materiais que você precisa.
       </p>
     </div>
-    <div class="flex w-full justify-content-between mt-2 gap-2">
-      <IftaLabel class="w-full">
+    <div class="flex w-full justify-content-end mt-2 gap-2">
+      <IftaLabel v-if="solicitationContext?.isGeneral" class="w-full">
         <Textarea
           id="textarea_label"
           class="w-full h-full"
@@ -50,6 +54,7 @@ const createSolicitation = () => {
       </div>
     </div>
   </div>
+  
 </template>
 
 <style scoped>

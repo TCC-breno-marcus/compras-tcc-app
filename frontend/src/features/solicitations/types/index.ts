@@ -1,7 +1,8 @@
-import type { Item } from '@/features/catalogo/types'; // Importe o tipo base
+import type { Item } from '@/features/catalogo/types' // Importe o tipo base
 
 export interface SolicitationItem extends Item {
-  quantity: number;
+  quantity: number
+  justification?: string
 }
 
 /**
@@ -13,4 +14,12 @@ export interface Solicitation {
   descricao: string
   type: string
   status: boolean
+}
+
+/**
+ * Representa a estrutura do contexto (estados) das páginas de solicitação.
+ */
+export interface SolicitationContext {
+  dialogMode: string // 'management' or 'selection'
+  isGeneral: boolean
 }
