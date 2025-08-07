@@ -72,7 +72,7 @@ namespace Services
                             item.Descricao.ToLower().Contains(descricao.ToLower())
                         );
                     }
-                    if (categoriaIds != null && categoriaIds.Any())
+                    if (categoriaIds != null && categoriaIds.Count != 0)
                     {
                         query = query.Where(item => categoriaIds.Contains(item.CategoriaId));
                     }
