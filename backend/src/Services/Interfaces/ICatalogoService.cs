@@ -9,7 +9,7 @@ namespace Services.Interfaces
             string? catMat,
             string? nome,
             string? descricao,
-            List<long> categoriaIds,
+            List<long> categoriaId,
             string? especificacao,
             bool? isActive,
             string? searchTerm,
