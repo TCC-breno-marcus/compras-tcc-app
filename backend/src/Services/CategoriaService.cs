@@ -13,8 +13,8 @@ namespace Services
         private readonly ILogger<CategoriaService> _logger = logger;
 
         public async Task<IEnumerable<CategoriaDto>> GetAllCategoriasAsync(
-            long? id,
-            string? nome,
+            List<long> ids,
+            List<string> nomes,
             string? descricao,
             bool? isActive
         )
@@ -25,15 +25,18 @@ namespace Services
             {
                 var query = _context.Categorias.AsQueryable();
 
-                if (id.HasValue)
+                if (ids != null && ids.Count != 0)
                 {
-                    query = query.Where(categoria => categoria.Id == id.Value);
+                    query = query.Where(categoria => ids.Contains(categoria.Id));
                 }
 
-                if (!string.IsNullOrWhiteSpace(nome))
+                if (nomes != null && nomes.Count != 0)
                 {
+                    var nomesLower = nomes.Select(n => n.ToLower()).ToList();
                     query = query.Where(categoria =>
-                        categoria.Nome.ToLower().Contains(nome.ToLower())
+                        nomesLower.Any(termoDeBusca =>
+                            categoria.Nome.ToLower().Contains(termoDeBusca)
+                        )
                     );
                 }
                 if (!string.IsNullOrWhiteSpace(descricao))

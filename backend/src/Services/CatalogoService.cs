@@ -22,7 +22,7 @@ namespace Services
             string? catMat,
             string? nome,
             string? descricao,
-            long? categoriaId,
+            List<long> categoriaIds,
             string? especificacao,
             bool? isActive,
             string? searchTerm,
@@ -72,9 +72,9 @@ namespace Services
                             item.Descricao.ToLower().Contains(descricao.ToLower())
                         );
                     }
-                    if (categoriaId.HasValue)
+                    if (categoriaIds != null && categoriaIds.Count != 0)
                     {
-                        query = query.Where(item => item.CategoriaId == categoriaId.Value);
+                        query = query.Where(item => categoriaIds.Contains(item.CategoriaId));
                     }
                     if (!string.IsNullOrWhiteSpace(especificacao))
                     {
