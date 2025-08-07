@@ -14,10 +14,10 @@ COPY . .
 # Restaura pacotes
 RUN dotnet restore
 
-# Constrói (opcional mas recomendado)
+# Constrói 
 RUN dotnet build
 
-# Expõe a porta (opcional, boa prática)
+# Expõe a porta
 EXPOSE 8080
 
 # Ponto de entrada

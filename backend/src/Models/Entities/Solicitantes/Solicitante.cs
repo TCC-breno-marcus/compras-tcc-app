@@ -14,7 +14,6 @@ namespace ComprasTccApp.Models.Entities.Solicitantes
         [Required]
         public required Servidor Servidor { get; set; }
 
-        [Required]
         public List<Solicitacao> Solicitacoes { get; set; } = new List<Solicitacao>();
 
         [Required]

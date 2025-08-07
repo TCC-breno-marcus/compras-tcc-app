@@ -22,7 +22,7 @@ namespace Services
             string? catMat,
             string? nome,
             string? descricao,
-            long? categoriaId,
+            List<long> categoriaIds,
             string? especificacao,
             bool? isActive,
             string? searchTerm,
@@ -44,6 +44,7 @@ namespace Services
                         || item.Descricao.ToLower().Contains(searchTerm.ToLower())
                         || item.CatMat.Contains(searchTerm.ToLower())
                         || item.Especificacao.ToLower().Contains(searchTerm.ToLower())
+                        || item.Categoria.Nome.ToLower().Contains(searchTerm.ToLower()) // validar e fzr esse commit na outra branch
                     );
 
                     if (isActive.HasValue)
@@ -71,9 +72,9 @@ namespace Services
                             item.Descricao.ToLower().Contains(descricao.ToLower())
                         );
                     }
-                    if (categoriaId.HasValue)
+                    if (categoriaIds != null && categoriaIds.Any())
                     {
-                        query = query.Where(item => item.CategoriaId == categoriaId.Value);
+                        query = query.Where(item => categoriaIds.Contains(item.CategoriaId));
                     }
                     if (!string.IsNullOrWhiteSpace(especificacao))
                     {
@@ -153,9 +154,7 @@ namespace Services
 
         public async Task<ItemDto?> EditarItemAsync(int id, ItemUpdateDto updateDto)
         {
-            var itemDoBanco = await _context
-                .Items.Include(item => item.Categoria)
-                .FirstOrDefaultAsync(i => i.Id == id);
+            var itemDoBanco = await _context.Items.FirstOrDefaultAsync(i => i.Id == id);
 
             if (itemDoBanco == null)
             {
@@ -190,6 +189,17 @@ namespace Services
 
             _logger.LogInformation("Item com ID {Id} atualizado.", id);
 
+            var categoriaDoItem = await _context
+                .Categorias.AsNoTracking()
+                .FirstOrDefaultAsync(c => c.Id == itemDoBanco.CategoriaId);
+
+            if (categoriaDoItem == null)
+            {
+                throw new InvalidOperationException(
+                    "A categoria associada ao item não foi encontrada após a criação."
+                );
+            }
+
             return new ItemDto
             {
                 Id = itemDoBanco.Id,
@@ -198,10 +208,10 @@ namespace Services
                 CatMat = itemDoBanco.CatMat,
                 Categoria = new CategoriaDto
                 {
-                    Id = itemDoBanco.Categoria.Id,
-                    Nome = itemDoBanco.Categoria.Nome,
-                    Descricao = itemDoBanco.Categoria.Descricao,
-                    IsActive = itemDoBanco.Categoria.IsActive,
+                    Id = categoriaDoItem.Id,
+                    Nome = categoriaDoItem.Nome,
+                    Descricao = categoriaDoItem.Descricao,
+                    IsActive = categoriaDoItem.IsActive,
                 },
                 PrecoSugerido = itemDoBanco.PrecoSugerido,
                 Especificacao = itemDoBanco.Especificacao,
@@ -381,9 +391,7 @@ namespace Services
 
         public async Task<ItemDto> CriarItemAsync(CreateItemDto dto)
         {
-            var itemExistente = await _context
-                .Items.Include(item => item.Categoria)
-                .AnyAsync(item => item.CatMat == dto.CatMat);
+            var itemExistente = await _context.Items.AnyAsync(item => item.CatMat == dto.CatMat);
 
             if (itemExistente)
             {
@@ -483,6 +491,7 @@ namespace Services
 
                 var itensSemelhantes = await _context
                     .Items.AsNoTracking()
+                    .Include(item => item.Categoria)
                     .Where(item => item.Nome == nomeParaBusca && item.Id != id)
                     .ToListAsync();
 
@@ -526,7 +535,9 @@ namespace Services
 
         public async Task<ItemDto?> AtualizarImagemAsync(long id, IFormFile imagem)
         {
-            var item = await _context.Items.FindAsync(id);
+            var item = await _context
+                .Items.Include(item => item.Categoria)
+                .FirstOrDefaultAsync(item => item.Id == id);
             if (item == null)
             {
                 return null;
