@@ -31,8 +31,8 @@ namespace Controllers
         [ProducesResponseType(500)]
         [Authorize(Roles = "Admin,Gestor,Solicitante")]
         public async Task<IActionResult> Get(
-            [FromQuery] List<long> ids,
-            [FromQuery] List<string> nomes,
+            [FromQuery] List<long> id,
+            [FromQuery] List<string> nome,
             [FromQuery] string? descricao,
             [FromQuery] bool? isActive
         )
@@ -42,8 +42,8 @@ namespace Controllers
                 _logger.LogInformation("Recebida requisição para buscar categorias com filtros.");
 
                 var result = await _categoriaService.GetAllCategoriasAsync(
-                    ids,
-                    nomes,
+                    id,
+                    nome,
                     descricao,
                     isActive
                 );
