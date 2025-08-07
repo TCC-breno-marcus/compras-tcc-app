@@ -5,8 +5,8 @@ namespace Services.Interfaces
     public interface ICategoriaService
     {
         Task<IEnumerable<CategoriaDto>> GetAllCategoriasAsync(
-            List<long> ids,
-            List<string> nomes,
+            List<long> id,
+            List<string> nome,
             string? descricao,
             bool? isActive
         );
