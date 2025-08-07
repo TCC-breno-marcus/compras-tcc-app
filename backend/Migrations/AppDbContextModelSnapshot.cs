@@ -181,8 +181,18 @@ namespace backend.Migrations
                     b.Property<long>("ItemId")
                         .HasColumnType("bigint");
 
+                    b.Property<string>("Justificativa")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
                     b.Property<decimal>("Quantidade")
                         .HasColumnType("numeric");
+
+                    b.Property<long?>("SolicitacaoGeralId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("SolicitacaoPatrimonialId")
+                        .HasColumnType("bigint");
 
                     b.Property<decimal>("ValorUnitario")
                         .HasColumnType("decimal(18,2)");
@@ -190,6 +200,10 @@ namespace backend.Migrations
                     b.HasKey("SolicitacaoId", "ItemId");
 
                     b.HasIndex("ItemId");
+
+                    b.HasIndex("SolicitacaoGeralId");
+
+                    b.HasIndex("SolicitacaoPatrimonialId");
 
                     b.ToTable("SolicitacaoItens");
                 });
@@ -280,13 +294,13 @@ namespace backend.Migrations
                     b.Property<long>("GestorId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("JustificativaGeral")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
                     b.Property<long>("SolicitanteId")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("TipoSolicitacao")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
 
                     b.HasKey("Id");
 
@@ -295,6 +309,10 @@ namespace backend.Migrations
                     b.HasIndex("SolicitanteId");
 
                     b.ToTable("Solicitacoes");
+
+                    b.HasDiscriminator<string>("TipoSolicitacao").HasValue("Solicitacao");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("ComprasTccApp.Models.Entities.Solicitantes.Solicitante", b =>
@@ -311,9 +329,8 @@ namespace backend.Migrations
                     b.Property<long>("ServidorId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("Unidade")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("Unidade")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -321,6 +338,25 @@ namespace backend.Migrations
                         .IsUnique();
 
                     b.ToTable("Solicitantes");
+                });
+
+            modelBuilder.Entity("SolicitacaoGeral", b =>
+                {
+                    b.HasBaseType("ComprasTccApp.Models.Entities.Solicitacoes.Solicitacao");
+
+                    b.Property<string>("JustificativaGeral")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.HasDiscriminator().HasValue("GERAL");
+                });
+
+            modelBuilder.Entity("SolicitacaoPatrimonial", b =>
+                {
+                    b.HasBaseType("ComprasTccApp.Models.Entities.Solicitacoes.Solicitacao");
+
+                    b.HasDiscriminator().HasValue("PATRIMONIAL");
                 });
 
             modelBuilder.Entity("ComprasTccApp.Backend.Models.Entities.Items.Item", b =>
@@ -353,11 +389,19 @@ namespace backend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ComprasTccApp.Models.Entities.Solicitacoes.Solicitacao", "Solicitacao")
+                    b.HasOne("SolicitacaoGeral", null)
                         .WithMany("ItemSolicitacao")
+                        .HasForeignKey("SolicitacaoGeralId");
+
+                    b.HasOne("ComprasTccApp.Models.Entities.Solicitacoes.Solicitacao", "Solicitacao")
+                        .WithMany()
                         .HasForeignKey("SolicitacaoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("SolicitacaoPatrimonial", null)
+                        .WithMany("ItemSolicitacao")
+                        .HasForeignKey("SolicitacaoPatrimonialId");
 
                     b.Navigation("Item");
 
@@ -420,14 +464,19 @@ namespace backend.Migrations
                     b.Navigation("Solicitacoes");
                 });
 
-            modelBuilder.Entity("ComprasTccApp.Models.Entities.Solicitacoes.Solicitacao", b =>
+            modelBuilder.Entity("ComprasTccApp.Models.Entities.Solicitantes.Solicitante", b =>
+                {
+                    b.Navigation("Solicitacoes");
+                });
+
+            modelBuilder.Entity("SolicitacaoGeral", b =>
                 {
                     b.Navigation("ItemSolicitacao");
                 });
 
-            modelBuilder.Entity("ComprasTccApp.Models.Entities.Solicitantes.Solicitante", b =>
+            modelBuilder.Entity("SolicitacaoPatrimonial", b =>
                 {
-                    b.Navigation("Solicitacoes");
+                    b.Navigation("ItemSolicitacao");
                 });
 #pragma warning restore 612, 618
         }

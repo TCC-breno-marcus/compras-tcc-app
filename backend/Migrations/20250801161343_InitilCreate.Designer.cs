@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250716204854_AdicionaEspecificacaoItem")]
-    partial class AdicionaEspecificacaoItem
+    [Migration("20250801161343_InitilCreate")]
+    partial class InitilCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -38,15 +38,18 @@ namespace backend.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
+                    b.Property<long>("CategoriaId")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("Descricao")
                         .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("character varying(250)");
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
 
                     b.Property<string>("Especificacao")
                         .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("character varying(250)");
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
@@ -56,17 +59,99 @@ namespace backend.Migrations
                         .HasMaxLength(250)
                         .HasColumnType("character varying(250)");
 
-                    b.Property<string>("UnidadeMedida")
+                    b.Property<string>("Nome")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
-                    b.Property<decimal>("ValorUnitario")
+                    b.Property<decimal>("PrecoSugerido")
                         .HasColumnType("numeric");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CategoriaId");
+
                     b.ToTable("Items");
+                });
+
+            modelBuilder.Entity("ComprasTccApp.Models.Entities.Categorias.Categoria", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Descricao")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Nome")
+                        .IsUnique();
+
+                    b.ToTable("Categorias");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            Descricao = "Componentes discretos e integrados para montagem e prototipagem de circuitos. Inclui resistores, capacitores, transistores, MCUs, LEDs e PCBs.",
+                            IsActive = true,
+                            Nome = "Componentes Eletrônicos"
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            Descricao = "Equipamentos elétricos de uso doméstico, em cozinhas ou escritórios. Abrange linha branca, portáteis e aparelhos de climatização.",
+                            IsActive = true,
+                            Nome = "Eletrodomésticos"
+                        },
+                        new
+                        {
+                            Id = 3L,
+                            Descricao = "Instrumentos manuais e elétricos para manutenção, montagem, reparos e medições. Inclui chaves de fenda, alicates, furadeiras e multímetros.",
+                            IsActive = true,
+                            Nome = "Ferramentas"
+                        },
+                        new
+                        {
+                            Id = 4L,
+                            Descricao = "Substâncias e compostos químicos utilizados em análises e sínteses. Inclui ácidos, bases, solventes, sais e padrões analíticos.",
+                            IsActive = true,
+                            Nome = "Reagentes Químicos"
+                        },
+                        new
+                        {
+                            Id = 5L,
+                            Descricao = "Utensílios, consumíveis e pequenos equipamentos para uso geral em laboratório que não são vidrarias ou reagentes.",
+                            IsActive = true,
+                            Nome = "Materiais de Laboratório"
+                        },
+                        new
+                        {
+                            Id = 6L,
+                            Descricao = "Móveis para ambientes de escritório, laboratórios ou áreas comuns, como mesas, cadeiras, armários e bancadas de trabalho.",
+                            IsActive = true,
+                            Nome = "Mobiliário"
+                        },
+                        new
+                        {
+                            Id = 7L,
+                            Descricao = "Categoria residual para itens que não se enquadram claramente em nenhuma outra classificação. Ideal para materiais de escritório ou de consumo geral.",
+                            IsActive = true,
+                            Nome = "Diversos"
+                        });
                 });
 
             modelBuilder.Entity("ComprasTccApp.Models.Entities.Gestores.Gestor", b =>
@@ -102,7 +187,7 @@ namespace backend.Migrations
                     b.Property<decimal>("Quantidade")
                         .HasColumnType("numeric");
 
-                    b.Property<decimal>("ValorUnitarioNaCompra")
+                    b.Property<decimal>("ValorUnitario")
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("SolicitacaoId", "ItemId");
@@ -137,6 +222,15 @@ namespace backend.Migrations
                         .IsRequired()
                         .HasMaxLength(120)
                         .HasColumnType("character varying(120)");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("Telefone")
                         .IsRequired()
@@ -220,9 +314,8 @@ namespace backend.Migrations
                     b.Property<long>("ServidorId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("Unidade")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("Unidade")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -230,6 +323,17 @@ namespace backend.Migrations
                         .IsUnique();
 
                     b.ToTable("Solicitantes");
+                });
+
+            modelBuilder.Entity("ComprasTccApp.Backend.Models.Entities.Items.Item", b =>
+                {
+                    b.HasOne("ComprasTccApp.Models.Entities.Categorias.Categoria", "Categoria")
+                        .WithMany("Itens")
+                        .HasForeignKey("CategoriaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Categoria");
                 });
 
             modelBuilder.Entity("ComprasTccApp.Models.Entities.Gestores.Gestor", b =>
@@ -306,6 +410,11 @@ namespace backend.Migrations
             modelBuilder.Entity("ComprasTccApp.Backend.Models.Entities.Items.Item", b =>
                 {
                     b.Navigation("SolicitacoesItem");
+                });
+
+            modelBuilder.Entity("ComprasTccApp.Models.Entities.Categorias.Categoria", b =>
+                {
+                    b.Navigation("Itens");
                 });
 
             modelBuilder.Entity("ComprasTccApp.Models.Entities.Gestores.Gestor", b =>

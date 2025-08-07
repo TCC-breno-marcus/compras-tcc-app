@@ -21,5 +21,8 @@ namespace ComprasTccApp.Backend.DTOs
 
         [Required, MinLength(6), MaxLength(24)]
         public required string Password { get; set; }
+
+        [Required]
+        public required string Departamento { get; set; }
     }
 }

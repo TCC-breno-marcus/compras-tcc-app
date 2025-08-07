@@ -1,5 +1,6 @@
 using ComprasTccApp.Backend.DTOs;
 using ComprasTccApp.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ComprasTccApp.Backend.Controllers
@@ -16,7 +17,7 @@ namespace ComprasTccApp.Backend.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register(RegisterDto registerDto)
+        public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
         {
             try
             {
@@ -34,7 +35,7 @@ namespace ComprasTccApp.Backend.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginDto loginDto)
+        public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
             var token = await _authService.LoginAsync(loginDto);
             if (token == null)
@@ -43,6 +44,20 @@ namespace ComprasTccApp.Backend.Controllers
             }
 
             return Ok(new { token, message = "Login bem-sucedido!" });
+        }
+
+        [HttpGet("me")]
+        [Authorize]
+        public async Task<IActionResult> GetMyProfile()
+        {
+            var userProfile = await _authService.GetMyProfileAsync(HttpContext.User);
+
+            if (userProfile == null)
+            {
+                return NotFound(new { message = "Usuário não encontrado." });
+            }
+
+            return Ok(userProfile);
         }
     }
 }

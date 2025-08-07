@@ -1,5 +1,10 @@
+using System.Security.Claims;
 using ComprasTccApp.Backend.DTOs;
+using ComprasTccApp.Backend.Enums;
+using ComprasTccApp.Backend.Extensions;
 using ComprasTccApp.Models.Entities.Pessoas;
+using ComprasTccApp.Models.Entities.Servidores;
+using ComprasTccApp.Models.Entities.Solicitantes;
 using ComprasTccApp.Services.Interfaces;
 using Database;
 using Microsoft.EntityFrameworkCore;
@@ -47,7 +52,23 @@ namespace ComprasTccApp.Backend.Services
                 Role = "Solicitante",
             };
 
-            await _context.Pessoas.AddAsync(novaPessoa);
+            var departamentoEnum = registerDto.Departamento.FromString<DepartamentoEnum>();
+
+            var novoServidor = new Servidor
+            {
+                Pessoa = novaPessoa,
+                IdentificadorInterno = "TEMP-" + registerDto.CPF,
+                IsGestor = false
+            };
+
+            var novoSolicitante = new Solicitante
+            {
+                Servidor = novoServidor,
+                Unidade = departamentoEnum,
+                DataUltimaSolicitacao = DateTime.UtcNow
+            };
+
+            await _context.Solicitantes.AddAsync(novoSolicitante);
             await _context.SaveChangesAsync();
 
             _logger.LogInformation(
@@ -85,6 +106,43 @@ namespace ComprasTccApp.Backend.Services
                 loginDto.Email
             );
             return _tokenService.GenerateJwtToken(pessoa);
+        }
+
+        public async Task<UserProfileDto?> GetMyProfileAsync(ClaimsPrincipal user)
+        {
+            var userIdString = user.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userIdString) || !long.TryParse(userIdString, out var userId)) return null;
+
+            var pessoa = await _context.Pessoas.FindAsync(userId);
+            if (pessoa == null) return null;
+
+            var servidor = await _context
+                .Servidores
+                .FirstOrDefaultAsync(s => s.PessoaId == userId);
+
+            string? unidadeDoSolicitante = null;
+            if (servidor != null)
+            {
+                var solicitante = await _context
+                    .Solicitantes
+                    .FirstOrDefaultAsync(sol => sol.ServidorId == servidor.Id);
+
+                if (solicitante != null) unidadeDoSolicitante = solicitante.Unidade.ToFriendlyString();
+            }
+
+            var userProfile = new UserProfileDto
+            {
+                Id = pessoa.Id,
+                Nome = pessoa.Nome,
+                Email = pessoa.Email,
+                Telefone = pessoa.Telefone,
+                CPF = pessoa.CPF,
+                Role = pessoa.Role,
+                Departamento = unidadeDoSolicitante ?? "não disponível"
+            };
+
+            return userProfile;
         }
     }
 }
