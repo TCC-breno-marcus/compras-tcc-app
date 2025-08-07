@@ -3,7 +3,7 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { catalogoService } from '../services/catalogoService';
-import type { Item, CatalogoParams } from '../types';
+import type { Item, CatalogoFilters } from '../types';
 
 export const useCatalogoStore = defineStore('catalogo', () => {
   const items = ref<Item[]>([]);
@@ -18,7 +18,7 @@ export const useCatalogoStore = defineStore('catalogo', () => {
    * Busca os itens do catálogo na API e atualiza o estado.
    * @param filters Os parâmetros de filtro e paginação.
    */
-  async function fetchItems(filters?: CatalogoParams) {
+  async function fetchItems(filters?: CatalogoFilters) {
     loading.value = true; 
     error.value = null;
 

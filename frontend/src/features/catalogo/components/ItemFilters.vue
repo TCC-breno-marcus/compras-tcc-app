@@ -34,7 +34,7 @@ const nomeFilter = ref(props.initialFilters.nome)
 const descricaoFilter = ref(props.initialFilters.descricao)
 const catmatFilter = ref(props.initialFilters.catMat)
 const especificacaoFilter = ref(props.initialFilters.especificacao)
-const categoriaIdFilter = ref(props.initialFilters.categoriaId)
+const categoriaIdsFilter = ref(props.initialFilters.categoriaIds || [])
 const statusFilter = ref(props.initialFilters.status)
 
 const opcoesStatus = ref([
@@ -76,7 +76,7 @@ const handleApply = () => {
     descricao: descricaoFilter.value,
     catmat: catmatFilter.value,
     especificacao: especificacaoFilter.value,
-    categoriaId: categoriaIdFilter.value,
+    categoriaIds: categoriaIdsFilter.value,
     status: statusFilter.value,
     sortOrder: sortOrder.value,
   }
@@ -94,7 +94,7 @@ const handleClear = () => {
   descricaoFilter.value = ''
   catmatFilter.value = ''
   especificacaoFilter.value = ''
-  categoriaIdFilter.value = ''
+  categoriaIdsFilter.value = []
   statusFilter.value = ''
   searchTerm.value = ''
   sortOrder.value = null
@@ -110,16 +110,13 @@ watch(
     descricaoFilter.value = newFilters.descricao || ''
     catmatFilter.value = newFilters.catMat || ''
     especificacaoFilter.value = newFilters.especificacao || '' 
-    categoriaIdFilter.value = newFilters.categoriaId || ''
+    categoriaIdsFilter.value = newFilters.categoriaIds || []
     statusFilter.value = newFilters.status || ''
     sortOrder.value = newFilters.sortOrder || null
   },
   { deep: true, immediate: true }, 
 )
 
-onMounted(() => {
-  categoriaStore.fetch()
-})
 </script>
 
 <template>
@@ -144,7 +141,8 @@ onMounted(() => {
     <FloatLabel class="w-full sm:w-16rem mt-1 sm:mt-0" variant="on">
       <!-- TODO: quando aplico o filtro o label fica vazio -->
       <Select
-        v-model="categoriaIdFilter"
+        v-model="categoriaIdsFilter"
+        multiple
         :options="categorias"
         optionLabel="nome"
         optionValue="id"
@@ -156,6 +154,7 @@ onMounted(() => {
       <label for="categoria-filter">Categoria</label>
     </FloatLabel>
 
+    <!-- TODO: Filtro de Status não deve aparecer nas paginas de solicitação  -->
     <FloatLabel class="w-full sm:w-8rem mt-1 sm:mt-0" variant="on">
       <Select
         v-model="statusFilter"

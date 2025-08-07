@@ -19,6 +19,11 @@ export const useCategoriaStore = defineStore('categoria', () => {
    * @param filters Os parâmetros de filtro.
    */
   async function fetch(filters?: CategoriaParams) {
+    // Categorias já carregadas, pulando a chamada de API.
+    if (!filters && categorias.value.length > 0) {
+      return
+    }
+
     loading.value = true
     error.value = null
 

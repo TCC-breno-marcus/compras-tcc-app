@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { reactive, ref, watch } from 'vue'
-import { useRoute, useRouter, type LocationQueryValue } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import ItemDetailsDialog from './ItemDetailsDialog.vue'
 import type { CatalogoFilters, Item } from '../types'
 import { Button } from 'primevue'
@@ -11,6 +11,17 @@ import NotFoundSvg from '@/assets/NotFoundSvg.vue'
 import ItemComponentSkeleton from './ItemComponentSkeleton.vue'
 import ItemFilters from './ItemFilters.vue'
 import ItemList from './ItemList.vue'
+import { useCategoriaStore } from '../stores/categoriaStore'
+import { categorysIdFilterPerName } from '../utils/categoriaTransformer'
+import { mapQueryToFilters, mountQueryWithPreFilterCategory } from '../utils/queryHelper'
+
+const props = defineProps<{
+  /**
+   * Define uma lista inicial de nomes de categoria para filtrar o catálogo.
+   * Se não for fornecido, nenhum filtro de categoria padrão será aplicado.
+   */
+  categoryNames?: string[]
+}>()
 
 const route = useRoute()
 const router = useRouter()
@@ -18,6 +29,8 @@ const router = useRouter()
 const catalogoStore = useCatalogoStore()
 const { items, loading, error, totalCount, pageNumber, pageSize, totalPages } =
   storeToRefs(catalogoStore)
+const categoriaStore = useCategoriaStore()
+const { categorias, loading: loadingCategorys } = storeToRefs(categoriaStore)
 
 const filters = reactive<CatalogoFilters>({
   searchTerm: '',
@@ -25,7 +38,9 @@ const filters = reactive<CatalogoFilters>({
   descricao: '',
   catMat: '',
   especificacao: '',
-  categoriaId: '',
+  categoriaIds: props.categoryNames
+    ? categorysIdFilterPerName(categorias.value, props.categoryNames)
+    : [],
   sortOrder: null,
   status: '',
 })
@@ -39,7 +54,7 @@ const applyFilters = (newFilters: CatalogoFilters) => {
   if (newFilters.descricao) query.descricao = newFilters.descricao
   if (newFilters.catMat) query.catMat = newFilters.catMat
   if (newFilters.especificacao) query.especificacao = newFilters.especificacao
-  if (newFilters.categoriaId) query.categoriaId = newFilters.categoriaId
+  if (newFilters.categoriaIds) query.categoriaIds = newFilters.categoriaIds
   if (newFilters.status) {
     query.isActive = (newFilters.status === 'ativo').toString()
   }
@@ -55,38 +70,20 @@ const clearFilters = () => {
   router.push({ query: {} })
 }
 
-const getFirstQueryValue = (value: LocationQueryValue | LocationQueryValue[]): string => {
-  if (Array.isArray(value)) {
-    return value[0] || ''
-  }
-  return value || ''
-}
-
-const getStatusFromQuery = (value: LocationQueryValue | LocationQueryValue[]): string => {
-  if (value === 'true') {
-    return 'ativo'
-  }
-  if (value === 'false') {
-    return 'inativo'
-  }
-  return ''
-}
-
 watch(
   () => route.query,
-  (newQuery) => {
-    filters.searchTerm = getFirstQueryValue(newQuery.searchTerm)
-    filters.nome = getFirstQueryValue(newQuery.nome)
-    filters.descricao = getFirstQueryValue(newQuery.descricao)
-    filters.catMat = getFirstQueryValue(newQuery.catmat)
-    filters.especificacao = getFirstQueryValue(newQuery.especificacao)
-    filters.categoriaId = getFirstQueryValue(newQuery.categoriaId)
-    filters.status = getStatusFromQuery(newQuery.isActive)
+  async (newQuery) => {
+    const filtersFromUrl = mapQueryToFilters(newQuery)
 
-    const querySort = getFirstQueryValue(newQuery.sortOrder)
-    filters.sortOrder = querySort === 'asc' || querySort === 'desc' ? querySort : null
-
-    catalogoStore.fetchItems(newQuery)
+    if (props.categoryNames && props.categoryNames.length > 0) {
+      await categoriaStore.fetch({ nomes: props.categoryNames })
+    }
+    const finalFilters = mountQueryWithPreFilterCategory(
+      filtersFromUrl,
+      categorias.value,
+      props.categoryNames,
+    )
+    catalogoStore.fetchItems(finalFilters)
   },
   { immediate: true },
 )
@@ -102,7 +99,8 @@ const handleViewDetails = (item: Item) => {
 
 const handleUpdateDialog = (payload: { item?: Item; action: string }) => {
   if (payload.action === 'updateItems') {
-    catalogoStore.fetchItems(route.query)
+    const filters = mapQueryToFilters(route.query)
+    catalogoStore.fetchItems(filters)
   }
   if (payload.item) {
     selectedItem.value = payload.item
@@ -136,7 +134,7 @@ defineExpose({
     </ItemList>
 
     <div
-      v-if="items.length === 0 && !loading"
+      v-if="items.length === 0 && !loading && !loadingCategorys"
       class="flex flex-column align-items-center mt-6 gap-2"
     >
       <div class="w-18rem sm:w-24rem md:w-30rem">
@@ -175,7 +173,7 @@ defineExpose({
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  max-height: calc(100vh - 320px);
+  max-height: calc(100vh - 300px);
   overflow-y: auto;
   /* Para Firefox */
   scrollbar-width: thin;

@@ -7,9 +7,10 @@ import type {
 } from '@/features/management/types'
 import imageCompression from 'browser-image-compression'
 import { transformItem } from '../utils/itemTransformer'
+import type { CatalogoFilters } from '../types'
 
 interface ICatalogoService {
-  getItens(params?: CatalogoParams): Promise<PaginatedResponse<Item>>
+  getItens(filters?: CatalogoFilters): Promise<PaginatedResponse<Item>>
   getItemById(id: number): Promise<Item>
   getItensSemelhantes(id: number): Promise<Item[]>
   editarItem(id: number, params: ItemParams): Promise<Item>
@@ -47,9 +48,24 @@ async function _processarImagem(arquivoOriginal: File): Promise<File> {
 export const catalogoService: ICatalogoService = {
   /**
    * Busca itens do catálogo de forma paginada e com filtros.
-   * @param params Um objeto com os filtros e paginação.
+   * @param filters Um objeto com os filtros e paginação.
    */
-  async getItens(params) {
+  async getItens(filters) {
+    const params = new URLSearchParams()
+
+    if (filters) {
+      Object.entries(filters).forEach(([key, value]) => {
+        if (key === 'categoriaIds') {
+          if (Array.isArray(value) && value.length > 0) {
+            value.forEach((id) => params.append('categoriaIds', String(id)))
+          }
+        } else {
+          if (value != null && value !== '') {
+            params.set(key, String(value))
+          }
+        }
+      })
+    }
     const response = await apiClient.get<PaginatedResponse<Item>>('/catalogo', { params })
     response.data.items = response.data.items.map(transformItem)
     return response.data

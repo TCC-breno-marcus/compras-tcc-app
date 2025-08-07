@@ -2,7 +2,7 @@
 import Divider from 'primevue/divider'
 import MyCurrentSolicitation from '../components/MyCurrentSolicitation.vue'
 import { useLayoutStore } from '@/stores/layout'
-import { ref, computed } from 'vue'
+import { ref, computed, inject } from 'vue'
 import CatalogoBrowser from '@/features/catalogo/components/CatalogoBrowser.vue'
 import type { Item } from '@/features/catalogo/types'
 import { useSolicitationStore } from '../stores/solicitationStore'
@@ -12,7 +12,11 @@ import { storeToRefs } from 'pinia'
 import { useLeaveConfirmation } from '@/composables/useLeaveConfirmation'
 import { DISCARD_SOLICITATION_CONFIRMATION } from '@/utils/confirmationFactoryUtils'
 import CustomBreadcrumb from '@/components/ui/CustomBreadcrumb.vue'
+import { useCategoriaStore } from '@/features/catalogo/stores/categoriaStore'
+import type { SolicitationContext } from '..'
+import { CATEGORY_ITEMS_GENERAL, CATEGORY_ITEMS_PATRIMONIALS } from '../constants'
 
+const solicitationContext = inject<SolicitationContext>('solicitationContext')
 
 const layoutStore = useLayoutStore()
 const { currentBreakpoint } = storeToRefs(layoutStore)
@@ -24,6 +28,7 @@ const toast = useToast()
 const confirm = useConfirm()
 const solicitationStore = useSolicitationStore()
 const { solicitationItems, justification } = storeToRefs(solicitationStore)
+const categoriaStore = useCategoriaStore()
 const catalogoBrowserRef = ref()
 
 const addItemSolicitation = (item: Item) => {
@@ -79,7 +84,12 @@ useLeaveConfirmation(isSolicitationDirty)
         </div>
         <!-- Na listagem do catalogo nas telas de criar solicitação, deve filtrar
          por padrão somente itens ativos -->
-        <CatalogoBrowser ref="catalogoBrowserRef">
+        <CatalogoBrowser
+          ref="catalogoBrowserRef"
+          :category-names="
+            solicitationContext?.isGeneral ? CATEGORY_ITEMS_GENERAL : CATEGORY_ITEMS_PATRIMONIALS
+          "
+        >
           <template #actions="{ item }">
             <Button
               icon="pi pi-plus"

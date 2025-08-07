@@ -4,7 +4,7 @@ import Button from 'primevue/button'
 import InputNumber from 'primevue/inputnumber'
 import InputText from 'primevue/inputtext'
 import { FloatLabel } from 'primevue'
-import type { SolicitationContext, SolicitationItem } from '../types'
+import type { SolicitationContext, SolicitationItem } from '..'
 import { useSolicitationStore } from '../stores/solicitationStore'
 import { useToast } from 'primevue/usetoast'
 

@@ -31,7 +31,7 @@ import ItemDetailsDialogSkeleton from './ItemDetailsDialogSkeleton.vue'
 import { useCategoriaStore } from '../stores/categoriaStore'
 import { storeToRefs } from 'pinia'
 import Select from 'primevue/select'
-import type { SolicitationContext } from '@/features/solicitations/types'
+import type { SolicitationContext } from '@/features/solicitations'
 
 const props = defineProps<{
   visible: boolean

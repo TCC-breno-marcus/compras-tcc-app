@@ -6,7 +6,7 @@ import { IftaLabel } from 'primevue'
 import Textarea from 'primevue/textarea'
 import { useSolicitationStore } from '../stores/solicitationStore'
 import { storeToRefs } from 'pinia'
-import type { SolicitationContext } from '../types'
+import type { SolicitationContext } from '..'
 
 const solicitationContext = inject<SolicitationContext>('solicitationContext')
 
@@ -24,7 +24,7 @@ const createSolicitation = () => {
   console.log(newSolicitation)
 }
 
-// TODO: ao trocar entre paginas de solicitacao, a solicitacao deve ser resetada. 
+// TODO: ao trocar entre paginas de solicitacao, a solicitacao deve ser resetada.
 // Mas para outras paginas, mantém a solicitacao no estado
 </script>
 
@@ -56,7 +56,6 @@ const createSolicitation = () => {
       </div>
     </div>
   </div>
-  
 </template>
 
 <style scoped>
