@@ -198,6 +198,7 @@ const closeDialog = () => {
         />
         <CatalogUpload />
       </div>
+      <!-- TODO: deve usar os componentes da feature de catalogo -->
       <div
         class="filters flex lg:flex-order-1 flex-column sm:flex-wrap sm:flex-row align-items-center sm:w-full lg:w-auto gap-2 p-3 xl:p-0"
       >

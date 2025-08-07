@@ -25,18 +25,5 @@ const emit = defineEmits(['viewDetails'])
 </template>
 
 <style scoped>
-.items-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  max-height: calc(100vh - 320px);
-  overflow-y: auto;
-  /* Para Firefox */
-  scrollbar-width: thin;
-  scrollbar-color: var(--p-surface-400) transparent;
-}
 
-:deep(.p-toolbar-start) {
-  flex: 1 1 auto;
-}
 </style>

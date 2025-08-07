@@ -1,3 +1,4 @@
+<!-- TODO: refatorar componente para separar os estados de forms no store e também em componentes menores -->
 <script setup lang="ts">
 import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
@@ -30,15 +31,14 @@ import ItemDetailsDialogSkeleton from './ItemDetailsDialogSkeleton.vue'
 import { useCategoriaStore } from '../stores/categoriaStore'
 import { storeToRefs } from 'pinia'
 import Select from 'primevue/select'
+import type { SolicitationContext } from '@/features/solicitations/types'
 
 const props = defineProps<{
   visible: boolean
   item: Item | null
 }>()
 
-const solicitationContext = inject('solicitationContext', { 
-    dialogMode: 'selection', 
-});
+const solicitationContext = inject<SolicitationContext>('solicitationContext')
 
 const confirm = useConfirm()
 const toast = useToast()
@@ -376,6 +376,10 @@ const fileUploadPT = ref({
         <div v-else class="image-placeholder mb-3">
           <span class="material-symbols-outlined placeholder-icon"> hide_image </span>
         </div>
+        <div class="flex align-items-center justify-content-center gap-1 text-xs w-full">
+          <i class="pi pi pi-info-circle text-xs cursor-pointer"></i>
+          <small>Imagem meramente ilustrativa</small>
+        </div>
         <div v-if="isEditing" class="field flex flex-column align-items-center">
           <Button
             v-if="formData.linkImagem"
@@ -556,7 +560,7 @@ const fileUploadPT = ref({
 
     <template #footer>
       <div class="flex justify-content-between w-full">
-        <div>
+        <div class="flex align-items-center gap-2 text-xs" style="color: var(--p-surface-500)">
           <!-- SOMENTE SE O USER FOR GESTOR OU ADMIN -->
           <Button
             v-if="isEditing"
@@ -581,7 +585,7 @@ const fileUploadPT = ref({
             :disabled="isLoading"
           />
           <Button
-            v-if="!isEditing && solicitationContext.dialogMode === 'management'"
+            v-if="!isEditing && solicitationContext?.dialogMode === 'management'"
             label="Editar"
             icon="pi pi-pencil"
             size="small"

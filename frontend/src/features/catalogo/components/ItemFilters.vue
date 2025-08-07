@@ -142,6 +142,7 @@ onMounted(() => {
     </FloatLabel>
 
     <FloatLabel class="w-full sm:w-16rem mt-1 sm:mt-0" variant="on">
+      <!-- TODO: quando aplico o filtro o label fica vazio -->
       <Select
         v-model="categoriaIdFilter"
         :options="categorias"

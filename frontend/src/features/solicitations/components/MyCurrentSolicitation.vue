@@ -23,12 +23,14 @@ const createSolicitation = () => {
   } catch (error) {}
   console.log(newSolicitation)
 }
+
+// TODO: ao trocar entre paginas de solicitacao, a solicitacao deve ser resetada. 
+// Mas para outras paginas, mantém a solicitacao no estado
 </script>
 
 <template>
   <div class="flex flex-column justify-content-between w-full h-full">
     <div v-if="solicitationItems.length > 0" class="items-list overflow-y-auto">
-      <!--  TODO: deve pegar o context da solicitacao para exibir um inputfield pra cada item se isGeneral for false-->
       <ItemSolicitation v-for="item in solicitationItems" :key="item.catMat" :item="item" />
     </div>
     <div v-else class="flex flex-column align-items-center text-center p-4">

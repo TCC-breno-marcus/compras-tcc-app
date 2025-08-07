@@ -23,6 +23,7 @@ const routeNamesMap: { [key: string]: { label: string; route?: string } } = {
   solicitacoes: { label: 'Solicitações', route: '/solicitacoes' },
   criar: { label: 'Criar' },
   patrimonial: { label: 'Patrimonial', route: '/solicitacoes/criar/patrimonial' },
+  geral: { label: 'Geral', route: '/solicitacoes/criar/geral' },
 }
 
 watch(
