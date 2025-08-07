@@ -17,7 +17,7 @@ export const categoriaService: ICategoriaService = {
 
     if (filters) {
       Object.entries(filters).forEach(([key, value]) => {
-        if (key === 'nomes' && Array.isArray(value) && value.length > 0) {
+        if (key === 'nome' && Array.isArray(value) && value.length > 0) {
           value.forEach((id) => params.append(key, id.toString()))
         } else if (value !== null && value !== undefined && value !== '') {
           params.set(key, String(value))

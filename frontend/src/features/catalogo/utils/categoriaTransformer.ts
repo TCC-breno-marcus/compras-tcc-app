@@ -21,10 +21,7 @@ export function categorysIdFilterPerName(categorys: Categoria[], namesFilter: st
   if (!namesFilter || namesFilter.length === 0) {
     return []
   }
-  console.log({ categorys })
-  console.log({ namesFilter })
   const nomesSet = new Set(namesFilter.map((name) => name.toLowerCase()))
   const categorysFilter = categorys.filter((c) => nomesSet.has(c.nome.toLowerCase()))
-  console.log({ categorysFilter })
   return categorysFilter.map((c) => c.id)
 }
