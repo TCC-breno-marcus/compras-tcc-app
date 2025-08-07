@@ -55,9 +55,9 @@ export const catalogoService: ICatalogoService = {
 
     if (filters) {
       Object.entries(filters).forEach(([key, value]) => {
-        if (key === 'categoriaIds') {
+        if (key === 'categoriaId') {
           if (Array.isArray(value) && value.length > 0) {
-            value.forEach((id) => params.append('categoriaIds', String(id)))
+            value.forEach((id) => params.append('categoriaId', String(id)))
           }
         } else {
           if (value != null && value !== '') {

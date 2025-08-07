@@ -39,7 +39,7 @@ export interface CatalogoParams {
   catMat?: string
   descricao?: string
   especificacao?: string
-  categoriaIds?: string
+  categoriaId?: string
   isActive?: boolean
   pageNumber?: number
   pageSize?: number

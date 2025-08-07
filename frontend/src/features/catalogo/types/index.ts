@@ -39,7 +39,7 @@ export interface CatalogoParams {
   catMat?: string
   descricao?: string
   especificacao?: string
-  categoriaIds?: number[];
+  categoriaId?: number[];
   isActive?: boolean
   pageNumber?: number
   pageSize?: number
@@ -57,7 +57,7 @@ export interface CatalogoFilters {
   descricao: string
   catMat: string
   especificacao: string
-  categoriaIds: number[];
+  categoriaId: number[];
   status: string
   sortOrder: 'asc' | 'desc' | null
 }
@@ -90,7 +90,7 @@ export interface Categoria {
  */
 export interface CategoriaParams {
   id?: number[]
-  nomes?: string[]
+  nome?: string[]
   descricao?: string
   isActive?: boolean
 }

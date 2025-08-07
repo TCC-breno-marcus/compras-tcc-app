@@ -38,7 +38,7 @@ const filters = reactive<CatalogoFilters>({
   descricao: '',
   catMat: '',
   especificacao: '',
-  categoriaIds: props.categoryNames
+  categoriaId: props.categoryNames
     ? categorysIdFilterPerName(categorias.value, props.categoryNames)
     : [],
   sortOrder: null,
@@ -54,7 +54,7 @@ const applyFilters = (newFilters: CatalogoFilters) => {
   if (newFilters.descricao) query.descricao = newFilters.descricao
   if (newFilters.catMat) query.catMat = newFilters.catMat
   if (newFilters.especificacao) query.especificacao = newFilters.especificacao
-  if (newFilters.categoriaIds) query.categoriaIds = newFilters.categoriaIds
+  if (newFilters.categoriaId) query.categoriaId = newFilters.categoriaId
   if (newFilters.status) {
     query.isActive = (newFilters.status === 'ativo').toString()
   }
@@ -76,7 +76,7 @@ watch(
     const filtersFromUrl = mapQueryToFilters(newQuery)
 
     if (props.categoryNames && props.categoryNames.length > 0) {
-      await categoriaStore.fetch({ nomes: props.categoryNames })
+      await categoriaStore.fetch({ nome: props.categoryNames })
     }
     const finalFilters = mountQueryWithPreFilterCategory(
       filtersFromUrl,

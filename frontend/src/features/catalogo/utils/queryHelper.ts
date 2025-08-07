@@ -9,7 +9,7 @@ export const mapQueryToFilters = (query: LocationQuery): CatalogoFilters => {
     descricao: getFirstQueryValue(query.descricao),
     catMat: getFirstQueryValue(query.catmat),
     especificacao: getFirstQueryValue(query.especificacao),
-    categoriaIds: getQueryAsArrayOfNumbers(query.categoriaIds),
+    categoriaId: getQueryAsArrayOfNumbers(query.categoriaId),
     status: getStatusFromQuery(query.isActive),
     sortOrder: getSortOrderFromQuery(query.sortOrder),
   }
@@ -58,14 +58,14 @@ export const mountQueryWithPreFilterCategory = (
   }
 
   const propCategoriesIds = categorysIdFilterPerName(allCategories, categoryNamesFromProps)
-  const urlCategories = queryFilters.categoriaIds
+  const urlCategories = queryFilters.categoriaId
 
   if (!urlCategories || urlCategories.length === 0) {
-    return { ...queryFilters, categoriaIds: propCategoriesIds }
+    return { ...queryFilters, categoriaId: propCategoriesIds }
   }
 
   const propCategoriesSet = new Set(propCategoriesIds)
   const intersection = urlCategories.filter((id) => propCategoriesSet.has(id))
 
-  return { ...queryFilters, categoriaIds: intersection }
+  return { ...queryFilters, categoriaId: intersection }
 }
