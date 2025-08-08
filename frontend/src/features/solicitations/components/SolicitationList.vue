@@ -1,75 +1,154 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Button } from 'primevue'
 import ItemSolicitation from './ItemSolicitation.vue'
-import { IftaLabel } from 'primevue'
-import Textarea from 'primevue/textarea'
+
+const props = defineProps<{
+  isEditing: boolean
+}>()
 
 const items = ref([
   {
-    title: 'ALCOÔMETRO',
-    img: '/items_img/408548.png',
-    code: '408548',
-    suggestedUnitPrice: 17.99,
+    id: 1,
+    nome: 'Agulha Bacteriológica',
+    descricao: 'Agulha bacteriológica em platina, sem cabo.',
+    catMat: '408828',
+    categoria: {
+      id: 5,
+      nome: 'Materiais de Laboratório',
+      descricao:
+        'Utensílios, consumíveis e pequenos equipamentos para uso geral em laboratório que não são vidrarias ou reagentes.',
+      isActive: true,
+    },
+    linkImagem: 'http://localhost:8088/images/408828.png',
+    especificacao: '5 cm',
+    precoSugerido: 12,
+    isActive: true,
+    quantity: 2,
   },
   {
-    title: 'ANEL COM MUFA',
-    img: '/items_img/421658.png',
-    code: '421658',
-    suggestedUnitPrice: 17.99,
+    id: 8,
+    nome: 'Alonga',
+    descricao: 'Alonga de borracha para usar em kitassato.',
+    catMat: '421644',
+    categoria: {
+      id: 5,
+      nome: 'Materiais de Laboratório',
+      descricao:
+        'Utensílios, consumíveis e pequenos equipamentos para uso geral em laboratório que não são vidrarias ou reagentes.',
+      isActive: true,
+    },
+    linkImagem: 'http://localhost:8088/images/421644.png',
+    especificacao: '15 x 40 mm',
+    precoSugerido: 15,
+    isActive: true,
+    quantity: 6,
   },
   {
-    title: 'BALÃO FUNDO CHATO',
-    img: '/items_img/409255.png',
-    code: '409255',
-    suggestedUnitPrice: 17.99,
+    id: 11,
+    nome: 'Anel Com Mufa',
+    descricao: 'Anel de ferro com mufa',
+    catMat: '431837',
+    categoria: {
+      id: 5,
+      nome: 'Materiais de Laboratório',
+      descricao:
+        'Utensílios, consumíveis e pequenos equipamentos para uso geral em laboratório que não são vidrarias ou reagentes.',
+      isActive: true,
+    },
+    linkImagem: 'http://localhost:8088/images/431837.png',
+    especificacao: '100 mm',
+    precoSugerido: 90,
+    isActive: true,
+    quantity: 12,
   },
   {
-    title: 'BALÃO VOLUMÉTRICO',
-    img: '/items_img/409415.png',
-    code: '409415',
-    suggestedUnitPrice: 17.99,
+    id: 15,
+    nome: 'Balão Fundo Chato',
+    descricao:
+      'Balão de vidro com fundo chato, fabricado em vidro borossilicato 3.3. Altamente resistente a choques térmicos e ao calor, resistente à água, ácidos fortes, soluções alcalinas e salinas. Classe A.',
+    catMat: '413186',
+    categoria: {
+      id: 5,
+      nome: 'Materiais de Laboratório',
+      descricao:
+        'Utensílios, consumíveis e pequenos equipamentos para uso geral em laboratório que não são vidrarias ou reagentes.',
+      isActive: true,
+    },
+    linkImagem: 'http://localhost:8088/images/413186.png',
+    especificacao: '6000 mL',
+    precoSugerido: 9,
+    isActive: true,
+    quantity: 14,
   },
   {
-    title: 'FRASCO DE VIDRO ÂMBAR',
-    img: '/items_img/409441.png',
-    code: '409441',
-    suggestedUnitPrice: 17.99,
+    id: 20,
+    nome: 'Balão Fundo Redondo Com Junta E Gargalo Curto',
+    descricao:
+      'Balão de vidro com fundo redondo, com junta esmerilhada intercambiável 24/40 cônica e com gargalo curto. Fabricado com vidro borosilicato 3.3. Extremamente resistente à corrosão química, a choques térmicos e ao calor. Classe A.',
+    catMat: '409262',
+    categoria: {
+      id: 5,
+      nome: 'Materiais de Laboratório',
+      descricao:
+        'Utensílios, consumíveis e pequenos equipamentos para uso geral em laboratório que não são vidrarias ou reagentes.',
+      isActive: true,
+    },
+    linkImagem: 'http://localhost:8088/images/409262.png',
+    especificacao: '500 mL',
+    precoSugerido: 10,
+    isActive: true,
+    quantity: 2,
   },
   {
-    title: 'FUNIL ANALÍTICO LISO HASTE CURTA',
-    img: '/items_img/410110.png',
-    code: '410110',
-    suggestedUnitPrice: 17.99,
+    id: 22,
+    nome: 'Balão Para Destilação',
+    descricao:
+      'Balão de vidro para destilação com fundo redondo, gargalo longo e saída lateral. Fabricado com vidro borosilicato 3.3. Extremamente resistente à corrosão química, a choques térmicos e ao calor. Classe A.',
+    catMat: '409280',
+    categoria: {
+      id: 5,
+      nome: 'Materiais de Laboratório',
+      descricao:
+        'Utensílios, consumíveis e pequenos equipamentos para uso geral em laboratório que não são vidrarias ou reagentes.',
+      isActive: true,
+    },
+    linkImagem: 'http://localhost:8088/images/409280.png',
+    especificacao: '250 mL',
+    precoSugerido: 12,
+    isActive: true,
+    quantity: 7,
   },
   {
-    title: 'GARRA PARA CONDENSADOR',
-    img: '/items_img/426234.png',
-    code: '426234',
-    suggestedUnitPrice: 17.99,
-  },
-  {
-    title: 'GRAL COM PISTILO',
-    img: '/items_img/421491.png',
-    code: '421491',
-    suggestedUnitPrice: 17.99,
+    id: 33,
+    nome: 'Balão Volumétrico',
+    descricao: 'Balão volumétrico de plástico com rolha de plástico.',
+    catMat: '409413',
+    categoria: {
+      id: 5,
+      nome: 'Materiais de Laboratório',
+      descricao:
+        'Utensílios, consumíveis e pequenos equipamentos para uso geral em laboratório que não são vidrarias ou reagentes.',
+      isActive: true,
+    },
+    linkImagem: 'http://localhost:8088/images/409413.png',
+    especificacao: '250 mL',
+    precoSugerido: 14,
+    isActive: true,
+    quantity: 9,
   },
 ])
-
-const justification = ref('')
 </script>
 
 <template>
   <div class="flex flex-column justify-content-between w-full lg:w-6">
     <div class="items-list overflow-y-auto">
-      <ItemSolicitation v-for="item in items" :key="item.code" :item="item" />
+      <ItemSolicitation
+        v-for="item in items"
+        :key="item.catMat"
+        :item="item"
+        :is-editing="props.isEditing"
+      />
     </div>
-
-    <!-- <div class="flex w-full justify-content-between mt-2 gap-2">
-      <div class="flex align-items-end">
-        <Button label="Solicitar" icon="pi pi-send" size="small" />
-      </div>
-    </div> -->
   </div>
 </template>
 

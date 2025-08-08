@@ -7,13 +7,15 @@ import { FloatLabel } from 'primevue'
 import type { SolicitationItem } from '..'
 import { useSolicitationStore } from '../stores/solicitationStore'
 import { useToast } from 'primevue/usetoast'
-import { SolicitationContextKey } from '../keys'
+import { SolicitationContextKey, SolicitationDetailsContextKey } from '../keys'
 
 const props = defineProps<{
   item: SolicitationItem
+  isEditing: boolean
 }>()
 
 const solicitationContext = inject(SolicitationContextKey)
+const solicitationDetailsContext = inject(SolicitationDetailsContextKey)
 
 const solicitationStore = useSolicitationStore()
 const toast = useToast()
@@ -56,7 +58,7 @@ const onQuantityChange = (newQuantity: number) => {
     </div>
 
     <div class="flex align-items-center gap-2 justify-content-end">
-      <FloatLabel variant="on" class="quantity-input w-full sm:w-3">
+      <FloatLabel v-if="isEditing" variant="on" class="quantity-input w-full sm:w-3">
         <InputNumber
           v-model="item.quantity"
           inputId="on_label_qtde"
@@ -69,7 +71,8 @@ const onQuantityChange = (newQuantity: number) => {
         />
         <label for="on_label_qtde">Qtde.</label>
       </FloatLabel>
-      <FloatLabel variant="on" class="price-input">
+      <p v-else>Quantidade: {{ item.quantity }}</p>
+      <FloatLabel v-if="isEditing" variant="on" class="price-input">
         <InputNumber
           v-model="item.precoSugerido"
           inputId="on_label_price"
@@ -82,7 +85,17 @@ const onQuantityChange = (newQuantity: number) => {
         />
         <label for="on_label_price">Preço Unitário</label>
       </FloatLabel>
+      <p v-else>
+        Preço Sugerido:
+        {{
+          item.precoSugerido.toLocaleString('pt-BR', {
+            style: 'currency',
+            currency: 'BRL',
+          })
+        }}
+      </p>
       <Button
+        v-if="isEditing"
         icon="pi pi-trash"
         variant="text"
         severity="danger"
@@ -95,7 +108,7 @@ const onQuantityChange = (newQuantity: number) => {
     v-if="!solicitationContext?.isGeneral"
     class="item-card flex justify-content-end w-full pb-2 pr-6 pl-7 md:pt-2 lg:pt-0"
   >
-    <FloatLabel variant="on" class="w-full">
+    <FloatLabel v-if="isEditing" variant="on" class="w-full">
       <InputText
         v-model="item.justification"
         inputId="on_label_justification"
@@ -107,6 +120,11 @@ const onQuantityChange = (newQuantity: number) => {
       />
       <label for="on_label_justification">Justificativa</label>
     </FloatLabel>
+    <p v-else>
+      Justificativa: {{ item.justification }} Lorem ipsum dolor sit amet consectetur, adipisicing
+      elit. Amet voluptatum nulla iusto ipsa suscipit corporis magnam dolorum dolorem? Cum quasi
+      obcaecati non magni cumque, repudiandae veritatis alias beatae fuga sed.
+    </p>
   </div>
 </template>
 

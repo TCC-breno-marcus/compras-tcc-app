@@ -1,21 +1,16 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import Divider from 'primevue/divider'
+import { ref, computed, reactive, provide, readonly } from 'vue'
 import Card from 'primevue/card'
 import Tabs from 'primevue/tabs'
 import TabList from 'primevue/tablist'
 import Tab from 'primevue/tab'
 import TabPanels from 'primevue/tabpanels'
 import TabPanel from 'primevue/tabpanel'
-import Popover from 'primevue/popover'
 import Button from 'primevue/button'
-import InputGroup from 'primevue/inputgroup'
-import InputGroupAddon from 'primevue/inputgroupaddon'
-import { InputText } from 'primevue'
 import Message from 'primevue/message'
-import ScrollPanel from 'primevue/scrollpanel'
 import SolicitationList from '../components/SolicitationList.vue'
 import SolicitationAnalysis from '../components/SolicitationAnalysis.vue'
+import { SolicitationContextKey, type SolicitationContext } from '../keys'
 
 // Seus dados da solicitação
 const solicitation = ref({
@@ -42,11 +37,20 @@ const formattedPrice = new Intl.NumberFormat('pt-BR', {
 
 const deadline = new Date('2025-08-31T23:59:59')
 const showDeadlineWarning = computed(() => new Date() < deadline)
+
+const solicitationContext = reactive<SolicitationContext>({
+  dialogMode: '',
+  isGeneral: true,
+})
+
+const isEditing = ref<boolean>(false)
+
+provide(SolicitationContextKey, readonly(solicitationContext))
 </script>
 
 <template>
   <div class="p-2" v-if="solicitation">
-    <div class="flex items-center justify-content-between mb-4">
+    <div class="flex align-items-center justify-content-between mb-4">
       <h3 class="m-0">Detalhes da Solicitação #{{ solicitation.id }}</h3>
       <div class="flex gap-2">
         <Message
@@ -61,7 +65,7 @@ const showDeadlineWarning = computed(() => new Date() < deadline)
         <Message
           v-else="showDeadlineWarning"
           icon="pi pi-info-circle"
-          severity="warn"
+          severity="error"
           size="small"
           :closable="false"
         >
@@ -69,7 +73,22 @@ const showDeadlineWarning = computed(() => new Date() < deadline)
         </Message>
 
         <!-- EDITAR SOMENTE SE O USER LOGADO NÃO FOR GESTOR -->
-        <Button icon="pi pi-pencil" label="Editar" size="small" />
+        <Button
+          v-if="!isEditing"
+          icon="pi pi-pencil"
+          label="Editar"
+          size="small"
+          @click="isEditing = true"
+        />
+        <Button
+          v-if="isEditing"
+          icon="pi pi-pencil"
+          text
+          severity="danger"
+          label="Cancelar"
+          size="small"
+          @click="isEditing = false"
+        />
       </div>
     </div>
 
@@ -85,7 +104,7 @@ const showDeadlineWarning = computed(() => new Date() < deadline)
                   <p class="font-bold m-0">{{ solicitation.userRequest }}</p>
                 </div>
               </li>
-              <li class="flex items-center">
+              <li class="flex align-items-center">
                 <i class="pi pi-envelope text-primary text-xl mr-3"></i>
                 <div>
                   <span class="text-sm text-surface-500">Contato</span>
@@ -101,11 +120,20 @@ const showDeadlineWarning = computed(() => new Date() < deadline)
         <Card class="h-full">
           <template #content>
             <ul class="list-none p-0 m-0">
-              <li class="flex align-items-center">
+              <li class="flex align-items-center mb-4">
                 <i class="pi pi-calendar text-primary text-xl mr-3"></i>
                 <div>
                   <span class="text-sm text-surface-500">Data da Solicitação</span>
                   <p class="font-bold m-0">{{ formattedDate }}</p>
+                </div>
+              </li>
+              <li class="flex align-items-center">
+                <i class="pi pi-envelope text-primary text-xl mr-3"></i>
+                <div>
+                  <span class="text-sm text-surface-500">Tipo da Solicitação</span>
+                  <p class="font-bold m-0">
+                    {{ solicitationContext.isGeneral ? 'Geral' : 'Patrimonial' }}
+                  </p>
                 </div>
               </li>
             </ul>
@@ -113,7 +141,7 @@ const showDeadlineWarning = computed(() => new Date() < deadline)
         </Card>
       </div>
 
-      <div class="col-12 lg:col-4">
+      <div v-if="solicitationContext.isGeneral" class="col-12 lg:col-4">
         <Card class="h-full">
           <template #title>
             <div class="flex align-items-center">
@@ -137,7 +165,7 @@ const showDeadlineWarning = computed(() => new Date() < deadline)
       </TabList>
       <TabPanels>
         <TabPanel value="0">
-          <SolicitationList />
+          <SolicitationList :is-editing="isEditing" />
         </TabPanel>
         <TabPanel value="1">
           <SolicitationAnalysis />

@@ -30,7 +30,7 @@ const createSolicitation = () => {
 <template>
   <div class="flex flex-column justify-content-between w-full h-full">
     <div v-if="solicitationItems.length > 0" class="items-list overflow-y-auto">
-      <ItemSolicitation v-for="item in solicitationItems" :key="item.catMat" :item="item" />
+      <ItemSolicitation v-for="item in solicitationItems" :key="item.catMat" :item="item" :is-editing="true" />
     </div>
     <div v-else class="flex flex-column align-items-center text-center p-4">
       <i class="pi pi pi-box text-3xl text-color-secondary mb-2"></i>
