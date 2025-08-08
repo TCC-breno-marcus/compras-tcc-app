@@ -2,8 +2,6 @@
 import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
 import { ref, computed, watch } from 'vue'
-import { catalogoService } from '../services/catalogoService'
-import type { Item } from '../types'
 import InputText from 'primevue/inputtext'
 import FloatLabel from 'primevue/floatlabel'
 import InputNumber from 'primevue/inputnumber'
@@ -16,11 +14,13 @@ import FileUpload, {
   type FileUploadSelectEvent,
 } from 'primevue/fileupload'
 import { dataHasBeenChanged } from '@/utils/objectUtils'
-import { CLOSE_CONFIRMATION, SAVE_CONFIRMATION } from '@/utils/confirmationFactoryUtils'
+import { CLOSE_CONFIRMATION } from '@/utils/confirmationFactoryUtils'
 import axios from 'axios'
 import { Select } from 'primevue'
-import { useCategoriaStore } from '../stores/categoriaStore'
 import { storeToRefs } from 'pinia'
+import { useCategoriaStore } from '../stores/categoriaStore'
+import type { Item } from '../types'
+import { catalogoService } from '../services/catalogoService'
 
 const props = defineProps<{
   visible: boolean

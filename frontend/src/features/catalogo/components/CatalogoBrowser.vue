@@ -14,6 +14,8 @@ import ItemList from './ItemList.vue'
 import { useCategoriaStore } from '../stores/categoriaStore'
 import { mapQueryToFilters, applyPreFilters } from '../utils/queryHelper'
 import { SolicitationContextKey } from '@/features/solicitations/keys'
+import CreateItemDialog from './CreateItemDialog.vue'
+import CatalogUpload from './CatalogUpload.vue'
 
 const props = defineProps<{
   /**
@@ -88,6 +90,7 @@ watch(
   { immediate: true },
 )
 
+const isCreateDialogVisible = ref(false)
 const isDialogVisible = ref(false)
 const selectedItem = ref<Item | null>(null)
 const itemWasSaveChanged = ref(false)
@@ -117,13 +120,34 @@ defineExpose({
 
 <template>
   <div class="flex flex-column w-full h-full">
-    <ItemFilters
-      :initialFilters="initFilters"
-      :showStatus="!solicitationContext"
-      @apply-filters="applyFilters"
-      @clear-filters="clearFilters"
-    />
+    <div
+      class="flex flex-column sm:flex-row w-full justify-content-between align-items-center sm:align-items-start gap-2"
+    >
+      <ItemFilters
+        class="flex-order-2"
+        :initialFilters="initFilters"
+        :showStatus="!solicitationContext"
+        @apply-filters="applyFilters"
+        @clear-filters="clearFilters"
+      />
 
+      <div
+        v-if="!solicitationContext"
+        class="flex flex-order-1 sm:flex-order-3 flex-row align-items-center gap-2 p-3 pb-0 sm:pb-3 xl:p-0"
+      >
+        <!-- TODO: ao invés de dois botões, explorar outras ideias como talvez um botão só que abre um menu e escolhe 
+         entre criar um item ou múltiplos itens com a planilha -->
+        <Button
+          type="button"
+          label="Criar"
+          icon="pi pi-plus"
+          size="small"
+          text
+          @click="isCreateDialogVisible = true"
+        />
+        <CatalogUpload />
+      </div>
+    </div>
     <div v-if="loading" class="items-grid mt-2 mb-6 gap-2">
       <ItemComponentSkeleton v-for="n in 50" :key="n" />
     </div>
@@ -166,6 +190,12 @@ defineExpose({
         <slot name="dialog-actions" :item="item"></slot>
       </template>
     </ItemDetailsDialog>
+
+    <CreateItemDialog
+      v-model:visible="isCreateDialogVisible"
+      @update:visible="isCreateDialogVisible = false"
+      @update-dialog="handleUpdateDialog"
+    />
   </div>
 </template>
 

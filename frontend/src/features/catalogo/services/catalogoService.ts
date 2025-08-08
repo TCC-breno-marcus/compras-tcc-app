@@ -1,10 +1,5 @@
 import { apiClient } from '@/services/apiClient'
-import type {
-  CatalogoParams,
-  Item,
-  ItemParams,
-  PaginatedResponse,
-} from '@/features/management/types'
+import type { Item, ItemParams, PaginatedResponse } from '@/features/catalogo/types'
 import imageCompression from 'browser-image-compression'
 import { transformItem } from '../utils/itemTransformer'
 import type { CatalogoFilters } from '../types'

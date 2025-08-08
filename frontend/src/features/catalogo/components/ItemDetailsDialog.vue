@@ -389,7 +389,7 @@ const fileUploadPT = ref({
             text
             size="small"
             @click="removerImagem"
-            class="mb-2"
+            class="my-2"
           />
           <FileUpload
             name="imagem"
@@ -585,7 +585,7 @@ const fileUploadPT = ref({
             :disabled="isLoading"
           />
           <Button
-            v-if="!isEditing && solicitationContext?.dialogMode === 'management'"
+            v-if="!isEditing && !solicitationContext"
             label="Editar"
             icon="pi pi-pencil"
             size="small"
