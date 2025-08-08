@@ -15,6 +15,7 @@ export interface UserRegistration {
   telefone: string
   cpf: string
   password: string
+  departamento: string
 }
 
 /**
@@ -23,4 +24,15 @@ export interface UserRegistration {
 export interface AuthResponse {
   token: string
   message: string
+}
+
+
+export interface UserData {
+  id: string
+  nome: string
+  email: string
+  telefone: string
+  cpf: string
+  role: string
+  departamento: string
 }

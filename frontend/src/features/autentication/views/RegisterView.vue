@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useAuthStore } from '@/features/autentication/stores/authStore'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
@@ -11,10 +11,13 @@ import Password from 'primevue/password'
 import { Message } from 'primevue'
 import { reactive } from 'vue'
 import InputMask from 'primevue/inputmask'
+import Select from 'primevue/select'
 import { cpfValidator, emailValidator } from '@/utils/validators'
+import { storeToRefs } from 'pinia'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const { departamentos } = storeToRefs(authStore)
 const toast = useToast()
 
 const email = ref('')
@@ -22,6 +25,7 @@ const password = ref('')
 const nome = ref('')
 const telefone = ref('')
 const cpf = ref('')
+const departamento = ref(null)
 const isLoading = ref(false)
 
 const errors = reactive({
@@ -30,14 +34,20 @@ const errors = reactive({
   telefone: '',
   cpf: '',
   password: '',
+  departamento: '',
 })
 
-const validateForm = (): boolean => {
+const resetErrors = () => {
   errors.email = ''
   errors.password = ''
   errors.nome = ''
   errors.telefone = ''
   errors.cpf = ''
+  errors.departamento = ''
+}
+
+const validateForm = (): boolean => {
+  resetErrors()
   let isValid = true
 
   if (!email.value) {
@@ -63,6 +73,11 @@ const validateForm = (): boolean => {
     isValid = false
   }
 
+  if (!departamento.value) {
+    errors.telefone = 'O departamento é obrigatório.'
+    isValid = false
+  }
+
   if (!cpf.value) {
     errors.cpf = 'O CPF é obrigatório.'
     isValid = false
@@ -81,20 +96,30 @@ const handleRegister = async () => {
 
   isLoading.value = true
   try {
-    await authStore.register({
+    const hasRegistered = await authStore.register({
       email: email.value,
       password: password.value,
       nome: nome.value,
       telefone: telefone.value.replace(/\D/g, ''),
       cpf: cpf.value.replace(/\D/g, ''),
+      departamento: departamento.value!,
     })
-    toast.add({
-      severity: 'success',
-      summary: 'Sucesso',
-      detail: 'Usuário criado com sucesso.',
-      life: 3000,
-    })
-    router.push('/')
+    if (hasRegistered) {
+      toast.add({
+        severity: 'success',
+        summary: 'Sucesso',
+        detail: 'Usuário criado com sucesso.',
+        life: 3000,
+      })
+      router.push('/')
+    } else {
+      toast.add({
+        severity: 'error',
+        summary: 'Erro',
+        detail: 'Não foi possível criar o usuário.',
+        life: 3000,
+      })
+    }
   } catch (error: any) {
     toast.add({
       severity: 'error',
@@ -106,6 +131,10 @@ const handleRegister = async () => {
     isLoading.value = false
   }
 }
+
+onMounted(() => {
+  authStore.fetchDeptos()
+})
 </script>
 
 <template>
@@ -211,6 +240,28 @@ const handleRegister = async () => {
               size="small"
               variant="simple"
               >{{ errors.telefone }}
+            </Message>
+          </div>
+          <div class="flex flex-column gap-1">
+            <FloatLabel variant="on">
+              <Select
+                v-model="departamento"
+                :options="departamentos"
+                inputId="departamento"
+                size="small"
+                class="w-full"
+                id="departamento"
+                :invalid="!!errors.departamento"
+              />
+              <label for="departamento"><Div></Div>Departamento</label>
+            </FloatLabel>
+            <Message
+              v-if="errors.departamento"
+              class="ml-1"
+              severity="error"
+              size="small"
+              variant="simple"
+              >{{ errors.departamento }}
             </Message>
           </div>
           <Button

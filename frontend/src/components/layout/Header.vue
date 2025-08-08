@@ -64,25 +64,28 @@ const userInitial = computed(() => {
     </router-link>
     <div class="flex align-items-center">
       <Avatar
-        :label="userInitial?.name?.charAt(0).toUpperCase()"
+        :label="userInitial?.nome?.charAt(0).toUpperCase()"
         class="mr-2 cursor-pointer"
         shape="circle"
         @click="toggle"
         aria-haspopup="true"
         aria-controls="overlay_menu"
       />
-      <!-- <p class="text-sm">{{ userInitial?.name }}</p> -->
+      <!-- <p class="text-sm">{{ userInitial?.nome }}</p> -->
       <Popover ref="op">
         <div class="user-menu-content flex flex-column w-14rem text-sm">
           <div class="flex flex-column align-items-center p-">
             <Avatar
-              :label="userInitial?.name?.charAt(0).toUpperCase()"
+              :label="userInitial?.nome?.charAt(0).toUpperCase()"
               size="large"
               shape="circle"
             />
-            <span class="font-bold mt-2">{{ userInitial?.name }}</span>
-            <!-- TODO: deve pegar qual departamento do usuario -->
-            <span class="text-sm text-color-secondary">DCOMP</span>
+            <span class="font-bold mt-2">{{ userInitial?.nome }}</span>
+            <span
+              v-if="userInitial?.departamento !== 'não disponível'"
+              class="text-sm text-color-secondary"
+              >{{ userInitial?.departamento }}</span
+            >
           </div>
 
           <Divider />

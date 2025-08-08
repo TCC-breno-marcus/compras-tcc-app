@@ -1,53 +1,80 @@
 import { defineStore } from 'pinia'
 import { authService } from '@/features/autentication/services/authService'
-import type { UserCredentials, UserRegistration } from '@/features/autentication/types'
+import type { UserCredentials, UserData, UserRegistration } from '@/features/autentication/types'
 import { isTokenExpired } from '@/utils/jwtHelper'
+import { computed, ref } from 'vue'
 
-interface AuthState {
-  user: { id: number; name: string; email: string; role: string } | null
-  token: string | null
-}
+export const useAuthStore = defineStore(
+  'auth',
+  () => {
+    const user = ref<UserData | null>(null)
+    const token = ref<string | null>(null)
+    const departamentos = ref<string[]>([])
 
-export const useAuthStore = defineStore('auth', {
-  state: (): AuthState => ({
-    user: null,
-    token: null,
-  }),
-  getters: {
-    isAuthenticated: (state): boolean => {
-      return !!state.token && !isTokenExpired(state.token)
-    },
-    isAdmin: (state) => state.user?.role === 'Admin',
-    isGestor: (state) => state.user?.role === 'Gestor',
-  },
-  actions: {
-    async login(credentials: UserCredentials) {
+    const isAuthenticated = computed(() => !!token.value && !isTokenExpired(token.value))
+    const isAdmin = computed(() => user.value?.role === 'Admin')
+    const isGestor = computed(() => user.value?.role === 'Gestor')
+
+    async function login(credentials: UserCredentials) {
       try {
-        const { token } = await authService.login(credentials)
-        //TODO: deve pegar os dados do user no backend
-        const userData = {
-          id: 2,
-          name: 'Admin do Sistema',
-          email: 'admin@sistema.com',
-          telefone: '99999999999',
-          role: 'Admin',
-        }
-        this.user = userData
-        this.token = token
+        const response = await authService.login(credentials)
+        token.value = response.token
         return true
       } catch (error) {
         console.error('Falha na ação de login da store:', error)
-        this.logout()
+        logout()
         return false
       }
-    },
-    async register(userData: UserRegistration) {
-      await authService.register(userData)
-    },
-    logout() {
-      this.user = null
-      this.token = null
-    },
+    }
+
+    async function fetchDataUser() {
+      try {
+        const myData = await authService.getMyData()
+        user.value = myData
+      } catch (error) {
+        console.error('Falha na ação de fetchDataUser da store:', error)
+      }
+    }
+
+    async function register(userData: UserRegistration) {
+      try {
+        await authService.register(userData)
+        return true
+      } catch (error) {
+        console.error('Falha na ação de registrar da store:', error)
+        return false
+      }
+    }
+
+    function logout() {
+      user.value = null
+      token.value = null
+    }
+
+    async function fetchDeptos() {
+      try {
+        const data = await authService.getDeptos()
+        departamentos.value = data
+      } catch (error) {
+        console.error('Falha na ação de fetchDataUser da store:', error)
+      }
+    }
+
+    return {
+      user,
+      token,
+      departamentos,
+      isAuthenticated,
+      isAdmin,
+      isGestor,
+      login,
+      fetchDataUser,
+      register,
+      logout,
+      fetchDeptos,
+    }
   },
-  persist: true,
-})
+  {
+    persist: true,
+  },
+)

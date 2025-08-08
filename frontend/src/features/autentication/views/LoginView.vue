@@ -55,6 +55,7 @@ const handleLogin = async () => {
     })
 
     if (loginSuccess) {
+      await authStore.fetchDataUser()
       router.push('/')
     } else {
       toast.add({
