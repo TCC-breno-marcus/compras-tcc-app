@@ -15,11 +15,3 @@ export interface Solicitation {
   type: string
   status: boolean
 }
-
-/**
- * Representa a estrutura do contexto (estados) das páginas de solicitação.
- */
-export interface SolicitationContext {
-  dialogMode: string // 'management' or 'selection'
-  isGeneral: boolean
-}

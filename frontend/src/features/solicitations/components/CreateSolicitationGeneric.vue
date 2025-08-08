@@ -13,10 +13,10 @@ import { useLeaveConfirmation } from '@/composables/useLeaveConfirmation'
 import { DISCARD_SOLICITATION_CONFIRMATION } from '@/utils/confirmationFactoryUtils'
 import CustomBreadcrumb from '@/components/ui/CustomBreadcrumb.vue'
 import { useCategoriaStore } from '@/features/catalogo/stores/categoriaStore'
-import type { SolicitationContext } from '..'
 import { CATEGORY_ITEMS_GENERAL, CATEGORY_ITEMS_PATRIMONIALS } from '../constants'
+import { SolicitationContextKey } from '../keys'
 
-const solicitationContext = inject<SolicitationContext>('solicitationContext')
+const solicitationContext = inject(SolicitationContextKey)
 
 const layoutStore = useLayoutStore()
 const { currentBreakpoint } = storeToRefs(layoutStore)

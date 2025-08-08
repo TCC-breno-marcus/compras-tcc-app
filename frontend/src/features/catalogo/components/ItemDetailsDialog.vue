@@ -31,14 +31,14 @@ import ItemDetailsDialogSkeleton from './ItemDetailsDialogSkeleton.vue'
 import { useCategoriaStore } from '../stores/categoriaStore'
 import { storeToRefs } from 'pinia'
 import Select from 'primevue/select'
-import type { SolicitationContext } from '@/features/solicitations'
+import { SolicitationContextKey } from '@/features/solicitations/keys'
 
 const props = defineProps<{
   visible: boolean
   item: Item | null
 }>()
 
-const solicitationContext = inject<SolicitationContext>('solicitationContext')
+const solicitationContext = inject(SolicitationContextKey)
 
 const confirm = useConfirm()
 const toast = useToast()
@@ -436,7 +436,7 @@ const fileUploadPT = ref({
               })
             }}
           </p>
-          <p>
+          <p v-if="!solicitationContext">
             <strong>Status:</strong>
             <Tag
               :severity="item?.isActive ? 'success' : 'danger'"

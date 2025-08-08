@@ -48,24 +48,40 @@ export const getQueryAsArrayOfNumbers = (value: unknown): number[] => {
   return arr.map(Number).filter((n) => !isNaN(n) && Number.isInteger(n))
 }
 
-export const mountQueryWithPreFilterCategory = (
-  queryFilters: CatalogoFilters,
+
+/**
+ * Aplica filtros pré-definidos (vindas de props) sobre os filtros da URL.
+ * @param filtersFromUrl Filtros extraídos da query da URL.
+ * @param allCategories Lista completa de categorias para fazer a tradução de nome para ID.
+ * @param preFilters Um objeto contendo os valores dos pré-filtros vindos das props.
+ * @returns Um objeto CatalogoFilters final e pronto para ser enviado à API.
+ */
+export const applyPreFilters = (
+  filtersFromUrl: CatalogoFilters,
   allCategories: Categoria[],
-  categoryNamesFromProps: string[] | undefined,
+  preFilters: {
+    categoryNames?: string[]
+    status?: string
+  },
 ): CatalogoFilters => {
-  if (!categoryNamesFromProps || categoryNamesFromProps.length === 0) {
-    return queryFilters
+  let finalFilters = { ...filtersFromUrl }
+
+  if (preFilters.categoryNames && preFilters.categoryNames.length > 0) {
+    const propCategoriesIds = categorysIdFilterPerName(allCategories, preFilters.categoryNames)
+    const urlCategoriesIds = filtersFromUrl.categoriaId
+
+    if (!urlCategoriesIds || urlCategoriesIds.length === 0) {
+      finalFilters.categoriaId = propCategoriesIds
+    } else {
+      const propCategoriesSet = new Set(propCategoriesIds)
+      const intersection = urlCategoriesIds.filter((id) => propCategoriesSet.has(id))
+      finalFilters.categoriaId = intersection
+    }
   }
 
-  const propCategoriesIds = categorysIdFilterPerName(allCategories, categoryNamesFromProps)
-  const urlCategories = queryFilters.categoriaId
-
-  if (!urlCategories || urlCategories.length === 0) {
-    return { ...queryFilters, categoriaId: propCategoriesIds }
+  if (preFilters.status) {
+    finalFilters.status = preFilters.status
   }
 
-  const propCategoriesSet = new Set(propCategoriesIds)
-  const intersection = urlCategories.filter((id) => propCategoriesSet.has(id))
-
-  return { ...queryFilters, categoriaId: intersection }
+  return finalFilters
 }

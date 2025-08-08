@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref, watch } from 'vue'
+import { inject, reactive, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import ItemDetailsDialog from './ItemDetailsDialog.vue'
 import type { CatalogoFilters, Item } from '../types'
@@ -12,8 +12,8 @@ import ItemComponentSkeleton from './ItemComponentSkeleton.vue'
 import ItemFilters from './ItemFilters.vue'
 import ItemList from './ItemList.vue'
 import { useCategoriaStore } from '../stores/categoriaStore'
-import { categorysIdFilterPerName } from '../utils/categoriaTransformer'
-import { mapQueryToFilters, mountQueryWithPreFilterCategory } from '../utils/queryHelper'
+import { mapQueryToFilters, applyPreFilters } from '../utils/queryHelper'
+import { SolicitationContextKey } from '@/features/solicitations/keys'
 
 const props = defineProps<{
   /**
@@ -22,6 +22,9 @@ const props = defineProps<{
    */
   categoryNames?: string[]
 }>()
+
+const solicitationContext = inject(SolicitationContextKey)
+// Todo: Injetar também depois o contexto de management
 
 const route = useRoute()
 const router = useRouter()
@@ -32,15 +35,13 @@ const { items, loading, error, totalCount, pageNumber, pageSize, totalPages } =
 const categoriaStore = useCategoriaStore()
 const { categorias, loading: loadingCategorys } = storeToRefs(categoriaStore)
 
-const filters = reactive<CatalogoFilters>({
+const initFilters = reactive<CatalogoFilters>({
   searchTerm: '',
   nome: '',
   descricao: '',
   catMat: '',
   especificacao: '',
-  categoriaId: props.categoryNames
-    ? categorysIdFilterPerName(categorias.value, props.categoryNames)
-    : [],
+  categoriaId: [],
   sortOrder: null,
   status: '',
 })
@@ -78,11 +79,10 @@ watch(
     if (props.categoryNames && props.categoryNames.length > 0) {
       await categoriaStore.fetch({ nome: props.categoryNames })
     }
-    const finalFilters = mountQueryWithPreFilterCategory(
-      filtersFromUrl,
-      categorias.value,
-      props.categoryNames,
-    )
+    const finalFilters = applyPreFilters(filtersFromUrl, categorias.value, {
+      categoryNames: props.categoryNames,
+      status: solicitationContext ? 'ativo' : '',
+    })
     catalogoStore.fetchItems(finalFilters)
   },
   { immediate: true },
@@ -118,7 +118,8 @@ defineExpose({
 <template>
   <div class="flex flex-column w-full h-full">
     <ItemFilters
-      :initialFilters="filters"
+      :initialFilters="initFilters"
+      :showStatus="!solicitationContext"
       @apply-filters="applyFilters"
       @clear-filters="clearFilters"
     />

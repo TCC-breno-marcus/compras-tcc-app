@@ -12,12 +12,15 @@ import FloatLabel from 'primevue/floatlabel'
 import { useCategoriaStore } from '../stores/categoriaStore'
 import type { CatalogoFilters } from '../types'
 
-const props = defineProps({
-  initialFilters: {
-    type: Object as PropType<CatalogoFilters>,
-    required: true,
+const props = withDefaults(
+  defineProps<{
+    initialFilters: CatalogoFilters
+    showStatus?: boolean
+  }>(),
+  {
+    showStatus: true,
   },
-})
+)
 
 const emit = defineEmits(['apply-filters', 'clear-filters'])
 
@@ -41,7 +44,7 @@ const opcoesStatus = ref([
   { name: 'Ativo', code: 'ativo' },
   { name: 'Inativo', code: 'inativo' },
 ])
-const sortOrder = ref(props.initialFilters.sortOrder || null);
+const sortOrder = ref(props.initialFilters.sortOrder || null)
 
 const toggleSortDirection = () => {
   if (sortOrder.value === null) {
@@ -49,7 +52,7 @@ const toggleSortDirection = () => {
   } else if (sortOrder.value === 'asc') {
     sortOrder.value = 'desc'
   } else {
-    sortOrder.value = null // Volta para o padrão
+    sortOrder.value = null
   }
 }
 
@@ -109,14 +112,13 @@ watch(
     nomeFilter.value = newFilters.nome || ''
     descricaoFilter.value = newFilters.descricao || ''
     catmatFilter.value = newFilters.catMat || ''
-    especificacaoFilter.value = newFilters.especificacao || '' 
+    especificacaoFilter.value = newFilters.especificacao || ''
     categoriaIdFilter.value = newFilters.categoriaId || []
     statusFilter.value = newFilters.status || ''
     sortOrder.value = newFilters.sortOrder || null
   },
-  { deep: true, immediate: true }, 
+  { deep: true, immediate: true },
 )
-
 </script>
 
 <template>
@@ -139,7 +141,6 @@ watch(
     </FloatLabel>
 
     <FloatLabel class="w-full sm:w-16rem mt-1 sm:mt-0" variant="on">
-      <!-- TODO: quando aplico o filtro o label fica vazio -->
       <Select
         v-model="categoriaIdFilter"
         multiple
@@ -154,8 +155,7 @@ watch(
       <label for="categoria-filter">Categoria</label>
     </FloatLabel>
 
-    <!-- TODO: Filtro de Status não deve aparecer nas paginas de solicitação  -->
-    <FloatLabel class="w-full sm:w-8rem mt-1 sm:mt-0" variant="on">
+    <FloatLabel class="w-full sm:w-8rem mt-1 sm:mt-0" variant="on" v-if="showStatus">
       <Select
         v-model="statusFilter"
         :options="opcoesStatus"

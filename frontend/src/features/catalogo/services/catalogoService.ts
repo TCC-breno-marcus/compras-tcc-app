@@ -59,6 +59,9 @@ export const catalogoService: ICatalogoService = {
           if (Array.isArray(value) && value.length > 0) {
             value.forEach((id) => params.append('categoriaId', String(id)))
           }
+        } else if (key === 'status' && (value === 'ativo' || value === 'inativo')) {
+          const isActive = value === 'ativo'
+          params.append('isActive', String(isActive))
         } else {
           if (value != null && value !== '') {
             params.set(key, String(value))

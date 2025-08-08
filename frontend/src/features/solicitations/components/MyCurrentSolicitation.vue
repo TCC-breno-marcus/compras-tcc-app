@@ -6,9 +6,9 @@ import { IftaLabel } from 'primevue'
 import Textarea from 'primevue/textarea'
 import { useSolicitationStore } from '../stores/solicitationStore'
 import { storeToRefs } from 'pinia'
-import type { SolicitationContext } from '..'
+import { SolicitationContextKey } from '../keys'
 
-const solicitationContext = inject<SolicitationContext>('solicitationContext')
+const solicitationContext = inject(SolicitationContextKey)
 
 const solicitationStore = useSolicitationStore()
 const { solicitationItems, justification } = storeToRefs(solicitationStore)

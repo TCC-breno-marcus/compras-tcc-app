@@ -4,15 +4,16 @@ import Button from 'primevue/button'
 import InputNumber from 'primevue/inputnumber'
 import InputText from 'primevue/inputtext'
 import { FloatLabel } from 'primevue'
-import type { SolicitationContext, SolicitationItem } from '..'
+import type { SolicitationItem } from '..'
 import { useSolicitationStore } from '../stores/solicitationStore'
 import { useToast } from 'primevue/usetoast'
+import { SolicitationContextKey } from '../keys'
 
 const props = defineProps<{
   item: SolicitationItem
 }>()
 
-const solicitationContext = inject<SolicitationContext>('solicitationContext')
+const solicitationContext = inject(SolicitationContextKey)
 
 const solicitationStore = useSolicitationStore()
 const toast = useToast()
