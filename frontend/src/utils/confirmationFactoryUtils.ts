@@ -137,7 +137,7 @@ export const ACCESS_ITEM_CONFIRMATION: ConfirmationOptions = {
  * Configuração padrão para um diálogo de confirmação de descartar alterações numa página.
  */
 export const DISCARD_SOLICITATION_CONFIRMATION: ConfirmationOptions = {
-  message: 'Você possui alterações não salvas. Se sair agora, elas serão perdidas. Deseja continuar?',
+  message: 'Você possui alterações não salvas. Deseja continuar?',
   header: 'Descartar Solicitação?',
   icon: 'pi pi-exclamation-triangle',
   rejectProps: {
@@ -149,6 +149,28 @@ export const DISCARD_SOLICITATION_CONFIRMATION: ConfirmationOptions = {
   },
   acceptProps: {
     label: 'Descartar',
+    icon: 'pi pi-trash',
+    size: 'small',
+    severity: 'danger',
+  },
+}
+
+/**
+ * Configuração padrão para um diálogo de confirmação ao tentar criar outro tipo de solicitação
+ * enquanto uma já está em andamento.
+ */
+export const CHANGE_SOLICITATION_CONFIRMATION: ConfirmationOptions = {
+  header: 'Solicitação Existente',
+  icon: 'pi pi-exclamation-triangle',
+  rejectProps: {
+    label: 'Cancelar',
+    severity: 'secondary',
+    text: true,
+    icon: 'pi pi-arrow-left',
+    size: 'small',
+  },
+  acceptProps: {
+    label: 'Descartar e Iniciar Nova',
     icon: 'pi pi-trash',
     size: 'small',
     severity: 'danger',

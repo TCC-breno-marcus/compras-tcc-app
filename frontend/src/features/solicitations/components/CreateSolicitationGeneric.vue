@@ -12,7 +12,6 @@ import { storeToRefs } from 'pinia'
 import { useLeaveConfirmation } from '@/composables/useLeaveConfirmation'
 import { DISCARD_SOLICITATION_CONFIRMATION } from '@/utils/confirmationFactoryUtils'
 import CustomBreadcrumb from '@/components/ui/CustomBreadcrumb.vue'
-import { useCategoriaStore } from '@/features/catalogo/stores/categoriaStore'
 import { CATEGORY_ITEMS_GENERAL, CATEGORY_ITEMS_PATRIMONIALS } from '../constants'
 import { SolicitationContextKey } from '../keys'
 
@@ -28,11 +27,10 @@ const toast = useToast()
 const confirm = useConfirm()
 const solicitationStore = useSolicitationStore()
 const { solicitationItems, justification } = storeToRefs(solicitationStore)
-const categoriaStore = useCategoriaStore()
 const catalogoBrowserRef = ref()
 
 const addItemSolicitation = (item: Item) => {
-  const actionReturn = solicitationStore.addItem(item)
+  const actionReturn = solicitationStore.addItem(item, solicitationContext?.isGeneral ? 'geral' : 'patrimonial')
   if (actionReturn === 'added') {
     toast.add({
       severity: 'success',
@@ -63,11 +61,11 @@ const resetSolicitation = () => {
   })
 }
 
-const isSolicitationDirty = computed(() => {
+const hasUnsavedChanges = computed(() => {
   return solicitationItems.value.length > 0 || justification.value.trim() !== ''
 })
 
-useLeaveConfirmation(isSolicitationDirty)
+useLeaveConfirmation()
 </script>
 
 <template>
@@ -82,8 +80,6 @@ useLeaveConfirmation(isSolicitationDirty)
         <div class="flex justify-content-between align-items-center mb-2">
           <h3>Buscar Itens</h3>
         </div>
-        <!-- Na listagem do catalogo nas telas de criar solicitação, deve filtrar
-         por padrão somente itens ativos -->
         <CatalogoBrowser
           ref="catalogoBrowserRef"
           :category-names="
@@ -121,7 +117,7 @@ useLeaveConfirmation(isSolicitationDirty)
         <div class="flex justify-content-between align-items-center w-full mb-4">
           <h3>Sua Solicitação</h3>
           <Button
-            v-if="isSolicitationDirty"
+            v-if="hasUnsavedChanges"
             icon="pi pi-eraser"
             severity="danger"
             label="Limpar Solicitação"

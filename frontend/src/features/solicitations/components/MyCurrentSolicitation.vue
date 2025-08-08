@@ -14,6 +14,7 @@ const solicitationStore = useSolicitationStore()
 const { solicitationItems, justification } = storeToRefs(solicitationStore)
 
 const createSolicitation = () => {
+  // TODO: implementar criação para chamar o backend
   const newSolicitation = {
     solicitationItems,
     justification,
@@ -24,8 +25,6 @@ const createSolicitation = () => {
   console.log(newSolicitation)
 }
 
-// TODO: ao trocar entre paginas de solicitacao, a solicitacao deve ser resetada.
-// Mas para outras paginas, mantém a solicitacao no estado
 </script>
 
 <template>

@@ -6,8 +6,13 @@ import type { SolicitationItem } from '@/features/solicitations'
 export const useSolicitationStore = defineStore('solicitation', () => {
   const solicitationItems = ref<SolicitationItem[]>([])
   const justification = ref<string>('')
+  const solicitationType = ref<'geral' | 'patrimonial' | null>(null)
 
-  function addItem(item: Item) {
+  function addItem(item: Item, type: 'geral' | 'patrimonial') {
+    if (solicitationItems.value.length === 0) {
+      solicitationType.value = type
+    }
+
     const itemExistente = solicitationItems.value.find((i) => i.id === item.id)
 
     if (itemExistente) {
@@ -34,11 +39,13 @@ export const useSolicitationStore = defineStore('solicitation', () => {
   function clearSolicitation() {
     solicitationItems.value = []
     justification.value = ''
+    solicitationType.value = null
   }
 
   return {
     solicitationItems,
     justification,
+    solicitationType,
     addItem,
     removeItem,
     updateItemQuantity,
