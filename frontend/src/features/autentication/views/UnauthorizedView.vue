@@ -6,13 +6,13 @@ import { useAuthStore } from '@/features/autentication/stores/authStore'
 const router = useRouter()
 const authStore = useAuthStore()
 
-const goToDashboard = () => {
-  // Envia para uma rota segura, como o dashboard
-  router.push('/gestor/dashboard')
+const goToHome = () => {
+  router.push('/')
 }
 
 const handleLogout = () => {
   authStore.logout()
+  router.push('/login')
 }
 </script>
 
@@ -32,9 +32,9 @@ const handleLogout = () => {
       <div class="flex justify-content-center gap-2">
         <Button
           size="small"
-          label="Voltar ao Painel"
+          label="Voltar para Página Inicial"
           icon="pi pi-arrow-left"
-          @click="goToDashboard"
+          @click="goToHome"
         ></Button>
         <Button
           size="small"

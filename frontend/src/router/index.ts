@@ -93,6 +93,12 @@ const router = createRouter({
           name: 'Unauthorized',
           component: () => import('../features/autentication/views/UnauthorizedView.vue'),
         },
+        {
+          path: '/not-found',
+          name: 'AppNotFound',
+          component: NotFoundView,
+          meta: { requiresAuth: true },
+        },
       ],
     },
     {
@@ -106,8 +112,8 @@ const router = createRouter({
       component: () => import('../features/autentication/views/RegisterView.vue'),
     },
     {
-      path: '/:pathMatch(.*)*',
-      name: 'NotFound',
+      path: '/not-found',
+      name: 'PublicNotFound',
       component: NotFoundView,
     },
   ],
@@ -116,6 +122,15 @@ const router = createRouter({
 // 2. Navigation Guard Global
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
+
+  if (to.matched.length === 0) {
+    if (authStore.isAuthenticated) {
+      return next({ name: 'AppNotFound' })
+    } else {
+      return next({ name: 'PublicNotFound' })
+    }
+  }
+
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     return next({ name: 'Login', query: { redirect: to.fullPath } })
   }
