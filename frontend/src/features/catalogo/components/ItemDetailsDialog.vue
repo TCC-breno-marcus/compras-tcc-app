@@ -561,7 +561,6 @@ const fileUploadPT = ref({
     <template #footer>
       <div class="flex justify-content-between w-full">
         <div class="flex align-items-center gap-2 text-xs" style="color: var(--p-surface-500)">
-          <!-- SOMENTE SE O USER FOR GESTOR OU ADMIN -->
           <Button
             v-if="isEditing"
             label="Excluir"

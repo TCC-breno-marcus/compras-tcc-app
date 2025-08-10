@@ -11,8 +11,10 @@ import Message from 'primevue/message'
 import SolicitationList from '../components/SolicitationList.vue'
 import SolicitationAnalysis from '../components/SolicitationAnalysis.vue'
 import { SolicitationContextKey, type SolicitationContext } from '../keys'
+import { useAuthStore } from '@/features/autentication/stores/authStore'
+import { storeToRefs } from 'pinia'
 
-// Seus dados da solicitação
+
 const solicitation = ref({
   id: 8,
   userRequest: 'Juliana Alves (DCOMP)',
@@ -23,17 +25,10 @@ const solicitation = ref({
   justification: 'Materiais necessários para o novo laboratório de redes, conforme projeto anexo.',
 })
 
-// Helper para formatar a data
 const formattedDate = new Date(solicitation.value.date).toLocaleString('pt-BR', {
   dateStyle: 'long',
   timeStyle: 'short',
 })
-
-// Helper para formatar o preço
-const formattedPrice = new Intl.NumberFormat('pt-BR', {
-  style: 'currency',
-  currency: 'BRL',
-}).format(solicitation.value.totalPrice)
 
 const deadline = new Date('2025-08-31T23:59:59')
 const showDeadlineWarning = computed(() => new Date() < deadline)
@@ -44,6 +39,9 @@ const solicitationContext = reactive<SolicitationContext>({
 })
 
 const isEditing = ref<boolean>(false)
+
+const authStore = useAuthStore()
+const { user } = storeToRefs(authStore)
 
 provide(SolicitationContextKey, readonly(solicitationContext))
 </script>
@@ -72,7 +70,7 @@ provide(SolicitationContextKey, readonly(solicitationContext))
           O prazo final para ajustes foi encerrado.
         </Message>
 
-        <!-- EDITAR SOMENTE SE O USER LOGADO NÃO FOR GESTOR -->
+        <!-- TODO: EDITAR SOMENTE SE O USER LOGADO É O MESMO PRÓPRIO SOLICITANTE -->
         <Button
           v-if="!isEditing"
           icon="pi pi-pencil"

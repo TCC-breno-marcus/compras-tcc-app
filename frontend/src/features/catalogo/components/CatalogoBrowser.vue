@@ -145,7 +145,8 @@ defineExpose({
           text
           @click="isCreateDialogVisible = true"
         />
-        <CatalogUpload />
+        <!-- TODO: Removi a opção de importar. Mais info: https://github.com/TCC-breno-marcus/compras-tcc-app/issues/53-->
+        <!-- <CatalogUpload /> -->
       </div>
     </div>
     <div v-if="loading" class="items-grid mt-2 mb-6 gap-2">

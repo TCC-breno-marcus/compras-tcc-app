@@ -104,7 +104,6 @@ const handleClear = () => {
   emit('clear-filters')
 }
 
-// Garante que o estado interno do ItemFilters sempre reflita as props que o pai envia.
 watch(
   () => props.initialFilters,
   (newFilters) => {
@@ -122,7 +121,6 @@ watch(
 </script>
 
 <template>
-  <!-- TODO: ESSES BOTOES DE FILTRO NÃO ESTAO LEGAL PRA TELA media -->
   <div
     class="filters flex flex-column sm:flex-wrap sm:flex-row align-items-center sm:w-full lg:w-auto gap-2 p-3 xl:p-0"
   >

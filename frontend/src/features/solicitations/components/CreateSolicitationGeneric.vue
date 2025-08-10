@@ -71,7 +71,6 @@ useLeaveConfirmation()
 <template>
   <div class="flex flex-column w-full h-full align-items-center">
     <div class="w-full">
-      <!-- <h2>Criar Solicitação de Bens Patrimoniais</h2> -->
       <CustomBreadcrumb />
     </div>
 
