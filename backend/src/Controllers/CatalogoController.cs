@@ -146,7 +146,10 @@ namespace Controllers
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
         [Authorize(Roles = "Admin, Gestor")]
-        public async Task<IActionResult> EditarItem([FromRoute] int id, [FromBody] ItemUpdateDto updateDto)
+        public async Task<IActionResult> EditarItem(
+            [FromRoute] int id,
+            [FromBody] ItemUpdateDto updateDto
+        )
         {
             if (updateDto == null)
                 return BadRequest("Corpo da requisição vazio.");

@@ -26,11 +26,11 @@ namespace ComprasTccApp.Backend.Extensions
                 )
                 {
                     if (attribute.Description == str)
-                        return (T)field.GetValue(null);
+                        return (T)field.GetValue(null)!;
                 }
 
                 if (field.Name == str)
-                    return (T)field.GetValue(null);
+                    return (T)field.GetValue(null)!;
             }
 
             throw new ArgumentException(
