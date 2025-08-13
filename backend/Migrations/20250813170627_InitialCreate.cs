@@ -123,7 +123,7 @@ namespace backend.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     ServidorId = table.Column<long>(type: "bigint", nullable: false),
                     DataUltimaSolicitacao = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Unidade = table.Column<string>(type: "text", nullable: false)
+                    Unidade = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {

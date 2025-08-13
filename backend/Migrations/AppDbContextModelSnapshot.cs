@@ -421,7 +421,7 @@ namespace backend.Migrations
 
             modelBuilder.Entity("ComprasTccApp.Models.Entities.Solicitacoes.Solicitacao", b =>
                 {
-                    b.HasOne("ComprasTccApp.Models.Entities.Gestores.Gestor", "Gestor")
+                    b.HasOne("ComprasTccApp.Models.Entities.Gestores.Gestor", null)
                         .WithMany("Solicitacoes")
                         .HasForeignKey("GestorId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -432,8 +432,6 @@ namespace backend.Migrations
                         .HasForeignKey("SolicitanteId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Gestor");
 
                     b.Navigation("Solicitante");
                 });
