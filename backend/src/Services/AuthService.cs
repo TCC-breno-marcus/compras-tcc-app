@@ -58,14 +58,14 @@ namespace ComprasTccApp.Backend.Services
             {
                 Pessoa = novaPessoa,
                 IdentificadorInterno = "TEMP-" + registerDto.CPF,
-                IsGestor = false
+                IsGestor = false,
             };
 
             var novoSolicitante = new Solicitante
             {
                 Servidor = novoServidor,
                 Unidade = departamentoEnum,
-                DataUltimaSolicitacao = DateTime.UtcNow
+                DataUltimaSolicitacao = DateTime.UtcNow,
             };
 
             await _context.Solicitantes.AddAsync(novoSolicitante);
@@ -112,23 +112,24 @@ namespace ComprasTccApp.Backend.Services
         {
             var userIdString = user.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if (string.IsNullOrEmpty(userIdString) || !long.TryParse(userIdString, out var userId)) return null;
+            if (string.IsNullOrEmpty(userIdString) || !long.TryParse(userIdString, out var userId))
+                return null;
 
             var pessoa = await _context.Pessoas.FindAsync(userId);
-            if (pessoa == null) return null;
+            if (pessoa == null)
+                return null;
 
-            var servidor = await _context
-                .Servidores
-                .FirstOrDefaultAsync(s => s.PessoaId == userId);
+            var servidor = await _context.Servidores.FirstOrDefaultAsync(s => s.PessoaId == userId);
 
             string? unidadeDoSolicitante = null;
             if (servidor != null)
             {
-                var solicitante = await _context
-                    .Solicitantes
-                    .FirstOrDefaultAsync(sol => sol.ServidorId == servidor.Id);
+                var solicitante = await _context.Solicitantes.FirstOrDefaultAsync(sol =>
+                    sol.ServidorId == servidor.Id
+                );
 
-                if (solicitante != null) unidadeDoSolicitante = solicitante.Unidade.ToFriendlyString();
+                if (solicitante != null)
+                    unidadeDoSolicitante = solicitante.Unidade.ToFriendlyString();
             }
 
             var userProfile = new UserProfileDto
@@ -139,7 +140,7 @@ namespace ComprasTccApp.Backend.Services
                 Telefone = pessoa.Telefone,
                 CPF = pessoa.CPF,
                 Role = pessoa.Role,
-                Departamento = unidadeDoSolicitante ?? "não disponível"
+                Departamento = unidadeDoSolicitante ?? "não disponível",
             };
 
             return userProfile;

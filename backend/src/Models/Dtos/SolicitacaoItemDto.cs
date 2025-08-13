@@ -2,9 +2,10 @@ using System.ComponentModel.DataAnnotations;
 
 public class SolicitacaoItemDto
 {
-  [Required]
-  public long ItemId { get; set; }
-  [Required, Range(0.01, double.MaxValue)]
-  public decimal Quantidade { get; set; }
-  public string? Justificativa { get; set; }
+    [Required]
+    public long ItemId { get; set; }
+
+    [Required, Range(0.01, double.MaxValue)]
+    public decimal Quantidade { get; set; }
+    public string? Justificativa { get; set; }
 }

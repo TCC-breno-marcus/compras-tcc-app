@@ -5,7 +5,10 @@ namespace ComprasTccApp.Backend.ValidationAttributes
 {
     public class CpfValidationAttribute : ValidationAttribute
     {
-        protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
+        protected override ValidationResult? IsValid(
+            object? value,
+            ValidationContext validationContext
+        )
         {
             if (value == null || string.IsNullOrWhiteSpace(value.ToString()))
             {

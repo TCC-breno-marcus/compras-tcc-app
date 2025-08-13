@@ -14,10 +14,10 @@ namespace ComprasTccApp.Backend.Controllers
         public IActionResult GetDepartamentos()
         {
             var departamentos = Enum.GetValues(typeof(DepartamentoEnum))
-                                    .Cast<DepartamentoEnum>()
-                                    .Select(d => d.ToFriendlyString())
-                                    .ToList();
-            
+                .Cast<DepartamentoEnum>()
+                .Select(d => d.ToFriendlyString())
+                .ToList();
+
             return Ok(departamentos);
         }
     }

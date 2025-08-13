@@ -9,60 +9,72 @@ using Microsoft.EntityFrameworkCore;
 [Authorize]
 public class SolicitacaoController : ControllerBase
 {
-  private readonly ISolicitacaoService _solicitacaoService;
-  private readonly AppDbContext _context;
+    private readonly ISolicitacaoService _solicitacaoService;
+    private readonly AppDbContext _context;
 
-  public SolicitacaoController
-  (
-    ISolicitacaoService solicitacaoService,
-    AppDbContext context
-  )
-  {
-    _solicitacaoService = solicitacaoService;
-    _context = context;
-  }
-
-  [HttpPost("geral")]
-  [Authorize(Roles = "Solicitante,Admin")]
-  public async Task<IActionResult> CreateSolicitacaoGeral([FromBody] CreateSolicitacaoGeralDto dto)
-  {
-    var solicitanteId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-
-    try
+    public SolicitacaoController(ISolicitacaoService solicitacaoService, AppDbContext context)
     {
-      var novaSolicitacao = await _solicitacaoService.CreateGeralAsync(dto, solicitanteId);
-      return CreatedAtAction(nameof(GetSolicitacaoById), new { id = novaSolicitacao.Id }, novaSolicitacao);
+        _solicitacaoService = solicitacaoService;
+        _context = context;
     }
-    catch (Exception ex)
+
+    [HttpPost("geral")]
+    [Authorize(Roles = "Solicitante,Admin")]
+    public async Task<IActionResult> CreateSolicitacaoGeral(
+        [FromBody] CreateSolicitacaoGeralDto dto
+    )
     {
-      return BadRequest(new { message = ex.Message });
+        var solicitanteId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+        try
+        {
+            var novaSolicitacao = await _solicitacaoService.CreateGeralAsync(dto, solicitanteId);
+            return CreatedAtAction(
+                nameof(GetSolicitacaoById),
+                new { id = novaSolicitacao.Id },
+                novaSolicitacao
+            );
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
-  }
 
-  [HttpGet("{id}")]
-  public async Task<IActionResult> GetSolicitacaoById([FromRoute] long id)
-  {
-    var solicitacao = await _solicitacaoService.GetByIdAsync(id);
-
-    if (solicitacao == null) return NotFound(new { message = "Solicitação não encontrada." });
-
-    return Ok(solicitacao);
-  }
-
-  [HttpPost("patrimonial")]
-  [Authorize(Roles = "Solicitante,Admin")]
-  public async Task<IActionResult> CreateSolicitacaoPatrimonial(CreateSolicitacaoPatrimonialDto dto)
-  {
-    var solicitanteId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-
-    try
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetSolicitacaoById([FromRoute] long id)
     {
-      var novaSolicitacao = await _solicitacaoService.CreatePatrimonialAsync(dto, solicitanteId);
-      return CreatedAtAction(nameof(GetSolicitacaoById), new { id = novaSolicitacao.Id }, novaSolicitacao);
+        var solicitacao = await _solicitacaoService.GetByIdAsync(id);
+
+        if (solicitacao == null)
+            return NotFound(new { message = "Solicitação não encontrada." });
+
+        return Ok(solicitacao);
     }
-    catch (Exception ex)
+
+    [HttpPost("patrimonial")]
+    [Authorize(Roles = "Solicitante,Admin")]
+    public async Task<IActionResult> CreateSolicitacaoPatrimonial(
+        CreateSolicitacaoPatrimonialDto dto
+    )
     {
-      return BadRequest(new { message = ex.Message });
+        var solicitanteId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+        try
+        {
+            var novaSolicitacao = await _solicitacaoService.CreatePatrimonialAsync(
+                dto,
+                solicitanteId
+            );
+            return CreatedAtAction(
+                nameof(GetSolicitacaoById),
+                new { id = novaSolicitacao.Id },
+                novaSolicitacao
+            );
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
-  }
 }
