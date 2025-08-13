@@ -74,7 +74,6 @@ const generateReport = () => {
           </div>
         </div>
 
-        <CatalogUpload />
       </div>
       <div class="flex justify-content-end gap-2 mt-4">
         <Button

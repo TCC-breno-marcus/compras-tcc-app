@@ -2,10 +2,15 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import AppLayout from '@/layouts/AppLayout.vue'
 import NotFoundView from '@/views/NotFoundView.vue'
-import NewSolicitation from '@/features/solicitations/views/NewSolicitation.vue'
+import NewGeneralSolicitationView from '@/features/solicitations/views/NewGeneralSolicitationView.vue'
+import NewPatrimonialSolicitationView from '@/features/solicitations/views/NewPatrimonialSolicitationView.vue'
 import ManagerPanel from '@/features/management/views/ManagerPanelView.vue'
 import SolicitationDetailsView from '@/features/solicitations/views/SolicitationDetailsView.vue'
-import { useAuthStore } from '@/stores/authStore'
+import { useAuthStore } from '@/features/autentication/stores/authStore'
+import MySolicitationsView from '@/features/solicitations/views/MySolicitationsView.vue'
+import { useSolicitationStore } from '@/features/solicitations/stores/solicitationStore'
+import { useConfirm } from 'primevue'
+import { CHANGE_SOLICITATION_CONFIRMATION } from '@/utils/confirmationFactoryUtils'
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -19,20 +24,44 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      component: AppLayout, // O Layout é o componente da rota pai
+      component: AppLayout,
       children: [
-        // As páginas são "filhas" do layout
         {
-          path: '/solicitacoes/criar',
-          name: 'NewSolicitation',
-          meta: { requiresAuth: true, roles: ['Solicitante', 'Admin'] },
-          component: NewSolicitation,
-        },
-        {
-          path: '/solicitacoes/:id',
-          name: 'SolicitationDetails',
-          meta: { requiresAuth: true, roles: ['Solicitante', 'Gestor', 'Admin'] },
-          component: SolicitationDetailsView,
+          path: '/solicitacoes',
+          children: [
+            {
+              path: 'criar/geral',
+              component: NewGeneralSolicitationView,
+              meta: {
+                requiresAuth: true,
+                roles: ['Solicitante', 'Admin'],
+                isCreateSolicitationPage: true,
+                solicitationType: 'geral',
+              },
+            },
+            {
+              path: 'criar/patrimonial',
+              component: NewPatrimonialSolicitationView,
+              meta: {
+                requiresAuth: true,
+                roles: ['Solicitante', 'Admin'],
+                isCreateSolicitationPage: true,
+                solicitationType: 'patrimonial',
+              },
+            },
+            {
+              path: ':id',
+              name: 'SolicitationDetails',
+              component: SolicitationDetailsView,
+              meta: { requiresAuth: true, roles: ['Solicitante', 'Gestor', 'Admin'] },
+            },
+            {
+              path: '',
+              name: 'MySolicitations',
+              component: MySolicitationsView,
+              meta: { requiresAuth: true, roles: ['Solicitante', 'Gestor', 'Admin'] },
+            },
+          ],
         },
         {
           path: '/gestor',
@@ -68,11 +97,6 @@ const router = createRouter({
           component: HomeView,
         },
         {
-          path: '/:pathMatch(.*)*', // Regex que captura qualquer coisa
-          name: 'NotFound',
-          component: NotFoundView,
-        },
-        {
           path: '/error',
           name: 'ServerError',
           component: () => import('../views/ServerErrorView.vue'),
@@ -80,26 +104,67 @@ const router = createRouter({
         {
           path: '/unauthorized',
           name: 'Unauthorized',
-          component: () => import('../views/UnauthorizedView.vue'),
+          component: () => import('../features/autentication/views/UnauthorizedView.vue'),
+        },
+        {
+          path: '/not-found',
+          name: 'AppNotFound',
+          component: NotFoundView,
+          meta: { requiresAuth: true },
         },
       ],
     },
     {
       path: '/login',
       name: 'Login',
-      component: () => import('../views/LoginView.vue'),
+      component: () => import('../features/autentication/views/LoginView.vue'),
     },
     {
       path: '/register',
       name: 'Register',
-      component: () => import('../views/RegisterView.vue'),
+      component: () => import('../features/autentication/views/RegisterView.vue'),
+    },
+    {
+      path: '/not-found',
+      name: 'PublicNotFound',
+      component: NotFoundView,
     },
   ],
 })
 
 // 2. Navigation Guard Global
 router.beforeEach((to, from, next) => {
+  const solicitationStore = useSolicitationStore()
+  const confirm = useConfirm()
+
+  const hasExistingSolicitation = solicitationStore.solicitationItems.length > 0
+  const isEnteringCreatePage = to.meta.isCreateSolicitationPage === true
+  const isDifferentType =
+    solicitationStore.solicitationType !== null &&
+    solicitationStore.solicitationType !== to.meta.solicitationType
+
+  if (isEnteringCreatePage && hasExistingSolicitation && isDifferentType) {
+    confirm.require({
+      ...CHANGE_SOLICITATION_CONFIRMATION,
+      message: `Você tem uma solicitação ${solicitationStore.solicitationType} em andamento. Deseja descartá-la para iniciar uma nova solicitação ${to.meta.solicitationType}?`,
+      accept: () => {
+        solicitationStore.clearSolicitation()
+        router.push(to.fullPath)
+      },
+    })
+
+    return next(false)
+  }
+
   const authStore = useAuthStore()
+
+  if (to.matched.length === 0) {
+    if (authStore.isAuthenticated) {
+      return next({ name: 'AppNotFound' })
+    } else {
+      return next({ name: 'PublicNotFound' })
+    }
+  }
 
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     return next({ name: 'Login', query: { redirect: to.fullPath } })

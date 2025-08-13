@@ -7,7 +7,6 @@ import ConfirmDialog from 'primevue/confirmdialog'
 
 const themeStore = useThemeStore()
 
-// 2. Cria um 'observador' que reage a qualquer mudança em themeStore.currentTheme
 watchEffect(() => {
   const rootElement = document.documentElement
   if (themeStore.currentTheme === 'dark') {
@@ -16,6 +15,7 @@ watchEffect(() => {
     rootElement.classList.remove('p-dark')
   }
 })
+
 </script>
 
 <template>
