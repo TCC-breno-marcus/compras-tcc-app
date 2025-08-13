@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 import TabMenu from 'primevue/tabmenu'
 import { useRoute, useRouter } from 'vue-router'
+import CustomBreadcrumb from '@/components/ui/CustomBreadcrumb.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -46,8 +47,14 @@ const activeRoute = computed(() => {
 
 <template>
   <div class="flex flex-column w-full h-full p-2">
-    <div class="flex items-center justify-content-between">
-      <h3>Painel do Gestor</h3>
+    <div class="grid align-items-center">
+      <!-- <div class="col">
+        <CustomBreadcrumb />
+      </div> -->
+
+      <h2 class="col-12 md:col text-start">Painel do Gestor</h2>
+
+      <!-- <div class="col-0 md:col"></div> -->
     </div>
     <TabMenu :model="items" :activeIndex="activeRoute" />
     <RouterView class="mt-2" />

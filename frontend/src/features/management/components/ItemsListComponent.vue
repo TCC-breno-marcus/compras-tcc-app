@@ -8,8 +8,8 @@ import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 import ItemComponent from './ItemComponent.vue';
 import ItemDetailsDialog from './ItemDetailsDialog.vue';
-import type { ItemCatalogo } from '@/types/itemsCatalogo';
 import { Button } from 'primevue';
+import type { Item } from '@/features/catalogo/types';
 
 const filters = ref([
   {
@@ -78,8 +78,8 @@ const items = ref([
 ]);
 
 const isDialogVisible = ref(false);
-const selectedItem = ref<ItemCatalogo | null>(null);
-const handleViewDetails = (item: ItemCatalogo) => {
+const selectedItem = ref<Item | null>(null);
+const handleViewDetails = (item: Item) => {
   selectedItem.value = item;
   isDialogVisible.value = true;
 };

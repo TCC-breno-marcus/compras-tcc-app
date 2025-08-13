@@ -12,13 +12,13 @@ const expandedRows = ref([])
 const materials = ref([
   {
     id: 1,
-    catmat: '408559',
-    description: 'Bandeja retangular 30 cm X 20 cm X 5 cm',
+    catmat: '26441',
+    description: 'Carteira Escolar',
     unit: 'UNIDADE',
-    unitPrice: 40.0,
+    unitPrice: 349.50,
     quantity: 16,
-    totalPrice: 64.0,
-    image: '/items_img/img1.png',
+    totalPrice: 5592,
+    image: '/items_img/26441.png',
     departments: [
       { name: 'DQI', quantity: 10 },
       { name: 'DEC', quantity: 6 },

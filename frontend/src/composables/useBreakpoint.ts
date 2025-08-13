@@ -12,7 +12,6 @@ export function useBreakpoint() {
   onMounted(() => window.addEventListener('resize', onResize));
   onUnmounted(() => window.removeEventListener('resize', onResize));
 
-  // Propriedade computada que nos diz se a tela é grande (desktop)
   const isLargeScreen = computed(() => screenWidth.value >= lgBreakpoint);
 
   return { isLargeScreen };

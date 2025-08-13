@@ -1,29 +1,42 @@
 <script setup lang="ts">
-import Drawer from 'primevue/drawer';
-import { Button } from 'primevue';
-import { ref } from "vue";
-import { useMenuStore } from '@/stores/menu';
-import Menu from 'primevue/menu';
+import Drawer from 'primevue/drawer'
+import { Button } from 'primevue'
+import { ref, watch } from 'vue'
+import { useMenuStore } from '@/stores/menu'
+import Menu from 'primevue/menu'
+import { useRoute } from 'vue-router'
 
-const visible = ref(false);
+const { itemsMenuOverlay } = useMenuStore()
+const route = useRoute()
 
-const { itemsMenuOverlay } = useMenuStore();
+const visible = ref(false)
 
+watch(
+  () => route.path,
+  () => {
+    visible.value = false
+  },
+)
 </script>
 
 <template>
   <div>
-    <Drawer v-model:visible="visible" header="Menu" class="w-min" :pt="{
-      root: {
-        style: {
-          background: 'var(--p-surface-800)',
-          color: 'var(--p-surface-100)',
-          border: 0
-        }
-      }
-    }">
-      <div class="card flex justify-center text-sm" style="color: var(--p-text-color);">
-        <Menu :model="itemsMenuOverlay" style="background-color: var(--p-surface-800); border: 0;">
+    <Drawer
+      v-model:visible="visible"
+      header="Menu"
+      class="w-min"
+      :pt="{
+        root: {
+          style: {
+            background: 'var(--p-surface-800)',
+            color: 'var(--p-surface-100)',
+            border: 0,
+          },
+        },
+      }"
+    >
+      <div class="card flex justify-center text-sm" style="color: var(--p-text-color)">
+        <Menu :model="itemsMenuOverlay" style="background-color: var(--p-surface-800); border: 0">
           <template #item="{ item, props }">
             <router-link v-if="item.route" v-slot="{ href, navigate }" :to="item.route" custom>
               <a v-ripple :href="href" v-bind="props.action" @click="navigate">
@@ -40,7 +53,6 @@ const { itemsMenuOverlay } = useMenuStore();
               <span>{{ item.label }}</span>
             </a>
           </template>
-
         </Menu>
       </div>
     </Drawer>
@@ -57,7 +69,6 @@ const { itemsMenuOverlay } = useMenuStore();
   color: var(--p-text-color);
 }
 
-
 :deep(.p-menu-item-link),
 :deep(.p-menu-item-icon) {
   color: var(--p-surface-300);
@@ -67,7 +78,6 @@ const { itemsMenuOverlay } = useMenuStore();
 :deep(.p-menu-submenu .p-menu-item-icon) {
   color: var(--p-surface-700);
 }
-
 
 :deep(.p-menu-item-content) {
   background-color: transparent !important;
@@ -99,8 +109,7 @@ const { itemsMenuOverlay } = useMenuStore();
   background-color: var(--p-surface-100) !important;
 }
 
-:deep(.p-menu-submenu-label){
+:deep(.p-menu-submenu-label) {
   color: var(--p-surface-400);
 }
-
 </style>

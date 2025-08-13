@@ -1,32 +1,59 @@
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/features/autentication/stores/authStore'
+import type { MenuItem } from 'primevue/menuitem'
+
+export interface AppMenuItem extends MenuItem {
+  roles?: string[]
+  materialIcon?: boolean
+  items?: AppMenuItem[]
+}
 
 export const useMenuStore = defineStore('menu', () => {
   const router = useRouter()
+  const authStore = useAuthStore()
 
-  const itemsMenu = ref([
+  const baseItemsMenu = ref<AppMenuItem[]>([
     {
       label: 'Solicitações',
       icon: 'assignment',
       materialIcon: true,
+      roles: ['Solicitante', 'Admin'],
       items: [
         {
-          label: 'Solicitações',
-          class: 'submenu-title',
+          label: 'Criar Solicitação',
           disabled: true,
+          class: 'submenu-title',
         },
         {
-          label: 'Nova Solicitação',
-          icon: 'add',
+          label: 'Geral',
+          icon: 'assignment',
           materialIcon: true,
-          route: '/solicitacoes/criar',
+          command: () => {
+            router.push('/solicitacoes/criar/geral')
+          },
+        },
+        {
+          label: 'Bens Patrimoniais',
+          icon: 'chair',
+          materialIcon: true,
+          command: () => {
+            router.push('/solicitacoes/criar/patrimonial')
+          },
+        },
+        {
+          label: 'Solicitações',
+          disabled: true,
+          class: 'submenu-title',
         },
         {
           label: 'Minhas Solicitações',
           icon: 'assignment_ind',
           materialIcon: true,
-          route: '/solicitacoes/minhas',
+          command: () => {
+            router.push('/solicitacoes')
+          },
         },
       ],
     },
@@ -34,6 +61,7 @@ export const useMenuStore = defineStore('menu', () => {
       label: 'Painel do Gestor',
       icon: 'bar_chart',
       materialIcon: true,
+      roles: ['Admin', 'Gestor'],
       command: () => {
         router.push('/gestor/dashboard')
       },
@@ -42,30 +70,44 @@ export const useMenuStore = defineStore('menu', () => {
       label: 'Fale Conosco',
       icon: 'mail',
       materialIcon: true,
+      roles: ['Admin', 'Gestor', 'Solicitante'],
       command: () => {
         router.push('/fale-conosco')
       },
     },
   ])
 
-  const itemsMenuOverlay = ref([
+  const baseItemsMenuOverlay = ref<AppMenuItem[]>([
     {
       label: 'Solicitações',
+      roles: ['Admin', 'Solicitante'],
       items: [
         {
-          label: 'Nova Solicitação',
-          icon: 'add_shopping_cart',
-          route: '/solicitacoes/criar',
+          label: 'Solicitação Geral',
+          icon: 'assignment',
+          command: () => {
+            router.push('/solicitacoes/criar/geral')
+          },
+        },
+        {
+          label: 'Bens Patrimoniais',
+          icon: 'chair',
+          command: () => {
+            router.push('/solicitacoes/criar/patrimonial')
+          },
         },
         {
           label: 'Minhas Solicitações',
-          icon: 'list_alt',
-          route: '/solicitacoes/minhas',
+          icon: 'assignment_ind',
+          command: () => {
+            router.push('/solicitacoes')
+          },
         },
       ],
     },
     {
       label: 'Gestor',
+      roles: ['Admin', 'Gestor'],
       items: [
         {
           label: 'Painel do Gestor',
@@ -73,11 +115,12 @@ export const useMenuStore = defineStore('menu', () => {
           command: () => {
             router.push('/gestor/dashboard')
           },
-        }
+        },
       ],
     },
     {
       label: 'Contato',
+      roles: ['Admin', 'Gestor'],
       items: [
         {
           label: 'Fale Conosco',
@@ -91,5 +134,40 @@ export const useMenuStore = defineStore('menu', () => {
     },
   ])
 
+  /**
+   * Filtra um array de itens de menu com base na role do usuário atual.
+   * A função é recursiva para lidar com sub-menus.
+   * @param items Array de itens de menu a serem filtrados.
+   */
+  function filterMenuByRole(items: AppMenuItem[]): AppMenuItem[] {
+    const userRole = authStore.user?.role
+
+    const filteredItems = []
+
+    for (const item of items) {
+      const isVisible = !item.roles || item.roles.includes(userRole as string)
+
+      if (isVisible) {
+        let filteredSubItems = item.items ? filterMenuByRole(item.items) : undefined
+        if (
+          item.class === 'submenu-title' &&
+          (!filteredSubItems || filteredSubItems.length === 0)
+        ) {
+          continue
+        }
+        const newItem = { ...item }
+
+        if (filteredSubItems) {
+          newItem.items = filteredSubItems
+        }
+        filteredItems.push(newItem)
+      }
+    }
+
+    return filteredItems
+  }
+
+  const itemsMenu = computed(() => filterMenuByRole(baseItemsMenu.value))
+  const itemsMenuOverlay = computed(() => filterMenuByRole(baseItemsMenuOverlay.value))
   return { itemsMenu, itemsMenuOverlay }
 })
