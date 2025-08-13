@@ -2,7 +2,6 @@ using System.ComponentModel.DataAnnotations;
 
 public class CreateSolicitacaoGeralDto
 {
-    [Required]
     public long GestorId { get; set; }
 
     [Required, StringLength(500)]

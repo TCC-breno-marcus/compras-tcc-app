@@ -15,8 +15,7 @@ namespace ComprasTccApp.Models.Entities.Solicitacoes
         [Required]
         public required Solicitante Solicitante { get; set; }
 
-        [Required]
-        public required Gestor Gestor { get; set; }
+        // public required Gestor Gestor { get; set; }
 
         [Required]
         public DateTime DataCriacao { get; set; }

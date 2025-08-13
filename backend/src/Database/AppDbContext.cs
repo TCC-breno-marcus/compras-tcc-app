@@ -69,12 +69,12 @@ public class AppDbContext : DbContext
             .HasForeignKey(s => s.SolicitanteId)
             .IsRequired();
 
-        modelBuilder
-            .Entity<Solicitacao>()
-            .HasOne(s => s.Gestor)
-            .WithMany(g => g.Solicitacoes)
-            .HasForeignKey(s => s.GestorId)
-            .IsRequired();
+        // modelBuilder
+        //     .Entity<Solicitacao>()
+        //     .HasOne(s => s.Gestor)
+        //     .WithMany(g => g.Solicitacoes)
+        //     .HasForeignKey(s => s.GestorId)
+        //     .IsRequired();
 
         modelBuilder
             .Entity<SolicitacaoItem>()

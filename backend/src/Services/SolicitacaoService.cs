@@ -23,19 +23,19 @@ public class SolicitacaoService : ISolicitacaoService
         try
         {
             var solicitante = await _context.Solicitantes.FindAsync(solicitanteId);
-            var gestor = await _context.Gestores.FindAsync(dto.GestorId);
+            // var gestor = await _context.Gestores.FindAsync(dto.GestorId);
 
             if (solicitante == null)
                 throw new Exception($"Solicitante com ID {solicitanteId} não encontrado.");
-            if (gestor == null)
-                throw new Exception($"Gestor com ID {dto.GestorId} não encontrado.");
+            // if (gestor == null)
+            //     throw new Exception($"Gestor com ID {dto.GestorId} não encontrado.");
 
             var novaSolicitacao = new SolicitacaoGeral
             {
                 SolicitanteId = solicitanteId,
-                GestorId = dto.GestorId,
+                // GestorId = dto.GestorId,
                 Solicitante = solicitante,
-                Gestor = gestor,
+                // Gestor = gestor,
                 DataCriacao = DateTime.UtcNow,
                 JustificativaGeral = dto.JustificativaGeral,
             };
@@ -100,9 +100,9 @@ public class SolicitacaoService : ISolicitacaoService
         try
         {
             var solicitante = await _context.Solicitantes.FindAsync(solicitanteId);
-            var gestor = await _context.Gestores.FindAsync(dto.GestorId);
+            // var gestor = await _context.Gestores.FindAsync(dto.GestorId);
 
-            if (solicitante == null || gestor == null)
+            if (solicitante == null)
             {
                 throw new Exception("Solicitante ou Gestor não encontrado.");
             }
@@ -110,9 +110,9 @@ public class SolicitacaoService : ISolicitacaoService
             var novaSolicitacao = new SolicitacaoPatrimonial
             {
                 SolicitanteId = solicitanteId,
-                GestorId = dto.GestorId,
+                // GestorId = dto.GestorId,
                 Solicitante = solicitante,
-                Gestor = gestor,
+                // Gestor = gestor,
                 DataCriacao = DateTime.UtcNow,
             };
 
