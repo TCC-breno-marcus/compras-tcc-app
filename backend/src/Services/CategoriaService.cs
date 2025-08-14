@@ -1,7 +1,7 @@
-using ComprasTccApp.Models.Dtos;
 using ComprasTccApp.Models.Entities.Categorias;
 using Database;
 using Microsoft.EntityFrameworkCore;
+using Models.Dtos;
 using Services.Interfaces;
 
 namespace Services

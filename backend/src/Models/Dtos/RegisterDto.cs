@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using ComprasTccApp.Backend.ValidationAttributes;
 
-namespace ComprasTccApp.Backend.DTOs
+namespace Models.Dtos
 {
     public class RegisterDto
     {

@@ -1,5 +1,4 @@
 using System.Security.Claims;
-using ComprasTccApp.Backend.DTOs;
 using ComprasTccApp.Backend.Enums;
 using ComprasTccApp.Backend.Extensions;
 using ComprasTccApp.Models.Entities.Pessoas;
@@ -8,6 +7,7 @@ using ComprasTccApp.Models.Entities.Solicitantes;
 using ComprasTccApp.Services.Interfaces;
 using Database;
 using Microsoft.EntityFrameworkCore;
+using Models.Dtos;
 
 namespace ComprasTccApp.Backend.Services
 {

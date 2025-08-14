@@ -1,4 +1,4 @@
-namespace ComprasTccApp.Backend.DTOs // Ajuste o namespace se necessário
+namespace Models.Dtos
 {
     public class UserProfileDto
     {

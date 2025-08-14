@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace ComprasTccApp.Models.Dtos
+namespace Models.Dtos
 {
     public class ItemImportacaoDto
     {

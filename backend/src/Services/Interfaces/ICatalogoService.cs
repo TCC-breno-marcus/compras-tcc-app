@@ -1,4 +1,4 @@
-using ComprasTccApp.Models.Dtos;
+using Models.Dtos;
 
 namespace Services.Interfaces
 {
