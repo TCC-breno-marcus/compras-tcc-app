@@ -3,6 +3,7 @@ using Database;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Models.Dtos;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -24,11 +25,11 @@ public class SolicitacaoController : ControllerBase
         [FromBody] CreateSolicitacaoGeralDto dto
     )
     {
-        var solicitanteId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var pessoaId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
         try
         {
-            var novaSolicitacao = await _solicitacaoService.CreateGeralAsync(dto, solicitanteId);
+            var novaSolicitacao = await _solicitacaoService.CreateGeralAsync(dto, pessoaId);
             return CreatedAtAction(
                 nameof(GetSolicitacaoById),
                 new { id = novaSolicitacao.Id },
@@ -58,14 +59,11 @@ public class SolicitacaoController : ControllerBase
         CreateSolicitacaoPatrimonialDto dto
     )
     {
-        var solicitanteId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var pessoaId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
         try
         {
-            var novaSolicitacao = await _solicitacaoService.CreatePatrimonialAsync(
-                dto,
-                solicitanteId
-            );
+            var novaSolicitacao = await _solicitacaoService.CreatePatrimonialAsync(dto, pessoaId);
             return CreatedAtAction(
                 nameof(GetSolicitacaoById),
                 new { id = novaSolicitacao.Id },

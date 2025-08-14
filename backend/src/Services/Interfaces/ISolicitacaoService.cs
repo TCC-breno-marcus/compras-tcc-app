@@ -1,11 +1,12 @@
 using ComprasTccApp.Models.Entities.Solicitacoes;
+using Models.Dtos;
 
 public interface ISolicitacaoService
 {
-    Task<SolicitacaoGeral> CreateGeralAsync(CreateSolicitacaoGeralDto dto, long solicitanteId);
+    Task<SolicitacaoResultDto> CreateGeralAsync(CreateSolicitacaoGeralDto dto, long pessoaId);
     Task<Solicitacao?> GetByIdAsync(long id);
     Task<SolicitacaoPatrimonial> CreatePatrimonialAsync(
         CreateSolicitacaoPatrimonialDto dto,
-        long solicitanteId
+        long pessoaId
     );
 }

@@ -1,11 +1,15 @@
 using System.ComponentModel.DataAnnotations;
 
-public class SolicitacaoItemDto
+namespace Models.Dtos
 {
-    [Required]
-    public long ItemId { get; set; }
+    public class SolicitacaoItemDto
+    {
+        [Required]
+        public long ItemId { get; set; }
 
-    [Required, Range(1, double.MaxValue)]
-    public decimal Quantidade { get; set; }
-    public string? Justificativa { get; set; }
+        [Required, Range(1, double.MaxValue)]
+        public decimal Quantidade { get; set; }
+        public string? Justificativa { get; set; }
+        public decimal ValorUnitario { get; set; }
+    }
 }

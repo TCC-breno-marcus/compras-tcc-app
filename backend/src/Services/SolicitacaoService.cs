@@ -1,7 +1,9 @@
+using ComprasTccApp.Backend.Extensions;
 using ComprasTccApp.Models.Entities.Itens;
 using ComprasTccApp.Models.Entities.Solicitacoes;
 using Database;
 using Microsoft.EntityFrameworkCore;
+using Models.Dtos;
 
 public class SolicitacaoService : ISolicitacaoService
 {
@@ -14,31 +16,38 @@ public class SolicitacaoService : ISolicitacaoService
         _logger = logger;
     }
 
-    public async Task<SolicitacaoGeral> CreateGeralAsync(
+    public async Task<SolicitacaoResultDto> CreateGeralAsync(
         CreateSolicitacaoGeralDto dto,
-        long solicitanteId
+        long pessoaId
     )
     {
         await using var transaction = await _context.Database.BeginTransactionAsync();
         try
         {
-            var solicitante = await _context.Solicitantes.FindAsync(solicitanteId);
-            // var gestor = await _context.Gestores.FindAsync(dto.GestorId);
+            var servidor = await _context
+                .Servidores.Include(s => s.Pessoa)
+                .FirstOrDefaultAsync(s => s.PessoaId == pessoaId);
+
+            if (servidor == null)
+                throw new Exception($"Pessoa com ID {pessoaId} não encontrada na tabela Servidor.");
+
+            var solicitante = await _context.Solicitantes.FirstOrDefaultAsync(s =>
+                s.ServidorId == servidor.Id
+            );
 
             if (solicitante == null)
-                throw new Exception($"Solicitante com ID {solicitanteId} não encontrado.");
-            // if (gestor == null)
-            //     throw new Exception($"Gestor com ID {dto.GestorId} não encontrado.");
+                throw new Exception(
+                    $"Servidor com ID {servidor.Id} não encontrado na tabela Solicitante."
+                );
 
             var novaSolicitacao = new SolicitacaoGeral
             {
-                SolicitanteId = solicitanteId,
-                // GestorId = dto.GestorId,
-                Solicitante = solicitante,
-                // Gestor = gestor,
+                SolicitanteId = solicitante.Id,
                 DataCriacao = DateTime.UtcNow,
                 JustificativaGeral = dto.JustificativaGeral,
             };
+
+            var itensDaSolicitacao = new List<SolicitacaoItem>();
 
             foreach (var itemDto in dto.Itens)
             {
@@ -56,17 +65,45 @@ public class SolicitacaoService : ISolicitacaoService
                     Item = itemDoCatalogo,
                     ItemId = itemDto.ItemId,
                     Quantidade = itemDto.Quantidade,
-                    ValorUnitario = itemDoCatalogo.PrecoSugerido,
+                    ValorUnitario = itemDto.ValorUnitario,
                     Justificativa = null,
                 };
-                novaSolicitacao.ItemSolicitacao.Add(solicitacaoItem);
+                itensDaSolicitacao.Add(solicitacaoItem);
             }
 
-            await _context.SolicitacoesGerais.AddAsync(novaSolicitacao);
+            novaSolicitacao.ItemSolicitacao = itensDaSolicitacao;
+
+            await _context.Solicitacoes.AddAsync(novaSolicitacao);
             await _context.SaveChangesAsync();
 
             await transaction.CommitAsync();
-            return novaSolicitacao;
+
+            var respostaDto = new SolicitacaoResultDto
+            {
+                Id = novaSolicitacao.Id,
+                DataCriacao = novaSolicitacao.DataCriacao,
+                JustificativaGeral = novaSolicitacao.JustificativaGeral,
+                Solicitante = new SolicitanteDto
+                {
+                    Id = solicitante.Id,
+                    Nome = servidor.Pessoa.Nome,
+                    Email = servidor.Pessoa.Email,
+                    Departamento = solicitante.Unidade.ToFriendlyString(),
+                },
+                Itens = novaSolicitacao
+                    .ItemSolicitacao.Select(item => new ItemSolicitacaoResultDto
+                    {
+                        ItemId = item.ItemId,
+                        NomeDoItem = item.Item.Nome,
+                        CatMat = item.Item.CatMat,
+                        Quantidade = item.Quantidade,
+                        ValorUnitario = item.ValorUnitario,
+                        Justificativa = item.Justificativa,
+                    })
+                    .ToList(),
+            };
+
+            return respostaDto;
         }
         catch (Exception ex)
         {
@@ -110,9 +147,7 @@ public class SolicitacaoService : ISolicitacaoService
             var novaSolicitacao = new SolicitacaoPatrimonial
             {
                 SolicitanteId = solicitanteId,
-                // GestorId = dto.GestorId,
                 Solicitante = solicitante,
-                // Gestor = gestor,
                 DataCriacao = DateTime.UtcNow,
             };
 

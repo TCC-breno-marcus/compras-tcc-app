@@ -10,12 +10,11 @@ namespace ComprasTccApp.Models.Entities.Solicitacoes
     {
         public long Id { get; set; }
         public long SolicitanteId { get; set; }
-        public long GestorId { get; set; }
+        public long? GestorId { get; set; }
 
-        [Required]
-        public required Solicitante Solicitante { get; set; }
+        public Solicitante Solicitante { get; set; } = null!;
 
-        // public required Gestor Gestor { get; set; }
+        public Gestor? Gestor { get; set; }
 
         [Required]
         public DateTime DataCriacao { get; set; }
