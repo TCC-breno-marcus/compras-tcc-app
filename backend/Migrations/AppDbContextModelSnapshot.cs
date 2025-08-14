@@ -291,7 +291,7 @@ namespace backend.Migrations
                     b.Property<DateTime>("DataCriacao")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<long>("GestorId")
+                    b.Property<long?>("GestorId")
                         .HasColumnType("bigint");
 
                     b.Property<long>("SolicitanteId")
@@ -421,17 +421,17 @@ namespace backend.Migrations
 
             modelBuilder.Entity("ComprasTccApp.Models.Entities.Solicitacoes.Solicitacao", b =>
                 {
-                    b.HasOne("ComprasTccApp.Models.Entities.Gestores.Gestor", null)
+                    b.HasOne("ComprasTccApp.Models.Entities.Gestores.Gestor", "Gestor")
                         .WithMany("Solicitacoes")
-                        .HasForeignKey("GestorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("GestorId");
 
                     b.HasOne("ComprasTccApp.Models.Entities.Solicitantes.Solicitante", "Solicitante")
                         .WithMany("Solicitacoes")
                         .HasForeignKey("SolicitanteId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Gestor");
 
                     b.Navigation("Solicitante");
                 });

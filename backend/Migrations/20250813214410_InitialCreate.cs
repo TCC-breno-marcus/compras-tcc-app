@@ -143,7 +143,7 @@ namespace backend.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     SolicitanteId = table.Column<long>(type: "bigint", nullable: false),
-                    GestorId = table.Column<long>(type: "bigint", nullable: false),
+                    GestorId = table.Column<long>(type: "bigint", nullable: true),
                     DataCriacao = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     TipoSolicitacao = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
                     JustificativaGeral = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true)
@@ -155,8 +155,7 @@ namespace backend.Migrations
                         name: "FK_Solicitacoes_Gestores_GestorId",
                         column: x => x.GestorId,
                         principalTable: "Gestores",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Solicitacoes_Solicitantes_SolicitanteId",
                         column: x => x.SolicitanteId,

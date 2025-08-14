@@ -25,8 +25,9 @@ public class AppDbContext : DbContext
     public DbSet<SolicitacaoGeral> SolicitacoesGerais { get; set; }
     public DbSet<SolicitacaoPatrimonial> SolicitacoesPatrimoniais { get; set; }
     public DbSet<SolicitacaoItem> SolicitacaoItens { get; set; }
+  public object Database { get; internal set; }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+  protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
@@ -69,12 +70,11 @@ public class AppDbContext : DbContext
             .HasForeignKey(s => s.SolicitanteId)
             .IsRequired();
 
-        // modelBuilder
-        //     .Entity<Solicitacao>()
-        //     .HasOne(s => s.Gestor)
-        //     .WithMany(g => g.Solicitacoes)
-        //     .HasForeignKey(s => s.GestorId)
-        //     .IsRequired();
+        modelBuilder
+            .Entity<Solicitacao>()
+            .HasOne(s => s.Gestor)
+            .WithMany(g => g.Solicitacoes)
+            .HasForeignKey(s => s.GestorId);
 
         modelBuilder
             .Entity<SolicitacaoItem>()
