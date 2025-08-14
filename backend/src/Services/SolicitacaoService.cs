@@ -1,6 +1,8 @@
 using ComprasTccApp.Backend.Extensions;
 using ComprasTccApp.Models.Entities.Itens;
+using ComprasTccApp.Models.Entities.Servidores;
 using ComprasTccApp.Models.Entities.Solicitacoes;
+using ComprasTccApp.Models.Entities.Solicitantes;
 using Database;
 using Microsoft.EntityFrameworkCore;
 using Models.Dtos;
@@ -21,25 +23,11 @@ public class SolicitacaoService : ISolicitacaoService
         long pessoaId
     )
     {
+        var (servidor, solicitante) = await GetSolicitanteInfoAsync(pessoaId);
+
         await using var transaction = await _context.Database.BeginTransactionAsync();
         try
         {
-            var servidor = await _context
-                .Servidores.Include(s => s.Pessoa)
-                .FirstOrDefaultAsync(s => s.PessoaId == pessoaId);
-
-            if (servidor == null)
-                throw new Exception($"Pessoa com ID {pessoaId} não encontrada na tabela Servidor.");
-
-            var solicitante = await _context.Solicitantes.FirstOrDefaultAsync(s =>
-                s.ServidorId == servidor.Id
-            );
-
-            if (solicitante == null)
-                throw new Exception(
-                    $"Servidor com ID {servidor.Id} não encontrado na tabela Solicitante."
-                );
-
             var novaSolicitacao = new SolicitacaoGeral
             {
                 SolicitanteId = solicitante.Id,
@@ -113,43 +101,23 @@ public class SolicitacaoService : ISolicitacaoService
         }
     }
 
-    public async Task<Solicitacao?> GetByIdAsync(long id)
-    {
-        _logger.LogInformation("Buscando solicitação com ID: {Id}", id);
-        var solicitacao = await _context
-            .Solicitacoes.Include("ItemSolicitacao.Item")
-            .FirstOrDefaultAsync(s => s.Id == id);
-
-        if (solicitacao == null)
-        {
-            _logger.LogWarning("Solicitação com ID: {Id} não encontrada.", id);
-        }
-
-        return solicitacao;
-    }
-
-    public async Task<SolicitacaoPatrimonial> CreatePatrimonialAsync(
+    public async Task<SolicitacaoResultDto> CreatePatrimonialAsync(
         CreateSolicitacaoPatrimonialDto dto,
-        long solicitanteId
+        long pessoaId
     )
     {
+        var (servidor, solicitante) = await GetSolicitanteInfoAsync(pessoaId);
+
         await using var transaction = await _context.Database.BeginTransactionAsync();
         try
         {
-            var solicitante = await _context.Solicitantes.FindAsync(solicitanteId);
-            // var gestor = await _context.Gestores.FindAsync(dto.GestorId);
-
-            if (solicitante == null)
-            {
-                throw new Exception("Solicitante ou Gestor não encontrado.");
-            }
-
             var novaSolicitacao = new SolicitacaoPatrimonial
             {
-                SolicitanteId = solicitanteId,
-                Solicitante = solicitante,
+                SolicitanteId = solicitante.Id,
                 DataCriacao = DateTime.UtcNow,
             };
+
+            var itensDaSolicitacao = new List<SolicitacaoItem>();
 
             foreach (var itemDto in dto.Itens)
             {
@@ -167,23 +135,88 @@ public class SolicitacaoService : ISolicitacaoService
                     Item = itemDoCatalogo,
                     ItemId = itemDto.ItemId,
                     Quantidade = itemDto.Quantidade,
-                    ValorUnitario = itemDoCatalogo.PrecoSugerido,
+                    ValorUnitario = itemDto.ValorUnitario,
                     Justificativa = itemDto.Justificativa,
                 };
-                novaSolicitacao.ItemSolicitacao.Add(solicitacaoItem);
+                itensDaSolicitacao.Add(solicitacaoItem);
             }
 
-            await _context.SolicitacoesPatrimoniais.AddAsync(novaSolicitacao);
+            novaSolicitacao.ItemSolicitacao = itensDaSolicitacao;
+
+            await _context.Solicitacoes.AddAsync(novaSolicitacao);
             await _context.SaveChangesAsync();
 
             await transaction.CommitAsync();
-            return novaSolicitacao;
+
+            var respostaDto = new SolicitacaoResultDto
+            {
+                Id = novaSolicitacao.Id,
+                DataCriacao = novaSolicitacao.DataCriacao,
+                Solicitante = new SolicitanteDto
+                {
+                    Id = solicitante.Id,
+                    Nome = servidor.Pessoa.Nome,
+                    Email = servidor.Pessoa.Email,
+                    Departamento = solicitante.Unidade.ToFriendlyString(),
+                },
+                Itens = novaSolicitacao
+                    .ItemSolicitacao.Select(item => new ItemSolicitacaoResultDto
+                    {
+                        ItemId = item.ItemId,
+                        NomeDoItem = item.Item.Nome,
+                        CatMat = item.Item.CatMat,
+                        Quantidade = item.Quantidade,
+                        ValorUnitario = item.ValorUnitario,
+                        Justificativa = item.Justificativa,
+                    })
+                    .ToList(),
+            };
+
+            return respostaDto;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao criar solicitação patrimonial.");
+            _logger.LogError(ex, "Erro ao criar solicitação geral.");
             await transaction.RollbackAsync();
             throw;
         }
+    }
+
+    private async Task<(Servidor servidor, Solicitante solicitante)> GetSolicitanteInfoAsync(
+        long pessoaId
+    )
+    {
+        var servidor = await _context
+            .Servidores.Include(s => s.Pessoa)
+            .FirstOrDefaultAsync(s => s.PessoaId == pessoaId);
+
+        if (servidor == null)
+            throw new Exception($"Pessoa com ID {pessoaId} não encontrada na tabela Servidor.");
+
+        var solicitante = await _context.Solicitantes.FirstOrDefaultAsync(s =>
+            s.ServidorId == servidor.Id
+        );
+
+        if (solicitante == null)
+            throw new Exception(
+                $"Servidor com ID {servidor.Id} não encontrado na tabela Solicitante."
+            );
+
+        return (servidor, solicitante);
+    }
+
+    public async Task<Solicitacao?> GetByIdAsync(long id)
+    {
+        _logger.LogInformation("Buscando solicitação com ID: {Id}", id);
+        var solicitacao = await _context
+            .Solicitacoes.Include("ItemSolicitacao.Item")
+            .FirstOrDefaultAsync(s => s.Id == id);
+
+        if (solicitacao == null)
+        {
+            _logger.LogWarning("Solicitação com ID: {Id} não encontrada.", id);
+        }
+
+        return solicitacao;
     }
 }

@@ -7,6 +7,6 @@ namespace Models.Dtos
         public long? GestorId { get; set; }
 
         [Required, MinLength(1)]
-        public required List<SolicitacaoPatrimonialItemDto> Itens { get; set; }
+        public required List<SolicitacaoItemDto> Itens { get; set; }
     }
 }
