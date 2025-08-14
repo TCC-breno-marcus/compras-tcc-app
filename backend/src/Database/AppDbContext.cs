@@ -25,9 +25,8 @@ public class AppDbContext : DbContext
     public DbSet<SolicitacaoGeral> SolicitacoesGerais { get; set; }
     public DbSet<SolicitacaoPatrimonial> SolicitacoesPatrimoniais { get; set; }
     public DbSet<SolicitacaoItem> SolicitacaoItens { get; set; }
-  public object Database { get; internal set; }
 
-  protected override void OnModelCreating(ModelBuilder modelBuilder)
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
