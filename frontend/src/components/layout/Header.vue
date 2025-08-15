@@ -83,7 +83,7 @@ const userInitial = computed(() => {
             <span class="font-bold mt-2">{{ userInitial?.nome }}</span>
             <span
               v-if="userInitial?.departamento !== 'não disponível'"
-              class="text-sm text-color-secondary"
+              class="text-sm text-center text-color-secondary mt-1"
               >{{ userInitial?.departamento }}</span
             >
           </div>

@@ -1,4 +1,5 @@
-import type { Item } from '@/features/management/types'
+import type { Item } from "@/features/catalogo/types"
+
 
 /**
  * Compara um objeto de formulário (parcial) com um objeto original completo.
