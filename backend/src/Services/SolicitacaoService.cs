@@ -1,147 +1,282 @@
+using ComprasTccApp.Backend.Extensions;
 using ComprasTccApp.Models.Entities.Itens;
+using ComprasTccApp.Models.Entities.Servidores;
 using ComprasTccApp.Models.Entities.Solicitacoes;
+using ComprasTccApp.Models.Entities.Solicitantes;
 using Database;
 using Microsoft.EntityFrameworkCore;
+using Models.Dtos;
+using Services.Interfaces;
 
 public class SolicitacaoService : ISolicitacaoService
 {
-  private readonly AppDbContext _context;
-  private readonly ILogger<SolicitacaoService> _logger;
+    private readonly AppDbContext _context;
+    private readonly ILogger<SolicitacaoService> _logger;
+    private readonly IConfiguracaoService _configuracaoService;
 
-  public SolicitacaoService(AppDbContext context, ILogger<SolicitacaoService> logger)
-  {
-    _context = context;
-    _logger = logger;
-  }
-
-  public async Task<SolicitacaoGeral> CreateGeralAsync(
-    CreateSolicitacaoGeralDto dto,
-    long solicitanteId
-)
-  {
-    await using var transaction = await _context.Database.BeginTransactionAsync();
-    try
+    public SolicitacaoService(
+        AppDbContext context,
+        ILogger<SolicitacaoService> logger,
+        IConfiguracaoService configuracaoService
+    )
     {
-      var solicitante = await _context.Solicitantes.FindAsync(solicitanteId);
-      var gestor = await _context.Gestores.FindAsync(dto.GestorId);
+        _context = context;
+        _logger = logger;
+        _configuracaoService = configuracaoService;
+    }
 
-      if (solicitante == null)
-        throw new Exception($"Solicitante com ID {solicitanteId} não encontrado.");
-      if (gestor == null)
-        throw new Exception($"Gestor com ID {dto.GestorId} não encontrado.");
-
-      var novaSolicitacao = new SolicitacaoGeral
-      {
-        SolicitanteId = solicitanteId,
-        GestorId = dto.GestorId,
-        Solicitante = solicitante,
-        Gestor = gestor,
-        DataCriacao = DateTime.UtcNow,
-        JustificativaGeral = dto.JustificativaGeral
-      };
-
-      foreach (var itemDto in dto.Itens)
-      {
-        var itemDoCatalogo = await _context.Items.FindAsync(itemDto.ItemId);
-        if (itemDoCatalogo == null || !itemDoCatalogo.IsActive)
+    public async Task<SolicitacaoResultDto> CreateGeralAsync(
+        CreateSolicitacaoGeralDto dto,
+        long pessoaId
+    )
+    {
+        var prazoSubmissao = await _configuracaoService.GetPrazoSubmissaoAsync();
+        if (prazoSubmissao.HasValue && DateTime.UtcNow > prazoSubmissao.Value)
         {
-          throw new Exception($"Item com ID {itemDto.ItemId} não existe ou está inativo.");
+            string prazoSubmissaoFormatado = prazoSubmissao.Value.ToString("dd/MM/yyyy 'às' HH:mm");
+            throw new InvalidOperationException(
+                $"O prazo para a criação de solicitações encerrou em {prazoSubmissaoFormatado}."
+            );
         }
 
-        var solicitacaoItem = new SolicitacaoItem
+        var (servidor, solicitante) = await GetSolicitanteInfoAsync(pessoaId);
+
+        await using var transaction = await _context.Database.BeginTransactionAsync();
+        try
         {
-          Solicitacao = novaSolicitacao,
-          Item = itemDoCatalogo,
-          ItemId = itemDto.ItemId,
-          Quantidade = itemDto.Quantidade,
-          ValorUnitario = itemDoCatalogo.PrecoSugerido,
-          Justificativa = null
-        };
-        novaSolicitacao.ItemSolicitacao.Add(solicitacaoItem);
-      }
+            var novaSolicitacao = new SolicitacaoGeral
+            {
+                SolicitanteId = solicitante.Id,
+                DataCriacao = DateTime.UtcNow,
+                JustificativaGeral = dto.JustificativaGeral,
+            };
 
-      await _context.SolicitacoesGerais.AddAsync(novaSolicitacao);
-      await _context.SaveChangesAsync();
+            var itensDaSolicitacao = new List<SolicitacaoItem>();
 
-      await transaction.CommitAsync();
-      return novaSolicitacao;
-    }
-    catch (Exception ex)
-    {
-      _logger.LogError(ex, "Erro ao criar solicitação geral.");
-      await transaction.RollbackAsync();
-      throw;
-    }
-  }
+            foreach (var itemDto in dto.Itens)
+            {
+                var itemDoCatalogo = await _context.Items.FindAsync(itemDto.ItemId);
+                if (itemDoCatalogo == null || !itemDoCatalogo.IsActive)
+                {
+                    throw new Exception(
+                        $"Item com ID {itemDto.ItemId} não existe ou está inativo."
+                    );
+                }
 
-  public async Task<Solicitacao?> GetByIdAsync(long id)
-  {
-    _logger.LogInformation("Buscando solicitação com ID: {Id}", id);
-    var solicitacao = await _context.Solicitacoes
-        .Include("ItemSolicitacao.Item")
-        .FirstOrDefaultAsync(s => s.Id == id);
+                var solicitacaoItem = new SolicitacaoItem
+                {
+                    Solicitacao = novaSolicitacao,
+                    Item = itemDoCatalogo,
+                    ItemId = itemDto.ItemId,
+                    Quantidade = itemDto.Quantidade,
+                    ValorUnitario = itemDto.ValorUnitario,
+                    Justificativa = null,
+                };
+                itensDaSolicitacao.Add(solicitacaoItem);
+            }
 
-    if (solicitacao == null)
-    {
-      _logger.LogWarning("Solicitação com ID: {Id} não encontrada.", id);
-    }
+            novaSolicitacao.ItemSolicitacao = itensDaSolicitacao;
 
-    return solicitacao;
-  }
+            await _context.Solicitacoes.AddAsync(novaSolicitacao);
+            await _context.SaveChangesAsync();
 
-  public async Task<SolicitacaoPatrimonial> CreatePatrimonialAsync(CreateSolicitacaoPatrimonialDto dto, long solicitanteId)
-  {
-    await using var transaction = await _context.Database.BeginTransactionAsync();
-    try
-    {
-      var solicitante = await _context.Solicitantes.FindAsync(solicitanteId);
-      var gestor = await _context.Gestores.FindAsync(dto.GestorId);
+            await transaction.CommitAsync();
 
-      if (solicitante == null || gestor == null)
-      {
-        throw new Exception("Solicitante ou Gestor não encontrado.");
-      }
+            var respostaDto = new SolicitacaoResultDto
+            {
+                Id = novaSolicitacao.Id,
+                DataCriacao = novaSolicitacao.DataCriacao,
+                JustificativaGeral = novaSolicitacao.JustificativaGeral,
+                Solicitante = new SolicitanteDto
+                {
+                    Id = solicitante.Id,
+                    Nome = servidor.Pessoa.Nome,
+                    Email = servidor.Pessoa.Email,
+                    Departamento = solicitante.Unidade.ToFriendlyString(),
+                },
+                Itens = novaSolicitacao
+                    .ItemSolicitacao.Select(item => new ItemSolicitacaoResultDto
+                    {
+                        ItemId = item.ItemId,
+                        NomeDoItem = item.Item.Nome,
+                        CatMat = item.Item.CatMat,
+                        Quantidade = item.Quantidade,
+                        ValorUnitario = item.ValorUnitario,
+                        Justificativa = item.Justificativa,
+                    })
+                    .ToList(),
+            };
 
-      var novaSolicitacao = new SolicitacaoPatrimonial
-      {
-        SolicitanteId = solicitanteId,
-        GestorId = dto.GestorId,
-        Solicitante = solicitante,
-        Gestor = gestor,
-        DataCriacao = DateTime.UtcNow
-      };
-
-      foreach (var itemDto in dto.Itens)
-      {
-        var itemDoCatalogo = await _context.Items.FindAsync(itemDto.ItemId);
-        if (itemDoCatalogo == null || !itemDoCatalogo.IsActive)
+            return respostaDto;
+        }
+        catch (Exception ex)
         {
-          throw new Exception($"Item com ID {itemDto.ItemId} não existe ou está inativo.");
+            _logger.LogError(ex, "Erro ao criar solicitação geral.");
+            await transaction.RollbackAsync();
+            throw;
+        }
+    }
+
+    public async Task<SolicitacaoResultDto> CreatePatrimonialAsync(
+        CreateSolicitacaoPatrimonialDto dto,
+        long pessoaId
+    )
+    {
+        var prazoSubmissao = await _configuracaoService.GetPrazoSubmissaoAsync();
+        if (prazoSubmissao.HasValue && DateTime.UtcNow > prazoSubmissao.Value)
+        {
+            string prazoSubmissaoFormatado = prazoSubmissao.Value.ToString("dd/MM/yyyy 'às' HH:mm");
+            throw new InvalidOperationException(
+                $"O prazo para a criação de solicitações encerrou em {prazoSubmissaoFormatado}."
+            );
         }
 
-        var solicitacaoItem = new SolicitacaoItem
+        var (servidor, solicitante) = await GetSolicitanteInfoAsync(pessoaId);
+
+        await using var transaction = await _context.Database.BeginTransactionAsync();
+        try
         {
-          Solicitacao = novaSolicitacao,
-          Item = itemDoCatalogo,
-          ItemId = itemDto.ItemId,
-          Quantidade = itemDto.Quantidade,
-          ValorUnitario = itemDoCatalogo.PrecoSugerido,
-          Justificativa = itemDto.Justificativa
-        };
-        novaSolicitacao.ItemSolicitacao.Add(solicitacaoItem);
-      }
+            var novaSolicitacao = new SolicitacaoPatrimonial
+            {
+                SolicitanteId = solicitante.Id,
+                DataCriacao = DateTime.UtcNow,
+            };
 
-      await _context.SolicitacoesPatrimoniais.AddAsync(novaSolicitacao);
-      await _context.SaveChangesAsync();
+            var itensDaSolicitacao = new List<SolicitacaoItem>();
 
-      await transaction.CommitAsync();
-      return novaSolicitacao;
+            foreach (var itemDto in dto.Itens)
+            {
+                var itemDoCatalogo = await _context.Items.FindAsync(itemDto.ItemId);
+                if (itemDoCatalogo == null || !itemDoCatalogo.IsActive)
+                {
+                    throw new Exception(
+                        $"Item com ID {itemDto.ItemId} não existe ou está inativo."
+                    );
+                }
+
+                var solicitacaoItem = new SolicitacaoItem
+                {
+                    Solicitacao = novaSolicitacao,
+                    Item = itemDoCatalogo,
+                    ItemId = itemDto.ItemId,
+                    Quantidade = itemDto.Quantidade,
+                    ValorUnitario = itemDto.ValorUnitario,
+                    Justificativa = itemDto.Justificativa,
+                };
+                itensDaSolicitacao.Add(solicitacaoItem);
+            }
+
+            novaSolicitacao.ItemSolicitacao = itensDaSolicitacao;
+
+            await _context.Solicitacoes.AddAsync(novaSolicitacao);
+            await _context.SaveChangesAsync();
+
+            await transaction.CommitAsync();
+
+            var respostaDto = new SolicitacaoResultDto
+            {
+                Id = novaSolicitacao.Id,
+                DataCriacao = novaSolicitacao.DataCriacao,
+                Solicitante = new SolicitanteDto
+                {
+                    Id = solicitante.Id,
+                    Nome = servidor.Pessoa.Nome,
+                    Email = servidor.Pessoa.Email,
+                    Departamento = solicitante.Unidade.ToFriendlyString(),
+                },
+                Itens = novaSolicitacao
+                    .ItemSolicitacao.Select(item => new ItemSolicitacaoResultDto
+                    {
+                        ItemId = item.ItemId,
+                        NomeDoItem = item.Item.Nome,
+                        CatMat = item.Item.CatMat,
+                        Quantidade = item.Quantidade,
+                        ValorUnitario = item.ValorUnitario,
+                        Justificativa = item.Justificativa,
+                    })
+                    .ToList(),
+            };
+
+            return respostaDto;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao criar solicitação geral.");
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
-    catch (Exception ex)
+
+    private async Task<(Servidor servidor, Solicitante solicitante)> GetSolicitanteInfoAsync(
+        long pessoaId
+    )
     {
-      _logger.LogError(ex, "Erro ao criar solicitação patrimonial.");
-      await transaction.RollbackAsync();
-      throw;
+        var servidor = await _context
+            .Servidores.Include(s => s.Pessoa)
+            .FirstOrDefaultAsync(s => s.PessoaId == pessoaId);
+
+        if (servidor == null)
+            throw new Exception($"Pessoa com ID {pessoaId} não encontrada na tabela Servidor.");
+
+        var solicitante = await _context.Solicitantes.FirstOrDefaultAsync(s =>
+            s.ServidorId == servidor.Id
+        );
+
+        if (solicitante == null)
+            throw new Exception(
+                $"Servidor com ID {servidor.Id} não encontrado na tabela Solicitante."
+            );
+
+        return (servidor, solicitante);
     }
-  }
+
+    public async Task<SolicitacaoResultDto?> GetByIdAsync(long id)
+    {
+        _logger.LogInformation("Buscando solicitação com ID: {Id}", id);
+
+        var solicitacao = await _context
+            .Solicitacoes.Include(s => s.Solicitante)
+            .ThenInclude(sol => sol.Servidor)
+            .ThenInclude(serv => serv.Pessoa)
+            .Include(s => s.ItemSolicitacao)
+            .ThenInclude(si => si.Item)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(s => s.Id == id);
+
+        if (solicitacao == null)
+        {
+            _logger.LogWarning("Solicitação com ID: {Id} não encontrada.", id);
+            return null;
+        }
+
+        var respostaDto = new SolicitacaoResultDto
+        {
+            Id = solicitacao.Id,
+            DataCriacao = solicitacao.DataCriacao,
+            JustificativaGeral =
+                (solicitacao is SolicitacaoGeral solicitacaoGeral)
+                    ? solicitacaoGeral.JustificativaGeral
+                    : null,
+            Solicitante = new SolicitanteDto
+            {
+                Id = solicitacao.Solicitante.Id,
+                Nome = solicitacao.Solicitante.Servidor.Pessoa.Nome,
+                Email = solicitacao.Solicitante.Servidor.Pessoa.Email,
+                Departamento = solicitacao.Solicitante.Unidade.ToFriendlyString(),
+            },
+            Itens = solicitacao
+                .ItemSolicitacao.Select(item => new ItemSolicitacaoResultDto
+                {
+                    ItemId = item.ItemId,
+                    NomeDoItem = item.Item.Nome,
+                    CatMat = item.Item.CatMat,
+                    Quantidade = item.Quantidade,
+                    ValorUnitario = item.ValorUnitario,
+                    Justificativa = item.Justificativa,
+                })
+                .ToList(),
+        };
+
+        return respostaDto;
+    }
 }

@@ -123,7 +123,7 @@ namespace backend.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     ServidorId = table.Column<long>(type: "bigint", nullable: false),
                     DataUltimaSolicitacao = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Unidade = table.Column<string>(type: "text", nullable: false)
+                    Unidade = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -143,7 +143,7 @@ namespace backend.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     SolicitanteId = table.Column<long>(type: "bigint", nullable: false),
-                    GestorId = table.Column<long>(type: "bigint", nullable: false),
+                    GestorId = table.Column<long>(type: "bigint", nullable: true),
                     DataCriacao = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     TipoSolicitacao = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
                     JustificativaGeral = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true)
@@ -155,8 +155,7 @@ namespace backend.Migrations
                         name: "FK_Solicitacoes_Gestores_GestorId",
                         column: x => x.GestorId,
                         principalTable: "Gestores",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Solicitacoes_Solicitantes_SolicitanteId",
                         column: x => x.SolicitanteId,
@@ -173,9 +172,7 @@ namespace backend.Migrations
                     ItemId = table.Column<long>(type: "bigint", nullable: false),
                     Quantidade = table.Column<decimal>(type: "numeric", nullable: false),
                     ValorUnitario = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
-                    Justificativa = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
-                    SolicitacaoGeralId = table.Column<long>(type: "bigint", nullable: true),
-                    SolicitacaoPatrimonialId = table.Column<long>(type: "bigint", nullable: true)
+                    Justificativa = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -187,21 +184,11 @@ namespace backend.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_SolicitacaoItens_Solicitacoes_SolicitacaoGeralId",
-                        column: x => x.SolicitacaoGeralId,
-                        principalTable: "Solicitacoes",
-                        principalColumn: "Id");
-                    table.ForeignKey(
                         name: "FK_SolicitacaoItens_Solicitacoes_SolicitacaoId",
                         column: x => x.SolicitacaoId,
                         principalTable: "Solicitacoes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_SolicitacaoItens_Solicitacoes_SolicitacaoPatrimonialId",
-                        column: x => x.SolicitacaoPatrimonialId,
-                        principalTable: "Solicitacoes",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.InsertData(
@@ -245,16 +232,6 @@ namespace backend.Migrations
                 name: "IX_SolicitacaoItens_ItemId",
                 table: "SolicitacaoItens",
                 column: "ItemId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_SolicitacaoItens_SolicitacaoGeralId",
-                table: "SolicitacaoItens",
-                column: "SolicitacaoGeralId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_SolicitacaoItens_SolicitacaoPatrimonialId",
-                table: "SolicitacaoItens",
-                column: "SolicitacaoPatrimonialId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Solicitacoes_GestorId",

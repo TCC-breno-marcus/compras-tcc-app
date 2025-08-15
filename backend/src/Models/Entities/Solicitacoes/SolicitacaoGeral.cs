@@ -6,6 +6,4 @@ public class SolicitacaoGeral : Solicitacao
 {
     [Required, StringLength(500)]
     public required string JustificativaGeral { get; set; }
-
-    public List<SolicitacaoItem> ItemSolicitacao { get; set; } = new();
 }

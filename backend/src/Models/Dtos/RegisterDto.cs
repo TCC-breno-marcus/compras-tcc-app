@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using ComprasTccApp.Backend.ValidationAttributes;
 
-namespace ComprasTccApp.Backend.DTOs
+namespace Models.Dtos
 {
     public class RegisterDto
     {
@@ -15,7 +15,11 @@ namespace ComprasTccApp.Backend.DTOs
         public required string Telefone { get; set; }
 
         [Required(ErrorMessage = "O CPF é obrigatório.")]
-        [StringLength(11, MinimumLength = 11, ErrorMessage = "O CPF deve conter exatamente 11 dígitos.")]
+        [StringLength(
+            11,
+            MinimumLength = 11,
+            ErrorMessage = "O CPF deve conter exatamente 11 dígitos."
+        )]
         [CpfValidation(ErrorMessage = "O CPF informado é inválido.")]
         public required string CPF { get; set; }
 

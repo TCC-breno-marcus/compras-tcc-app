@@ -1,10 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 
-public class CreateSolicitacaoPatrimonialDto
+namespace Models.Dtos
 {
-  [Required]
-  public long GestorId { get; set; }
+    public class CreateSolicitacaoPatrimonialDto
+    {
+        public long? GestorId { get; set; }
 
-  [Required, MinLength(1)]
-  public required List<SolicitacaoPatrimonialItemDto> Itens { get; set; }
+        [Required, MinLength(1)]
+        public required List<SolicitacaoItemDto> Itens { get; set; }
+    }
 }

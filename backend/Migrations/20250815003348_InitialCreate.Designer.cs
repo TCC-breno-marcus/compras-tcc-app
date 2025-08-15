@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250802114153_AplicarMudancas")]
-    partial class AplicarMudancas
+    [Migration("20250815003348_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -184,6 +184,10 @@ namespace backend.Migrations
                     b.Property<long>("ItemId")
                         .HasColumnType("bigint");
 
+                    b.Property<string>("Justificativa")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
                     b.Property<decimal>("Quantidade")
                         .HasColumnType("numeric");
 
@@ -280,16 +284,16 @@ namespace backend.Migrations
                     b.Property<DateTime>("DataCriacao")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<long>("GestorId")
+                    b.Property<long?>("GestorId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("JustificativaGeral")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
 
                     b.Property<long>("SolicitanteId")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("TipoSolicitacao")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
 
                     b.HasKey("Id");
 
@@ -298,6 +302,10 @@ namespace backend.Migrations
                     b.HasIndex("SolicitanteId");
 
                     b.ToTable("Solicitacoes");
+
+                    b.HasDiscriminator<string>("TipoSolicitacao").HasValue("Solicitacao");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("ComprasTccApp.Models.Entities.Solicitantes.Solicitante", b =>
@@ -314,9 +322,8 @@ namespace backend.Migrations
                     b.Property<long>("ServidorId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("Unidade")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("Unidade")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -324,6 +331,25 @@ namespace backend.Migrations
                         .IsUnique();
 
                     b.ToTable("Solicitantes");
+                });
+
+            modelBuilder.Entity("SolicitacaoGeral", b =>
+                {
+                    b.HasBaseType("ComprasTccApp.Models.Entities.Solicitacoes.Solicitacao");
+
+                    b.Property<string>("JustificativaGeral")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.HasDiscriminator().HasValue("GERAL");
+                });
+
+            modelBuilder.Entity("SolicitacaoPatrimonial", b =>
+                {
+                    b.HasBaseType("ComprasTccApp.Models.Entities.Solicitacoes.Solicitacao");
+
+                    b.HasDiscriminator().HasValue("PATRIMONIAL");
                 });
 
             modelBuilder.Entity("ComprasTccApp.Backend.Models.Entities.Items.Item", b =>
@@ -382,9 +408,7 @@ namespace backend.Migrations
                 {
                     b.HasOne("ComprasTccApp.Models.Entities.Gestores.Gestor", "Gestor")
                         .WithMany("Solicitacoes")
-                        .HasForeignKey("GestorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("GestorId");
 
                     b.HasOne("ComprasTccApp.Models.Entities.Solicitantes.Solicitante", "Solicitante")
                         .WithMany("Solicitacoes")

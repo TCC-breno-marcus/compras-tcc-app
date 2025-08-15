@@ -3,66 +3,85 @@ using Database;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Models.Dtos;
 
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
 public class SolicitacaoController : ControllerBase
 {
-  private readonly ISolicitacaoService _solicitacaoService;
-  private readonly AppDbContext _context;
+    private readonly ISolicitacaoService _solicitacaoService;
+    private readonly AppDbContext _context;
 
-  public SolicitacaoController
-  (
-    ISolicitacaoService solicitacaoService,
-    AppDbContext context
-  )
-  {
-    _solicitacaoService = solicitacaoService;
-    _context = context;
-  }
-
-  [HttpPost("geral")]
-  [Authorize(Roles = "Solicitante,Admin")]
-  public async Task<IActionResult> CreateSolicitacaoGeral([FromBody] CreateSolicitacaoGeralDto dto)
-  {
-    var solicitanteId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-
-    try
+    public SolicitacaoController(ISolicitacaoService solicitacaoService, AppDbContext context)
     {
-      var novaSolicitacao = await _solicitacaoService.CreateGeralAsync(dto, solicitanteId);
-      return CreatedAtAction(nameof(GetSolicitacaoById), new { id = novaSolicitacao.Id }, novaSolicitacao);
+        _solicitacaoService = solicitacaoService;
+        _context = context;
     }
-    catch (Exception ex)
+
+    [HttpPost("geral")]
+    [Authorize(Roles = "Solicitante,Admin")]
+    public async Task<IActionResult> CreateSolicitacaoGeral(
+        [FromBody] CreateSolicitacaoGeralDto dto
+    )
     {
-      return BadRequest(new { message = ex.Message });
+        var pessoaId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+        try
+        {
+            var novaSolicitacao = await _solicitacaoService.CreateGeralAsync(dto, pessoaId);
+            return CreatedAtAction(
+                nameof(GetSolicitacaoById),
+                new { id = novaSolicitacao.Id },
+                novaSolicitacao
+            );
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
-  }
 
-  [HttpGet("{id}")]
-  public async Task<IActionResult> GetSolicitacaoById([FromRoute] long id)
-  {
-    var solicitacao = await _solicitacaoService.GetByIdAsync(id);
-
-    if (solicitacao == null) return NotFound(new { message = "Solicitação não encontrada." });
-
-    return Ok(solicitacao);
-  }
-
-  [HttpPost("patrimonial")]
-  [Authorize(Roles = "Solicitante,Admin")]
-  public async Task<IActionResult> CreateSolicitacaoPatrimonial(CreateSolicitacaoPatrimonialDto dto)
-  {
-    var solicitanteId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-
-    try
+    [HttpPost("patrimonial")]
+    [Authorize(Roles = "Solicitante,Admin")]
+    public async Task<IActionResult> CreateSolicitacaoPatrimonial(
+        CreateSolicitacaoPatrimonialDto dto
+    )
     {
-      var novaSolicitacao = await _solicitacaoService.CreatePatrimonialAsync(dto, solicitanteId);
-      return CreatedAtAction(nameof(GetSolicitacaoById), new { id = novaSolicitacao.Id }, novaSolicitacao);
+        var pessoaId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+        try
+        {
+            var novaSolicitacao = await _solicitacaoService.CreatePatrimonialAsync(dto, pessoaId);
+            return CreatedAtAction(
+                nameof(GetSolicitacaoById),
+                new { id = novaSolicitacao.Id },
+                novaSolicitacao
+            );
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
-    catch (Exception ex)
+
+    [HttpGet("{id}", Name = "GetSolicitacaoById")]
+    [Authorize(Roles = "Solicitante,Gestor,Admin")]
+    public async Task<IActionResult> GetSolicitacaoById([FromRoute] long id)
     {
-      return BadRequest(new { message = ex.Message });
+        var solicitacaoDto = await _solicitacaoService.GetByIdAsync(id);
+
+        if (solicitacaoDto == null)
+            return NotFound(new { message = "Solicitação não encontrada." });
+
+        return Ok(solicitacaoDto);
     }
-  }
 }

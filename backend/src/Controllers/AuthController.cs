@@ -1,7 +1,7 @@
-using ComprasTccApp.Backend.DTOs;
 using ComprasTccApp.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Models.Dtos;
 
 namespace ComprasTccApp.Backend.Controllers
 {

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using ComprasTccApp.Backend.Models.Entities.Items;
-using ComprasTccApp.Models.Dtos;
+using Models.Dtos;
 
 namespace ComprasTccApp.Models.Entities.Categorias
 {

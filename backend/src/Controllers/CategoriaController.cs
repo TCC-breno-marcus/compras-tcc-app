@@ -1,7 +1,7 @@
-using ComprasTccApp.Models.Dtos;
 using Database;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Models.Dtos;
 using Services.Interfaces;
 
 namespace Controllers

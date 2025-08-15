@@ -1,6 +1,6 @@
 using System.Security.Claims;
-using ComprasTccApp.Backend.DTOs;
 using ComprasTccApp.Models.Entities.Pessoas;
+using Models.Dtos;
 
 namespace ComprasTccApp.Services.Interfaces
 {

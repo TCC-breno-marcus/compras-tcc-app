@@ -1,4 +1,4 @@
-namespace ComprasTccApp.Models.Dtos
+namespace Models.Dtos
 {
     public class CreateItemDto
     {

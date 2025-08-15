@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace ComprasTccApp.Backend.DTOs
+namespace Models.Dtos
 {
     public class LoginDto
     {
