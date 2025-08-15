@@ -6,16 +6,23 @@ using ComprasTccApp.Models.Entities.Solicitantes;
 using Database;
 using Microsoft.EntityFrameworkCore;
 using Models.Dtos;
+using Services.Interfaces;
 
 public class SolicitacaoService : ISolicitacaoService
 {
     private readonly AppDbContext _context;
     private readonly ILogger<SolicitacaoService> _logger;
+    private readonly IConfiguracaoService _configuracaoService;
 
-    public SolicitacaoService(AppDbContext context, ILogger<SolicitacaoService> logger)
+    public SolicitacaoService(
+        AppDbContext context,
+        ILogger<SolicitacaoService> logger,
+        IConfiguracaoService configuracaoService
+    )
     {
         _context = context;
         _logger = logger;
+        _configuracaoService = configuracaoService;
     }
 
     public async Task<SolicitacaoResultDto> CreateGeralAsync(
@@ -23,6 +30,15 @@ public class SolicitacaoService : ISolicitacaoService
         long pessoaId
     )
     {
+        var prazoSubmissao = await _configuracaoService.GetPrazoSubmissaoAsync();
+        if (prazoSubmissao.HasValue && DateTime.UtcNow > prazoSubmissao.Value)
+        {
+            string prazoSubmissaoFormatado = prazoSubmissao.Value.ToString("dd/MM/yyyy 'às' HH:mm");
+            throw new InvalidOperationException(
+                $"O prazo para a criação de solicitações encerrou em {prazoSubmissaoFormatado}."
+            );
+        }
+
         var (servidor, solicitante) = await GetSolicitanteInfoAsync(pessoaId);
 
         await using var transaction = await _context.Database.BeginTransactionAsync();
@@ -106,6 +122,15 @@ public class SolicitacaoService : ISolicitacaoService
         long pessoaId
     )
     {
+        var prazoSubmissao = await _configuracaoService.GetPrazoSubmissaoAsync();
+        if (prazoSubmissao.HasValue && DateTime.UtcNow > prazoSubmissao.Value)
+        {
+            string prazoSubmissaoFormatado = prazoSubmissao.Value.ToString("dd/MM/yyyy 'às' HH:mm");
+            throw new InvalidOperationException(
+                $"O prazo para a criação de solicitações encerrou em {prazoSubmissaoFormatado}."
+            );
+        }
+
         var (servidor, solicitante) = await GetSolicitanteInfoAsync(pessoaId);
 
         await using var transaction = await _context.Database.BeginTransactionAsync();

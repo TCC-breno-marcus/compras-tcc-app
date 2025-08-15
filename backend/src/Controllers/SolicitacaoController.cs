@@ -36,6 +36,10 @@ public class SolicitacaoController : ControllerBase
                 novaSolicitacao
             );
         }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
         catch (Exception ex)
         {
             return BadRequest(new { message = ex.Message });
@@ -59,6 +63,10 @@ public class SolicitacaoController : ControllerBase
                 novaSolicitacao
             );
         }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
         catch (Exception ex)
         {
             return BadRequest(new { message = ex.Message });
@@ -66,6 +74,7 @@ public class SolicitacaoController : ControllerBase
     }
 
     [HttpGet("{id}", Name = "GetSolicitacaoById")]
+    [Authorize(Roles = "Solicitante,Gestor,Admin")]
     public async Task<IActionResult> GetSolicitacaoById([FromRoute] long id)
     {
         var solicitacaoDto = await _solicitacaoService.GetByIdAsync(id);

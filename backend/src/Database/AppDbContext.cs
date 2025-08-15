@@ -1,5 +1,6 @@
 using ComprasTccApp.Backend.Models.Entities.Items;
 using ComprasTccApp.Models.Entities.Categorias;
+using ComprasTccApp.Models.Entities.Configuracoes;
 using ComprasTccApp.Models.Entities.Gestores;
 using ComprasTccApp.Models.Entities.Itens;
 using ComprasTccApp.Models.Entities.Pessoas;
@@ -25,6 +26,7 @@ public class AppDbContext : DbContext
     public DbSet<SolicitacaoGeral> SolicitacoesGerais { get; set; }
     public DbSet<SolicitacaoPatrimonial> SolicitacoesPatrimoniais { get; set; }
     public DbSet<SolicitacaoItem> SolicitacaoItens { get; set; }
+    public DbSet<Configuracao> Configuracoes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
