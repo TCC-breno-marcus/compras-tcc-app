@@ -205,18 +205,53 @@ public class SolicitacaoService : ISolicitacaoService
         return (servidor, solicitante);
     }
 
-    public async Task<Solicitacao?> GetByIdAsync(long id)
+    public async Task<SolicitacaoResultDto?> GetByIdAsync(long id)
     {
         _logger.LogInformation("Buscando solicitação com ID: {Id}", id);
+
         var solicitacao = await _context
-            .Solicitacoes.Include("ItemSolicitacao.Item")
+            .Solicitacoes.Include(s => s.Solicitante)
+            .ThenInclude(sol => sol.Servidor)
+            .ThenInclude(serv => serv.Pessoa)
+            .Include(s => s.ItemSolicitacao)
+            .ThenInclude(si => si.Item)
+            .AsNoTracking()
             .FirstOrDefaultAsync(s => s.Id == id);
 
         if (solicitacao == null)
         {
             _logger.LogWarning("Solicitação com ID: {Id} não encontrada.", id);
+            return null;
         }
 
-        return solicitacao;
+        var respostaDto = new SolicitacaoResultDto
+        {
+            Id = solicitacao.Id,
+            DataCriacao = solicitacao.DataCriacao,
+            JustificativaGeral =
+                (solicitacao is SolicitacaoGeral solicitacaoGeral)
+                    ? solicitacaoGeral.JustificativaGeral
+                    : null,
+            Solicitante = new SolicitanteDto
+            {
+                Id = solicitacao.Solicitante.Id,
+                Nome = solicitacao.Solicitante.Servidor.Pessoa.Nome,
+                Email = solicitacao.Solicitante.Servidor.Pessoa.Email,
+                Departamento = solicitacao.Solicitante.Unidade.ToFriendlyString(),
+            },
+            Itens = solicitacao
+                .ItemSolicitacao.Select(item => new ItemSolicitacaoResultDto
+                {
+                    ItemId = item.ItemId,
+                    NomeDoItem = item.Item.Nome,
+                    CatMat = item.Item.CatMat,
+                    Quantidade = item.Quantidade,
+                    ValorUnitario = item.ValorUnitario,
+                    Justificativa = item.Justificativa,
+                })
+                .ToList(),
+        };
+
+        return respostaDto;
     }
 }

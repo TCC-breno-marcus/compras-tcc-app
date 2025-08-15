@@ -42,17 +42,6 @@ public class SolicitacaoController : ControllerBase
         }
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetSolicitacaoById([FromRoute] long id)
-    {
-        var solicitacao = await _solicitacaoService.GetByIdAsync(id);
-
-        if (solicitacao == null)
-            return NotFound(new { message = "Solicitação não encontrada." });
-
-        return Ok(solicitacao);
-    }
-
     [HttpPost("patrimonial")]
     [Authorize(Roles = "Solicitante,Admin")]
     public async Task<IActionResult> CreateSolicitacaoPatrimonial(
@@ -74,5 +63,16 @@ public class SolicitacaoController : ControllerBase
         {
             return BadRequest(new { message = ex.Message });
         }
+    }
+
+    [HttpGet("{id}", Name = "GetSolicitacaoById")]
+    public async Task<IActionResult> GetSolicitacaoById([FromRoute] long id)
+    {
+        var solicitacaoDto = await _solicitacaoService.GetByIdAsync(id);
+
+        if (solicitacaoDto == null)
+            return NotFound(new { message = "Solicitação não encontrada." });
+
+        return Ok(solicitacaoDto);
     }
 }
