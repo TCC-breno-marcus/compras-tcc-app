@@ -38,8 +38,6 @@ public class AppDbContext : DbContext
 
         modelBuilder.Entity<Solicitacao>().Property("TipoSolicitacao").HasMaxLength(20);
 
-        modelBuilder.Entity<SolicitacaoItem>().HasKey(si => new { si.SolicitacaoId, si.ItemId });
-
         // Relações 1-para-1 (Pessoa -> Servidor -> Solicitante/Gestor)
         modelBuilder
             .Entity<Servidor>()
@@ -75,18 +73,18 @@ public class AppDbContext : DbContext
             .WithMany(g => g.Solicitacoes)
             .HasForeignKey(s => s.GestorId);
 
-        modelBuilder
-            .Entity<SolicitacaoItem>()
-            .HasOne(si => si.Solicitacao)
-            .WithMany()
-            .HasForeignKey(si => si.SolicitacaoId);
-
-        modelBuilder
-            .Entity<SolicitacaoItem>()
-            .HasOne(si => si.Item)
-            .WithMany(i => i.SolicitacoesItem)
-            .HasForeignKey(si => si.ItemId)
-            .IsRequired();
+        modelBuilder.Entity<SolicitacaoItem>(entity =>
+        {
+            entity.HasKey(si => new { si.SolicitacaoId, si.ItemId });
+            entity
+                .HasOne(si => si.Solicitacao)
+                .WithMany(s => s.ItemSolicitacao)
+                .HasForeignKey(si => si.SolicitacaoId);
+            entity
+                .HasOne(si => si.Item)
+                .WithMany(i => i.SolicitacoesItem)
+                .HasForeignKey(si => si.ItemId);
+        });
 
         modelBuilder.Entity<Categoria>(entity =>
         {

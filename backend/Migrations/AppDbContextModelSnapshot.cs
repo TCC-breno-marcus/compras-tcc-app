@@ -188,22 +188,12 @@ namespace backend.Migrations
                     b.Property<decimal>("Quantidade")
                         .HasColumnType("numeric");
 
-                    b.Property<long?>("SolicitacaoGeralId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("SolicitacaoPatrimonialId")
-                        .HasColumnType("bigint");
-
                     b.Property<decimal>("ValorUnitario")
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("SolicitacaoId", "ItemId");
 
                     b.HasIndex("ItemId");
-
-                    b.HasIndex("SolicitacaoGeralId");
-
-                    b.HasIndex("SolicitacaoPatrimonialId");
 
                     b.ToTable("SolicitacaoItens");
                 });
@@ -389,19 +379,11 @@ namespace backend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SolicitacaoGeral", null)
-                        .WithMany("ItemSolicitacao")
-                        .HasForeignKey("SolicitacaoGeralId");
-
                     b.HasOne("ComprasTccApp.Models.Entities.Solicitacoes.Solicitacao", "Solicitacao")
-                        .WithMany()
+                        .WithMany("ItemSolicitacao")
                         .HasForeignKey("SolicitacaoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("SolicitacaoPatrimonial", null)
-                        .WithMany("ItemSolicitacao")
-                        .HasForeignKey("SolicitacaoPatrimonialId");
 
                     b.Navigation("Item");
 
@@ -462,19 +444,14 @@ namespace backend.Migrations
                     b.Navigation("Solicitacoes");
                 });
 
+            modelBuilder.Entity("ComprasTccApp.Models.Entities.Solicitacoes.Solicitacao", b =>
+                {
+                    b.Navigation("ItemSolicitacao");
+                });
+
             modelBuilder.Entity("ComprasTccApp.Models.Entities.Solicitantes.Solicitante", b =>
                 {
                     b.Navigation("Solicitacoes");
-                });
-
-            modelBuilder.Entity("SolicitacaoGeral", b =>
-                {
-                    b.Navigation("ItemSolicitacao");
-                });
-
-            modelBuilder.Entity("SolicitacaoPatrimonial", b =>
-                {
-                    b.Navigation("ItemSolicitacao");
                 });
 #pragma warning restore 612, 618
         }

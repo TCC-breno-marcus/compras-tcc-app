@@ -18,5 +18,7 @@ namespace ComprasTccApp.Models.Entities.Solicitacoes
 
         [Required]
         public DateTime DataCriacao { get; set; }
+
+        public List<SolicitacaoItem> ItemSolicitacao { get; set; } = new();
     }
 }
