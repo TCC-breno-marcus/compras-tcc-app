@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, reactive, provide, readonly } from 'vue'
+import { ref, computed, reactive, provide, readonly, watch, onMounted } from 'vue'
 import Card from 'primevue/card'
 import Tabs from 'primevue/tabs'
 import TabList from 'primevue/tablist'
@@ -13,25 +13,27 @@ import SolicitationAnalysis from '../components/SolicitationAnalysis.vue'
 import { SolicitationContextKey, type SolicitationContext } from '../keys'
 import { useAuthStore } from '@/features/autentication/stores/authStore'
 import { storeToRefs } from 'pinia'
+import { useRoute } from 'vue-router'
+import type { SolicitationResult } from '..'
+import { solicitationService } from '../services/solicitationService'
+import { useSettingStore } from '@/stores/settingStore'
+import { formatDate } from '@/utils/dateUtils'
 
+const route = useRoute()
+const authStore = useAuthStore()
+const settingStore = useSettingStore()
+const { deadline } = storeToRefs(settingStore)
+const { user } = storeToRefs(authStore)
+const solicitation = ref<SolicitationResult | null>(null)
+const isLoading = ref(true)
+const error = ref<string | null>(null)
 
-const solicitation = ref({
-  id: 8,
-  userRequest: 'Juliana Alves (DCOMP)',
-  userContact: 'juliana.alves@email.com',
-  date: 1752211200000,
-  itemsQuantity: 6,
-  totalPrice: 2100.0,
-  justification: 'Materiais necessários para o novo laboratório de redes, conforme projeto anexo.',
+const showDeadlineWarning = computed(() => {
+  if (deadline.value) {
+    return new Date() < deadline.value
+  }
+  return false
 })
-
-const formattedDate = new Date(solicitation.value.date).toLocaleString('pt-BR', {
-  dateStyle: 'long',
-  timeStyle: 'short',
-})
-
-const deadline = new Date('2025-08-31T23:59:59')
-const showDeadlineWarning = computed(() => new Date() < deadline)
 
 const solicitationContext = reactive<SolicitationContext>({
   dialogMode: '',
@@ -40,12 +42,39 @@ const solicitationContext = reactive<SolicitationContext>({
 
 const isEditing = ref<boolean>(false)
 
-const authStore = useAuthStore()
-const { user } = storeToRefs(authStore)
+const fetchSolicitation = async (id: number) => {
+  isLoading.value = true
+  error.value = null
+  try {
+    solicitation.value = await solicitationService.getById(id)
+  } catch (err) {
+    error.value = 'Falha ao carregar os detalhes da solicitação.'
+    console.error(err)
+  } finally {
+    isLoading.value = false
+  }
+}
+
+watch(
+  () => route.params.id,
+  (newId) => {
+    if (newId && typeof newId === 'string') {
+      fetchSolicitation(parseInt(newId, 10))
+    }
+  },
+  {
+    immediate: true,
+  },
+)
+
+onMounted(() => {
+  settingStore.fetchPrazoSubmissao()
+})
 
 provide(SolicitationContextKey, readonly(solicitationContext))
 </script>
 
+<!-- TODO: esse componente está grande. Tentar quebrar mais ele -->
 <template>
   <div class="p-2" v-if="solicitation">
     <div class="flex align-items-center justify-content-between mb-4">
@@ -58,7 +87,7 @@ provide(SolicitationContextKey, readonly(solicitationContext))
           size="small"
           :closable="false"
         >
-          Prazo final para ajustes: 31/08/2025
+          Prazo final para ajustes: {{ formatDate(deadline, 'short') }}
         </Message>
         <Message
           v-else="showDeadlineWarning"
@@ -99,14 +128,15 @@ provide(SolicitationContextKey, readonly(solicitationContext))
                 <i class="pi pi-user text-primary text-xl mr-3"></i>
                 <div>
                   <span class="text-sm text-surface-500">Requisitante</span>
-                  <p class="font-bold m-0">{{ solicitation.userRequest }}</p>
+                  <p class="font-bold m-0">{{ solicitation.solicitante.nome }}</p>
+                  <!-- TODO: deve mostrar o departamento dele tbm -->
                 </div>
               </li>
               <li class="flex align-items-center">
                 <i class="pi pi-envelope text-primary text-xl mr-3"></i>
                 <div>
                   <span class="text-sm text-surface-500">Contato</span>
-                  <p class="font-bold m-0">{{ solicitation.userContact }}</p>
+                  <p class="font-bold m-0">{{ solicitation.solicitante.email }}</p>
                 </div>
               </li>
             </ul>
@@ -122,7 +152,7 @@ provide(SolicitationContextKey, readonly(solicitationContext))
                 <i class="pi pi-calendar text-primary text-xl mr-3"></i>
                 <div>
                   <span class="text-sm text-surface-500">Data da Solicitação</span>
-                  <p class="font-bold m-0">{{ formattedDate }}</p>
+                  <p class="font-bold m-0">{{ formatDate(solicitation.dataCriacao, 'long') }}</p>
                 </div>
               </li>
               <li class="flex align-items-center">
@@ -149,7 +179,7 @@ provide(SolicitationContextKey, readonly(solicitationContext))
           </template>
           <template #content>
             <p class="m-0">
-              {{ solicitation.justification }}
+              {{ solicitation.justificativaGeral }}
             </p>
           </template>
         </Card>
@@ -164,6 +194,8 @@ provide(SolicitationContextKey, readonly(solicitationContext))
       <TabPanels>
         <TabPanel value="0">
           <SolicitationList :is-editing="isEditing" />
+          <!-- TODO: deve agora pegar a lista de itens que já está no em solicitation
+           Vai ser melhor colocar a solicitacao atual no store pra ser acessivel no filho -->
         </TabPanel>
         <TabPanel value="1">
           <SolicitationAnalysis />
