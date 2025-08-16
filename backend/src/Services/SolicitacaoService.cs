@@ -97,11 +97,12 @@ public class SolicitacaoService : ISolicitacaoService
                 Itens = novaSolicitacao
                     .ItemSolicitacao.Select(item => new ItemSolicitacaoResultDto
                     {
-                        ItemId = item.ItemId,
-                        NomeDoItem = item.Item.Nome,
+                        Id = item.ItemId,
+                        Nome = item.Item.Nome,
                         CatMat = item.Item.CatMat,
                         Quantidade = item.Quantidade,
-                        ValorUnitario = item.ValorUnitario,
+                        LinkImagem = item.Item.LinkImagem,
+                        PrecoSugerido = item.ValorUnitario,
                         Justificativa = item.Justificativa,
                     })
                     .ToList(),
@@ -187,11 +188,12 @@ public class SolicitacaoService : ISolicitacaoService
                 Itens = novaSolicitacao
                     .ItemSolicitacao.Select(item => new ItemSolicitacaoResultDto
                     {
-                        ItemId = item.ItemId,
-                        NomeDoItem = item.Item.Nome,
+                        Id = item.ItemId,
+                        Nome = item.Item.Nome,
                         CatMat = item.Item.CatMat,
                         Quantidade = item.Quantidade,
-                        ValorUnitario = item.ValorUnitario,
+                        LinkImagem = item.Item.LinkImagem,
+                        PrecoSugerido = item.ValorUnitario,
                         Justificativa = item.Justificativa,
                     })
                     .ToList(),
@@ -267,11 +269,12 @@ public class SolicitacaoService : ISolicitacaoService
             Itens = solicitacao
                 .ItemSolicitacao.Select(item => new ItemSolicitacaoResultDto
                 {
-                    ItemId = item.ItemId,
-                    NomeDoItem = item.Item.Nome,
+                    Id = item.ItemId,
+                    Nome = item.Item.Nome,
                     CatMat = item.Item.CatMat,
                     Quantidade = item.Quantidade,
-                    ValorUnitario = item.ValorUnitario,
+                    LinkImagem = item.Item.LinkImagem,
+                    PrecoSugerido = item.ValorUnitario,
                     Justificativa = item.Justificativa,
                 })
                 .ToList(),
