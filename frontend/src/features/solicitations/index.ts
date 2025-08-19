@@ -1,15 +1,15 @@
 import type { Item } from '@/features/catalogo/types' // Importe o tipo base
 
-export interface SolicitationItem extends Item {
-  quantity: number
-  justification?: string
+export type SolicitationItem = Partial<Item> & {
+  quantidade: number
+  justificativa?: string
 }
 
 /**
  * Representa um único item dentro de uma solicitação a ser enviada para a API.
  */
 export interface CreateItemSolicitationPayload {
-  itemId: number
+  id: number
   quantidade: number
   valorUnitario: number
   justificativa?: string
@@ -50,11 +50,12 @@ export interface Solicitante {
  * Representa um item no retorno de uma solicitação
  */
 export interface ItemSolicitationResponse {
-  itemId: number
-  nomeDoItem: number
+  id: number
+  nome: string
   catMat: string
+  linkImagem: string
   quantidade: number
-  valorUnitario: number
+  precoSugerido: number
   justificativa: string
 }
 
@@ -66,5 +67,16 @@ export interface SolicitationResult {
   dataCriacao: string
   justificativaGeral: string
   solicitante: Solicitante
-  itens: ItemSolicitationResponse[]
+  itens: SolicitationItem[]
+}
+
+/**
+ * Representa uma solicitação no front.
+ */
+export interface Solicitation {
+  id: string
+  dataCriacao: string
+  justificativaGeral: string
+  solicitante: Solicitante
+  itens: SolicitationItem[]
 }

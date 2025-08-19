@@ -8,7 +8,7 @@ import ManagerPanel from '@/features/management/views/ManagerPanelView.vue'
 import SolicitationDetailsView from '@/features/solicitations/views/SolicitationDetailsView.vue'
 import { useAuthStore } from '@/features/autentication/stores/authStore'
 import MySolicitationsView from '@/features/solicitations/views/MySolicitationsView.vue'
-import { useSolicitationStore } from '@/features/solicitations/stores/solicitationStore'
+import { useSolicitationCartStore } from '@/features/solicitations/stores/solicitationCartStore'
 import { useConfirm } from 'primevue'
 import { CHANGE_SOLICITATION_CONFIRMATION } from '@/utils/confirmationFactoryUtils'
 
@@ -134,21 +134,21 @@ const router = createRouter({
 
 // 2. Navigation Guard Global
 router.beforeEach((to, from, next) => {
-  const solicitationStore = useSolicitationStore()
+  const solicitationCartStore = useSolicitationCartStore()
   const confirm = useConfirm()
 
-  const hasExistingSolicitation = solicitationStore.solicitationItems.length > 0
+  const hasExistingSolicitation = solicitationCartStore.solicitationItems.length > 0
   const isEnteringCreatePage = to.meta.isCreateSolicitationPage === true
   const isDifferentType =
-    solicitationStore.solicitationType !== null &&
-    solicitationStore.solicitationType !== to.meta.solicitationType
+    solicitationCartStore.solicitationType !== null &&
+    solicitationCartStore.solicitationType !== to.meta.solicitationType
 
   if (isEnteringCreatePage && hasExistingSolicitation && isDifferentType) {
     confirm.require({
       ...CHANGE_SOLICITATION_CONFIRMATION,
-      message: `Você tem uma solicitação ${solicitationStore.solicitationType} em andamento. Deseja descartá-la para iniciar uma nova solicitação ${to.meta.solicitationType}?`,
+      message: `Você tem uma solicitação ${solicitationCartStore.solicitationType} em andamento. Deseja descartá-la para iniciar uma nova solicitação ${to.meta.solicitationType}?`,
       accept: () => {
-        solicitationStore.clearSolicitation()
+        solicitationCartStore.clearSolicitation()
         router.push(to.fullPath)
       },
     })

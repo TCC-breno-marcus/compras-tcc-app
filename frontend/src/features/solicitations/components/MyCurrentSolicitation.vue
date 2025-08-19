@@ -4,18 +4,18 @@ import { Button, useToast } from 'primevue'
 import ItemSolicitation from './ItemSolicitation.vue'
 import { IftaLabel } from 'primevue'
 import Textarea from 'primevue/textarea'
-import { useSolicitationStore } from '../stores/solicitationStore'
+import { useSolicitationCartStore } from '../stores/solicitationCartStore'
 import { storeToRefs } from 'pinia'
 import { SolicitationContextKey } from '../keys'
 
 const solicitationContext = inject(SolicitationContextKey)
 
-const solicitationStore = useSolicitationStore()
-const { solicitationItems, justification, error, isLoading } = storeToRefs(solicitationStore)
+const solicitationCartStore = useSolicitationCartStore()
+const { solicitationItems, justification, error, isLoading } = storeToRefs(solicitationCartStore)
 const toast = useToast()
 
 const createSolicitation = async () => {
-  const success = await solicitationStore.createSolicitation(solicitationContext?.isGeneral)
+  const success = await solicitationCartStore.createSolicitation(solicitationContext?.isGeneral)
 
   if (success) {
     toast.add({
@@ -43,7 +43,7 @@ const disabledSendSolicitation = computed(() => {
     return !justification.value || justification.value.trim() === ''
   } else {
     return solicitationItems.value.some(
-      (item) => !item.justification || item.justification.trim() === '',
+      (item) => !item.justificativa || item.justificativa.trim() === '',
     )
   }
 })

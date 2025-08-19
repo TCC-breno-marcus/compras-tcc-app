@@ -1,7 +1,7 @@
 import { computed, onMounted, onUnmounted, type Ref } from 'vue'
 import { onBeforeRouteLeave } from 'vue-router'
 import { useConfirm } from 'primevue/useconfirm'
-import { useSolicitationStore } from '@/features/solicitations/stores/solicitationStore'
+import { useSolicitationCartStore } from '@/features/solicitations/stores/solicitationCartStore'
 import { storeToRefs } from 'pinia'
 import { DISCARD_SOLICITATION_CONFIRMATION } from '@/utils/confirmationFactoryUtils'
 
@@ -12,8 +12,8 @@ import { DISCARD_SOLICITATION_CONFIRMATION } from '@/utils/confirmationFactoryUt
  */
 export function useLeaveConfirmation() {
   const confirm = useConfirm()
-  const solicitationStore = useSolicitationStore()
-  const { solicitationItems, justification } = storeToRefs(solicitationStore)
+  const solicitationCartStore = useSolicitationCartStore()
+  const { solicitationItems, justification } = storeToRefs(solicitationCartStore)
 
   const hasUnsavedChanges = computed(
     () => solicitationItems.value.length > 0 || justification.value.trim() !== '',
@@ -28,7 +28,7 @@ export function useLeaveConfirmation() {
       confirm.require({
         ...DISCARD_SOLICITATION_CONFIRMATION,
         accept: () => {
-          solicitationStore.clearSolicitation()
+          solicitationCartStore.clearSolicitation()
           next()
         },
         reject: () => {

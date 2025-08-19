@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { inject, ref } from 'vue'
+import { inject, ref, watch } from 'vue'
 import Button from 'primevue/button'
 import InputNumber from 'primevue/inputnumber'
 import InputText from 'primevue/inputtext'
-import { FloatLabel } from 'primevue'
+import { FloatLabel, Tag } from 'primevue'
 import type { SolicitationItem } from '..'
-import { useSolicitationStore } from '../stores/solicitationStore'
+import { useSolicitationCartStore } from '../stores/solicitationCartStore'
 import { useToast } from 'primevue/usetoast'
 import { SolicitationContextKey, SolicitationDetailsContextKey } from '../keys'
 
@@ -14,35 +14,30 @@ const props = defineProps<{
   isEditing: boolean
 }>()
 
-const solicitationContext = inject(SolicitationContextKey)
-const solicitationDetailsContext = inject(SolicitationDetailsContextKey)
+const emit = defineEmits(['removeItem', 'updateItem'])
 
-const solicitationStore = useSolicitationStore()
-const toast = useToast()
+const localItem = ref<SolicitationItem>({ ...props.item })
+
+watch(
+  () => props.item,
+  (newItem) => {
+    localItem.value = { ...newItem }
+  },
+  { deep: true },
+)
 
 const removeItem = () => {
-  solicitationStore.removeItem(props.item.id)
-  toast.add({
-    severity: 'warn',
-    summary: 'Removido',
-    detail: `Item ${props.item.nome} (${props.item.catMat}) removido da solicitação.`,
-    life: 3000,
-  })
+  emit('removeItem', props.item.id)
 }
 
-const onQuantityChange = (newQuantity: number) => {
-  const item = props.item
-  if (item.quantity === null || item.quantity === undefined || item.quantity < 1) {
-    solicitationStore.updateItemQuantity(item.id, 1)
-    return
-  }
-  solicitationStore.updateItemQuantity(props.item.id, newQuantity)
+const onFieldUpdate = () => {
+  emit('updateItem', localItem.value)
 }
 </script>
 <template>
   <div
     class="flex md:flex-column lg:flex-row justify-content-between lg:justify-content-between p-2 w-full gap-2"
-    :class="solicitationContext?.isGeneral ? 'item-card mb-2' : 'pb-0'"
+    :class="item.justificativa ? '' : 'custom-border'"
   >
     <div class="flex justify-content-start align-items-center gap-2 mr-2">
       <div class="image-preview-container flex justify-content-center align-items-center">
@@ -57,10 +52,10 @@ const onQuantityChange = (newQuantity: number) => {
       </div>
     </div>
 
-    <div class="flex align-items-center gap-2 justify-content-end">
+    <div class="flex align-items-center gap-4 justify-content-end">
       <FloatLabel v-if="isEditing" variant="on" class="quantity-input w-full sm:w-3">
         <InputNumber
-          v-model="item.quantity"
+          v-model="item.quantidade"
           inputId="on_label_qtde"
           :min="1"
           :max="9999"
@@ -68,10 +63,26 @@ const onQuantityChange = (newQuantity: number) => {
           fluid
           class="w-full"
           inputClass="w-full"
+          @update:modelValue="onFieldUpdate"
         />
-        <label for="on_label_qtde">Qtde.</label>
+        <label for="on_label_qtde">Qtde.</label> 
       </FloatLabel>
-      <p v-else>Quantidade: {{ item.quantity }}</p>
+
+      <!-- <p v-else>
+        <div>
+
+          <Tag severity="info" :value="'Quantidade: ' + item.quantidade">
+          </Tag>
+        </div>
+
+      </p> -->
+      <div v-else class="flex flex-column align-items-center text-center">
+        <p class="text-color-secondary">Quantidade</p>
+        <!-- <Tag severity="info" :value="'Quantidade'"> </Tag> -->
+        <!-- <Tag severity="info" :value="item.quantidade"> </Tag> -->
+        <p class="font-bold">{{ item.quantidade }}</p>
+      </div>
+
       <FloatLabel v-if="isEditing" variant="on" class="price-input">
         <InputNumber
           v-model="item.precoSugerido"
@@ -82,18 +93,22 @@ const onQuantityChange = (newQuantity: number) => {
           fluid
           :min="0"
           size="small"
+          @update:modelValue="onFieldUpdate"
         />
         <label for="on_label_price">Preço Unitário</label>
       </FloatLabel>
-      <p v-else>
-        Preço Sugerido:
-        {{
-          item.precoSugerido.toLocaleString('pt-BR', {
-            style: 'currency',
-            currency: 'BRL',
-          })
-        }}
-      </p>
+      <!-- <p v-else><Tag severity="info" :value="'Preço Sugerido: ' + item.precoSugerido"></Tag></p> -->
+      <div v-else class="flex flex-column align-items-center text-center">
+        <p class="text-color-secondary">Preço Unitário</p>
+        <p class="font-bold">
+          {{
+            item.precoSugerido?.toLocaleString('pt-BR', {
+              style: 'currency',
+              currency: 'BRL',
+            })
+          }}
+        </p>
+      </div>
       <Button
         v-if="isEditing"
         icon="pi pi-trash"
@@ -105,36 +120,41 @@ const onQuantityChange = (newQuantity: number) => {
     </div>
   </div>
   <div
-    v-if="!solicitationContext?.isGeneral"
-    class="item-card flex justify-content-end w-full pb-2 pr-6 pl-7 md:pt-2 lg:pt-0"
+    v-if="item.justificativa"
+    class="flex justify-content-end w-full pb-2 pl-7 md:pt-2 lg:pt-0"
+    :class="item.justificativa ? 'custom-border' : ''"
   >
     <FloatLabel v-if="isEditing" variant="on" class="w-full">
       <InputText
-        v-model="item.justification"
+        v-model="item.justificativa"
         inputId="on_label_justification"
-        :invalid="item.justification === ''"
+        :invalid="item.justificativa.trim() === ''"
         size="small"
         class="w-full"
         inputClass="w-full"
         :maxlength="250"
+        @update:modelValue="onFieldUpdate"
       />
       <label for="on_label_justification">Justificativa</label>
     </FloatLabel>
-    <p v-else>
-      Justificativa: {{ item.justification }} Lorem ipsum dolor sit amet consectetur, adipisicing
-      elit. Amet voluptatum nulla iusto ipsa suscipit corporis magnam dolorum dolorem? Cum quasi
-      obcaecati non magni cumque, repudiandae veritatis alias beatae fuga sed.
-    </p>
+    <div v-else>
+      <span class="text-color-secondary">Justificativa: </span>
+      <em class="text-center">
+        {{ item.justificativa }} Lorem ipsum dolor sit amet consectetur, adipisicing elit. Amet
+        voluptatum nulla iusto ipsa suscipit corporis magnam dolorum dolorem? Cum quasi obcaecati
+        non magni cumque, repudiandae veritatis alias beatae fuga sed.
+      </em>
+    </div>
   </div>
 </template>
 
 <style scoped>
-.item-card {
+.custom-border {
   /* background-color: var(--p-surface-50); */
   border-bottom: 1px solid var(--p-surface-200);
 }
 
-.p-dark .item-card {
+.p-dark .custom-border {
   border-bottom: 1px solid var(--p-surface-800);
   background-color: initial;
 }

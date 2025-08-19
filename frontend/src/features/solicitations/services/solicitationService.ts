@@ -1,16 +1,20 @@
 import { apiClient } from '@/services/apiClient'
-import type { CreateSolicitationPayload, SolicitationResult } from '..'
+import type {
+  CreateSolicitationPayload,
+  Solicitation,
+  SolicitationResult,
+} from '..'
 
 interface ISolicitationService {
   create(payload: CreateSolicitationPayload): Promise<SolicitationResult>
-  getById(id: number): Promise<SolicitationResult>
+  getById(id: number): Promise<Solicitation>
 }
 
 export const solicitationService: ISolicitationService = {
   /**
    * Cria uma nova solicitação no backend.
    * @param payload Os dados da nova solicitação.
-   * @returns A solicitação criada.
+   * @returns A solicitação criada. 
    */
   async create(payload) {
     const { type, ...apiPayload } = payload
@@ -20,7 +24,7 @@ export const solicitationService: ISolicitationService = {
       return response.data
     } catch (error) {
       console.error(`Erro ao criar solicitação '${type}':`, error)
-      throw new Error('Não foi possível enviar a solicitação.')
+      throw new Error('Não foi possível criar a solicitação.')
     }
   },
 
@@ -34,8 +38,8 @@ export const solicitationService: ISolicitationService = {
       const response = await apiClient.get<SolicitationResult>(`/solicitacao/${id}`)
       return response.data
     } catch (error) {
-      console.error(`Erro ao buscar solicitação:`, error)
-      throw new Error('Não foi possível enviar a solicitação.')
+      console.error(`Erro ao buscar a solicitação:`, error)
+      throw new Error('Não foi possível buscar a solicitação.')
     }
   },
 }

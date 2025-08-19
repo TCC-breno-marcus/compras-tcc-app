@@ -5,7 +5,7 @@ import { useLayoutStore } from '@/stores/layout'
 import { ref, computed, inject } from 'vue'
 import CatalogoBrowser from '@/features/catalogo/components/CatalogoBrowser.vue'
 import type { Item } from '@/features/catalogo/types'
-import { useSolicitationStore } from '../stores/solicitationStore'
+import { useSolicitationCartStore } from '../stores/solicitationCartStore'
 import { Button, useConfirm } from 'primevue'
 import { useToast } from 'primevue/usetoast'
 import { storeToRefs } from 'pinia'
@@ -25,12 +25,15 @@ const isMobileView = computed(() => {
 
 const toast = useToast()
 const confirm = useConfirm()
-const solicitationStore = useSolicitationStore()
-const { solicitationItems, justification } = storeToRefs(solicitationStore)
+const solicitationCartStore = useSolicitationCartStore()
+const { solicitationItems, justification } = storeToRefs(solicitationCartStore)
 const catalogoBrowserRef = ref()
 
 const addItemSolicitation = (item: Item) => {
-  const actionReturn = solicitationStore.addItem(item, solicitationContext?.isGeneral ? 'geral' : 'patrimonial')
+  const actionReturn = solicitationCartStore.addItem(
+    item,
+    solicitationContext?.isGeneral ? 'geral' : 'patrimonial',
+  )
   if (actionReturn === 'added') {
     toast.add({
       severity: 'success',
@@ -56,7 +59,7 @@ const resetSolicitation = () => {
   confirm.require({
     ...DISCARD_SOLICITATION_CONFIRMATION,
     accept: () => {
-      solicitationStore.clearSolicitation()
+      solicitationCartStore.clearSolicitation()
     },
   })
 }

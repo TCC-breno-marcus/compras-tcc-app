@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import ItemSolicitation from './ItemSolicitation.vue'
+import { useSolicitationStore } from '../stores/solicitationStore'
+import { storeToRefs } from 'pinia'
+import { useToast } from 'primevue'
+import type { SolicitationItem } from '..'
 
 const props = defineProps<{
   isEditing: boolean
@@ -137,16 +141,37 @@ const items = ref([
     quantity: 9,
   },
 ])
+
+const solicitationStore = useSolicitationStore()
+const { currentSolicitation } = storeToRefs(solicitationStore)
+const toast = useToast()
+
+const handleItemRemoveFromDetails = (itemId: number) => {
+  if (!currentSolicitation.value) return
+  solicitationStore.removeItem(itemId)
+  toast.add({
+    severity: 'warn',
+    summary: 'Removido',
+    detail: `Item removido da solicitação.`,
+    life: 3000,
+  })
+}
+
+const handleItemUpdateInDetails = (updatedItem: SolicitationItem) => {
+  // ... lógica para atualizar o item dentro do array 'solicitation.value.itens'
+}
 </script>
 
 <template>
-  <div class="flex flex-column justify-content-between w-full lg:w-6">
+  <div class="flex flex-column justify-content-between w-full">
     <div class="items-list overflow-y-auto">
       <ItemSolicitation
-        v-for="item in items"
+        v-for="item in currentSolicitation?.itens"
         :key="item.catMat"
         :item="item"
         :is-editing="props.isEditing"
+        @remove-item="handleItemRemoveFromDetails"
+        @update-item="handleItemUpdateInDetails"
       />
     </div>
   </div>
