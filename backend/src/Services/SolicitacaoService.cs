@@ -101,7 +101,10 @@ public class SolicitacaoService : ISolicitacaoService
                         Nome = item.Item.Nome,
                         CatMat = item.Item.CatMat,
                         Quantidade = item.Quantidade,
-                        LinkImagem = item.Item.LinkImagem,
+                        // TODO: o link abaixo deve estar em variável de ambiente
+                        LinkImagem = string.IsNullOrWhiteSpace(item.Item.LinkImagem)
+                            ? item.Item.LinkImagem
+                            : $"http://localhost:8088/images/{item.Item.LinkImagem}",
                         PrecoSugerido = item.ValorUnitario,
                         Justificativa = item.Justificativa,
                     })
@@ -192,7 +195,10 @@ public class SolicitacaoService : ISolicitacaoService
                         Nome = item.Item.Nome,
                         CatMat = item.Item.CatMat,
                         Quantidade = item.Quantidade,
-                        LinkImagem = item.Item.LinkImagem,
+                        // TODO: o link abaixo deve estar em variável de ambiente
+                        LinkImagem = string.IsNullOrWhiteSpace(item.Item.LinkImagem)
+                            ? item.Item.LinkImagem
+                            : $"http://localhost:8088/images/{item.Item.LinkImagem}",
                         PrecoSugerido = item.ValorUnitario,
                         Justificativa = item.Justificativa,
                     })
@@ -273,7 +279,10 @@ public class SolicitacaoService : ISolicitacaoService
                     Nome = item.Item.Nome,
                     CatMat = item.Item.CatMat,
                     Quantidade = item.Quantidade,
-                    LinkImagem = item.Item.LinkImagem,
+                    // TODO: o link abaixo deve estar em variável de ambiente
+                    LinkImagem = string.IsNullOrWhiteSpace(item.Item.LinkImagem)
+                        ? item.Item.LinkImagem
+                        : $"http://localhost:8088/images/{item.Item.LinkImagem}",
                     PrecoSugerido = item.ValorUnitario,
                     Justificativa = item.Justificativa,
                 })
