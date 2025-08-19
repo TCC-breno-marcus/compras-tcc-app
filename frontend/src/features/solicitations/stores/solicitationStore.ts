@@ -1,7 +1,11 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import type { Solicitation } from '@/features/solicitations'
 import { solicitationService } from '../services/solicitationService'
+import { dataHasBeenChanged } from '@/utils/objectUtils'
+
+// TODO: refatorar todas as funcoes de stores da aplicação para usar modo mais moderno ao inves de
+// 'function'. Este já está ok
 
 export const useSolicitationStore = defineStore('solicitation', () => {
   const currentSolicitation = ref<Solicitation | null>(null)
@@ -13,16 +17,15 @@ export const useSolicitationStore = defineStore('solicitation', () => {
    * Busca uma solicitação específica por ID na API.
    * @param id O ID da solicitação a ser buscada.
    */
-  async function fetchById(id: number) {
+  const fetchById = async (id: number) => {
     isLoading.value = true
     error.value = null
     currentSolicitation.value = null
-    currentSolicitationBackup.value = null
 
     try {
       const response = await solicitationService.getById(id)
       currentSolicitation.value = response
-      currentSolicitationBackup.value = response
+      currentSolicitationBackup.value = JSON.parse(JSON.stringify(response))
     } catch (err: any) {
       error.value = err.message || 'Falha ao carregar a solicitação.'
     } finally {
@@ -34,21 +37,42 @@ export const useSolicitationStore = defineStore('solicitation', () => {
    * Salva as alterações de uma solicitação no backend.
    * @param payload Os dados atualizados da solicitação.
    */
-  async function update(payload: Partial<Solicitation>) {
+  const update = async (payload: Partial<Solicitation>) => {
     // ... lógica para chamar o serviço de update
   }
 
-  function removeItem(itemId: number) {
-    currentSolicitation.value?.itens.filter((i) => i.id !== itemId)
-    return 'removed'
+  const removeItem = (itemId: number) => {
+    if (currentSolicitation.value) {
+      currentSolicitation.value.itens = currentSolicitation.value.itens.filter(
+        (i) => i.id !== itemId,
+      )
+      return 'removed'
+    }
   }
 
-  function updateItemQuantity(itemId: number, newQuantity: number) {
+  const updateItemQuantity = (itemId: number, newQuantity: number) => {
     const item = currentSolicitation.value?.itens.find((i) => i.id === itemId)
     if (item) {
       item.quantidade = newQuantity
     }
   }
+
+  const isDirty = computed(() => {
+    if (!currentSolicitation.value || !currentSolicitationBackup.value) {
+      return false
+    }
+    console.log(currentSolicitation.value)
+    console.log(currentSolicitationBackup.value)
+    console.log('Tipo do backup.dataCriacao:', typeof currentSolicitationBackup.value.dataCriacao)
+    console.log('Tipo do atual.dataCriacao:', typeof currentSolicitation.value.dataCriacao)
+
+    const is = dataHasBeenChanged<Solicitation>(
+      currentSolicitationBackup.value,
+      currentSolicitation.value,
+    )
+    console.log(is)
+    return is
+  })
 
   return {
     currentSolicitation,
@@ -58,5 +82,6 @@ export const useSolicitationStore = defineStore('solicitation', () => {
     update,
     removeItem,
     updateItemQuantity,
+    isDirty,
   }
 })

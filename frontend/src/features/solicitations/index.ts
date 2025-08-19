@@ -63,7 +63,7 @@ export interface ItemSolicitationResponse {
  * Retorno de uma solicitação.
  */
 export interface SolicitationResult {
-  id: string
+  id: number
   dataCriacao: string
   justificativaGeral: string
   solicitante: Solicitante
@@ -74,7 +74,7 @@ export interface SolicitationResult {
  * Representa uma solicitação no front.
  */
 export interface Solicitation {
-  id: string
+  id: number
   dataCriacao: string
   justificativaGeral: string
   solicitante: Solicitante

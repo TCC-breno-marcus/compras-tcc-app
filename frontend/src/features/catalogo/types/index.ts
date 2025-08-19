@@ -94,3 +94,17 @@ export interface CategoriaParams {
   descricao?: string
   isActive?: boolean
 }
+
+
+/**
+ * Define o objeto do formulário de um item.
+ */
+export interface ItemFormData {
+  nome: string;
+  descricao: string;
+  catMat: string;
+  especificacao: string;
+  categoriaId: number | null; 
+  precoSugerido: number;
+  isActive: boolean;
+}

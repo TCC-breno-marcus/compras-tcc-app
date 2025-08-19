@@ -38,24 +38,20 @@ const showDeadlineWarning = computed(() => {
 
 const isEditing = ref<boolean>(false)
 
-const fetchSolicitation = async (id: number) => {
-  isLoading.value = true
-  error.value = null
-  try {
-    currentSolicitation.value = await solicitationService.getById(id)
-  } catch (err) {
-    error.value = 'Falha ao carregar os detalhes da solicitação.'
-    console.error(err)
-  } finally {
-    isLoading.value = false
+const handleCancel = () => {
+  const id = currentSolicitation.value?.id
+  if (id && solicitationStore.isDirty) {
+    console.log('oi')
+    solicitationStore.fetchById(id)
   }
+  isEditing.value = false
 }
 
 watch(
   () => route.params.id,
   (newId) => {
     if (newId && typeof newId === 'string') {
-      fetchSolicitation(parseInt(newId, 10))
+      solicitationStore.fetchById(parseInt(newId, 10))
     }
   },
   {
@@ -70,12 +66,12 @@ onMounted(() => {
 
 <!-- TODO: esse componente está grande. Tentar quebrar mais ele -->
 <!-- TODO: UM SOLICITANTE SÓ PODE VISUALIZAR OS DETALHES DE SOLICITAÇÕES FEITAS PELO SEU DEPARTAMENTO-->
+<!-- TODO: deve ter um botão para adicionar itens ao pedido. O botão irá abrir um modal que irá usar o componente CatalogoBrowser -->
 <template>
   <SolicitationDetailsSkeleton v-if="isLoading" />
   <div class="p-2" v-if="currentSolicitation">
-
     <!-- TODO: ajustar responsividade dessa div abaixo  -->
-    <div class="flex align-items-center justify-content-between mb-4">   
+    <div class="flex align-items-center justify-content-between mb-4">
       <h3 class="m-0">Detalhes da Solicitação #{{ currentSolicitation.id }}</h3>
       <div class="flex gap-2">
         <Message
@@ -112,7 +108,15 @@ onMounted(() => {
           severity="danger"
           label="Cancelar"
           size="small"
+          @click="handleCancel"
+        />
+        <Button
+          v-if="isEditing"
+          icon="pi pi-save"
+          label="Salvar"
+          size="small"
           @click="isEditing = false"
+          :disabled="!solicitationStore.isDirty"
         />
       </div>
     </div>

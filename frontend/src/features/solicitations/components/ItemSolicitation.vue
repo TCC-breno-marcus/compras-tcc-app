@@ -1,13 +1,10 @@
 <script setup lang="ts">
-import { inject, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import Button from 'primevue/button'
 import InputNumber from 'primevue/inputnumber'
 import InputText from 'primevue/inputtext'
-import { FloatLabel, Tag } from 'primevue'
+import { FloatLabel } from 'primevue'
 import type { SolicitationItem } from '..'
-import { useSolicitationCartStore } from '../stores/solicitationCartStore'
-import { useToast } from 'primevue/usetoast'
-import { SolicitationContextKey, SolicitationDetailsContextKey } from '../keys'
 
 const props = defineProps<{
   item: SolicitationItem
@@ -65,21 +62,10 @@ const onFieldUpdate = () => {
           inputClass="w-full"
           @update:modelValue="onFieldUpdate"
         />
-        <label for="on_label_qtde">Qtde.</label> 
+        <label for="on_label_qtde">Qtde.</label>
       </FloatLabel>
-
-      <!-- <p v-else>
-        <div>
-
-          <Tag severity="info" :value="'Quantidade: ' + item.quantidade">
-          </Tag>
-        </div>
-
-      </p> -->
       <div v-else class="flex flex-column align-items-center text-center">
         <p class="text-color-secondary">Quantidade</p>
-        <!-- <Tag severity="info" :value="'Quantidade'"> </Tag> -->
-        <!-- <Tag severity="info" :value="item.quantidade"> </Tag> -->
         <p class="font-bold">{{ item.quantidade }}</p>
       </div>
 
@@ -97,7 +83,6 @@ const onFieldUpdate = () => {
         />
         <label for="on_label_price">Preço Unitário</label>
       </FloatLabel>
-      <!-- <p v-else><Tag severity="info" :value="'Preço Sugerido: ' + item.precoSugerido"></Tag></p> -->
       <div v-else class="flex flex-column align-items-center text-center">
         <p class="text-color-secondary">Preço Unitário</p>
         <p class="font-bold">
@@ -140,9 +125,7 @@ const onFieldUpdate = () => {
     <div v-else>
       <span class="text-color-secondary">Justificativa: </span>
       <em class="text-center">
-        {{ item.justificativa }} Lorem ipsum dolor sit amet consectetur, adipisicing elit. Amet
-        voluptatum nulla iusto ipsa suscipit corporis magnam dolorum dolorem? Cum quasi obcaecati
-        non magni cumque, repudiandae veritatis alias beatae fuga sed.
+        {{ item.justificativa }}
       </em>
     </div>
   </div>
