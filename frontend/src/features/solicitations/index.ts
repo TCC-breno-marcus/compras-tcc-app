@@ -1,4 +1,4 @@
-import type { Item } from '@/features/catalogo/types' // Importe o tipo base
+import type { Item } from '@/features/catalogo/types' 
 
 export type SolicitationItem = Partial<Item> & {
   quantidade: number

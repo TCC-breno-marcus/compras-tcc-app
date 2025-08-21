@@ -1,4 +1,3 @@
-// /src/utils/confirmationFactory.ts
 import type { ConfirmationOptions } from 'primevue/confirmationoptions'
 
 /**

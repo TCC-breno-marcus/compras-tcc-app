@@ -1,7 +1,6 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 
-// Definimos os tipos para segurança
 type Theme = 'light' | 'dark'
 
 export const useThemeStore = defineStore(

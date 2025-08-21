@@ -1,5 +1,3 @@
-// src/features/management/stores/catalogoStore.ts
-
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { catalogoService } from '../services/catalogoService';

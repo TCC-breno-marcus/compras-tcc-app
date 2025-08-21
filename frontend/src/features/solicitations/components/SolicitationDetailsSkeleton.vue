@@ -1,5 +1,4 @@
 <script setup lang="ts">
-// Importando todos os componentes PrimeVue necessários para a estrutura
 import Skeleton from 'primevue/skeleton'
 import Card from 'primevue/card'
 import Tabs from 'primevue/tabs'
