@@ -14,12 +14,16 @@ import { SolicitationContextKey, type SolicitationContext } from '../keys'
 import { useAuthStore } from '@/features/autentication/stores/authStore'
 import { storeToRefs } from 'pinia'
 import { useRoute } from 'vue-router'
-import type { SolicitationResult } from '..'
-import { solicitationService } from '../services/solicitationService'
 import { useSettingStore } from '@/stores/settingStore'
 import { formatDate } from '@/utils/dateUtils'
 import SolicitationDetailsSkeleton from '../components/SolicitationDetailsSkeleton.vue'
 import { useSolicitationStore } from '../stores/solicitationStore'
+
+const solicitationContext = reactive<SolicitationContext>({
+  dialogMode: 'selection'
+})
+
+provide(SolicitationContextKey, readonly(solicitationContext))
 
 const route = useRoute()
 const authStore = useAuthStore()
@@ -130,8 +134,7 @@ onMounted(() => {
                 <i class="pi pi-user text-primary text-xl mr-3"></i>
                 <div>
                   <span class="text-sm text-color-secondary">Requisitante</span>
-                  <p class="font-bold m-0">{{ currentSolicitation.solicitante.nome }}</p>
-                  <!-- TODO: deve mostrar o departamento dele tbm -->
+                  <p class="font-bold m-0">{{ currentSolicitation.solicitante.nome }} ({{ currentSolicitation.solicitante.departamento }})</p>
                 </div>
               </li>
               <li class="flex align-items-center">

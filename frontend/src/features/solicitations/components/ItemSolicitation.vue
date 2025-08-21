@@ -100,6 +100,7 @@ const onFieldUpdate = () => {
         variant="text"
         severity="danger"
         size="small"
+        v-tooltip="'Remover Item'"
         @click="removeItem"
       />
     </div>

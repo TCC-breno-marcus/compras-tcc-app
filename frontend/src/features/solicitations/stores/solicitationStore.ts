@@ -3,8 +3,11 @@ import { computed, ref } from 'vue'
 import type { Solicitation } from '@/features/solicitations'
 import { solicitationService } from '../services/solicitationService'
 import { dataHasBeenChanged } from '@/utils/objectUtils'
+import type { Item } from '@/features/catalogo/types'
 
-
+/**
+ * Store para gerenciar estados da view Detalhes da Solicitação
+ */
 export const useSolicitationStore = defineStore('solicitation', () => {
   const currentSolicitation = ref<Solicitation | null>(null)
   const currentSolicitationBackup = ref<Solicitation | null>(null)
@@ -39,6 +42,24 @@ export const useSolicitationStore = defineStore('solicitation', () => {
     // ... lógica para chamar o serviço de update
   }
 
+  /**
+   * Adiciona um item à solicitação atual
+   * @param item
+   * @param type
+   * @returns
+   */
+  const addItem = (item: Item) => {
+    const itemExistente = currentSolicitation.value?.itens.find((i) => i.id === item.id)
+
+    if (itemExistente) {
+      itemExistente.quantidade++
+      return 'incremented'
+    } else {
+      currentSolicitation.value?.itens.push({ ...item, quantidade: 1 })
+      return 'added'
+    }
+  }
+
   const removeItem = (itemId: number) => {
     if (currentSolicitation.value) {
       currentSolicitation.value.itens = currentSolicitation.value.itens.filter(
@@ -59,16 +80,10 @@ export const useSolicitationStore = defineStore('solicitation', () => {
     if (!currentSolicitation.value || !currentSolicitationBackup.value) {
       return false
     }
-    console.log(currentSolicitation.value)
-    console.log(currentSolicitationBackup.value)
-    console.log('Tipo do backup.dataCriacao:', typeof currentSolicitationBackup.value.dataCriacao)
-    console.log('Tipo do atual.dataCriacao:', typeof currentSolicitation.value.dataCriacao)
-
     const is = dataHasBeenChanged<Solicitation>(
       currentSolicitationBackup.value,
       currentSolicitation.value,
     )
-    console.log(is)
     return is
   })
 
@@ -78,6 +93,7 @@ export const useSolicitationStore = defineStore('solicitation', () => {
     error,
     fetchById,
     update,
+    addItem,
     removeItem,
     updateItemQuantity,
     isDirty,
