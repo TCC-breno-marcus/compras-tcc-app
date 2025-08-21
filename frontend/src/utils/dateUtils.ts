@@ -6,10 +6,10 @@ type DateFormatType = 'short' | 'long'
  * @param formatType O tipo de formato: 'short' (dd/mm/aaaa) ou 'long' (data por extenso com hora).
  * @returns A data formatada como string.
  */
-export function formatDate(
+export const formatDate = (
   date: Date | string | null,
   formatType: DateFormatType = 'short',
-): string {
+): string => {
   if (!date) {
     return ''
   }

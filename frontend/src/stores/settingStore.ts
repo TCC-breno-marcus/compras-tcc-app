@@ -9,7 +9,7 @@ export const useSettingStore = defineStore('setting', () => {
   /**
    * Busca o prazo da API, mas apenas se ele ainda não foi carregado.
    */
-  async function fetchPrazoSubmissao() {
+  const fetchPrazoSubmissao = async () => {
     if (deadline.value) {
       return
     }

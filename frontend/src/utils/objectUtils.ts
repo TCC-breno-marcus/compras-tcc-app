@@ -4,10 +4,10 @@
  * @param origin O objeto original completo.
  * @param edited O objeto com os dados do formulário (parcial).
  */
-export function dataHasBeenChanged<T extends object>(
+export const dataHasBeenChanged = <T extends object>(
   origin: T | Partial<T> | null,
   edited: Partial<T>,
-): boolean {
+): boolean => {
   if (!origin) {
     return false
   }

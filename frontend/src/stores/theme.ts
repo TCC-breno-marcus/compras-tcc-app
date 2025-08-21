@@ -11,11 +11,11 @@ export const useThemeStore = defineStore(
 
     const isDarkMode = computed(() => currentTheme.value === 'dark')
 
-    function toggleTheme() {
+    const toggleTheme = () => {
       currentTheme.value = currentTheme.value === 'light' ? 'dark' : 'light'
     }
 
-    function setTheme(theme: Theme) {
+    const setTheme = (theme: Theme) => {
       currentTheme.value = theme
     }
 

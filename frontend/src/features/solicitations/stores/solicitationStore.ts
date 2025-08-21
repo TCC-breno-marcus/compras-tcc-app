@@ -4,8 +4,6 @@ import type { Solicitation } from '@/features/solicitations'
 import { solicitationService } from '../services/solicitationService'
 import { dataHasBeenChanged } from '@/utils/objectUtils'
 
-// TODO: refatorar todas as funcoes de stores da aplicação para usar modo mais moderno ao inves de
-// 'function'. Este já está ok
 
 export const useSolicitationStore = defineStore('solicitation', () => {
   const currentSolicitation = ref<Solicitation | null>(null)

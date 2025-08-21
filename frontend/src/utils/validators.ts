@@ -3,7 +3,7 @@
  * @param email O email a ser validado.
  * @returns 'true' se o email for válido, 'false' caso contrário.
  */
-export function emailValidator(email: string): boolean {
+export const emailValidator = (email: string): boolean => {
   if (!email) {
     return false
   }
@@ -18,7 +18,7 @@ export function emailValidator(email: string): boolean {
  * @param cpf O CPF a ser validado (pode conter pontos e traço).
  * @returns 'true' se o CPF for válido, 'false' caso contrário.
  */
-export function cpfValidator(cpf: string): boolean {
+export const cpfValidator = (cpf: string): boolean => {
   if (!cpf) {
     return false
   }

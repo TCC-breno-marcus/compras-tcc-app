@@ -139,7 +139,7 @@ export const useMenuStore = defineStore('menu', () => {
    * A função é recursiva para lidar com sub-menus.
    * @param items Array de itens de menu a serem filtrados.
    */
-  function filterMenuByRole(items: AppMenuItem[]): AppMenuItem[] {
+  const filterMenuByRole = (items: AppMenuItem[]): AppMenuItem[] => {
     const userRole = authStore.user?.role
 
     const filteredItems = []

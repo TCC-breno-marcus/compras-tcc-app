@@ -2,7 +2,7 @@ import { toTitleCase } from '@/utils/stringUtils'
 import type { Categoria } from '../types'
 
 // Esta função recebe uma categoria da API e a retorna no formato padronizado
-export function transformCategory(categoryFromApi: Categoria): Categoria {
+export const transformCategory = (categoryFromApi: Categoria): Categoria => {
   return {
     ...categoryFromApi,
     nome: toTitleCase(categoryFromApi.nome),
@@ -17,7 +17,7 @@ export function transformCategory(categoryFromApi: Categoria): Categoria {
  * @param namesFilter Um array de strings com os nomes desejados.
  * @returns Um novo array contendo apenas as categorias que correspondem aos nomes.
  */
-export function categorysIdFilterPerName(categorys: Categoria[], namesFilter: string[]): number[] {
+export const categorysIdFilterPerName = (categorys: Categoria[], namesFilter: string[]): number[] => {
   if (!namesFilter || namesFilter.length === 0) {
     return []
   }

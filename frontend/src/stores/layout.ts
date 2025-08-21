@@ -6,7 +6,7 @@ export const useLayoutStore = defineStore(
   () => {
     const isSidebarCollapsed = ref(false)
 
-    function toggleSidebar() {
+    const toggleSidebar = () => {
       isSidebarCollapsed.value = !isSidebarCollapsed.value
     }
 

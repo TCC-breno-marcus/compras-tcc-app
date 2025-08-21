@@ -18,7 +18,7 @@ export const useCatalogoStore = defineStore('catalogo', () => {
    * Busca os itens do catálogo na API e atualiza o estado.
    * @param filters Os parâmetros de filtro e paginação.
    */
-  async function fetchItems(filters?: CatalogoFilters) {
+  const fetchItems = async (filters?: CatalogoFilters) => {
     loading.value = true; 
     error.value = null;
 

@@ -2,7 +2,7 @@ import { ref, onMounted, onUnmounted, computed } from 'vue';
 
 const lgBreakpoint = 992; // Padrão do PrimeVue/Bootstrap para 'lg'
 
-export function useBreakpoint() {
+export const useBreakpoint = () => {
   const screenWidth = ref(window.innerWidth);
 
   const onResize = () => {

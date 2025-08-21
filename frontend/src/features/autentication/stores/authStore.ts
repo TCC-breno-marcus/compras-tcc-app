@@ -15,7 +15,7 @@ export const useAuthStore = defineStore(
     const isAdmin = computed(() => user.value?.role === 'Admin')
     const isGestor = computed(() => user.value?.role === 'Gestor')
 
-    async function login(credentials: UserCredentials) {
+    const login = async (credentials: UserCredentials) => {
       try {
         const response = await authService.login(credentials)
         token.value = response.token
@@ -27,7 +27,7 @@ export const useAuthStore = defineStore(
       }
     }
 
-    async function fetchDataUser() {
+    const fetchDataUser = async () => {
       try {
         const myData = await authService.getMyData()
         user.value = myData
@@ -36,7 +36,7 @@ export const useAuthStore = defineStore(
       }
     }
 
-    async function register(userData: UserRegistration) {
+    const register = async (userData: UserRegistration) => {
       try {
         await authService.register(userData)
         return true
@@ -46,12 +46,12 @@ export const useAuthStore = defineStore(
       }
     }
 
-    function logout() {
+    const logout = () => {
       user.value = null
       token.value = null
     }
 
-    async function fetchDeptos() {
+    const fetchDeptos = async () => {
       try {
         const data = await authService.getDeptos()
         departamentos.value = data

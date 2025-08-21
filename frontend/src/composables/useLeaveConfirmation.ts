@@ -10,7 +10,7 @@ import { DISCARD_SOLICITATION_CONFIRMATION } from '@/utils/confirmationFactoryUt
  * se houver uma solicitação em andamento.
  * Lida tanto com a navegação interna (Vue Router) quanto externa (fechar aba/refresh).
  */
-export function useLeaveConfirmation() {
+export const useLeaveConfirmation = () => {
   const confirm = useConfirm()
   const solicitationCartStore = useSolicitationCartStore()
   const { solicitationItems, justification } = storeToRefs(solicitationCartStore)

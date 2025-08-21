@@ -19,7 +19,7 @@ interface ICatalogoService {
  * Comprimir imagem para melhor otimização de espaço
  * @param arquivoOriginal Arquivo original
  */
-async function _processarImagem(arquivoOriginal: File): Promise<File> {
+const _processarImagem = async (arquivoOriginal: File): Promise<File> => {
   // console.log(`Tamanho original: ${(arquivoOriginal.size / 1024 / 1024).toFixed(2)} MB`)
 
   const options = {
