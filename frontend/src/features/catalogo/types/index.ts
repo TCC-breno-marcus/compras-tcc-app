@@ -71,7 +71,7 @@ export interface PaginatedResponse<T> {
   pageSize: number
   totalCount: number
   totalPages: number
-  items: T[]
+  data: T[]
 }
 
 /**

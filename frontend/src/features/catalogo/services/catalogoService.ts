@@ -65,7 +65,7 @@ export const catalogoService: ICatalogoService = {
       })
     }
     const response = await apiClient.get<PaginatedResponse<Item>>('/catalogo', { params })
-    response.data.items = response.data.items.map(transformItem)
+    response.data.data = response.data.data.map(transformItem)
     return response.data
   },
 

@@ -23,7 +23,7 @@ export const useCatalogoStore = defineStore('catalogo', () => {
     try {
       const response = await catalogoService.getItens(filters);
       
-      items.value = response.items; 
+      items.value = response.data; 
       totalCount.value = response.totalCount;
       pageNumber.value = response.pageNumber;
       pageSize.value = response.pageSize;
