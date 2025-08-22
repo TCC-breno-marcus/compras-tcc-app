@@ -63,18 +63,6 @@ export interface CatalogoFilters {
 }
 
 /**
- * Representa a estrutura padrão de uma resposta paginada da sua API.
- * É genérica para poder ser reutilizada com outros tipos de dados (ex: Solicitações).
- */
-export interface PaginatedResponse<T> {
-  pageNumber: number
-  pageSize: number
-  totalCount: number
-  totalPages: number
-  data: T[]
-}
-
-/**
  * Representa a estrutura de uma categoria de item do catálogo.
  */
 export interface Categoria {

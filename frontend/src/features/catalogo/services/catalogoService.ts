@@ -1,8 +1,9 @@
 import { apiClient } from '@/services/apiClient'
-import type { Item, ItemParams, PaginatedResponse } from '@/features/catalogo/types'
+import type { Item, ItemParams } from '@/features/catalogo/types'
 import imageCompression from 'browser-image-compression'
 import { transformItem } from '../utils/itemTransformer'
 import type { CatalogoFilters } from '../types'
+import type { PaginatedResponse } from '@/types'
 
 interface ICatalogoService {
   getItens(filters?: CatalogoFilters): Promise<PaginatedResponse<Item>>
