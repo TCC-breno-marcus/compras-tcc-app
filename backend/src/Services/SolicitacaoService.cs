@@ -291,4 +291,54 @@ public class SolicitacaoService : ISolicitacaoService
 
         return respostaDto;
     }
+
+    public async Task<PaginatedResultDto<SolicitacaoResultDto>> GetAllBySolicitanteAsync(
+        long solicitanteId,
+        int pageNumber,
+        int pageSize)
+    {
+        _logger.LogInformation("Buscando solicitações para o solicitante ID: {Id}", solicitanteId);
+
+        var query = _context.Solicitacoes
+            .Where(s => s.SolicitanteId == solicitanteId)
+            .Include(s => s.Solicitante.Servidor.Pessoa)
+            .Include("ItemSolicitacao.Item")
+            .AsNoTracking()
+            .OrderByDescending(s => s.DataCriacao);
+
+        var totalCount = await query.CountAsync();
+        var solicitacoesPaginadas = await query
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        var listaDeDtos = solicitacoesPaginadas.Select(solicitacao =>
+            new SolicitacaoResultDto
+            {
+                Id = solicitacao.Id,
+                DataCriacao = solicitacao.DataCriacao,
+                JustificativaGeral = (solicitacao is SolicitacaoGeral sg) ? sg.JustificativaGeral : null,
+                Solicitante = new SolicitanteDto
+                {
+                    Id = solicitacao.Solicitante.Id,
+                    Nome = solicitacao.Solicitante.Servidor.Pessoa.Nome,
+                    Email = solicitacao.Solicitante.Servidor.Pessoa.Email,
+                    Departamento = solicitacao.Solicitante.Unidade.ToFriendlyString(),
+                },
+                Itens = ((solicitacao is SolicitacaoGeral geral) ? geral.ItemSolicitacao :
+                        (solicitacao is SolicitacaoPatrimonial patrimonial) ? patrimonial.ItemSolicitacao :
+                        new List<SolicitacaoItem>())
+                    .Select(item => new ItemSolicitacaoResultDto
+                    {
+                        ItemId = item.ItemId,
+                        NomeDoItem = item.Item.Nome,
+                        CatMat = item.Item.CatMat,
+                        Quantidade = item.Quantidade,
+                        ValorUnitario = item.ValorUnitario,
+                        Justificativa = item.Justificativa,
+                    }).ToList(),
+            }).ToList();
+
+        return new PaginatedResultDto<SolicitacaoResultDto>(listaDeDtos, totalCount, pageNumber, pageSize);
+    }
 }
