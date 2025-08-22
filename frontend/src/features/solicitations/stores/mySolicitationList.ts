@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import type { Solicitation, SolicitationListItem } from '@/features/solicitations'
 import { solicitationService } from '../services/solicitationService'
 
@@ -41,6 +41,10 @@ export const useMySolicitationListStore = defineStore('mySolicitationList', () =
   const solicitations = ref<SolicitationListItem[]>([])
   const isLoading = ref(false)
   const error = ref<string | null>(null)
+  const totalCount = ref<number>(0)
+  const pageNumber = ref<number>(1)
+  const pageSize = ref<number>(10)
+  const totalPages = ref<number>(1)
 
   /**
    * Busca minhas solicitações.
@@ -52,6 +56,10 @@ export const useMySolicitationListStore = defineStore('mySolicitationList', () =
     try {
       const response = await solicitationService.getMySolicitations()
       solicitations.value = response.data.map(transformSolicitation)
+      totalCount.value = response.totalCount
+      pageNumber.value = response.pageNumber
+      pageSize.value = response.pageSize
+      totalPages.value = Math.ceil(response.totalCount / response.pageSize) || 1
     } catch (err: any) {
       error.value = err.message || 'Falha ao carregar minhas solicitações.'
     } finally {
@@ -59,10 +67,17 @@ export const useMySolicitationListStore = defineStore('mySolicitationList', () =
     }
   }
 
+  const hasNextPage = computed(() => pageNumber.value < totalPages.value)
+
   return {
     solicitations,
     isLoading,
     error,
+    totalCount,
+    totalPages,
+    pageNumber,
+    pageSize,
     fetchAll,
+    hasNextPage
   }
 })

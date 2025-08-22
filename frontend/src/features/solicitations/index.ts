@@ -1,4 +1,4 @@
-import type { Item } from '@/features/catalogo/types' 
+import type { Item } from '@/features/catalogo/types'
 
 export type SolicitationItem = Partial<Item> & {
   quantidade: number
@@ -85,8 +85,18 @@ export interface Solicitation {
  * Representa uma solicitação exibida na tabela de listar solicitações
  */
 export interface SolicitationListItem extends Solicitation {
-  itemsCount: number;
-  totalItemsQuantity: number;
-  totalEstimatedPrice: number;
-  typeDisplay: 'Geral' | 'Patrimonial';
+  itemsCount: number
+  totalItemsQuantity: number
+  totalEstimatedPrice: number
+  typeDisplay: 'Geral' | 'Patrimonial'
+}
+
+/**
+ *
+ */
+export interface MySolicitationFilters {
+  idFilter: string
+  typeFilter: 'Geral' | 'Patrimonial' | ''
+  dateFilter: Date | null
+  sortOrder: string | null
 }
