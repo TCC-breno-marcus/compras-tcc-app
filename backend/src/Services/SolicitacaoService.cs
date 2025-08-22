@@ -97,11 +97,15 @@ public class SolicitacaoService : ISolicitacaoService
                 Itens = novaSolicitacao
                     .ItemSolicitacao.Select(item => new ItemSolicitacaoResultDto
                     {
-                        ItemId = item.ItemId,
-                        NomeDoItem = item.Item.Nome,
+                        Id = item.ItemId,
+                        Nome = item.Item.Nome,
                         CatMat = item.Item.CatMat,
                         Quantidade = item.Quantidade,
-                        ValorUnitario = item.ValorUnitario,
+                        // TODO: o link abaixo deve estar em variável de ambiente
+                        LinkImagem = string.IsNullOrWhiteSpace(item.Item.LinkImagem)
+                            ? item.Item.LinkImagem
+                            : $"http://localhost:8088/images/{item.Item.LinkImagem}",
+                        PrecoSugerido = item.ValorUnitario,
                         Justificativa = item.Justificativa,
                     })
                     .ToList(),
@@ -187,11 +191,15 @@ public class SolicitacaoService : ISolicitacaoService
                 Itens = novaSolicitacao
                     .ItemSolicitacao.Select(item => new ItemSolicitacaoResultDto
                     {
-                        ItemId = item.ItemId,
-                        NomeDoItem = item.Item.Nome,
+                        Id = item.ItemId,
+                        Nome = item.Item.Nome,
                         CatMat = item.Item.CatMat,
                         Quantidade = item.Quantidade,
-                        ValorUnitario = item.ValorUnitario,
+                        // TODO: o link abaixo deve estar em variável de ambiente
+                        LinkImagem = string.IsNullOrWhiteSpace(item.Item.LinkImagem)
+                            ? item.Item.LinkImagem
+                            : $"http://localhost:8088/images/{item.Item.LinkImagem}",
+                        PrecoSugerido = item.ValorUnitario,
                         Justificativa = item.Justificativa,
                     })
                     .ToList(),
@@ -267,11 +275,15 @@ public class SolicitacaoService : ISolicitacaoService
             Itens = solicitacao
                 .ItemSolicitacao.Select(item => new ItemSolicitacaoResultDto
                 {
-                    ItemId = item.ItemId,
-                    NomeDoItem = item.Item.Nome,
+                    Id = item.ItemId,
+                    Nome = item.Item.Nome,
                     CatMat = item.Item.CatMat,
                     Quantidade = item.Quantidade,
-                    ValorUnitario = item.ValorUnitario,
+                    // TODO: o link abaixo deve estar em variável de ambiente
+                    LinkImagem = string.IsNullOrWhiteSpace(item.Item.LinkImagem)
+                        ? item.Item.LinkImagem
+                        : $"http://localhost:8088/images/{item.Item.LinkImagem}",
+                    PrecoSugerido = item.ValorUnitario,
                     Justificativa = item.Justificativa,
                 })
                 .ToList(),
