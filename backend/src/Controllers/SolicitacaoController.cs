@@ -84,4 +84,18 @@ public class SolicitacaoController : ControllerBase
 
         return Ok(solicitacaoDto);
     }
+
+    [HttpGet("minhas-solicitacoes")]
+    [Authorize(Roles = "Solicitante,Admin")]
+    public async Task<IActionResult> GetMinhasSolicitacoes(
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 10
+    )
+    {
+        var solicitanteId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+        var resultadoPaginado = await _solicitacaoService.GetAllBySolicitanteAsync(solicitanteId, pageNumber, pageSize);
+        
+        return Ok(resultadoPaginado);
+    }
 }
