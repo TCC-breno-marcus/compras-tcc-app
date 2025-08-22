@@ -6,11 +6,11 @@ namespace Models.Dtos
         public int PageSize { get; }
         public int TotalCount { get; }
         public int TotalPages { get; }
-        public List<T> Items { get; }
+        public List<T> Data { get; }
 
-        public PaginatedResultDto(List<T> items, int totalCount, int pageNumber, int pageSize)
+        public PaginatedResultDto(List<T> data, int totalCount, int pageNumber, int pageSize)
         {
-            Items = items;
+            Data = data;
             TotalCount = totalCount;
             PageNumber = pageNumber;
             PageSize = pageSize;
