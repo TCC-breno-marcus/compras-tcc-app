@@ -80,3 +80,13 @@ export interface Solicitation {
   solicitante: Solicitante
   itens: SolicitationItem[]
 }
+
+/**
+ * Representa uma solicitação exibida na tabela de listar solicitações
+ */
+export interface SolicitationListItem extends Solicitation {
+  itemsCount: number;
+  totalItemsQuantity: number;
+  totalEstimatedPrice: number;
+  typeDisplay: 'Geral' | 'Patrimonial';
+}

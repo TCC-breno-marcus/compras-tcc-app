@@ -1,20 +1,18 @@
 import { apiClient } from '@/services/apiClient'
-import type {
-  CreateSolicitationPayload,
-  Solicitation,
-  SolicitationResult,
-} from '..'
+import type { CreateSolicitationPayload, Solicitation, SolicitationResult } from '..'
+import type { PaginatedResponse } from '@/types'
 
 interface ISolicitationService {
   create(payload: CreateSolicitationPayload): Promise<SolicitationResult>
   getById(id: number): Promise<Solicitation>
+  getMySolicitations(): Promise<PaginatedResponse<Solicitation>>
 }
 
 export const solicitationService: ISolicitationService = {
   /**
    * Cria uma nova solicitação no backend.
    * @param payload Os dados da nova solicitação.
-   * @returns A solicitação criada. 
+   * @returns A solicitação criada.
    */
   async create(payload) {
     const { type, ...apiPayload } = payload
@@ -40,6 +38,22 @@ export const solicitationService: ISolicitationService = {
     } catch (error) {
       console.error(`Erro ao buscar a solicitação:`, error)
       throw new Error('Não foi possível buscar a solicitação.')
+    }
+  },
+
+  /**
+   * Busca todas as solicitações do solicitante logado.
+   * @returns As solicitações.
+   */
+  async getMySolicitations() {
+    try {
+      const response = await apiClient.get<PaginatedResponse<Solicitation>>(
+        `/solicitacao/minhas-solicitacoes`,
+      )
+      return response.data
+    } catch (error) {
+      console.error(`Erro ao buscar suas solicitações:`, error)
+      throw new Error('Não foi possível buscar suas solicitações.')
     }
   },
 }

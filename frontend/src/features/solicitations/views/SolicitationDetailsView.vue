@@ -18,9 +18,10 @@ import { useSettingStore } from '@/stores/settingStore'
 import { formatDate } from '@/utils/dateUtils'
 import SolicitationDetailsSkeleton from '../components/SolicitationDetailsSkeleton.vue'
 import { useSolicitationStore } from '../stores/solicitationStore'
+import CustomBreadcrumb from '@/components/ui/CustomBreadcrumb.vue'
 
 const solicitationContext = reactive<SolicitationContext>({
-  dialogMode: 'selection'
+  dialogMode: 'selection',
 })
 
 provide(SolicitationContextKey, readonly(solicitationContext))
@@ -75,7 +76,10 @@ onMounted(() => {
   <SolicitationDetailsSkeleton v-if="isLoading" />
   <div class="p-2" v-if="currentSolicitation">
     <!-- TODO: ajustar responsividade dessa div abaixo  -->
-    <div class="flex align-items-center justify-content-between mb-4">
+    <div class="flex align-items-center justify-content-between mb-2">
+      <CustomBreadcrumb />
+    </div>
+    <div class="flex align-items-center justify-content-between mb-2">
       <h3 class="m-0">Detalhes da Solicitação #{{ currentSolicitation.id }}</h3>
       <div class="flex gap-2">
         <Message
@@ -134,7 +138,11 @@ onMounted(() => {
                 <i class="pi pi-user text-primary text-xl mr-3"></i>
                 <div>
                   <span class="text-sm text-color-secondary">Requisitante</span>
-                  <p class="font-bold m-0">{{ currentSolicitation.solicitante.nome }} ({{ currentSolicitation.solicitante.departamento }})</p>
+                  <p class="font-bold m-0">
+                    {{ currentSolicitation.solicitante.nome }} ({{
+                      currentSolicitation.solicitante.departamento
+                    }})
+                  </p>
                 </div>
               </li>
               <li class="flex align-items-center">
