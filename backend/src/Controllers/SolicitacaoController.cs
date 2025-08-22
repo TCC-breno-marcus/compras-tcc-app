@@ -92,10 +92,14 @@ public class SolicitacaoController : ControllerBase
         [FromQuery] int pageSize = 10
     )
     {
-        var solicitanteId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var pessoaId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-        var resultadoPaginado = await _solicitacaoService.GetAllBySolicitanteAsync(solicitanteId, pageNumber, pageSize);
-        
+        var resultadoPaginado = await _solicitacaoService.GetAllBySolicitanteAsync(
+            pessoaId,
+            pageNumber,
+            pageSize
+        );
+
         return Ok(resultadoPaginado);
     }
 }
