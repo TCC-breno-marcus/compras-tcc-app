@@ -51,6 +51,8 @@ public class SolicitacaoService : ISolicitacaoService
                 JustificativaGeral = dto.JustificativaGeral,
             };
 
+            novaSolicitacao.ExternalId = GenerateExternalId(novaSolicitacao);
+
             var itensDaSolicitacao = new List<SolicitacaoItem>();
 
             foreach (var itemDto in dto.Itens)
@@ -141,6 +143,8 @@ public class SolicitacaoService : ISolicitacaoService
                 SolicitanteId = solicitante.Id,
                 DataCriacao = DateTime.UtcNow,
             };
+
+            novaSolicitacao.ExternalId = GenerateExternalId(novaSolicitacao);
 
             var itensDaSolicitacao = new List<SolicitacaoItem>();
 
@@ -282,6 +286,12 @@ public class SolicitacaoService : ISolicitacaoService
 
     public async Task<PaginatedResultDto<SolicitacaoResultDto>> GetAllBySolicitanteAsync(
         long solicitanteId,
+        long? gestorId,
+        string? tipo,
+        DateTime? dataInicial,
+        DateTime? dataFinal,
+        string? externalId,
+        string? sortOrder,
         int pageNumber,
         int pageSize)
     {
@@ -291,8 +301,37 @@ public class SolicitacaoService : ISolicitacaoService
             .Where(s => s.SolicitanteId == solicitanteId)
             .Include(s => s.Solicitante.Servidor.Pessoa)
             .Include("ItemSolicitacao.Item")
-            .AsNoTracking()
-            .OrderByDescending(s => s.DataCriacao);
+            .AsNoTracking();
+
+        if (gestorId.HasValue)
+        {
+            query = query.Where(s => s.GestorId == gestorId.Value);
+        }
+        if (!string.IsNullOrWhiteSpace(tipo))
+        {
+            query = query.Where(s => EF.Property<string>(s, "TipoSolicitacao") == tipo.ToUpper());
+        }
+        if (dataInicial.HasValue)
+        {
+            query = query.Where(s => s.DataCriacao.Date >= dataInicial.Value.Date);
+        }
+        if (dataFinal.HasValue)
+        {
+            query = query.Where(s => s.DataCriacao.Date < dataFinal.Value.Date.AddDays(1));
+        }
+        if (!string.IsNullOrWhiteSpace(externalId))
+        {
+            query = query.Where(s => s.ExternalId == externalId);
+        }
+
+        if (sortOrder?.ToLower() == "asc")
+        {
+            query = query.OrderBy(s => s.DataCriacao);
+        }
+        else
+        {
+            query = query.OrderByDescending(s => s.DataCriacao);
+        }
 
         var totalCount = await query.CountAsync();
         var solicitacoesPaginadas = await query
@@ -301,7 +340,12 @@ public class SolicitacaoService : ISolicitacaoService
             .ToListAsync();
 
         var listaDeDtos = solicitacoesPaginadas.Select(solicitacao =>
-            new SolicitacaoResultDto
+        {
+            var itensDaSolicitacao = (solicitacao is SolicitacaoGeral geral) ? geral.ItemSolicitacao :
+                                    (solicitacao is SolicitacaoPatrimonial patrimonial) ? patrimonial.ItemSolicitacao :
+                                    new List<SolicitacaoItem>();
+
+            return new SolicitacaoResultDto
             {
                 Id = solicitacao.Id,
                 DataCriacao = solicitacao.DataCriacao,
@@ -313,20 +357,33 @@ public class SolicitacaoService : ISolicitacaoService
                     Email = solicitacao.Solicitante.Servidor.Pessoa.Email,
                     Departamento = solicitacao.Solicitante.Unidade.ToFriendlyString(),
                 },
-                Itens = ((solicitacao is SolicitacaoGeral geral) ? geral.ItemSolicitacao :
-                        (solicitacao is SolicitacaoPatrimonial patrimonial) ? patrimonial.ItemSolicitacao :
-                        new List<SolicitacaoItem>())
-                    .Select(item => new ItemSolicitacaoResultDto
-                    {
-                        ItemId = item.ItemId,
-                        NomeDoItem = item.Item.Nome,
-                        CatMat = item.Item.CatMat,
-                        Quantidade = item.Quantidade,
-                        ValorUnitario = item.ValorUnitario,
-                        Justificativa = item.Justificativa,
-                    }).ToList(),
-            }).ToList();
+                Itens = itensDaSolicitacao.Select(item => new ItemSolicitacaoResultDto
+                {
+                    ItemId = item.ItemId,
+                    NomeDoItem = item.Item.Nome,
+                    CatMat = item.Item.CatMat,
+                    Quantidade = item.Quantidade,
+                    ValorUnitario = item.ValorUnitario,
+                    Justificativa = item.Justificativa,
+                }).ToList(),
+            };
+        }).ToList();
 
         return new PaginatedResultDto<SolicitacaoResultDto>(listaDeDtos, totalCount, pageNumber, pageSize);
+    }
+
+    private string GenerateExternalId(Solicitacao solicitacao)
+    {
+        var ano = solicitacao.DataCriacao.ToString("yy");
+        var mes = solicitacao.DataCriacao.ToString("MM");
+
+        var idFormatado = solicitacao.Id.ToString("D6");
+
+        if (solicitacao is SolicitacaoPatrimonial)
+        {
+            return $"SP{ano}{mes}{idFormatado}";
+        }
+
+        return $"S{ano}{mes}{idFormatado}";
     }
 }
