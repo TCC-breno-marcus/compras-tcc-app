@@ -87,6 +87,13 @@ export const useSolicitationStore = defineStore('solicitation', () => {
     return is
   })
 
+  const $reset = () => {
+    currentSolicitation.value = null
+    currentSolicitationBackup.value = null
+    isLoading.value = false
+    error.value = null
+  }
+
   return {
     currentSolicitation,
     isLoading,
@@ -97,5 +104,6 @@ export const useSolicitationStore = defineStore('solicitation', () => {
     removeItem,
     updateItemQuantity,
     isDirty,
+    $reset,
   }
 })

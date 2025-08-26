@@ -148,7 +148,7 @@ router.beforeEach((to, from, next) => {
       ...CHANGE_SOLICITATION_CONFIRMATION,
       message: `Você tem uma solicitação ${solicitationCartStore.solicitationType} em andamento. Deseja descartá-la para iniciar uma nova solicitação ${to.meta.solicitationType}?`,
       accept: () => {
-        solicitationCartStore.clearSolicitation()
+        solicitationCartStore.$reset()
         router.push(to.fullPath)
       },
     })

@@ -59,7 +59,7 @@ const resetSolicitation = () => {
   confirm.require({
     ...DISCARD_SOLICITATION_CONFIRMATION,
     accept: () => {
-      solicitationCartStore.clearSolicitation()
+      solicitationCartStore.$reset()
     },
   })
 }

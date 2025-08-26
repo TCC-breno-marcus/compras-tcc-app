@@ -3,6 +3,9 @@ import { authService } from '@/features/autentication/services/authService'
 import type { UserCredentials, UserData, UserRegistration } from '@/features/autentication/types'
 import { isTokenExpired } from '@/utils/jwtHelper'
 import { computed, ref } from 'vue'
+import { useMySolicitationListStore } from '@/features/solicitations/stores/mySolicitationList'
+import { useSolicitationStore } from '@/features/solicitations/stores/solicitationStore'
+import { useSolicitationCartStore } from '@/features/solicitations/stores/solicitationCartStore'
 
 export const useAuthStore = defineStore(
   'auth',
@@ -47,6 +50,9 @@ export const useAuthStore = defineStore(
     }
 
     const logout = () => {
+      useMySolicitationListStore().$reset()
+      useSolicitationStore().$reset()
+      useSolicitationCartStore().$reset()
       user.value = null
       token.value = null
     }

@@ -39,12 +39,6 @@ export const useSolicitationCartStore = defineStore('solicitationCart', () => {
     }
   }
 
-  const clearSolicitation = () => {
-    solicitationItems.value = []
-    justification.value = ''
-    solicitationType.value = null
-  }
-
   const createSolicitation = async (isGeneral?: boolean) => {
     isLoading.value = true
     error.value = null
@@ -75,7 +69,7 @@ export const useSolicitationCartStore = defineStore('solicitationCart', () => {
 
     try {
       await solicitationService.create(payload)
-      clearSolicitation()
+      $reset()
       return true
     } catch (err: any) {
       error.value = err.message || 'Ocorreu um erro desconhecido.'
@@ -83,6 +77,14 @@ export const useSolicitationCartStore = defineStore('solicitationCart', () => {
     } finally {
       isLoading.value = false
     }
+  }
+
+  const $reset = () => {
+    solicitationItems.value = []
+    justification.value = ''
+    solicitationType.value = null
+    isLoading.value = false
+    error.value = null
   }
 
   return {
@@ -94,7 +96,7 @@ export const useSolicitationCartStore = defineStore('solicitationCart', () => {
     addItem,
     removeItem,
     updateItemQuantity,
-    clearSolicitation,
     createSolicitation,
+    $reset,
   }
 })

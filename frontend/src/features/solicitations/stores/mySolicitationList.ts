@@ -69,6 +69,16 @@ export const useMySolicitationListStore = defineStore('mySolicitationList', () =
 
   const hasNextPage = computed(() => pageNumber.value < totalPages.value)
 
+  const $reset = () => {
+    solicitations.value = []
+    isLoading.value = false
+    error.value = null
+    totalCount.value = 0
+    pageNumber.value = 1
+    pageSize.value = 10
+    totalPages.value = 1
+  }
+
   return {
     solicitations,
     isLoading,
@@ -78,6 +88,7 @@ export const useMySolicitationListStore = defineStore('mySolicitationList', () =
     pageNumber,
     pageSize,
     fetchAll,
-    hasNextPage
+    hasNextPage,
+    $reset,
   }
 })
