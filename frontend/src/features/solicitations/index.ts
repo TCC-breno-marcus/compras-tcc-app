@@ -9,7 +9,7 @@ export type SolicitationItem = Partial<Item> & {
  * Representa um único item dentro de uma solicitação a ser enviada para a API.
  */
 export interface CreateItemSolicitationPayload {
-  id: number
+  itemId: number
   quantidade: number
   valorUnitario: number
   justificativa?: string
@@ -66,6 +66,7 @@ export interface SolicitationResult {
   id: number
   dataCriacao: string
   justificativaGeral: string
+  externalId: string
   solicitante: Solicitante
   itens: SolicitationItem[]
 }
@@ -77,6 +78,7 @@ export interface Solicitation {
   id: number
   dataCriacao: string
   justificativaGeral: string
+  externalId: string
   solicitante: Solicitante
   itens: SolicitationItem[]
 }
@@ -95,8 +97,9 @@ export interface SolicitationListItem extends Solicitation {
  *
  */
 export interface MySolicitationFilters {
-  idFilter: string
-  typeFilter: 'Geral' | 'Patrimonial' | ''
-  dateFilter: Date | null
+  externalId: string
+  tipo: 'Geral' | 'Patrimonial' | ''
+  dataInicial: Date | null
+  dataFinal: Date | null
   sortOrder: string | null
 }

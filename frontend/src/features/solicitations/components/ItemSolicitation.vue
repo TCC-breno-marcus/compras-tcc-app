@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { inject, ref, watch } from 'vue'
 import Button from 'primevue/button'
 import InputNumber from 'primevue/inputnumber'
 import InputText from 'primevue/inputtext'
 import { FloatLabel } from 'primevue'
 import type { SolicitationItem } from '..'
+import { SolicitationContextKey } from '../keys'
 
 const props = defineProps<{
   item: SolicitationItem
@@ -12,6 +13,8 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits(['removeItem', 'updateItem'])
+
+const solicitationContext = inject(SolicitationContextKey)
 
 const localItem = ref<SolicitationItem>({ ...props.item })
 
@@ -106,7 +109,7 @@ const onFieldUpdate = () => {
     </div>
   </div>
   <div
-    v-if="item.justificativa"
+    v-if="item.justificativa || !solicitationContext?.isGeneral"
     class="flex justify-content-end w-full pb-2 pl-7 md:pt-2 lg:pt-0"
     :class="item.justificativa ? 'custom-border' : ''"
   >
@@ -114,7 +117,7 @@ const onFieldUpdate = () => {
       <InputText
         v-model="item.justificativa"
         inputId="on_label_justification"
-        :invalid="item.justificativa.trim() === ''"
+        :invalid="item.justificativa?.trim() === ''"
         size="small"
         class="w-full"
         inputClass="w-full"

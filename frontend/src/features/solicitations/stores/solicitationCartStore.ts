@@ -50,7 +50,7 @@ export const useSolicitationCartStore = defineStore('solicitationCart', () => {
         type: 'geral',
         justificativaGeral: justification.value,
         itens: solicitationItems.value.map((item) => ({
-          id: item.id!,
+          itemId: item.id!,
           quantidade: item.quantidade,
           valorUnitario: item.precoSugerido!,
         })),
@@ -59,7 +59,7 @@ export const useSolicitationCartStore = defineStore('solicitationCart', () => {
       payload = {
         type: 'patrimonial',
         itens: solicitationItems.value.map((item) => ({
-          id: item.id!,
+          itemId: item.id!,
           quantidade: item.quantidade,
           valorUnitario: item.precoSugerido!,
           justificativa: item.justificativa,

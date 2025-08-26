@@ -80,7 +80,7 @@ onMounted(() => {
       <CustomBreadcrumb />
     </div>
     <div class="flex align-items-center justify-content-between mb-2">
-      <h3 class="m-0">Detalhes da Solicitação #{{ currentSolicitation.id }}</h3>
+      <h3 class="m-0">Detalhes da Solicitação {{ currentSolicitation.externalId }}</h3>
       <div class="flex gap-2">
         <Message
           v-if="showDeadlineWarning"
@@ -101,7 +101,7 @@ onMounted(() => {
           O prazo final para ajustes foi encerrado.
         </Message>
 
-        <!-- TODO: só pode editar se a solicitação foi feita pelo próprio usuário logado -->
+        <!-- TODO: só pode editar se a solicitação foi feita pelo próprio usuário logado e também se ainda está dentro do prazo de edição-->
         <Button
           v-if="!isEditing"
           icon="pi pi-pencil"
