@@ -88,14 +88,23 @@ public class SolicitacaoController : ControllerBase
     [HttpGet("minhas-solicitacoes")]
     [Authorize(Roles = "Solicitante,Admin")]
     public async Task<IActionResult> GetMinhasSolicitacoes(
+        [FromQuery] long? gestorId,
+        [FromQuery] string? tipo,
+        [FromQuery] DateTime? dataInicial,
+        [FromQuery] DateTime? dataFinal,
+        [FromQuery] string? externalId,
+        [FromQuery] string? sortOrder = "desc",
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 10
     )
     {
         var solicitanteId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-        var resultadoPaginado = await _solicitacaoService.GetAllBySolicitanteAsync(solicitanteId, pageNumber, pageSize);
-        
+        var resultadoPaginado = await _solicitacaoService.GetAllBySolicitanteAsync(
+            solicitanteId, gestorId, tipo, dataInicial, dataFinal,
+            externalId, sortOrder,
+            pageNumber, pageSize);
+
         return Ok(resultadoPaginado);
     }
 }
