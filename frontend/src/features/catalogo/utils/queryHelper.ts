@@ -1,6 +1,7 @@
 import type { LocationQuery, LocationQueryValue } from 'vue-router'
 import type { CatalogoFilters, Categoria } from '../types'
 import { categorysIdFilterPerName } from './categoriaTransformer'
+import { getFirstQueryValue, getQueryAsArrayOfNumbers, getSortOrderFromQuery } from '@/utils/queryHelper'
 
 export const mapQueryToFilters = (query: LocationQuery): CatalogoFilters => {
   return {
@@ -15,13 +16,6 @@ export const mapQueryToFilters = (query: LocationQuery): CatalogoFilters => {
   }
 }
 
-export const getFirstQueryValue = (value: LocationQueryValue | LocationQueryValue[]): string => {
-  if (Array.isArray(value)) {
-    return value[0] || ''
-  }
-  return value || ''
-}
-
 export const getStatusFromQuery = (value: LocationQueryValue | LocationQueryValue[]): string => {
   if (value === 'true') {
     return 'ativo'
@@ -31,23 +25,6 @@ export const getStatusFromQuery = (value: LocationQueryValue | LocationQueryValu
   }
   return ''
 }
-
-export const getSortOrderFromQuery = (
-  value: LocationQueryValue | LocationQueryValue[],
-): 'asc' | 'desc' | null => {
-  const querySort = getFirstQueryValue(value)
-  if (querySort === 'asc' || querySort === 'desc') {
-    return querySort
-  }
-  return null
-}
-
-export const getQueryAsArrayOfNumbers = (value: unknown): number[] => {
-  if (!value) return []
-  const arr = Array.isArray(value) ? value : [value]
-  return arr.map(Number).filter((n) => !isNaN(n) && Number.isInteger(n))
-}
-
 
 /**
  * Aplica filtros pré-definidos (vindas de props) sobre os filtros da URL.

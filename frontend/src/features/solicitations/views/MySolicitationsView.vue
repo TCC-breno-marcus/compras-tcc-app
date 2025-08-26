@@ -4,7 +4,7 @@ import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import CustomBreadcrumb from '@/components/ui/CustomBreadcrumb.vue'
 import Button from 'primevue/button'
-import { useRoute } from 'vue-router'
+import { useRoute, type LocationQuery } from 'vue-router'
 import { useMySolicitationListStore } from '../stores/mySolicitationList'
 import { storeToRefs } from 'pinia'
 import { formatDate } from '@/utils/dateUtils'
@@ -19,24 +19,19 @@ import Select from 'primevue/select'
 import FloatLabel from 'primevue/floatlabel'
 import type { MySolicitationFilters } from '..'
 import DatePicker from 'primevue/datepicker'
+import MySolicitationsSkeleton from '../components/MySolicitationsSkeleton.vue'
+import { mapQueryToFilters } from '../utils/queryHelper'
 
 const route = useRoute()
 const mySolicitationListStore = useMySolicitationListStore()
 const { solicitations, isLoading, error, totalCount, pageNumber, pageSize, totalPages } =
   storeToRefs(mySolicitationListStore)
 
-watch(
-  () => route.query,
-  async (newQuery) => {
-    mySolicitationListStore.fetchAll()
-  },
-  { immediate: true },
-)
-
 const filter = reactive<MySolicitationFilters>({
-  idFilter: '',
-  typeFilter: '',
-  dateFilter: null,
+  externalId: '',
+  tipo: '',
+  dataInicial: null,
+  dataFinal: null,
   sortOrder: null,
 })
 
@@ -46,10 +41,10 @@ const applyFilters = () => {
   const query: any = {}
 
   // Adiciona os filtros que estiverem preenchidos
-  if (filter.idFilter) query.idFilter = filter.idFilter
-  if (filter.typeFilter) query.typeFilter = filter.typeFilter
-  if (filter.dateFilter) {
-    query.dateFilter = filter.dateFilter.toISOString().split('T')[0]
+  if (filter.externalId) query.externalId = filter.externalId
+  if (filter.tipo) query.tipo = filter.tipo
+  if (filter.dataInicial) {
+    query.dataInicial = filter.dataInicial.toISOString().split('T')[0]
   }
   if (filter.sortOrder) query.sortOrder = filter.sortOrder
 
@@ -64,7 +59,7 @@ const clearFilters = () => {
 }
 
 const columns = [
-  { field: 'id', header: 'ID' },
+  { field: 'externalId', header: 'Código' },
   { field: 'typeDisplay', header: 'Tipo' },
   { field: 'dataCriacao', header: 'Data de Criação' },
   { field: 'itemsCount', header: 'Itens Únicos' },
@@ -100,6 +95,16 @@ const verDetalhes = (id: number) => {
 const goToCreatePage = (type: 'geral' | 'patrimonial') => {
   router.push(`/solicitacoes/criar/${type}`)
 }
+
+watch(
+  () => route.query,
+  async (newQuery) => {
+    const cleanFilters = mapQueryToFilters(newQuery)
+    Object.assign(filter, cleanFilters)
+    mySolicitationListStore.fetchAll(cleanFilters)
+  },
+  { immediate: true },
+)
 </script>
 
 <!-- TODO: ajustar repsonsivdade dessa página -->
@@ -113,7 +118,6 @@ const goToCreatePage = (type: 'geral' | 'patrimonial') => {
     </div>
 
     <div
-      v-if="solicitations.length > 0"
       class="flex align-items-center justify-content-between lg:justify-content-start w-full gap-2"
     >
       <div class="flex flex-wrap align-items-center gap-2">
@@ -121,30 +125,31 @@ const goToCreatePage = (type: 'geral' | 'patrimonial') => {
           <IconField iconPosition="left">
             <InputIcon class="pi pi-search"></InputIcon>
             <InputText
-              v-model="filter.idFilter"
+              v-model="filter.externalId"
               size="small"
               class="w-full"
               inputId="id-search"
               @keyup.enter="applyFilters"
             />
           </IconField>
-          <label for="id-search">Buscar ID</label>
+          <label for="id-search">Código</label>
         </FloatLabel>
 
         <FloatLabel class="w-full sm:w-10rem mt-1 sm:mt-0" variant="on">
           <Select
-            v-model="filter.typeFilter"
+            v-model="filter.tipo"
             :options="typeOptions"
-            inputId="typeFilter-filter"
+            inputId="tipo-filter"
             size="small"
             class="w-full sm:w-10rem"
             :showClear="true"
           />
-          <label for="typeFilter-filter">Tipo</label>
+          <label for="tipo-filter">Tipo</label>
         </FloatLabel>
         <FloatLabel variant="on" class="w-full sm:w-12rem">
+          <!-- todo: ajustar logica de filtrar por data ou intervalo de datas -->
           <DatePicker
-            v-model="filter.dateFilter"
+            v-model="filter.dataInicial"
             dateFormat="dd/mm/yy"
             inputId="date-filter"
             showIcon
@@ -181,8 +186,10 @@ const goToCreatePage = (type: 'geral' | 'patrimonial') => {
       </div>
     </div>
 
+    <MySolicitationsSkeleton v-if="isLoading" />
+
     <DataTable
-      v-if="solicitations.length > 0"
+      v-if="solicitations.length > 0 && !isLoading"
       :value="solicitations"
       tableStyle="min-width: 50rem"
       class="w-full"
@@ -232,13 +239,13 @@ const goToCreatePage = (type: 'geral' | 'patrimonial') => {
       </Column>
     </DataTable>
 
-    <div v-if="solicitations.length === 0" class="text-center p-5">
+    <div v-if="solicitations.length === 0 && !isLoading" class="text-center p-5">
       <div class="flex flex-column align-items-center">
         <i class="pi pi-inbox text-4xl text-color-secondary mb-3"></i>
 
         <h4 class="font-bold mt-0 mb-2">Nenhuma Solicitação Encontrada</h4>
         <p class="text-color-secondary mt-0 mb-4">
-          Clique em um dos botões abaixo para criar sua primeira solicitação.
+          Clique em um dos botões abaixo para criar sua primeira solicitação ou refaça os filtros.
         </p>
 
         <div class="flex align-items-center gap-2">
