@@ -80,6 +80,10 @@ public class SolicitacaoService : ISolicitacaoService
             await _context.Solicitacoes.AddAsync(novaSolicitacao);
             await _context.SaveChangesAsync();
 
+            novaSolicitacao.ExternalId = GenerateExternalId(novaSolicitacao);
+
+            await _context.SaveChangesAsync();
+
             await transaction.CommitAsync();
 
             var respostaDto = new SolicitacaoResultDto
@@ -87,6 +91,7 @@ public class SolicitacaoService : ISolicitacaoService
                 Id = novaSolicitacao.Id,
                 DataCriacao = novaSolicitacao.DataCriacao,
                 JustificativaGeral = novaSolicitacao.JustificativaGeral,
+                ExternalId = novaSolicitacao.ExternalId,
                 Solicitante = new SolicitanteDto
                 {
                     Id = solicitante.Id,
@@ -175,12 +180,18 @@ public class SolicitacaoService : ISolicitacaoService
             await _context.Solicitacoes.AddAsync(novaSolicitacao);
             await _context.SaveChangesAsync();
 
+            novaSolicitacao.ExternalId = GenerateExternalId(novaSolicitacao);
+
+            await _context.SaveChangesAsync();
+
             await transaction.CommitAsync();
 
             var respostaDto = new SolicitacaoResultDto
             {
                 Id = novaSolicitacao.Id,
                 DataCriacao = novaSolicitacao.DataCriacao,
+                ExternalId = novaSolicitacao.ExternalId,
+                JustificativaGeral = null,
                 Solicitante = new SolicitanteDto
                 {
                     Id = solicitante.Id,
@@ -265,6 +276,7 @@ public class SolicitacaoService : ISolicitacaoService
                 (solicitacao is SolicitacaoGeral solicitacaoGeral)
                     ? solicitacaoGeral.JustificativaGeral
                     : null,
+            ExternalId = solicitacao.ExternalId,
             Solicitante = new SolicitanteDto
             {
                 Id = solicitacao.Solicitante.Id,
@@ -294,6 +306,12 @@ public class SolicitacaoService : ISolicitacaoService
 
     public async Task<PaginatedResultDto<SolicitacaoResultDto>> GetAllBySolicitanteAsync(
         long pessoaId,
+        long? gestorId,
+        string? tipo,
+        DateTime? dataInicial,
+        DateTime? dataFinal,
+        string? externalId,
+        string? sortOrder,
         int pageNumber,
         int pageSize
     )
@@ -306,8 +324,40 @@ public class SolicitacaoService : ISolicitacaoService
             .Solicitacoes.Where(s => s.SolicitanteId == solicitante.Id)
             .Include(s => s.Solicitante.Servidor.Pessoa)
             .Include("ItemSolicitacao.Item")
-            .AsNoTracking()
-            .OrderByDescending(s => s.DataCriacao);
+            .AsNoTracking();
+
+        if (gestorId.HasValue)
+        {
+            query = query.Where(s => s.GestorId == gestorId.Value);
+        }
+        if (!string.IsNullOrWhiteSpace(tipo))
+        {
+            query = query.Where(s => EF.Property<string>(s, "TipoSolicitacao") == tipo.ToUpper());
+        }
+        if (dataInicial.HasValue)
+        {
+            var inicioPeriodo = dataInicial.Value.ToUniversalTime().Date;
+            var fimPeriodo = (dataFinal ?? dataInicial).Value.ToUniversalTime().Date.AddDays(1);
+            query = query.Where(s => s.DataCriacao >= inicioPeriodo && s.DataCriacao < fimPeriodo);
+        }
+        else if (dataFinal.HasValue)
+        {
+            var fimPeriodo = dataFinal.Value.ToUniversalTime().Date.AddDays(1);
+            query = query.Where(s => s.DataCriacao < fimPeriodo);
+        }
+        if (!string.IsNullOrWhiteSpace(externalId))
+        {
+            query = query.Where(s => s.ExternalId == externalId);
+        }
+
+        if (sortOrder?.ToLower() == "asc")
+        {
+            query = query.OrderBy(s => s.DataCriacao);
+        }
+        else
+        {
+            query = query.OrderByDescending(s => s.DataCriacao);
+        }
 
         var totalCount = await query.CountAsync();
         var solicitacoesPaginadas = await query
@@ -322,6 +372,7 @@ public class SolicitacaoService : ISolicitacaoService
                 DataCriacao = solicitacao.DataCriacao,
                 JustificativaGeral =
                     (solicitacao is SolicitacaoGeral sg) ? sg.JustificativaGeral : null,
+                ExternalId = solicitacao.ExternalId,
                 Solicitante = new SolicitanteDto
                 {
                     Id = solicitacao.Solicitante.Id,
@@ -358,5 +409,19 @@ public class SolicitacaoService : ISolicitacaoService
             pageNumber,
             pageSize
         );
+    }
+
+    private string GenerateExternalId(Solicitacao solicitacao)
+    {
+        var ano = solicitacao.DataCriacao.ToString("yyyy");
+        var idFormatado = solicitacao.Id.ToString("D4");
+        string prefixo = solicitacao switch
+        {
+            SolicitacaoPatrimonial => "SP",
+            SolicitacaoGeral => "SG",
+            _ => "SO",
+        };
+
+        return $"{prefixo}-{ano}-{idFormatado}";
     }
 }

@@ -11,6 +11,12 @@ public interface ISolicitacaoService
     );
     Task<PaginatedResultDto<SolicitacaoResultDto>> GetAllBySolicitanteAsync(
         long pessoaId,
+        long? gestorId,
+        string? tipo,
+        DateTime? dataInicial,
+        DateTime? dataFinal,
+        string? externalId,
+        string? sortOrder,
         int pageNumber,
         int pageSize
     );
