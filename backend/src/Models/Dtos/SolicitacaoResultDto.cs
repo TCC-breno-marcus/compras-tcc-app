@@ -4,6 +4,7 @@ namespace Models.Dtos
     {
         public long Id { get; set; }
         public DateTime DataCriacao { get; set; }
+        public string? ExternalId { get; set; }
         public string? JustificativaGeral { get; set; }
         public required SolicitanteDto Solicitante { get; set; }
         public List<ItemSolicitacaoResultDto> Itens { get; set; } = new();

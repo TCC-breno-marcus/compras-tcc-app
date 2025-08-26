@@ -12,6 +12,9 @@ namespace ComprasTccApp.Models.Entities.Solicitacoes
         public long SolicitanteId { get; set; }
         public long? GestorId { get; set; }
 
+        [StringLength(100)]
+        public string? ExternalId { get; set; }
+
         public Solicitante Solicitante { get; set; } = null!;
 
         public Gestor? Gestor { get; set; }
