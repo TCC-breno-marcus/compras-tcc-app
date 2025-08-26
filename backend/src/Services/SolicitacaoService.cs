@@ -51,8 +51,6 @@ public class SolicitacaoService : ISolicitacaoService
                 JustificativaGeral = dto.JustificativaGeral,
             };
 
-            novaSolicitacao.ExternalId = GenerateExternalId(novaSolicitacao);
-
             var itensDaSolicitacao = new List<SolicitacaoItem>();
 
             foreach (var itemDto in dto.Itens)
@@ -82,6 +80,10 @@ public class SolicitacaoService : ISolicitacaoService
             await _context.Solicitacoes.AddAsync(novaSolicitacao);
             await _context.SaveChangesAsync();
 
+            novaSolicitacao.ExternalId = GenerateExternalId(novaSolicitacao);
+
+            await _context.SaveChangesAsync();
+
             await transaction.CommitAsync();
 
             var respostaDto = new SolicitacaoResultDto
@@ -89,6 +91,7 @@ public class SolicitacaoService : ISolicitacaoService
                 Id = novaSolicitacao.Id,
                 DataCriacao = novaSolicitacao.DataCriacao,
                 JustificativaGeral = novaSolicitacao.JustificativaGeral,
+                ExternalId = novaSolicitacao.ExternalId,
                 Solicitante = new SolicitanteDto
                 {
                     Id = solicitante.Id,
@@ -99,11 +102,15 @@ public class SolicitacaoService : ISolicitacaoService
                 Itens = novaSolicitacao
                     .ItemSolicitacao.Select(item => new ItemSolicitacaoResultDto
                     {
-                        ItemId = item.ItemId,
-                        NomeDoItem = item.Item.Nome,
+                        Id = item.ItemId,
+                        Nome = item.Item.Nome,
                         CatMat = item.Item.CatMat,
                         Quantidade = item.Quantidade,
-                        ValorUnitario = item.ValorUnitario,
+                        // TODO: o link abaixo deve estar em variável de ambiente
+                        LinkImagem = string.IsNullOrWhiteSpace(item.Item.LinkImagem)
+                            ? item.Item.LinkImagem
+                            : $"http://localhost:8088/images/{item.Item.LinkImagem}",
+                        PrecoSugerido = item.ValorUnitario,
                         Justificativa = item.Justificativa,
                     })
                     .ToList(),
@@ -144,8 +151,6 @@ public class SolicitacaoService : ISolicitacaoService
                 DataCriacao = DateTime.UtcNow,
             };
 
-            novaSolicitacao.ExternalId = GenerateExternalId(novaSolicitacao);
-
             var itensDaSolicitacao = new List<SolicitacaoItem>();
 
             foreach (var itemDto in dto.Itens)
@@ -175,12 +180,18 @@ public class SolicitacaoService : ISolicitacaoService
             await _context.Solicitacoes.AddAsync(novaSolicitacao);
             await _context.SaveChangesAsync();
 
+            novaSolicitacao.ExternalId = GenerateExternalId(novaSolicitacao);
+
+            await _context.SaveChangesAsync();
+
             await transaction.CommitAsync();
 
             var respostaDto = new SolicitacaoResultDto
             {
                 Id = novaSolicitacao.Id,
                 DataCriacao = novaSolicitacao.DataCriacao,
+                ExternalId = novaSolicitacao.ExternalId,
+                JustificativaGeral = null,
                 Solicitante = new SolicitanteDto
                 {
                     Id = solicitante.Id,
@@ -191,11 +202,15 @@ public class SolicitacaoService : ISolicitacaoService
                 Itens = novaSolicitacao
                     .ItemSolicitacao.Select(item => new ItemSolicitacaoResultDto
                     {
-                        ItemId = item.ItemId,
-                        NomeDoItem = item.Item.Nome,
+                        Id = item.ItemId,
+                        Nome = item.Item.Nome,
                         CatMat = item.Item.CatMat,
                         Quantidade = item.Quantidade,
-                        ValorUnitario = item.ValorUnitario,
+                        // TODO: o link abaixo deve estar em variável de ambiente
+                        LinkImagem = string.IsNullOrWhiteSpace(item.Item.LinkImagem)
+                            ? item.Item.LinkImagem
+                            : $"http://localhost:8088/images/{item.Item.LinkImagem}",
+                        PrecoSugerido = item.ValorUnitario,
                         Justificativa = item.Justificativa,
                     })
                     .ToList(),
@@ -261,6 +276,7 @@ public class SolicitacaoService : ISolicitacaoService
                 (solicitacao is SolicitacaoGeral solicitacaoGeral)
                     ? solicitacaoGeral.JustificativaGeral
                     : null,
+            ExternalId = solicitacao.ExternalId,
             Solicitante = new SolicitanteDto
             {
                 Id = solicitacao.Solicitante.Id,
@@ -271,11 +287,15 @@ public class SolicitacaoService : ISolicitacaoService
             Itens = solicitacao
                 .ItemSolicitacao.Select(item => new ItemSolicitacaoResultDto
                 {
-                    ItemId = item.ItemId,
-                    NomeDoItem = item.Item.Nome,
+                    Id = item.ItemId,
+                    Nome = item.Item.Nome,
                     CatMat = item.Item.CatMat,
                     Quantidade = item.Quantidade,
-                    ValorUnitario = item.ValorUnitario,
+                    // TODO: o link abaixo deve estar em variável de ambiente
+                    LinkImagem = string.IsNullOrWhiteSpace(item.Item.LinkImagem)
+                        ? item.Item.LinkImagem
+                        : $"http://localhost:8088/images/{item.Item.LinkImagem}",
+                    PrecoSugerido = item.ValorUnitario,
                     Justificativa = item.Justificativa,
                 })
                 .ToList(),
@@ -285,7 +305,7 @@ public class SolicitacaoService : ISolicitacaoService
     }
 
     public async Task<PaginatedResultDto<SolicitacaoResultDto>> GetAllBySolicitanteAsync(
-        long solicitanteId,
+        long pessoaId,
         long? gestorId,
         string? tipo,
         DateTime? dataInicial,
@@ -293,12 +313,15 @@ public class SolicitacaoService : ISolicitacaoService
         string? externalId,
         string? sortOrder,
         int pageNumber,
-        int pageSize)
+        int pageSize
+    )
     {
-        _logger.LogInformation("Buscando solicitações para o solicitante ID: {Id}", solicitanteId);
+        var (servidor, solicitante) = await GetSolicitanteInfoAsync(pessoaId);
 
-        var query = _context.Solicitacoes
-            .Where(s => s.SolicitanteId == solicitanteId)
+        _logger.LogInformation("Buscando solicitações para o solicitante ID: {Id}", solicitante.Id);
+
+        var query = _context
+            .Solicitacoes.Where(s => s.SolicitanteId == solicitante.Id)
             .Include(s => s.Solicitante.Servidor.Pessoa)
             .Include("ItemSolicitacao.Item")
             .AsNoTracking();
@@ -313,11 +336,14 @@ public class SolicitacaoService : ISolicitacaoService
         }
         if (dataInicial.HasValue)
         {
-            query = query.Where(s => s.DataCriacao.Date >= dataInicial.Value.Date);
+            var inicioPeriodo = dataInicial.Value.ToUniversalTime().Date;
+            var fimPeriodo = (dataFinal ?? dataInicial).Value.ToUniversalTime().Date.AddDays(1);
+            query = query.Where(s => s.DataCriacao >= inicioPeriodo && s.DataCriacao < fimPeriodo);
         }
-        if (dataFinal.HasValue)
+        else if (dataFinal.HasValue)
         {
-            query = query.Where(s => s.DataCriacao.Date < dataFinal.Value.Date.AddDays(1));
+            var fimPeriodo = dataFinal.Value.ToUniversalTime().Date.AddDays(1);
+            query = query.Where(s => s.DataCriacao < fimPeriodo);
         }
         if (!string.IsNullOrWhiteSpace(externalId))
         {
@@ -339,17 +365,14 @@ public class SolicitacaoService : ISolicitacaoService
             .Take(pageSize)
             .ToListAsync();
 
-        var listaDeDtos = solicitacoesPaginadas.Select(solicitacao =>
-        {
-            var itensDaSolicitacao = (solicitacao is SolicitacaoGeral geral) ? geral.ItemSolicitacao :
-                                    (solicitacao is SolicitacaoPatrimonial patrimonial) ? patrimonial.ItemSolicitacao :
-                                    new List<SolicitacaoItem>();
-
-            return new SolicitacaoResultDto
+        var listaDeDtos = solicitacoesPaginadas
+            .Select(solicitacao => new SolicitacaoResultDto
             {
                 Id = solicitacao.Id,
                 DataCriacao = solicitacao.DataCriacao,
-                JustificativaGeral = (solicitacao is SolicitacaoGeral sg) ? sg.JustificativaGeral : null,
+                JustificativaGeral =
+                    (solicitacao is SolicitacaoGeral sg) ? sg.JustificativaGeral : null,
+                ExternalId = solicitacao.ExternalId,
                 Solicitante = new SolicitanteDto
                 {
                     Id = solicitacao.Solicitante.Id,
@@ -357,33 +380,48 @@ public class SolicitacaoService : ISolicitacaoService
                     Email = solicitacao.Solicitante.Servidor.Pessoa.Email,
                     Departamento = solicitacao.Solicitante.Unidade.ToFriendlyString(),
                 },
-                Itens = itensDaSolicitacao.Select(item => new ItemSolicitacaoResultDto
-                {
-                    ItemId = item.ItemId,
-                    NomeDoItem = item.Item.Nome,
-                    CatMat = item.Item.CatMat,
-                    Quantidade = item.Quantidade,
-                    ValorUnitario = item.ValorUnitario,
-                    Justificativa = item.Justificativa,
-                }).ToList(),
-            };
-        }).ToList();
+                Itens = (
+                    (solicitacao is SolicitacaoGeral geral) ? geral.ItemSolicitacao
+                    : (solicitacao is SolicitacaoPatrimonial patrimonial)
+                        ? patrimonial.ItemSolicitacao
+                    : new List<SolicitacaoItem>()
+                )
+                    .Select(item => new ItemSolicitacaoResultDto
+                    {
+                        Id = item.ItemId,
+                        Nome = item.Item.Nome,
+                        CatMat = item.Item.CatMat,
+                        Quantidade = item.Quantidade,
+                        // TODO: o link abaixo deve estar em variável de ambiente
+                        LinkImagem = string.IsNullOrWhiteSpace(item.Item.LinkImagem)
+                            ? item.Item.LinkImagem
+                            : $"http://localhost:8088/images/{item.Item.LinkImagem}",
+                        PrecoSugerido = item.ValorUnitario,
+                        Justificativa = item.Justificativa,
+                    })
+                    .ToList(),
+            })
+            .ToList();
 
-        return new PaginatedResultDto<SolicitacaoResultDto>(listaDeDtos, totalCount, pageNumber, pageSize);
+        return new PaginatedResultDto<SolicitacaoResultDto>(
+            listaDeDtos,
+            totalCount,
+            pageNumber,
+            pageSize
+        );
     }
 
     private string GenerateExternalId(Solicitacao solicitacao)
     {
-        var ano = solicitacao.DataCriacao.ToString("yy");
-        var mes = solicitacao.DataCriacao.ToString("MM");
-
-        var idFormatado = solicitacao.Id.ToString("D6");
-
-        if (solicitacao is SolicitacaoPatrimonial)
+        var ano = solicitacao.DataCriacao.ToString("yyyy");
+        var idFormatado = solicitacao.Id.ToString("D4");
+        string prefixo = solicitacao switch
         {
-            return $"SP{ano}{mes}{idFormatado}";
-        }
+            SolicitacaoPatrimonial => "SP",
+            SolicitacaoGeral => "SG",
+            _ => "SO",
+        };
 
-        return $"S{ano}{mes}{idFormatado}";
+        return $"{prefixo}-{ano}-{idFormatado}";
     }
 }

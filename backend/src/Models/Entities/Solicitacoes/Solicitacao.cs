@@ -24,5 +24,4 @@ namespace ComprasTccApp.Models.Entities.Solicitacoes
 
         public List<SolicitacaoItem> ItemSolicitacao { get; set; } = new();
     }
-
 }

@@ -98,12 +98,19 @@ public class SolicitacaoController : ControllerBase
         [FromQuery] int pageSize = 10
     )
     {
-        var solicitanteId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var pessoaId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
         var resultadoPaginado = await _solicitacaoService.GetAllBySolicitanteAsync(
-            solicitanteId, gestorId, tipo, dataInicial, dataFinal,
-            externalId, sortOrder,
-            pageNumber, pageSize);
+            pessoaId,
+            gestorId,
+            tipo,
+            dataInicial,
+            dataFinal,
+            externalId,
+            sortOrder,
+            pageNumber,
+            pageSize
+        );
 
         return Ok(resultadoPaginado);
     }
