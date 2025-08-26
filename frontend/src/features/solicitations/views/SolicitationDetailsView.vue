@@ -71,7 +71,7 @@ onMounted(() => {
 
 <!-- TODO: esse componente está grande. Tentar quebrar mais ele -->
 <!-- TODO: UM SOLICITANTE SÓ PODE VISUALIZAR OS DETALHES DE SOLICITAÇÕES FEITAS PELO SEU DEPARTAMENTO-->
-<!-- TODO: deve ter um botão para adicionar itens ao pedido. O botão irá abrir um modal que irá usar o componente CatalogoBrowser -->
+
 <template>
   <SolicitationDetailsSkeleton v-if="isLoading" />
   <div class="p-2" v-if="currentSolicitation">

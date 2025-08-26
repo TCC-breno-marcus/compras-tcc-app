@@ -96,6 +96,10 @@ const computedSort = computed(() => {
 const verDetalhes = (id: number) => {
   router.push(`/solicitacoes/${id}`)
 }
+
+const goToCreatePage = (type: 'geral' | 'patrimonial') => {
+  router.push(`/solicitacoes/criar/${type}`)
+}
 </script>
 
 <!-- TODO: ajustar repsonsivdade dessa página -->
@@ -109,6 +113,7 @@ const verDetalhes = (id: number) => {
     </div>
 
     <div
+      v-if="solicitations.length > 0"
       class="flex align-items-center justify-content-between lg:justify-content-start w-full gap-2"
     >
       <div class="flex flex-wrap align-items-center gap-2">
@@ -177,6 +182,7 @@ const verDetalhes = (id: number) => {
     </div>
 
     <DataTable
+      v-if="solicitations.length > 0"
       :value="solicitations"
       tableStyle="min-width: 50rem"
       class="w-full"
@@ -225,6 +231,27 @@ const verDetalhes = (id: number) => {
         </template>
       </Column>
     </DataTable>
+
+    <div v-if="solicitations.length === 0" class="text-center p-5">
+      <div class="flex flex-column align-items-center">
+        <i class="pi pi-inbox text-4xl text-color-secondary mb-3"></i>
+
+        <h4 class="font-bold mt-0 mb-2">Nenhuma Solicitação Encontrada</h4>
+        <p class="text-color-secondary mt-0 mb-4">
+          Clique em um dos botões abaixo para criar sua primeira solicitação.
+        </p>
+
+        <div class="flex align-items-center gap-2">
+          <Button label="Geral" icon="pi pi-plus" @click="goToCreatePage('geral')" size="small" />
+          <Button
+            label="Patrimonial"
+            icon="pi pi-plus"
+            @click="goToCreatePage('patrimonial')"
+            size="small"
+          />
+        </div>
+      </div>
+    </div>
 
     <CustomPaginator
       v-if="solicitations.length > 0 && !isLoading"

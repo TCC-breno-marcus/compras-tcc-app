@@ -25,6 +25,11 @@ const props = defineProps({
     type: Number,
     required: true,
   },
+  responsiveBreakpoint: {
+    type: String,
+    validator: (value) => ['sm', 'md', 'lg', 'xl', 'none'].includes(value),
+    default: 'sm',
+  },
 })
 
 const itemInicial = computed(() => (props.pageNumber - 1) * props.pageSize + 1)
@@ -91,10 +96,20 @@ const opcoesItens = ref([
 watch(itensPorPagina, () => {
   handleNavigation(1) // Voltar para primeira página
 })
+
+const containerClasses = computed(() => {
+  const baseClasses = 'flex flex-column align-items-center justify-content-between w-full'
+  if (props.responsiveBreakpoint === 'none') {
+    return baseClasses
+  }
+  const responsiveClass = `${props.responsiveBreakpoint}:flex-row`
+
+  return `${baseClasses} ${responsiveClass}`
+})
 </script>
 
 <template>
-  <div class="flex flex-column xl:flex-row align-items-center justify-content-between w-full">
+  <div :class="containerClasses">
     <div class="caption-list text-center">
       <small> Exibindo {{ itemInicial }} - {{ itemFinal }} de {{ totalCount }} resultados </small>
     </div>

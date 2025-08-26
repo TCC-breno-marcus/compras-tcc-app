@@ -178,6 +178,7 @@ defineExpose({
       :has-next-page="pageNumber < totalPages"
       :page-size="pageSize"
       :page-number="pageNumber"
+      :responsive-breakpoint="solicitationContext ? 'xl' : 'md'"
     />
 
     <ItemDetailsDialog
