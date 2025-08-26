@@ -77,7 +77,7 @@ onMounted(() => {
   <div class="p-2" v-if="currentSolicitation">
     <!-- TODO: ajustar responsividade dessa div abaixo  -->
     <div class="flex align-items-center justify-content-between mb-2">
-      <CustomBreadcrumb />
+      <CustomBreadcrumb :dynamic-label="currentSolicitation?.externalId" />
     </div>
     <div class="flex align-items-center justify-content-between mb-2">
       <h3 class="m-0">Detalhes da Solicitação {{ currentSolicitation.externalId }}</h3>
