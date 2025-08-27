@@ -226,6 +226,115 @@ public class SolicitacaoService : ISolicitacaoService
         }
     }
 
+    public async Task<SolicitacaoResultDto?> EditarSolicitacaoAsync(
+        long id,
+        long pessoaId,
+        bool isAdmin,
+        UpdateSolicitacaoDto dto
+    )
+    {
+        await using var transaction = await _context.Database.BeginTransactionAsync();
+        try
+        {
+            var prazoSubmissao = await _configuracaoService.GetPrazoSubmissaoAsync();
+            if (prazoSubmissao.HasValue && DateTime.UtcNow > prazoSubmissao.Value)
+            {
+                string prazoSubmissaoFormatado = prazoSubmissao.Value.ToString(
+                    "dd/MM/yyyy 'às' HH:mm"
+                );
+                throw new InvalidOperationException(
+                    $"O prazo para a criação de solicitações encerrou em {prazoSubmissaoFormatado}."
+                );
+            }
+
+            var solicitacaoDoBanco = await _context
+                .Solicitacoes.Include(s => s.ItemSolicitacao)
+                .FirstOrDefaultAsync(s => s.Id == id);
+
+            if (solicitacaoDoBanco == null)
+                return null;
+
+            var (servidor, solicitante) = await GetSolicitanteInfoAsync(pessoaId);
+
+            if (
+                solicitante == null
+                || solicitacaoDoBanco.SolicitanteId != solicitante.Id && !isAdmin
+            )
+            {
+                throw new UnauthorizedAccessException(
+                    "Você não tem permissão para editar esta solicitação."
+                );
+            }
+
+            if (
+                solicitacaoDoBanco is SolicitacaoGeral solicitacaoGeral
+                && dto.JustificativaGeral != null
+            )
+            {
+                solicitacaoGeral.JustificativaGeral = dto.JustificativaGeral;
+            }
+
+            var idsDosItensRecebidos = dto.Itens.Select(i => i.ItemId).ToHashSet();
+            var itensAtuaisNoBanco = solicitacaoDoBanco.ItemSolicitacao.ToList();
+
+            var itensParaRemover = itensAtuaisNoBanco
+                .Where(i => !idsDosItensRecebidos.Contains(i.ItemId))
+                .ToList();
+            _context.SolicitacaoItens.RemoveRange(itensParaRemover);
+
+            foreach (var itemDto in dto.Itens)
+            {
+                var itemExistente = itensAtuaisNoBanco.FirstOrDefault(i =>
+                    i.ItemId == itemDto.ItemId
+                );
+
+                if (itemExistente != null)
+                {
+                    itemExistente.Quantidade = itemDto.Quantidade;
+                    itemExistente.ValorUnitario = itemDto.ValorUnitario;
+                    if (solicitacaoDoBanco is SolicitacaoPatrimonial)
+                    {
+                        itemExistente.Justificativa = itemDto.Justificativa;
+                    }
+                }
+                else
+                {
+                    var itemDoCatalogo = await _context.Items.FindAsync(itemDto.ItemId);
+                    if (itemDoCatalogo == null || !itemDoCatalogo.IsActive)
+                        throw new Exception(
+                            $"Item com ID {itemDto.ItemId} não existe ou está inativo."
+                        );
+
+                    solicitacaoDoBanco.ItemSolicitacao.Add(
+                        new SolicitacaoItem
+                        {
+                            Solicitacao = solicitacaoDoBanco,
+                            Item = itemDoCatalogo,
+                            ItemId = itemDto.ItemId,
+                            Quantidade = itemDto.Quantidade,
+                            ValorUnitario = itemDto.ValorUnitario,
+                            Justificativa =
+                                (solicitacaoDoBanco is SolicitacaoPatrimonial)
+                                    ? itemDto.Justificativa
+                                    : null,
+                        }
+                    );
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            return await GetByIdAsync(id);
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync();
+            _logger.LogError(ex, "Erro ao editar solicitação com ID {Id}", id);
+            throw;
+        }
+    }
+
     private async Task<(Servidor servidor, Solicitante solicitante)> GetSolicitanteInfoAsync(
         long pessoaId
     )

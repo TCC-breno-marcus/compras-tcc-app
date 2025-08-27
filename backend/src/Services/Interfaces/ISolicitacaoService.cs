@@ -9,6 +9,13 @@ public interface ISolicitacaoService
         CreateSolicitacaoPatrimonialDto dto,
         long pessoaId
     );
+
+    Task<SolicitacaoResultDto?> EditarSolicitacaoAsync(
+        long id,
+        long pessoaId,
+        bool isAdmin,
+        UpdateSolicitacaoDto dto
+    );
     Task<PaginatedResultDto<SolicitacaoResultDto>> GetAllBySolicitanteAsync(
         long pessoaId,
         long? gestorId,

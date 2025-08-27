@@ -73,6 +73,36 @@ public class SolicitacaoController : ControllerBase
         }
     }
 
+    [HttpPatch("{id}")]
+    [Authorize(Roles = "Solicitante,Admin")]
+    public async Task<IActionResult> EditarSolicitacao(long id, [FromBody] UpdateSolicitacaoDto dto)
+    {
+        try
+        {
+            var pessoaId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var isAdmin = User.IsInRole("Admin");
+            var solicitacaoAtualizada = await _solicitacaoService.EditarSolicitacaoAsync(
+                id,
+                pessoaId,
+                isAdmin,
+                dto
+            );
+            if (solicitacaoAtualizada == null)
+            {
+                return NotFound(new { message = "Solicitação não encontrada." });
+            }
+            return Ok(solicitacaoAtualizada);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = $"Ocorreu um erro interno: {ex.Message}" });
+        }
+    }
+
     [HttpGet("{id}", Name = "GetSolicitacaoById")]
     [Authorize(Roles = "Solicitante,Gestor,Admin")]
     public async Task<IActionResult> GetSolicitacaoById([FromRoute] long id)
