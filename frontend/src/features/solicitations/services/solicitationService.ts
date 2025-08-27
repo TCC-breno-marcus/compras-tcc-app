@@ -55,8 +55,14 @@ export const solicitationService: ISolicitationService = {
 
     if (filters) {
       Object.entries(filters).forEach(([key, value]) => {
-        if ((key === 'dataInicial' || key === 'dataFinal') && value instanceof Date) {
-          params.append(key, value.toISOString().split('T')[0])
+        if (key === 'dateRange' && Array.isArray(value) && value.length > 0) {
+          if (value[0]) {
+            params.append('dataInicial', value[0].toISOString().split('T')[0])
+          }
+
+          if (value[1]) {
+            params.append('dataFinal', value[1].toISOString().split('T')[0])
+          }
         } else {
           if (value != null && value !== '') {
             params.set(key, String(value))

@@ -99,7 +99,8 @@ export interface SolicitationListItem extends Solicitation {
 export interface MySolicitationFilters {
   externalId: string
   tipo: 'Geral' | 'Patrimonial' | ''
-  dataInicial: Date | null
-  dataFinal: Date | null
+  dateRange: (Date | null)[] | Date | null
   sortOrder: string | null
+  pageSize: string
+  pageNumber: string
 }

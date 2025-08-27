@@ -30,9 +30,10 @@ const { solicitations, isLoading, error, totalCount, pageNumber, pageSize, total
 const filter = reactive<MySolicitationFilters>({
   externalId: '',
   tipo: '',
-  dataInicial: null,
-  dataFinal: null,
+  dateRange: null,
   sortOrder: null,
+  pageNumber: '1',
+  pageSize: '10'
 })
 
 const typeOptions = ref(['Geral', 'Patrimonial'])
@@ -43,9 +44,20 @@ const applyFilters = () => {
   // Adiciona os filtros que estiverem preenchidos
   if (filter.externalId) query.externalId = filter.externalId
   if (filter.tipo) query.tipo = filter.tipo
-  if (filter.dataInicial) {
-    query.dataInicial = filter.dataInicial.toISOString().split('T')[0]
+
+  if (filter.dateRange) {
+    if (Array.isArray(filter.dateRange)) {
+      if (filter.dateRange[0]) {
+        query.dataInicial = filter.dateRange[0].toISOString().split('T')[0]
+      }
+      if (filter.dateRange[1]) {
+        query.dataFinal = filter.dateRange[1].toISOString().split('T')[0]
+      }
+    } else {
+      query.dataInicial = filter.dateRange.toISOString().split('T')[0]
+    }
   }
+
   if (filter.sortOrder) query.sortOrder = filter.sortOrder
 
   // Reseta para a primeira página
@@ -80,12 +92,12 @@ const toggleSortDirection = () => {
 
 const computedSort = computed(() => {
   if (filter.sortOrder === 'asc') {
-    return { text: 'Ordenar de A-Z', icon: 'pi pi-sort-alpha-down' }
+    return { text: 'Mais Antigos', icon: 'pi pi-sort-amount-up' }
   }
   if (filter.sortOrder === 'desc') {
-    return { text: 'Ordenar de Z-A', icon: 'pi pi-sort-alpha-up' }
+    return { text: 'Mais Recentes', icon: 'pi pi-sort-amount-down' }
   }
-  return { text: 'Não Ordenar', icon: 'pi pi-sort-alt' }
+  return { text: 'Ordenar por Data', icon: 'pi pi-sort-alt' }
 })
 
 const verDetalhes = (id: number) => {
@@ -146,15 +158,17 @@ watch(
           />
           <label for="tipo-filter">Tipo</label>
         </FloatLabel>
-        <FloatLabel variant="on" class="w-full sm:w-12rem">
-          <!-- todo: ajustar logica de filtrar por data ou intervalo de datas -->
+        <FloatLabel variant="on" class="w-full sm:w-14rem">
           <DatePicker
-            v-model="filter.dataInicial"
+            v-model="filter.dateRange"
+            selectionMode="range"
+            :manualInput="false"
             dateFormat="dd/mm/yy"
             inputId="date-filter"
             showIcon
-            class="w-full sm:w-12rem"
+            class="w-full sm:w-14rem"
             iconDisplay="input"
+            size="small"
           />
           <label for="date-filter">Data de Criação</label>
         </FloatLabel>
@@ -162,10 +176,10 @@ watch(
         <Button
           :icon="computedSort.icon"
           @click="toggleSortDirection"
-          label="Ordem"
+          :label="computedSort.text"
           outlined
           size="small"
-          aria-label="Ordem"
+          aria-label="Ordenar"
           v-tooltip.top="computedSort.text"
         />
         <Button
