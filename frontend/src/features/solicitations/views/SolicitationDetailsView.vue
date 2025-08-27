@@ -34,11 +34,15 @@ const { user } = storeToRefs(authStore)
 const solicitationStore = useSolicitationStore()
 const { currentSolicitation, isLoading, error } = storeToRefs(solicitationStore)
 
-const showDeadlineWarning = computed(() => {
+const deadlineHasExpired = computed(() => {
   if (deadline.value) {
-    return new Date() < deadline.value
+    return new Date() > deadline.value
   }
   return false
+})
+
+const loggedUserCreatedIt = computed(() => {
+  return currentSolicitation.value?.solicitante.departamento === user.value?.departamento
 })
 
 const isEditing = ref<boolean>(false)
@@ -69,41 +73,35 @@ onMounted(() => {
 })
 </script>
 
-<!-- TODO: esse componente está grande. Tentar quebrar mais ele -->
+<!-- TODO: componentizar mais esse componente -->
 <!-- TODO: UM SOLICITANTE SÓ PODE VISUALIZAR OS DETALHES DE SOLICITAÇÕES FEITAS PELO SEU DEPARTAMENTO-->
 
 <template>
   <SolicitationDetailsSkeleton v-if="isLoading" />
   <div class="p-2" v-if="currentSolicitation">
-    <!-- TODO: ajustar responsividade dessa div abaixo  -->
     <div class="flex align-items-center justify-content-between mb-2">
       <CustomBreadcrumb :dynamic-label="currentSolicitation?.externalId" />
     </div>
-    <div class="flex align-items-center justify-content-between mb-2">
+    <div
+      class="flex flex-column md:flex-row md:align-items-center md:justify-content-between mb-2 gap-2 md:gap-0"
+    >
       <h3 class="m-0">Detalhes da Solicitação {{ currentSolicitation.externalId }}</h3>
-      <div class="flex gap-2">
+      <div class="flex justify-content-end gap-2">
         <Message
-          v-if="showDeadlineWarning"
+          v-if="loggedUserCreatedIt"
           icon="pi pi-info-circle"
-          severity="warn"
+          :severity="deadlineHasExpired ? 'error' : 'warn'"
           size="small"
           :closable="false"
         >
-          Prazo final para ajustes: {{ formatDate(deadline, 'short') }}
+          {{
+            deadlineHasExpired
+              ? 'O prazo final para ajustes foi encerrado.'
+              : `Prazo final para ajustes: ${formatDate(deadline, 'short')}`
+          }}
         </Message>
-        <Message
-          v-else="showDeadlineWarning"
-          icon="pi pi-info-circle"
-          severity="error"
-          size="small"
-          :closable="false"
-        >
-          O prazo final para ajustes foi encerrado.
-        </Message>
-
-        <!-- TODO: só pode editar se a solicitação foi feita pelo próprio usuário logado e também se ainda está dentro do prazo de edição-->
         <Button
-          v-if="!isEditing"
+          v-if="!isEditing && !deadlineHasExpired && loggedUserCreatedIt"
           icon="pi pi-pencil"
           label="Editar"
           size="small"

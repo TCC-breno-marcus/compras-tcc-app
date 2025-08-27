@@ -119,7 +119,6 @@ watch(
 )
 </script>
 
-<!-- TODO: ajustar repsonsivdade dessa página -->
 <template>
   <div class="flex flex-column w-full h-full align-items-center p-2 gap-3">
     <div class="flex w-full">
@@ -246,7 +245,7 @@ watch(
             text
             rounded
             aria-label="Ver Detalhes"
-            v-tooltip="'Ver Detalhes'"
+            v-tooltip.left="'Ver Detalhes'"
             @click="verDetalhes(slotProps.data.id)"
           />
         </template>
