@@ -9,6 +9,10 @@ interface BreadcrumbItem {
   isLast: boolean
 }
 
+const props = defineProps<{
+  dynamicLabel?: string
+}>()
+
 const route = useRoute()
 
 const home = ref({
@@ -27,12 +31,22 @@ const routeNamesMap: { [key: string]: { label: string; route?: string } } = {
 }
 
 watch(
-  () => route.path,
-  (newPath) => {
+  [() => route.path, () => props.dynamicLabel],
+  ([newPath, newLabel]) => {
     const pathSegments = newPath.split('/').filter((p) => p)
     items.value = pathSegments.map((segment, index) => {
-      const mapping = routeNamesMap[segment]
       const isLast = index === pathSegments.length - 1
+      const isDynamicSegment = !isNaN(Number(segment))
+
+      if (isLast && isDynamicSegment && newLabel) {
+        return {
+          label: newLabel,
+          route: undefined,
+          isLast: true,
+        }
+      }
+
+      const mapping = routeNamesMap[segment]
       return {
         label: mapping ? mapping.label : segment,
         route: mapping && mapping.route ? mapping.route : undefined,

@@ -5,7 +5,7 @@ import { jwtDecode } from 'jwt-decode'
  * @param token O token JWT.
  * @returns 'true' se o token estiver expirado, 'false' caso contrário.
  */
-export function isTokenExpired(token: string | null): boolean {
+export const isTokenExpired = (token: string | null): boolean => {
   if (!token) {
     return true
   }

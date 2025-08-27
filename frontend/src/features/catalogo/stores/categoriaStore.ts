@@ -1,5 +1,3 @@
-// src/features/management/stores/catalogoStore.ts
-
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { Categoria, CategoriaParams } from '../types'
@@ -18,7 +16,7 @@ export const useCategoriaStore = defineStore('categoria', () => {
    * Busca as categorias de itens na API e atualiza o estado.
    * @param filters Os parâmetros de filtro.
    */
-  async function fetch(filters?: CategoriaParams) {
+  const fetch = async (filters?: CategoriaParams) => {
     // Categorias já carregadas, pulando a chamada de API.
     if (!filters && categorias.value.length > 0) {
       return

@@ -1,54 +1,109 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+import type { Solicitation } from '@/features/solicitations'
+import { solicitationService } from '../services/solicitationService'
+import { dataHasBeenChanged } from '@/utils/objectUtils'
 import type { Item } from '@/features/catalogo/types'
-import type { SolicitationItem } from '@/features/solicitations'
 
+/**
+ * Store para gerenciar estados da view Detalhes da Solicitação
+ */
 export const useSolicitationStore = defineStore('solicitation', () => {
-  const solicitationItems = ref<SolicitationItem[]>([])
-  const justification = ref<string>('')
-  const solicitationType = ref<'geral' | 'patrimonial' | null>(null)
+  const currentSolicitation = ref<Solicitation | null>(null)
+  const currentSolicitationBackup = ref<Solicitation | null>(null)
+  const isLoading = ref(false)
+  const error = ref<string | null>(null)
 
-  function addItem(item: Item, type: 'geral' | 'patrimonial') {
-    if (solicitationItems.value.length === 0) {
-      solicitationType.value = type
+  /**
+   * Busca uma solicitação específica por ID na API.
+   * @param id O ID da solicitação a ser buscada.
+   */
+  const fetchById = async (id: number) => {
+    isLoading.value = true
+    error.value = null
+    currentSolicitation.value = null
+
+    try {
+      const response = await solicitationService.getById(id)
+      currentSolicitation.value = response
+      currentSolicitationBackup.value = JSON.parse(JSON.stringify(response))
+    } catch (err: any) {
+      error.value = err.message || 'Falha ao carregar a solicitação.'
+    } finally {
+      isLoading.value = false
     }
+  }
 
-    const itemExistente = solicitationItems.value.find((i) => i.id === item.id)
+  /**
+   * Salva as alterações de uma solicitação no backend.
+   * @param payload Os dados atualizados da solicitação.
+   */
+  const update = async (payload: Partial<Solicitation>) => {
+    // ... lógica para chamar o serviço de update
+  }
+
+  /**
+   * Adiciona um item à solicitação atual
+   * @param item
+   * @param type
+   * @returns
+   */
+  const addItem = (item: Item) => {
+    const itemExistente = currentSolicitation.value?.itens.find((i) => i.id === item.id)
 
     if (itemExistente) {
-      itemExistente.quantity++
+      itemExistente.quantidade++
       return 'incremented'
     } else {
-      solicitationItems.value.push({ ...item, quantity: 1 })
+      currentSolicitation.value?.itens.push({ ...item, quantidade: 1 })
       return 'added'
     }
   }
 
-  function removeItem(itemId: number) {
-    solicitationItems.value = solicitationItems.value.filter((i) => i.id !== itemId)
-    return 'removed'
-  }
-
-  function updateItemQuantity(itemId: number, newQuantity: number) {
-    const item = solicitationItems.value.find((i) => i.id === itemId)
-    if (item) {
-      item.quantity = newQuantity
+  const removeItem = (itemId: number) => {
+    if (currentSolicitation.value) {
+      currentSolicitation.value.itens = currentSolicitation.value.itens.filter(
+        (i) => i.id !== itemId,
+      )
+      return 'removed'
     }
   }
 
-  function clearSolicitation() {
-    solicitationItems.value = []
-    justification.value = ''
-    solicitationType.value = null
+  const updateItemQuantity = (itemId: number, newQuantity: number) => {
+    const item = currentSolicitation.value?.itens.find((i) => i.id === itemId)
+    if (item) {
+      item.quantidade = newQuantity
+    }
+  }
+
+  const isDirty = computed(() => {
+    if (!currentSolicitation.value || !currentSolicitationBackup.value) {
+      return false
+    }
+    const is = dataHasBeenChanged<Solicitation>(
+      currentSolicitationBackup.value,
+      currentSolicitation.value,
+    )
+    return is
+  })
+
+  const $reset = () => {
+    currentSolicitation.value = null
+    currentSolicitationBackup.value = null
+    isLoading.value = false
+    error.value = null
   }
 
   return {
-    solicitationItems,
-    justification,
-    solicitationType,
+    currentSolicitation,
+    isLoading,
+    error,
+    fetchById,
+    update,
     addItem,
     removeItem,
     updateItemQuantity,
-    clearSolicitation,
+    isDirty,
+    $reset,
   }
 })

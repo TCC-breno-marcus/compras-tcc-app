@@ -19,7 +19,7 @@ import axios from 'axios'
 import { Select } from 'primevue'
 import { storeToRefs } from 'pinia'
 import { useCategoriaStore } from '../stores/categoriaStore'
-import type { Item } from '../types'
+import type { Item, ItemFormData } from '../types'
 import { catalogoService } from '../services/catalogoService'
 
 const props = defineProps<{
@@ -38,7 +38,7 @@ const {
 
 const isLoading = ref(false)
 const error = ref<string | null>(null)
-const formDataInitial = {
+const formDataInitial: ItemFormData = {
   nome: '',
   descricao: '',
   catMat: '',

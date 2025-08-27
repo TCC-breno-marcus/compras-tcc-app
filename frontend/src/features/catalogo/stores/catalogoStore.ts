@@ -1,5 +1,3 @@
-// src/features/management/stores/catalogoStore.ts
-
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { catalogoService } from '../services/catalogoService';
@@ -18,14 +16,14 @@ export const useCatalogoStore = defineStore('catalogo', () => {
    * Busca os itens do catálogo na API e atualiza o estado.
    * @param filters Os parâmetros de filtro e paginação.
    */
-  async function fetchItems(filters?: CatalogoFilters) {
+  const fetchItems = async (filters?: CatalogoFilters) => {
     loading.value = true; 
     error.value = null;
 
     try {
       const response = await catalogoService.getItens(filters);
       
-      items.value = response.items; 
+      items.value = response.data; 
       totalCount.value = response.totalCount;
       pageNumber.value = response.pageNumber;
       pageSize.value = response.pageSize;

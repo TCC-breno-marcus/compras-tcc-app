@@ -25,6 +25,11 @@ const props = defineProps({
     type: Number,
     required: true,
   },
+  responsiveBreakpoint: {
+    type: String,
+    validator: (value) => ['sm', 'md', 'lg', 'xl', 'none'].includes(value),
+    default: 'sm',
+  },
 })
 
 const itemInicial = computed(() => (props.pageNumber - 1) * props.pageSize + 1)
@@ -57,7 +62,7 @@ const handleNavigation = (action) => {
 
   // 2. Atualize apenas o parâmetro da página
   newQuery.pageNumber = page.toString()
-  newQuery.pageSize = itensPorPagina.value.code
+  newQuery.pageSize = itensPorPagina.value
 
   // 3. Envie o objeto de query diretamente para o router
   router.push({ query: newQuery })
@@ -79,22 +84,26 @@ const visiblePages = computed(() => {
   return links
 })
 
-const itensPorPagina = ref({ name: props.pageSize.toString(), code: props.pageSize.toString() })
-const opcoesItens = ref([
-  { name: '10', code: '10' },
-  { name: '20', code: '20' },
-  { name: '30', code: '30' },
-  { name: '40', code: '40' },
-  { name: '50', code: '50' },
-])
+const itensPorPagina = ref(props.pageSize.toString())
+const opcoesItens = ref(['10', '25', '50'])
 
 watch(itensPorPagina, () => {
   handleNavigation(1) // Voltar para primeira página
 })
+
+const containerClasses = computed(() => {
+  const baseClasses = 'flex flex-column align-items-center justify-content-between w-full'
+  if (props.responsiveBreakpoint === 'none') {
+    return baseClasses
+  }
+  const responsiveClass = `${props.responsiveBreakpoint}:flex-row`
+
+  return `${baseClasses} ${responsiveClass}`
+})
 </script>
 
 <template>
-  <div class="flex flex-column xl:flex-row align-items-center justify-content-between w-full">
+  <div :class="containerClasses">
     <div class="caption-list text-center">
       <small> Exibindo {{ itemInicial }} - {{ itemFinal }} de {{ totalCount }} resultados </small>
     </div>
@@ -180,7 +189,6 @@ watch(itensPorPagina, () => {
       <Select
         v-model="itensPorPagina"
         :options="opcoesItens"
-        optionLabel="name"
         placeholder="Itens"
         size="small"
       />

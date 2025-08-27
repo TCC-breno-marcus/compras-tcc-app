@@ -1,8 +1,9 @@
 import { apiClient } from '@/services/apiClient'
-import type { Item, ItemParams, PaginatedResponse } from '@/features/catalogo/types'
+import type { Item, ItemParams } from '@/features/catalogo/types'
 import imageCompression from 'browser-image-compression'
 import { transformItem } from '../utils/itemTransformer'
 import type { CatalogoFilters } from '../types'
+import type { PaginatedResponse } from '@/types'
 
 interface ICatalogoService {
   getItens(filters?: CatalogoFilters): Promise<PaginatedResponse<Item>>
@@ -19,7 +20,7 @@ interface ICatalogoService {
  * Comprimir imagem para melhor otimização de espaço
  * @param arquivoOriginal Arquivo original
  */
-async function _processarImagem(arquivoOriginal: File): Promise<File> {
+const _processarImagem = async (arquivoOriginal: File): Promise<File> => {
   // console.log(`Tamanho original: ${(arquivoOriginal.size / 1024 / 1024).toFixed(2)} MB`)
 
   const options = {
@@ -65,7 +66,7 @@ export const catalogoService: ICatalogoService = {
       })
     }
     const response = await apiClient.get<PaginatedResponse<Item>>('/catalogo', { params })
-    response.data.items = response.data.items.map(transformItem)
+    response.data.data = response.data.data.map(transformItem)
     return response.data
   },
 

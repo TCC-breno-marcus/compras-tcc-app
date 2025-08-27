@@ -7,7 +7,7 @@ import TieredMenu from 'primevue/tieredmenu';
 const layoutStore = useLayoutStore();
 const isSidebarCollapsed = computed(() => layoutStore.isSidebarCollapsed);
 
-function toggleSidebar() {
+const toggleSidebar = () => {
     layoutStore.toggleSidebar();
 }
 
