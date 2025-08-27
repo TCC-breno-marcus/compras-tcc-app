@@ -254,16 +254,15 @@ public class SolicitacaoService : ISolicitacaoService
             if (solicitacaoDoBanco == null)
                 return null;
 
-            var (servidor, solicitante) = await GetSolicitanteInfoAsync(pessoaId);
-
-            if (
-                solicitante == null
-                || solicitacaoDoBanco.SolicitanteId != solicitante.Id && !isAdmin
-            )
+            if (!isAdmin)
             {
-                throw new UnauthorizedAccessException(
-                    "Você não tem permissão para editar esta solicitação."
-                );
+                var (servidor, solicitante) = await GetSolicitanteInfoAsync(pessoaId);
+                if (solicitacaoDoBanco.SolicitanteId != solicitante.Id)
+                {
+                    throw new UnauthorizedAccessException(
+                        "Você não tem permissão para editar esta solicitação."
+                    );
+                }
             }
 
             if (
