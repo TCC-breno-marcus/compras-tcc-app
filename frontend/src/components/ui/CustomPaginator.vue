@@ -62,7 +62,7 @@ const handleNavigation = (action) => {
 
   // 2. Atualize apenas o parâmetro da página
   newQuery.pageNumber = page.toString()
-  newQuery.pageSize = itensPorPagina.value.code
+  newQuery.pageSize = itensPorPagina.value
 
   // 3. Envie o objeto de query diretamente para o router
   router.push({ query: newQuery })
@@ -84,14 +84,8 @@ const visiblePages = computed(() => {
   return links
 })
 
-const itensPorPagina = ref({ name: props.pageSize.toString(), code: props.pageSize.toString() })
-const opcoesItens = ref([
-  { name: '10', code: '10' },
-  { name: '20', code: '20' },
-  { name: '30', code: '30' },
-  { name: '40', code: '40' },
-  { name: '50', code: '50' },
-])
+const itensPorPagina = ref(props.pageSize.toString())
+const opcoesItens = ref(['10', '25', '50'])
 
 watch(itensPorPagina, () => {
   handleNavigation(1) // Voltar para primeira página
@@ -195,7 +189,6 @@ const containerClasses = computed(() => {
       <Select
         v-model="itensPorPagina"
         :options="opcoesItens"
-        optionLabel="name"
         placeholder="Itens"
         size="small"
       />

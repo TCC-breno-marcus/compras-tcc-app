@@ -30,24 +30,6 @@ export interface ItemParams {
 }
 
 /**
- * Define todos os parâmetros possíveis do backend para filtrar e paginar o catálogo.
- * Todas as propriedades são opcionais.
- */
-export interface CatalogoParams {
-  id?: number
-  nome?: string
-  catMat?: string
-  descricao?: string
-  especificacao?: string
-  categoriaId?: number[];
-  isActive?: boolean
-  pageNumber?: number
-  pageSize?: number
-  sortOrder?: 'asc' | 'desc'
-  search?: string
-}
-
-/**
  * Define todos os filtros do formulário filtrar o catálogo.
  * Todas as propriedades são opcionais.
  */
@@ -57,9 +39,11 @@ export interface CatalogoFilters {
   descricao: string
   catMat: string
   especificacao: string
-  categoriaId: number[];
+  categoriaId: number[]
   status: string
   sortOrder: 'asc' | 'desc' | null
+  pageNumber?: string
+  pageSize?: string
 }
 
 /**
@@ -83,16 +67,15 @@ export interface CategoriaParams {
   isActive?: boolean
 }
 
-
 /**
  * Define o objeto do formulário de um item.
  */
 export interface ItemFormData {
-  nome: string;
-  descricao: string;
-  catMat: string;
-  especificacao: string;
-  categoriaId: number | null; 
-  precoSugerido: number;
-  isActive: boolean;
+  nome: string
+  descricao: string
+  catMat: string
+  especificacao: string
+  categoriaId: number | null
+  precoSugerido: number
+  isActive: boolean
 }

@@ -1,7 +1,11 @@
 import type { LocationQuery, LocationQueryValue } from 'vue-router'
 import type { CatalogoFilters, Categoria } from '../types'
 import { categorysIdFilterPerName } from './categoriaTransformer'
-import { getFirstQueryValue, getQueryAsArrayOfNumbers, getSortOrderFromQuery } from '@/utils/queryHelper'
+import {
+  getFirstQueryValue,
+  getQueryAsArrayOfNumbers,
+  getSortOrderFromQuery,
+} from '@/utils/queryHelper'
 
 export const mapQueryToFilters = (query: LocationQuery): CatalogoFilters => {
   return {
@@ -13,6 +17,8 @@ export const mapQueryToFilters = (query: LocationQuery): CatalogoFilters => {
     categoriaId: getQueryAsArrayOfNumbers(query.categoriaId),
     status: getStatusFromQuery(query.isActive),
     sortOrder: getSortOrderFromQuery(query.sortOrder),
+    pageNumber: getFirstQueryValue(query.pageNumber),
+    pageSize: getFirstQueryValue(query.pageSize),
   }
 }
 
