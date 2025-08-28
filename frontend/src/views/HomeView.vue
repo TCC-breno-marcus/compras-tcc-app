@@ -13,21 +13,23 @@ const { user } = storeToRefs(authStore)
 
 <template>
   <div class="flex flex-column mt-2">
-    <h2 class="mb-4">Bem-vindo, Solicitante!</h2>
-    <div class="grid">
+    <div class="my-4">
+      <h2 class="m-0 text-2xl text-primary">Olá, {{ user?.nome }}!</h2>
+      <p class="mt-2 text-color-secondary text-lg">O que você gostaria de fazer hoje?</p>
+    </div>
+
+    <div class="grid ml-2">
       <div class="col-12 md:col-6 lg:col-4">
         <Card>
           <template #title>
-            <div class="flex align-items-center gap-2">
-              <span class="material-symbols-outlined">add_2</span>
-              <span>Criar Nova Solicitação</span>
+            <div class="flex align-items-center justify-content-between">
+              <span class="font-semibold text-primary">Criar Nova Solicitação</span>
+              <span class="material-symbols-outlined text-primary">add_2</span>
             </div>
           </template>
           <template #content>
-            <p>Inicie uma nova solicitação para itens gerais ou patrimoniais.</p>
-          </template>
-          <template #footer>
-            <div class="flex gap-2">
+            <p class="">Inicie uma nova solicitação para itens gerais ou patrimoniais.</p>
+            <div class="flex justify-content-end w-full gap-2 mt-6">
               <Button
                 label="Geral"
                 @click="router.push('/solicitacoes/criar/geral')"
@@ -36,7 +38,7 @@ const { user } = storeToRefs(authStore)
               <Button
                 label="Patrimonial"
                 @click="router.push('/solicitacoes/criar/patrimonial')"
-                outlined
+                text
                 size="small"
               />
             </div>
@@ -47,22 +49,22 @@ const { user } = storeToRefs(authStore)
       <div class="col-12 md:col-6 lg:col-4">
         <Card>
           <template #title>
-            <div class="flex align-items-center gap-2">
-              <span class="material-symbols-outlined">assignment</span>
-              <span>Minhas Solicitações</span>
+            <div class="flex align-items-center justify-content-between">
+              <span class="font-semibold text-primary">Minhas Solicitações</span>
+              <span class="material-symbols-outlined text-primary">assignment</span>
             </div>
           </template>
           <template #content>
             <p>Visualize ou edite todas as suas solicitações.</p>
-          </template>
-          <template #footer>
-            <Button
-              label="Ver Minhas Solicitações"
-              icon="pi pi-arrow-right"
-              icon-pos="right"
-              @click="router.push('/solicitacoes')"
-              size="small"
-            />
+            <div class="flex justify-content-end w-full gap-2 mt-6">
+              <Button
+                label="Ver Minhas Solicitações"
+                icon="pi pi-arrow-right"
+                icon-pos="right"
+                @click="router.push('/solicitacoes')"
+                size="small"
+              />
+            </div>
           </template>
         </Card>
       </div>
