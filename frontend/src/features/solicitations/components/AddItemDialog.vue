@@ -1,17 +1,20 @@
 <script setup lang="ts">
 import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
-import { ref } from 'vue'
+import { inject, ref } from 'vue'
 import CatalogoBrowser from '@/features/catalogo/components/CatalogoBrowser.vue'
 import { CATEGORY_ITEMS_GENERAL, CATEGORY_ITEMS_PATRIMONIALS } from '../constants'
 import type { Item } from '@/features/catalogo/types'
 import { useToast } from 'primevue'
 import { storeToRefs } from 'pinia'
 import { useSolicitationStore } from '../stores/solicitationStore'
+import { SolicitationContextKey } from '../keys'
 
 const props = defineProps<{
   visible: boolean
 }>()
+
+const solicitationContext = inject(SolicitationContextKey)
 
 const isLoading = ref(false)
 const catalogoBrowserRef = ref()
@@ -59,9 +62,7 @@ const addItemSolicitation = (item: Item) => {
       <CatalogoBrowser
         ref="catalogoBrowserRef"
         :category-names="
-          currentSolicitation?.justificativaGeral !== ''
-            ? CATEGORY_ITEMS_GENERAL
-            : CATEGORY_ITEMS_PATRIMONIALS
+          solicitationContext?.isGeneral ? CATEGORY_ITEMS_GENERAL : CATEGORY_ITEMS_PATRIMONIALS
         "
       >
         <template #actions="{ item }">
