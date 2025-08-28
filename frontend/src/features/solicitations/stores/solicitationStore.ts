@@ -38,8 +38,20 @@ export const useSolicitationStore = defineStore('solicitation', () => {
    * Salva as alterações de uma solicitação no backend.
    * @param payload Os dados atualizados da solicitação.
    */
-  const update = async (payload: Partial<Solicitation>) => {
-    // ... lógica para chamar o serviço de update
+  const update = async (id: number, payload: Partial<Solicitation>) => {
+    isLoading.value = true
+    error.value = null
+
+    try {
+      const response = await solicitationService.update(id, payload)
+      currentSolicitation.value = response
+      currentSolicitationBackup.value = JSON.parse(JSON.stringify(response))
+    } catch (err: any) {
+      error.value = err.message || 'Falha ao carregar a solicitação.'
+      throw new Error(err.message || 'Falha ao carregar a solicitação.')
+    } finally {
+      isLoading.value = false
+    }
   }
 
   /**
@@ -95,6 +107,7 @@ export const useSolicitationStore = defineStore('solicitation', () => {
 
   return {
     currentSolicitation,
+    currentSolicitationBackup,
     isLoading,
     error,
     fetchById,

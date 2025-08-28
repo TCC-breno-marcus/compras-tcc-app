@@ -1,14 +1,10 @@
 import { apiClient } from '@/services/apiClient'
-import type {
-  CreateSolicitationPayload,
-  MySolicitationFilters,
-  Solicitation,
-  SolicitationResult,
-} from '..'
+import type { CreateSolicitationPayload, MySolicitationFilters, Solicitation } from '..'
 import type { PaginatedResponse } from '@/types'
 
 interface ISolicitationService {
-  create(payload: CreateSolicitationPayload): Promise<SolicitationResult>
+  create(payload: CreateSolicitationPayload): Promise<Solicitation>
+  update(id: number, payload: Partial<Solicitation>): Promise<Solicitation>
   getById(id: number): Promise<Solicitation>
   getMySolicitations(filters?: MySolicitationFilters): Promise<PaginatedResponse<Solicitation>>
 }
@@ -23,11 +19,27 @@ export const solicitationService: ISolicitationService = {
     const { type, ...apiPayload } = payload
     const endpoint = type === 'geral' ? '/solicitacao/geral' : '/solicitacao/patrimonial'
     try {
-      const response = await apiClient.post<SolicitationResult>(endpoint, apiPayload)
+      const response = await apiClient.post<Solicitation>(endpoint, apiPayload)
       return response.data
     } catch (error) {
       console.error(`Erro ao criar solicitação '${type}':`, error)
       throw new Error('Não foi possível criar a solicitação.')
+    }
+  },
+
+  /**
+   * Atualiza uma solicitação no backend.
+   * @param id ID da solicitação.
+   * @param payload Os novos dados da solicitação.
+   * @returns A solicitação com os novos dados.
+   */
+  async update(id, payload) {
+    try {
+      const response = await apiClient.patch<Solicitation>(`/solicitacao/${id}`, payload)
+      return response.data
+    } catch (error) {
+      console.error(`Erro ao atualizar solicitação:`, error)
+      throw new Error('Não foi possível atualizar a solicitação.')
     }
   },
 
@@ -38,7 +50,7 @@ export const solicitationService: ISolicitationService = {
    */
   async getById(id) {
     try {
-      const response = await apiClient.get<SolicitationResult>(`/solicitacao/${id}`)
+      const response = await apiClient.get<Solicitation>(`/solicitacao/${id}`)
       return response.data
     } catch (error) {
       console.error(`Erro ao buscar a solicitação:`, error)

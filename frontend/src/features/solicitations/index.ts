@@ -36,6 +36,7 @@ export type CreateSolicitationPayload =
   | CreateSolicitationGeneralPayload
   | CreateSolicitationPatrimonialPayload
 
+
 /**
  * Representa os dados de um solicitante no retorno de uma solicitação
  */
@@ -59,17 +60,6 @@ export interface ItemSolicitationResponse {
   justificativa: string
 }
 
-/**
- * Retorno de uma solicitação.
- */
-export interface SolicitationResult {
-  id: number
-  dataCriacao: string
-  justificativaGeral: string
-  externalId: string
-  solicitante: Solicitante
-  itens: SolicitationItem[]
-}
 
 /**
  * Representa uma solicitação no front.
