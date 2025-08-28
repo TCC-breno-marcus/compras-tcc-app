@@ -103,10 +103,9 @@ const isSolicitationValid = (solicitation: Solicitation | null): boolean => {
   }
 
   let isValid = true
-  const isGeneral = !!currentSolicitationBackup.value?.justificativaGeral
 
   if (
-    isGeneral &&
+    solicitationContext.isGeneral &&
     (!solicitation.justificativaGeral || solicitation.justificativaGeral.trim() === '')
   ) {
     toast.add({
@@ -139,7 +138,10 @@ const isSolicitationValid = (solicitation: Solicitation | null): boolean => {
       isValid = false
     }
 
-    if (!isGeneral && (!item.justificativa || item.justificativa.trim() === '')) {
+    if (
+      !solicitationContext.isGeneral &&
+      (!item.justificativa || item.justificativa.trim() === '')
+    ) {
       toast.add({
         severity: 'error',
         summary: 'Campo Obrigatório',
@@ -284,7 +286,7 @@ onMounted(() => {
                 <div>
                   <span class="text-sm text-color-secondary">Tipo da Solicitação</span>
                   <p class="font-bold m-0">
-                    {{ currentSolicitationBackup?.justificativaGeral ? 'Geral' : 'Patrimonial' }}
+                    {{ solicitationContext.isGeneral ? 'Geral' : 'Patrimonial' }}
                   </p>
                 </div>
               </li>
@@ -293,8 +295,7 @@ onMounted(() => {
         </Card>
       </div>
 
-      <div v-if="currentSolicitationBackup?.justificativaGeral" class="col-12 lg:col-4">
-        <!-- todo: deve ser editável também -->
+      <div v-if="solicitationContext.isGeneral" class="col-12 lg:col-4">
         <Card class="h-full">
           <template #title>
             <div class="flex align-items-center">
