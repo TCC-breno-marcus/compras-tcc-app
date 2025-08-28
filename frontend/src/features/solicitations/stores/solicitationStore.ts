@@ -4,6 +4,7 @@ import type { Solicitation } from '@/features/solicitations'
 import { solicitationService } from '../services/solicitationService'
 import { dataHasBeenChanged } from '@/utils/objectUtils'
 import type { Item } from '@/features/catalogo/types'
+import { useToast } from 'primevue'
 
 /**
  * Store para gerenciar estados da view Detalhes da Solicitação
@@ -13,6 +14,7 @@ export const useSolicitationStore = defineStore('solicitation', () => {
   const currentSolicitationBackup = ref<Solicitation | null>(null)
   const isLoading = ref(false)
   const error = ref<string | null>(null)
+  const toast = useToast()
 
   /**
    * Busca uma solicitação específica por ID na API.
@@ -36,19 +38,44 @@ export const useSolicitationStore = defineStore('solicitation', () => {
 
   /**
    * Salva as alterações de uma solicitação no backend.
-   * @param payload Os dados atualizados da solicitação.
+   * @param payload Os novos dados da solicitação.
    */
-  const update = async (id: number, payload: Partial<Solicitation>) => {
+  const update = async (payload: Solicitation) => {
     isLoading.value = true
     error.value = null
 
+    const newData = {
+      justificativaGeral: payload.justificativaGeral,
+      itens: payload.itens.map((item) => {
+        return {
+          itemId: item.id,
+          quantidade: item.quantidade,
+          valorUnitario: item.precoSugerido,
+          justificativa: item.justificativa,
+        }
+      }),
+    }
+
     try {
-      const response = await solicitationService.update(id, payload)
+      const response = await solicitationService.update(payload.id, newData)
       currentSolicitation.value = response
       currentSolicitationBackup.value = JSON.parse(JSON.stringify(response))
+      toast.add({
+        severity: 'success',
+        summary: 'Sucesso',
+        detail: 'A solicitação foi salva com sucesso.',
+        life: 3000,
+      })
+      return true
     } catch (err: any) {
       error.value = err.message || 'Falha ao carregar a solicitação.'
-      throw new Error(err.message || 'Falha ao carregar a solicitação.')
+      toast.add({
+        severity: 'error',
+        summary: 'Erro',
+        detail: 'Não foi possível salvar as alterações.',
+        life: 3000,
+      })
+      return false
     } finally {
       isLoading.value = false
     }

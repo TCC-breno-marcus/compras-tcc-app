@@ -67,41 +67,9 @@ const handleCancel = () => {
 
 const acceptSaveChanges = async () => {
   if (!currentSolicitation.value) return
-
-  isLoading.value = true
-  try {
-    const newData = {
-      justificativaGeral: currentSolicitation.value.justificativaGeral,
-      itens: currentSolicitation.value.itens.map((item) => {
-        return {
-          itemId: item.id,
-          quantidade: item.quantidade,
-          valorUnitario: item.precoSugerido,
-          justificativa: item.justificativa,
-        }
-      }),
-    }
-
-    solicitationStore.update(currentSolicitation.value.id, newData)
-
-    toast.add({
-      severity: 'success',
-      summary: 'Sucesso',
-      detail: 'A solicitação foi salva com sucesso.',
-      life: 3000,
-    })
-
+  const success = await solicitationStore.update(currentSolicitation.value)
+  if (success) {
     isEditing.value = false
-  } catch (err) {
-    console.error('Erro ao salvar as alterações:', err)
-    toast.add({
-      severity: 'error',
-      summary: 'Erro',
-      detail: 'Não foi possível salvar as alterações.',
-      life: 3000,
-    })
-  } finally {
-    isLoading.value = false
   }
 }
 
