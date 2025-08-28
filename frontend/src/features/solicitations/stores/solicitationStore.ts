@@ -45,7 +45,6 @@ export const useSolicitationStore = defineStore('solicitation', () => {
   /**
    * Adiciona um item à solicitação atual
    * @param item
-   * @param type
    * @returns
    */
   const addItem = (item: Item) => {

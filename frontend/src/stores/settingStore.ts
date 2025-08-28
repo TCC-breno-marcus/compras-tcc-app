@@ -18,7 +18,6 @@ export const useSettingStore = defineStore('setting', () => {
     try {
       const response = await settingService.getPrazoSubmissao()
       deadline.value = new Date(response.prazoSubmissao)
-      console.log(deadline.value)
     } catch (error) {
       console.error(error)
     } finally {
