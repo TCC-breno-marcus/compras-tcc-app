@@ -1,72 +1,105 @@
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
-import Card from 'primevue/card'
-import Button from 'primevue/button'
 import { useAuthStore } from '@/features/autentication/stores/authStore'
 import { storeToRefs } from 'pinia'
+import HomeCard from '@/components/ui/HomeCard.vue'
 
-const router = useRouter()
 const authStore = useAuthStore()
 
-const { user } = storeToRefs(authStore)
+const { user, isAdmin, isGestor, isSolicitante } = storeToRefs(authStore)
 </script>
 
 <template>
   <div class="flex flex-column mt-2">
     <div class="my-4">
       <h2 class="m-0 text-2xl text-primary">Olá, {{ user?.nome }}!</h2>
-      <p class="mt-2 text-color-secondary text-lg">O que você gostaria de fazer hoje?</p>
+      <p class="mt-2 text-color-secondary text-base">O que você gostaria de fazer hoje?</p>
     </div>
 
     <div class="grid ml-2">
       <div class="col-12 md:col-6 lg:col-4">
-        <Card>
-          <template #title>
-            <div class="flex align-items-center justify-content-between">
-              <span class="font-semibold text-primary">Criar Nova Solicitação</span>
-              <span class="material-symbols-outlined text-primary">add_2</span>
-            </div>
-          </template>
-          <template #content>
-            <p class="">Inicie uma nova solicitação para itens gerais ou patrimoniais.</p>
-            <div class="flex justify-content-end w-full gap-2 mt-6">
-              <Button
-                label="Geral"
-                @click="router.push('/solicitacoes/criar/geral')"
-                size="small"
-              />
-              <Button
-                label="Patrimonial"
-                @click="router.push('/solicitacoes/criar/patrimonial')"
-                text
-                size="small"
-              />
-            </div>
-          </template>
-        </Card>
+        <HomeCard
+          v-if="isAdmin || isSolicitante"
+          title="Nova Solicitação"
+          title-icon="add_shopping_cart"
+          content-text="Inicie uma nova solicitação para itens gerais ou patrimoniais."
+          button-label="Geral"
+          button-route="/solicitacoes/criar/geral"
+          button-label2="Patrimonial"
+          button-route2="/solicitacoes/criar/patrimonial"
+          color="#17b287"
+        />
       </div>
 
       <div class="col-12 md:col-6 lg:col-4">
-        <Card>
-          <template #title>
-            <div class="flex align-items-center justify-content-between">
-              <span class="font-semibold text-primary">Minhas Solicitações</span>
-              <span class="material-symbols-outlined text-primary">assignment</span>
-            </div>
-          </template>
-          <template #content>
-            <p>Visualize ou edite todas as suas solicitações.</p>
-            <div class="flex justify-content-end w-full gap-2 mt-6">
-              <Button
-                label="Ver Minhas Solicitações"
-                icon="pi pi-arrow-right"
-                icon-pos="right"
-                @click="router.push('/solicitacoes')"
-                size="small"
-              />
-            </div>
-          </template>
-        </Card>
+        <HomeCard
+          v-if="isAdmin || isSolicitante"
+          title="Minhas Solicitações"
+          title-icon="assignment_ind "
+          content-text="Visualize ou edite todas as suas solicitações."
+          button-label="Ver Histórico"
+          button-route="/solicitacoes"
+          color="#17b287"
+        />
+      </div>
+
+      <div class="col-12 md:col-6 lg:col-4">
+        <HomeCard
+          v-if="isAdmin || isGestor"
+          title="Itens por Departamento"
+          title-icon="segment"
+          content-text="Visualize os itens solicitados divididos por departamento."
+          button-label="Itens por Departamento"
+          button-route="/gestor/departamento"
+          color="#3d97f4"
+        />
+      </div>
+
+      <div class="col-12 md:col-6 lg:col-4">
+        <HomeCard
+          v-if="isAdmin || isGestor"
+          title="Solicitações"
+          title-icon="checklist"
+          content-text="Visualize e revise as solicitações de compra abertas."
+          button-label="Ver Solicitações"
+          button-route="/gestor/solicitacoes"
+          color="#3d97f4"
+        />
+      </div>
+
+      <div class="col-12 md:col-6 lg:col-4">
+        <HomeCard
+          v-if="isAdmin || isGestor"
+          title="Catálogo"
+          title-icon="inventory_2"
+          content-text="Adicione, edite ou remova itens e controle a disponibilidade deles no sistema."
+          button-label="Acessar Catálogo"
+          button-route="/gestor/catalogo"
+          color="#3d97f4"
+        />
+      </div>
+
+      <div class="col-12 md:col-6 lg:col-4">
+        <HomeCard
+          v-if="isAdmin || isGestor"
+          title="Dashboards"
+          title-icon="bar_chart"
+          content-text="Visualize gráficos e indicadores sobre as solicitações de compra."
+          button-label="Ver Gráficos"
+          button-route="/gestor/dashboard"
+          color="#f26c4f"
+        />
+      </div>
+
+      <div class="col-12 md:col-6 lg:col-4">
+        <HomeCard
+          v-if="isAdmin || isGestor"
+          title="Relatórios"
+          title-icon="article"
+          content-text="Gere relatórios detalhados sobre as solicitações de compra."
+          button-label="Gerar Relatórios"
+          button-route="/gestor/relatorios"
+          color="#f26c4f"
+        />
       </div>
     </div>
   </div>

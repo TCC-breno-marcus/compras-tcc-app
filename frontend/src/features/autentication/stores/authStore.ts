@@ -17,6 +17,7 @@ export const useAuthStore = defineStore(
     const isAuthenticated = computed(() => !!token.value && !isTokenExpired(token.value))
     const isAdmin = computed(() => user.value?.role === 'Admin')
     const isGestor = computed(() => user.value?.role === 'Gestor')
+    const isSolicitante = computed(() => user.value?.role === 'Solicitante')
 
     const login = async (credentials: UserCredentials) => {
       try {
@@ -73,6 +74,7 @@ export const useAuthStore = defineStore(
       isAuthenticated,
       isAdmin,
       isGestor,
+      isSolicitante,
       login,
       fetchDataUser,
       register,
