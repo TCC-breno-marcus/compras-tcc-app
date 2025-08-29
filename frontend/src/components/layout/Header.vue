@@ -26,7 +26,7 @@ const actionItems = computed(() => {
     {
       label: 'Configurações',
       icon: 'pi pi-cog',
-      route: '/configuracoes',
+      route: '/configuracoes/geral',
     },
     {
       label: 'Alternar Tema',

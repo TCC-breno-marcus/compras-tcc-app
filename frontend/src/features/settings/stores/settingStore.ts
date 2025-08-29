@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import { settingService } from '@/services/settingService'
+import { settingService } from '@/features/settings/services/settingService'
 
 export const useSettingStore = defineStore('setting', () => {
   const deadline = ref<Date | null>(null)

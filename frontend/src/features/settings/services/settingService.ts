@@ -1,8 +1,5 @@
 import { apiClient } from '@/services/apiClient'
-
-export interface PrazoSubmissao {
-  prazoSubmissao: string
-}
+import type { PrazoSubmissao } from '../types'
 
 interface ISettingService {
   getPrazoSubmissao(): Promise<PrazoSubmissao>

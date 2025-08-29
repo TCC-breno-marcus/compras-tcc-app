@@ -11,6 +11,11 @@ import MySolicitationsView from '@/features/solicitations/views/MySolicitationsV
 import { useSolicitationCartStore } from '@/features/solicitations/stores/solicitationCartStore'
 import { useConfirm } from 'primevue'
 import { CHANGE_SOLICITATION_CONFIRMATION } from '@/utils/confirmationFactoryUtils'
+import SettingsView from '@/features/settings/views/SettingsView.vue'
+import Notifications from '@/features/settings/components/Notifications.vue'
+import General from '@/features/settings/components/General.vue'
+import Solicitations from '@/features/settings/components/Solicitations.vue'
+import UsersAndPermissions from '@/features/settings/components/UsersAndPermissions.vue'
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -87,6 +92,29 @@ const router = createRouter({
             {
               path: 'relatorios',
               component: () => import('@/features/management/components/Reports.vue'),
+            },
+          ],
+        },
+        {
+          path: '/configuracoes',
+          meta: { requiresAuth: true, roles: ['Gestor', 'Admin'] },
+          component: SettingsView,
+          children: [
+            {
+              path: 'geral',
+              component: General,
+            },
+            {
+              path: 'solicitacoes',
+              component: Solicitations,
+            },
+            {
+              path: 'usuarios',
+              component: UsersAndPermissions,
+            },
+            {
+              path: 'notificacoes',
+              component: Notifications,
             },
           ],
         },
