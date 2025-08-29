@@ -1,6 +1,10 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-import type { MySolicitationFilters, Solicitation, SolicitationListItem } from '@/features/solicitations'
+import type {
+  MySolicitationFilters,
+  Solicitation,
+  SolicitationListItem,
+} from '@/features/solicitations/types'
 import { solicitationService } from '../services/solicitationService'
 import { transformSolicitation } from '../utils'
 

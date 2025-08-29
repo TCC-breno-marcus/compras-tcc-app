@@ -1,5 +1,5 @@
 import type { LocationQuery } from 'vue-router'
-import type { MySolicitationFilters } from '..'
+import type { MySolicitationFilters } from '../types'
 import { getFirstQueryValue, getSortOrderFromQuery } from '@/utils/queryHelper'
 
 export const mapQueryToFilters = (query: LocationQuery): MySolicitationFilters => {

@@ -17,7 +17,7 @@ import InputIcon from 'primevue/inputicon'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
 import FloatLabel from 'primevue/floatlabel'
-import type { MySolicitationFilters } from '..'
+import type { MySolicitationFilters } from '../types'
 import DatePicker from 'primevue/datepicker'
 import MySolicitationsSkeleton from '../components/MySolicitationsSkeleton.vue'
 import { mapQueryToFilters } from '../utils/queryHelper'
@@ -33,7 +33,7 @@ const filter = reactive<MySolicitationFilters>({
   dateRange: null,
   sortOrder: null,
   pageNumber: '1',
-  pageSize: '10'
+  pageSize: '10',
 })
 
 const typeOptions = ref(['Geral', 'Patrimonial'])

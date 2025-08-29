@@ -1,4 +1,4 @@
-import type { Solicitation, SolicitationListItem } from '..'
+import type { Solicitation, SolicitationListItem } from '../types'
 
 /**
  * Converte um objeto Solicitation da API para o formato de exibição da lista,

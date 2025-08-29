@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { Item } from '@/features/catalogo/types'
-import type { CreateSolicitationPayload, SolicitationItem } from '@/features/solicitations'
+import type { CreateSolicitationPayload, SolicitationItem } from '@/features/solicitations/types'
 import { solicitationService } from '../services/solicitationService'
 
 export const useSolicitationCartStore = defineStore('solicitationCart', () => {

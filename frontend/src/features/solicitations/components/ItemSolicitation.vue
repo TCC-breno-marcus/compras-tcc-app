@@ -4,7 +4,7 @@ import Button from 'primevue/button'
 import InputNumber from 'primevue/inputnumber'
 import InputText from 'primevue/inputtext'
 import { FloatLabel } from 'primevue'
-import type { SolicitationItem } from '..'
+import type { SolicitationItem } from '../types'
 import { SolicitationContextKey } from '../keys'
 
 const props = defineProps<{

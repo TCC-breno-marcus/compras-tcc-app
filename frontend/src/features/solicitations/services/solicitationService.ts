@@ -1,5 +1,5 @@
 import { apiClient } from '@/services/apiClient'
-import type { CreateSolicitationPayload, MySolicitationFilters, Solicitation } from '..'
+import type { CreateSolicitationPayload, MySolicitationFilters, Solicitation } from '../types'
 import type { PaginatedResponse } from '@/types'
 
 interface ISolicitationService {
