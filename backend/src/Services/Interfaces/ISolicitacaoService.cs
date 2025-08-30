@@ -27,4 +27,16 @@ public interface ISolicitacaoService
         int pageNumber,
         int pageSize
     );
+
+    Task<PaginatedResultDto<SolicitacaoResultDto>> GetAllAsync(
+        long? solicitanteId,
+        long? gestorId,
+        string? tipo,
+        DateTime? dataInicial,
+        DateTime? dataFinal,
+        string? externalId,
+        string? sortOrder,
+        int pageNumber,
+        int pageSize
+    );
 }
