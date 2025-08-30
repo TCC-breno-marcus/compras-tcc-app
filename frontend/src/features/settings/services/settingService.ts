@@ -2,11 +2,27 @@ import { apiClient } from '@/services/apiClient'
 import type { PrazoSubmissao } from '../types'
 
 interface ISettingService {
+  getSettings(): Promise<PrazoSubmissao>
   getPrazoSubmissao(): Promise<PrazoSubmissao>
   editarPrazoSubmissao(newDate: string): void
 }
 
 export const settingService: ISettingService = {
+  /**
+   * Busca todas as configurações no backend.
+   * @returns .
+   */
+  async getSettings() {
+    // TODO:
+    try {
+      const response = await apiClient.get<PrazoSubmissao>('/configuracao/prazo-submissao')
+      return response.data
+    } catch (error) {
+      console.error(`Erro ao buscar o prazo de submissão:`, error)
+      throw new Error('Não foi possível buscar o prazo de submissão.')
+    }
+  },
+
   /**
    * Busca o prazo de submissão (criação e edição) de solicitações.
    * @returns O prazo.

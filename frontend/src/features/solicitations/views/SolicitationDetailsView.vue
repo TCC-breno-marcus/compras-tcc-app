@@ -182,7 +182,7 @@ watch(
 )
 
 onMounted(() => {
-  settingStore.fetchPrazoSubmissao()
+  settingStore.fetchSettings()
 })
 </script>
 
