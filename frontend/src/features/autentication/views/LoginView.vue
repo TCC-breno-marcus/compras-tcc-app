@@ -49,27 +49,17 @@ const handleLogin = async () => {
 
   isLoading.value = true
   try {
-    const loginSuccess = await authStore.login({
+    await authStore.login({
       email: email.value,
       password: password.value,
     })
-
-    if (loginSuccess) {
-      await authStore.fetchDataUser()
-      router.push('/')
-    } else {
-      toast.add({
-        severity: 'error',
-        summary: 'Erro',
-        detail: 'Credenciais inválidas.',
-        life: 3000,
-      })
-    }
-  } catch (error) {
+    await authStore.fetchDataUser()
+    router.push('/')
+  } catch (error: unknown) {
     toast.add({
       severity: 'error',
       summary: 'Erro',
-      detail: 'Não foi possível conectar ao servidor.',
+      detail: error,
       life: 3000,
     })
   } finally {

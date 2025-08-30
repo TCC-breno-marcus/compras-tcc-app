@@ -23,11 +23,11 @@ export const useAuthStore = defineStore(
       try {
         const response = await authService.login(credentials)
         token.value = response.token
-        return true
       } catch (error) {
         console.error('Falha na ação de login da store:', error)
         logout()
-        return false
+        const errorMessage = error instanceof Error ? error.message : error
+        throw errorMessage
       }
     }
 
@@ -43,10 +43,10 @@ export const useAuthStore = defineStore(
     const register = async (userData: UserRegistration) => {
       try {
         await authService.register(userData)
-        return true
       } catch (error) {
         console.error('Falha na ação de registrar da store:', error)
-        return false
+        const errorMessage = error instanceof Error ? error.message : error
+        throw errorMessage
       }
     }
 
