@@ -2,7 +2,7 @@
 import { useRouter } from 'vue-router'
 import Card from 'primevue/card'
 import Button from 'primevue/button'
-import addToCartImg from '@/assets/undraw_add-to-cart_c8f2.svg'
+import { computed } from 'vue'
 
 const props = defineProps<{
   title: string
@@ -16,53 +16,64 @@ const props = defineProps<{
 }>()
 
 const router = useRouter()
+
+const iconStyle = computed(() => ({
+  backgroundColor: `${props.color}1A`,
+  color: props.color,
+}))
 </script>
 
 <template>
-  <Card class="h-full flex flex-column" :style="{ borderTop: `0px solid ${props.color}` }">
-    <template #header>
-      <div
-        class="flex align-items-center justify-content-between p-4"
-        :style="{ backgroundColor: `${props.color}`, borderRadius: '10px 10px 0px 0px' }"
-      >
-        <span class="font-semibold text-xl" :style="{ color: 'white' }">{{ props.title }}</span>
-        <span class="material-symbols-outlined" :style="{ color: 'white' }">{{
-          props.titleIcon
-        }}</span>
-      </div>
-    </template>
-    <!-- <template #title>
-      <div class="flex align-items-center justify-content-between">
-        <span class="font-semibold">{{ props.title }}</span>
-        <span class="material-symbols-outlined">{{ props.titleIcon }}</span>
-      </div>
-    </template> -->
+  <Card
+    class="h-full flex flex-column shadow-1 hover:shadow-4 transition-duration-200 cursor-pointer"
+    @click="router.push(props.buttonRoute)"
+  >
     <template #content>
-      <div class="flex h-1rem">
-        <p class="">{{ props.contentText }}</p>
-      </div>
-    </template>
-    <template #footer>
-      <div class="flex justify-content-end w-full gap-2 mt-6">
-        <Button
-          :label="props.buttonLabel"
-          @click="router.push(props.buttonRoute)"
-          size="small"
-          icon="pi pi-arrow-right"
-          icon-pos="right"
-          :style="{ color: props.color }"
-          text
-        />
-        <Button
-          v-if="props.buttonLabel2 && props.buttonRoute2"
-          :label="props.buttonLabel2"
-          @click="router.push(props.buttonRoute2)"
-          text
-          icon="pi pi-arrow-right"
-          icon-pos="right"
-          size="small"
-          :style="{ color: props.color }"
-        />
+      <div class="flex flex-column h-10rem">
+        <div class="flex align-items-center gap-2 mb-2">
+          <div
+            class="flex align-items-center justify-content-center border-round"
+            :style="iconStyle"
+            style="width: 3rem; height: 3rem"
+          >
+            <span class="material-symbols-outlined" style="font-size: 1.5rem">
+              {{ props.titleIcon }}
+            </span>
+          </div>
+          <h3 class="font-semibold text-xl">{{ props.title }}</h3>
+        </div>
+
+        <p class="mt-0 mb-4 text-color-secondary line-height-3 flex-grow-1">
+          {{ props.contentText }}
+        </p>
+
+        <div class="flex justify-content-end w-full gap-2 mt-auto">
+          <template v-if="props.buttonLabel2 && props.buttonRoute2">
+            <Button
+              :label="props.buttonLabel"
+              @click.stop="router.push(props.buttonRoute)"
+              size="small"
+              text
+            />
+            <Button
+              :label="props.buttonLabel2"
+              @click.stop="router.push(props.buttonRoute2)"
+              outlined
+              size="small"
+              text
+            />
+          </template>
+          <template v-else>
+            <Button
+              :label="props.buttonLabel"
+              @click.stop
+              icon="pi pi-arrow-right"
+              icon-pos="right"
+              size="small"
+              text
+            />
+          </template>
+        </div>
       </div>
     </template>
   </Card>

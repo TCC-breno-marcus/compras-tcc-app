@@ -10,8 +10,8 @@ const { user, isAdmin, isGestor, isSolicitante } = storeToRefs(authStore)
 
 <template>
   <div class="flex flex-column mt-2">
-    <div class="my-4">
-      <h2 class="m-0 text-2xl text-primary">Olá, {{ user?.nome }}!</h2>
+    <div class="mb-4">
+      <h2 class="m-0 text-2xl text-primary">Olá, {{ user?.nome }}</h2>
       <p class="mt-2 text-color-secondary text-base">O que você gostaria de fazer hoje?</p>
     </div>
 
