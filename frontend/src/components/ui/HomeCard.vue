@@ -2,6 +2,7 @@
 import { useRouter } from 'vue-router'
 import Card from 'primevue/card'
 import Button from 'primevue/button'
+import addToCartImg from '@/assets/undraw_add-to-cart_c8f2.svg'
 
 const props = defineProps<{
   title: string
@@ -19,14 +20,23 @@ const router = useRouter()
 
 <template>
   <Card class="h-full flex flex-column" :style="{ borderTop: `0px solid ${props.color}` }">
-    <template #title>
-      <div class="flex align-items-center justify-content-between">
-        <span class="font-semibold" :style="{ color: props.color }">{{ props.title }}</span>
-        <span class="material-symbols-outlined" :style="{ color: props.color }">{{
+    <template #header>
+      <div
+        class="flex align-items-center justify-content-between p-4"
+        :style="{ backgroundColor: `${props.color}`, borderRadius: '10px 10px 0px 0px' }"
+      >
+        <span class="font-semibold text-xl" :style="{ color: 'white' }">{{ props.title }}</span>
+        <span class="material-symbols-outlined" :style="{ color: 'white' }">{{
           props.titleIcon
         }}</span>
       </div>
     </template>
+    <!-- <template #title>
+      <div class="flex align-items-center justify-content-between">
+        <span class="font-semibold">{{ props.title }}</span>
+        <span class="material-symbols-outlined">{{ props.titleIcon }}</span>
+      </div>
+    </template> -->
     <template #content>
       <div class="flex h-1rem">
         <p class="">{{ props.contentText }}</p>
