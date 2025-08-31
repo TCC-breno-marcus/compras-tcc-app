@@ -532,4 +532,113 @@ public class SolicitacaoService : ISolicitacaoService
 
         return $"{prefixo}-{ano}-{idFormatado}";
     }
+
+    public async Task<PaginatedResultDto<SolicitacaoResultDto>> GetAllAsync(
+        long? solicitanteId,
+        long? gestorId,
+        string? tipo,
+        DateTime? dataInicial,
+        DateTime? dataFinal,
+        string? externalId,
+        string? sortOrder,
+        int pageNumber,
+        int pageSize
+)
+    {
+        _logger.LogInformation("Buscando todas as solicitações com filtros administrativos.");
+
+        var query = _context
+            .Solicitacoes
+            .Include(s => s.Solicitante.Servidor.Pessoa)
+            .Include("ItemSolicitacao.Item")
+            .AsNoTracking();
+
+        if (solicitanteId.HasValue)
+        {
+            query = query.Where(s => s.SolicitanteId == solicitanteId.Value);
+        }
+
+        if (gestorId.HasValue)
+        {
+            query = query.Where(s => s.GestorId == gestorId.Value);
+        }
+        if (!string.IsNullOrWhiteSpace(tipo))
+        {
+            query = query.Where(s => EF.Property<string>(s, "TipoSolicitacao") == tipo.ToUpper());
+        }
+        if (dataInicial.HasValue)
+        {
+            var inicioPeriodo = dataInicial.Value.ToUniversalTime().Date;
+            var fimPeriodo = (dataFinal ?? dataInicial).Value.ToUniversalTime().Date.AddDays(1);
+            query = query.Where(s => s.DataCriacao >= inicioPeriodo && s.DataCriacao < fimPeriodo);
+        }
+        else if (dataFinal.HasValue)
+        {
+            var fimPeriodo = dataFinal.Value.ToUniversalTime().Date.AddDays(1);
+            query = query.Where(s => s.DataCriacao < fimPeriodo);
+        }
+        if (!string.IsNullOrWhiteSpace(externalId))
+        {
+            query = query.Where(s => s.ExternalId == externalId);
+        }
+
+        if (sortOrder?.ToLower() == "asc")
+        {
+            query = query.OrderBy(s => s.DataCriacao);
+        }
+        else
+        {
+            query = query.OrderByDescending(s => s.DataCriacao);
+        }
+
+        var totalCount = await query.CountAsync();
+        var solicitacoesPaginadas = await query
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        var listaDeDtos = solicitacoesPaginadas
+            .Select(solicitacao => new SolicitacaoResultDto
+            {
+                Id = solicitacao.Id,
+                DataCriacao = solicitacao.DataCriacao,
+                JustificativaGeral =
+                    (solicitacao is SolicitacaoGeral sg) ? sg.JustificativaGeral : null,
+                ExternalId = solicitacao.ExternalId,
+                Solicitante = new SolicitanteDto
+                {
+                    Id = solicitacao.Solicitante.Id,
+                    Nome = solicitacao.Solicitante.Servidor.Pessoa.Nome,
+                    Email = solicitacao.Solicitante.Servidor.Pessoa.Email,
+                    Departamento = solicitacao.Solicitante.Unidade.ToFriendlyString(),
+                },
+                Itens = (
+                    (solicitacao is SolicitacaoGeral geral) ? geral.ItemSolicitacao
+                    : (solicitacao is SolicitacaoPatrimonial patrimonial)
+                        ? patrimonial.ItemSolicitacao
+                    : new List<SolicitacaoItem>()
+                )
+                    .Select(item => new ItemSolicitacaoResultDto
+                    {
+                        Id = item.ItemId,
+                        Nome = item.Item.Nome,
+                        CatMat = item.Item.CatMat,
+                        Quantidade = item.Quantidade,
+                        LinkImagem = string.IsNullOrWhiteSpace(item.Item.LinkImagem)
+                            ? item.Item.LinkImagem
+                            : $"http://localhost:8088/images/{item.Item.LinkImagem}",
+                        PrecoSugerido = item.ValorUnitario,
+                        Justificativa = item.Justificativa,
+                    })
+                    .ToList(),
+            })
+            .ToList();
+
+        return new PaginatedResultDto<SolicitacaoResultDto>(
+            listaDeDtos,
+            totalCount,
+            pageNumber,
+            pageSize
+        );
+    }
 }

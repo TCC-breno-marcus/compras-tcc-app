@@ -144,4 +144,33 @@ public class SolicitacaoController : ControllerBase
 
         return Ok(resultadoPaginado);
     }
+
+    [HttpGet]
+    [Authorize(Roles = "Admin,Gestor")]
+    public async Task<IActionResult> GetAllSolicitacoes(
+        [FromQuery] long? solicitanteId,
+        [FromQuery] long? gestorId,
+        [FromQuery] string? tipo,
+        [FromQuery] DateTime? dataInicial,
+        [FromQuery] DateTime? dataFinal,
+        [FromQuery] string? externalId,
+        [FromQuery] string? sortOrder = "desc",
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 10
+    )
+    {
+        var resultadoPaginado = await _solicitacaoService.GetAllAsync(
+            solicitanteId,
+            gestorId,
+            tipo,
+            dataInicial,
+            dataFinal,
+            externalId,
+            sortOrder,
+            pageNumber,
+            pageSize
+        );
+
+        return Ok(resultadoPaginado);
+    }
 }
