@@ -5,7 +5,7 @@ namespace Services.Interfaces
 {
     public interface IConfiguracaoService
     {
-        Task<DateTime?> GetPrazoSubmissaoAsync();
-        Task SetPrazoSubmissaoAsync(DateTime novaData);
+        Task<ConfiguracaoDto> GetConfiguracoesAsync();
+        Task UpdateConfiguracoesAsync(UpdateConfiguracaoDto dto);
     }
 }

@@ -9,7 +9,16 @@ public class ConfiguracaoService : IConfiguracaoService
 {
     private readonly AppDbContext _context;
     private readonly ILogger<ConfiguracaoService> _logger;
-    private const string ChavePrazoSubmissao = "PrazoSubmissaoSolicitacoes";
+
+    private static class Keys
+    {
+        public const string PrazoSubmissao = "PrazoSubmissaoSolicitacoes";
+        public const string MaxQuantidade = "MaxQuantidadePorItem";
+        public const string MaxItens = "MaxItensDiferentesPorSolicitacao";
+        public const string EmailContato = "EmailContatoPrincipal";
+        public const string EmailNotificacoes = "EmailParaNotificacoes";
+        public const string AutoCadastro = "PermitirAutoCadastro";
+    }
 
     public ConfiguracaoService(AppDbContext context, ILogger<ConfiguracaoService> logger)
     {
@@ -17,33 +26,153 @@ public class ConfiguracaoService : IConfiguracaoService
         _logger = logger;
     }
 
-    public async Task<DateTime?> GetPrazoSubmissaoAsync()
+    public async Task<ConfiguracaoDto> GetConfiguracoesAsync()
     {
-        var config = await _context.Configuracoes.FindAsync(ChavePrazoSubmissao);
-        if (config != null && DateTime.TryParse(config.Valor, out var data))
+        var configs = await _context.Configuracoes.ToDictionaryAsync(c => c.Chave, c => c.Valor);
+
+        var dto = new ConfiguracaoDto
         {
-            return data;
-        }
-        return null;
+            PrazoSubmissao =
+                configs.TryGetValue(Keys.PrazoSubmissao, out string? prazoStr)
+                && DateTime.TryParse(prazoStr, out var prazo)
+                    ? prazo
+                    : null,
+            MaxItensDiferentesPorSolicitacao =
+                configs.TryGetValue(Keys.MaxItens, out string? maxItensStr)
+                && int.TryParse(maxItensStr, out var maxItens)
+                    ? maxItens
+                    : 99, // Default
+
+            MaxQuantidadePorItem =
+                configs.TryGetValue(Keys.MaxQuantidade, out string? maxQuantidadeStr)
+                && int.TryParse(maxQuantidadeStr, out var maxQuantidade)
+                    ? maxQuantidade
+                    : 9999, // Default
+
+            EmailContatoPrincipal = configs.GetValueOrDefault(
+                Keys.EmailContato,
+                "nao-configurado@sistema.com"
+            ),
+            EmailParaNotificacoes = configs.GetValueOrDefault(
+                Keys.EmailNotificacoes,
+                "nao-configurado@sistema.com"
+            ),
+
+            PermitirAutoCadastro =
+                configs.TryGetValue(Keys.AutoCadastro, out string? autoCadastroStr)
+                && bool.TryParse(autoCadastroStr, out var autoCadastro)
+                && autoCadastro,
+        };
+
+        return dto;
     }
 
-    public async Task SetPrazoSubmissaoAsync(DateTime novaData)
+    public async Task UpdateConfiguracoesAsync(UpdateConfiguracaoDto dto)
     {
-        var config = await _context.Configuracoes.FindAsync(ChavePrazoSubmissao);
-        if (config == null)
+        var chavesParaAtualizar = new List<string>
         {
-            config = new Configuracao
+            Keys.PrazoSubmissao,
+            Keys.MaxItens,
+            Keys.MaxQuantidade,
+            Keys.EmailContato,
+            Keys.EmailNotificacoes,
+            Keys.AutoCadastro,
+        };
+
+        var configsDoBanco = await _context
+            .Configuracoes.Where(c => chavesParaAtualizar.Contains(c.Chave))
+            .ToDictionaryAsync(c => c.Chave);
+
+        if (dto.PrazoSubmissao.HasValue)
+        {
+            var valor = dto.PrazoSubmissao.Value.ToUniversalTime().ToString("o");
+            if (configsDoBanco.TryGetValue(Keys.PrazoSubmissao, out var config))
             {
-                Chave = ChavePrazoSubmissao,
-                Valor = novaData.ToUniversalTime().ToString("o"),
-            };
-            await _context.Configuracoes.AddAsync(config);
+                config.Valor = valor;
+            }
+            else
+            {
+                await _context.Configuracoes.AddAsync(
+                    new Configuracao { Chave = Keys.PrazoSubmissao, Valor = valor }
+                );
+            }
         }
-        else
+
+        if (dto.MaxItensDiferentesPorSolicitacao.HasValue)
         {
-            config.Valor = novaData.ToUniversalTime().ToString("o");
+            var valor = dto.MaxItensDiferentesPorSolicitacao.Value.ToString();
+            if (configsDoBanco.TryGetValue(Keys.MaxItens, out var config))
+            {
+                config.Valor = valor;
+            }
+            else
+            {
+                await _context.Configuracoes.AddAsync(
+                    new Configuracao { Chave = Keys.MaxItens, Valor = valor }
+                );
+            }
         }
-        config.Valor = novaData.ToUniversalTime().ToString("o");
+
+        if (dto.MaxQuantidadePorItem.HasValue)
+        {
+            var valor = dto.MaxQuantidadePorItem.Value.ToString();
+            if (configsDoBanco.TryGetValue(Keys.MaxQuantidade, out var config))
+            {
+                config.Valor = valor;
+            }
+            else
+            {
+                await _context.Configuracoes.AddAsync(
+                    new Configuracao { Chave = Keys.MaxQuantidade, Valor = valor }
+                );
+            }
+        }
+
+        if (!string.IsNullOrEmpty(dto.EmailContatoPrincipal))
+        {
+            var valor = dto.EmailContatoPrincipal.ToString();
+            if (configsDoBanco.TryGetValue(Keys.EmailContato, out var config))
+            {
+                config.Valor = valor;
+            }
+            else
+            {
+                await _context.Configuracoes.AddAsync(
+                    new Configuracao { Chave = Keys.EmailContato, Valor = valor }
+                );
+            }
+        }
+
+        if (!string.IsNullOrEmpty(dto.EmailParaNotificacoes))
+        {
+            var valor = dto.EmailParaNotificacoes.ToString();
+            if (configsDoBanco.TryGetValue(Keys.EmailNotificacoes, out var config))
+            {
+                config.Valor = valor;
+            }
+            else
+            {
+                await _context.Configuracoes.AddAsync(
+                    new Configuracao { Chave = Keys.EmailNotificacoes, Valor = valor }
+                );
+            }
+        }
+
+        if (dto.PermitirAutoCadastro.HasValue)
+        {
+            var valor = dto.PermitirAutoCadastro.Value.ToString();
+            if (configsDoBanco.TryGetValue(Keys.AutoCadastro, out var config))
+            {
+                config.Valor = valor;
+            }
+            else
+            {
+                await _context.Configuracoes.AddAsync(
+                    new Configuracao { Chave = Keys.AutoCadastro, Valor = valor }
+                );
+            }
+        }
+
         await _context.SaveChangesAsync();
     }
 }

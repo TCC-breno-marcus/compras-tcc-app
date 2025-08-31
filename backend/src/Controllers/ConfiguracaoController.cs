@@ -6,35 +6,76 @@ using Microsoft.EntityFrameworkCore;
 using Models.Dtos;
 using Services.Interfaces;
 
-[ApiController]
-[Route("api/[controller]")]
-[Authorize]
-public class ConfiguracaoController : ControllerBase
+namespace Controllers
 {
-    private readonly IConfiguracaoService _configService;
-    private readonly AppDbContext _context;
-
-    public ConfiguracaoController(IConfiguracaoService configService, AppDbContext context)
+    [ApiController]
+    [Route("api/[controller]")]
+    [Authorize]
+    public class ConfiguracaoController : ControllerBase
     {
-        _configService = configService;
-        _context = context;
-    }
+        private readonly IConfiguracaoService _configService;
+        private readonly ILogger<ConfiguracaoController> _logger;
 
-    [HttpGet("prazo-submissao")]
-    [Authorize(Roles = "Solicitante,Gestor,Admin")]
-    public async Task<IActionResult> GetPrazoSubmissao()
-    {
-        var data = await _configService.GetPrazoSubmissaoAsync();
-        if (data == null)
-            return NotFound("Prazo para submissão ainda não definido.");
-        return Ok(new { prazoSubmissao = data });
-    }
+        // Mantenha apenas este construtor
+        public ConfiguracaoController(
+            IConfiguracaoService configService,
+            AppDbContext context,
+            ILogger<ConfiguracaoController> logger
+        )
+        {
+            _configService = configService;
+            _logger = logger;
+        }
 
-    [HttpPut("prazo-submissao")]
-    [Authorize(Roles = "Gestor,Admin")]
-    public async Task<IActionResult> SetPrazoSubmissao([FromBody] UpdatePrazoDto dto)
-    {
-        await _configService.SetPrazoSubmissaoAsync(dto.NovaData);
-        return NoContent();
+        [HttpGet]
+        [ProducesResponseType(typeof(ConfiguracaoDto), 200)]
+        [ProducesResponseType(500)]
+        [Authorize(Roles = "Admin,Gestor,Solicitante")]
+        public async Task<IActionResult> GetConfiguracoes()
+        {
+            try
+            {
+                var configs = await _configService.GetConfiguracoesAsync();
+                return Ok(configs);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ocorreu um erro não tratado ao buscar as configurações.");
+                return StatusCode(
+                    500,
+                    new { message = "Ocorreu um erro interno ao buscar as configurações." }
+                );
+            }
+        }
+
+        [HttpPatch]
+        [ProducesResponseType(typeof(ConfiguracaoDto), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        [Authorize(Roles = "Admin,Gestor")]
+        public async Task<IActionResult> UpdateConfiguracoes([FromBody] UpdateConfiguracaoDto dto)
+        {
+            try
+            {
+                await _configService.UpdateConfiguracoesAsync(dto);
+                var configsAtualizadas = await _configService.GetConfiguracoesAsync();
+                return Ok(configsAtualizadas);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ocorreu um erro não tratado ao atualizar as configurações.");
+                return StatusCode(
+                    500,
+                    new
+                    {
+                        message = "Ocorreu um erro interno no servidor. Por favor, tente novamente mais tarde.",
+                    }
+                );
+            }
+        }
     }
 }
