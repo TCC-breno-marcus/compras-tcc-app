@@ -30,7 +30,8 @@ public class SolicitacaoService : ISolicitacaoService
         long pessoaId
     )
     {
-        var prazoSubmissao = await _configuracaoService.GetPrazoSubmissaoAsync();
+        var configuracoes = await _configuracaoService.GetConfiguracoesAsync();
+        var prazoSubmissao = configuracoes.PrazoSubmissao;
         if (prazoSubmissao.HasValue && DateTime.UtcNow > prazoSubmissao.Value)
         {
             string prazoSubmissaoFormatado = prazoSubmissao.Value.ToString("dd/MM/yyyy 'às' HH:mm");
@@ -131,7 +132,8 @@ public class SolicitacaoService : ISolicitacaoService
         long pessoaId
     )
     {
-        var prazoSubmissao = await _configuracaoService.GetPrazoSubmissaoAsync();
+        var configuracoes = await _configuracaoService.GetConfiguracoesAsync();
+        var prazoSubmissao = configuracoes.PrazoSubmissao;
         if (prazoSubmissao.HasValue && DateTime.UtcNow > prazoSubmissao.Value)
         {
             string prazoSubmissaoFormatado = prazoSubmissao.Value.ToString("dd/MM/yyyy 'às' HH:mm");
@@ -236,7 +238,8 @@ public class SolicitacaoService : ISolicitacaoService
         await using var transaction = await _context.Database.BeginTransactionAsync();
         try
         {
-            var prazoSubmissao = await _configuracaoService.GetPrazoSubmissaoAsync();
+            var configuracoes = await _configuracaoService.GetConfiguracoesAsync();
+            var prazoSubmissao = configuracoes.PrazoSubmissao;
             if (prazoSubmissao.HasValue && DateTime.UtcNow > prazoSubmissao.Value)
             {
                 string prazoSubmissaoFormatado = prazoSubmissao.Value.ToString(
