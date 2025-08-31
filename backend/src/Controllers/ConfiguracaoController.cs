@@ -49,7 +49,7 @@ namespace Controllers
         }
 
         [HttpPatch]
-        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(ConfiguracaoDto), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
         [Authorize(Roles = "Admin,Gestor")]
@@ -58,7 +58,8 @@ namespace Controllers
             try
             {
                 await _configService.UpdateConfiguracoesAsync(dto);
-                return NoContent();
+                var configsAtualizadas = await _configService.GetConfiguracoesAsync();
+                return Ok(configsAtualizadas);
             }
             catch (InvalidOperationException ex)
             {

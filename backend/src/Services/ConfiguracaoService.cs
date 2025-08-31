@@ -44,7 +44,7 @@ public class ConfiguracaoService : IConfiguracaoService
                     : 99, // Default
 
             MaxQuantidadePorItem =
-                configs.TryGetValue(Keys.MaxItens, out string? maxQuantidadeStr)
+                configs.TryGetValue(Keys.MaxQuantidade, out string? maxQuantidadeStr)
                 && int.TryParse(maxQuantidadeStr, out var maxQuantidade)
                     ? maxQuantidade
                     : 9999, // Default
