@@ -6,6 +6,7 @@ import { computed, ref } from 'vue'
 import { useMySolicitationListStore } from '@/features/solicitations/stores/mySolicitationList'
 import { useSolicitationStore } from '@/features/solicitations/stores/solicitationStore'
 import { useSolicitationCartStore } from '@/features/solicitations/stores/solicitationCartStore'
+import { useSettingStore } from '@/features/settings/stores/settingStore'
 
 export const useAuthStore = defineStore(
   'auth',
@@ -23,6 +24,9 @@ export const useAuthStore = defineStore(
       try {
         const response = await authService.login(credentials)
         token.value = response.token
+
+        await useSettingStore().fetchSettings()
+
       } catch (error) {
         console.error('Falha na ação de login da store:', error)
         logout()

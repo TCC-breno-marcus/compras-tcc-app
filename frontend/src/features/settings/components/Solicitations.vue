@@ -1,27 +1,41 @@
 <script setup lang="ts">
-import { ref, onMounted, inject, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useSettingStore } from '../stores/settingStore'
-import { DatePicker, FloatLabel, InputNumber } from 'primevue'
-import { SettingsContextKey } from '../settings.keys'
-import { formatDate } from '@/utils/dateUtils'
+import { DatePicker, InputNumber, Button, Card } from 'primevue'
+
+import { formatDate, parseDateString } from '@/utils/dateUtils'
 import type { Setting } from '../types'
 
-const settingsContext = inject(SettingsContextKey)
-
 const settingsStore = useSettingStore()
-// 'settings' é o estado atual, 'settingsBackup' é a cópia para o 'cancelar'
 const { settings, settingsBackup, isLoading } = storeToRefs(settingsStore)
 
 const isEditing = ref(false)
 
-const formData = ref<Setting>({
-  maxItensSolicitacao: 0,
-  prazoSubmissao: null,
+const formData = ref<Partial<Setting>>({
+  maxQuantidadePorItem: 0,
+  maxItensDiferentesPorSolicitacao: 0,
+  emailContatoPrincipal: '',
+  emailParaNotificacoes: '',
+  permitirAutoCadastro: true,
+})
+
+const prazoSubmissaoParaDatePicker = computed({
+  get() {
+    return settings.value ? parseDateString(settings.value.prazoSubmissao) : null
+  },
+
+  set(newValue: Date | null) {
+    if (settings.value) {
+      settings.value.prazoSubmissao = formatDate(newValue, 'iso')
+    }
+  },
 })
 
 onMounted(() => {
-  settingsStore.fetchSettings()
+  if (!settings.value) {
+    settingsStore.fetchSettings()
+  }
 })
 
 const handleSave = async () => {
@@ -32,15 +46,15 @@ const handleSave = async () => {
 }
 
 const handleCancel = () => {
-  settingsStore.$reset() // Reseta para o valor do backup
   isEditing.value = false
+  // settingsStore.$reset() // Reseta para o valor do backup
 }
 
 watch(
   settings,
   (newSettings) => {
     if (newSettings) {
-      formData.value = { ...newSettings } // Cria uma cópia
+      formData.value = { ...newSettings }
     }
     console.log(formData)
   },
@@ -49,34 +63,81 @@ watch(
 </script>
 
 <template>
-  <div class="flex w-full">
-    <div class="mt-4 surface-card p-4 border-round">
-      <div v-if="settingsContext?.isEditing" class="flex flex-column gap-4">
-        <FloatLabel>
-          <DatePicker
-            v-model="formData.prazoSubmissao"
-            inputId="prazo-picker"
-            class="w-full md:w-14rem"
-          />
-          <label for="prazo-picker">Prazo final para edição</label>
-        </FloatLabel>
-        <FloatLabel>
-          <InputNumber v-model="formData.maxItensSolicitacao" inputId="max-itens-input" />
-          <label for="max-itens-input">Nº Máximo de Itens por Solicitação</label>
-        </FloatLabel>
-      </div>
+  <div class="flex flex-column w-full gap-2">
+    <div class="flex flex-column gap-3">
+      <Card class="mb-4">
+        <template #title>
+          <div class="flex align-items-center gap-2">
+            <i class="pi pi-file-edit text-xl"></i>
+            <span>Regras Gerais de Solicitação</span>
+          </div>
+        </template>
+        <template #content>
+          <ul class="list-none p-0 pt-2 m-0">
+            <li
+              class="flex flex-column sm:flex-row sm:align-items-center justify-content-between mb-2"
+            >
+              <span class="text-color-secondary mb-1">Prazo final para edição</span>
+              <DatePicker
+                v-if="isEditing"
+                v-model="prazoSubmissaoParaDatePicker"
+                inputId="prazo-picker"
+                dateFormat="dd/mm/yy"
+                showIcon
+                class="w-full sm:w-10rem"
+                iconDisplay="input"
+                size="small"
+              />
+              <strong v-else class="text-lg">{{
+                formatDate(formData.prazoSubmissao || null)
+              }}</strong>
+            </li>
+            <li
+              class="flex flex-column sm:flex-row sm:align-items-center justify-content-between mb-2"
+            >
+              <span class="text-color-secondary mb-1">Nº Máximo de Quantidade por Item</span>
+              <InputNumber
+                v-if="isEditing"
+                v-model="formData.maxQuantidadePorItem"
+                inputId="max-qtd-itens-input"
+                :min="1"
+                size="small"
+                inputClass="w-full sm:w-10rem"
+              />
+              <strong v-else class="text-lg">{{ formData.maxQuantidadePorItem }}</strong>
+            </li>
+            <li class="flex flex-column sm:flex-row sm:align-items-center justify-content-between">
+              <span class="text-color-secondary mb-1"
+                >Nº Máximo de Itens Diferentes por Solicitação</span
+              >
+              <InputNumber
+                v-if="isEditing"
+                v-model="formData.maxItensDiferentesPorSolicitacao"
+                inputId="max-itens-input"
+                :min="1"
+                size="small"
+                inputClass="w-full sm:w-10rem"
+              />
+              <strong v-else class="text-lg">{{
+                formData.maxItensDiferentesPorSolicitacao
+              }}</strong>
+            </li>
+          </ul>
+        </template>
+      </Card>
+    </div>
 
-      <div v-else class="flex flex-column gap-3">
-        <div>
-          <label class="block text-sm text-color-secondary">Prazo final para edição</label>
-          <p class="font-medium mt-1">{{ formatDate(formData.prazoSubmissao!) }}a</p>
-        </div>
-        <div>
-          <label class="block text-sm text-color-secondary"
-            >Nº Máximo de Itens por Solicitação</label
-          >
-          <p class="font-medium mt-1">{{ formData.maxItensSolicitacao }}a</p>
-        </div>
+    <div class="flex w-full justify-content-end">
+      <Button
+        v-if="!isEditing"
+        label="Editar"
+        icon="pi pi-pencil"
+        size="small"
+        @click="isEditing = true"
+      />
+      <div v-else class="flex gap-2">
+        <Button label="Cancelar" severity="secondary" size="small" @click="handleCancel" text />
+        <Button label="Salvar Alterações" icon="pi pi-check" size="small" @click="handleSave" />
       </div>
     </div>
   </div>

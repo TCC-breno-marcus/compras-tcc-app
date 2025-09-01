@@ -1,8 +1,8 @@
-export interface PrazoSubmissao {
-  prazoSubmissao: string
-}
-
 export interface Setting {
-  prazoSubmissao: Date | null
-  maxItensSolicitacao: number
+  prazoSubmissao: string
+  maxQuantidadePorItem: number
+  maxItensDiferentesPorSolicitacao: number
+  emailContatoPrincipal: string
+  emailParaNotificacoes: string
+  permitirAutoCadastro: boolean
 }

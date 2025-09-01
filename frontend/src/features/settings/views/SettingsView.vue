@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import { ref, computed, provide } from 'vue'
+import { ref, computed } from 'vue'
 import TabMenu from 'primevue/tabmenu'
 import { useRoute, useRouter } from 'vue-router'
-import { Button } from 'primevue'
-import { SettingsContextKey } from '../settings.keys'
 
 const router = useRouter()
 const route = useRoute()
@@ -38,51 +36,13 @@ const items = ref([
 const activeRoute = computed(() => {
   return items.value.findIndex((item) => item.path === route.path)
 })
-
-const isEditing = ref(false)
-const childActions = ref({
-  save: async () => console.warn('Nenhuma ação de salvar registrada.'),
-  cancel: () => console.warn('Nenhuma ação de cancelar registrada.'),
-})
-
-const handleSave = async () => {
-  await childActions.value.save()
-  isEditing.value = false
-}
-
-const handleCancel = () => {
-  childActions.value.cancel()
-  isEditing.value = false
-}
-
-const registerActions = (actions: { save: () => Promise<void>; cancel: () => void }) => {
-  childActions.value = actions
-}
-
-provide(SettingsContextKey, {
-  isEditing,
-  registerActions,
-})
 </script>
 
+// TODO: terminar toda logica desse componente
 <template>
   <div class="flex flex-column w-full h-full p-2">
     <div class="grid align-items-center">
-      <i class="pi pi-cog"></i>
-      <h2 class="col-12 md:col text-start">Configurações do Sistema</h2>
-      <div>
-        <Button
-          v-if="!isEditing"
-          label="Editar"
-          icon="pi pi-pencil"
-          size="small"
-          @click="isEditing = true"
-        />
-        <div v-else class="flex gap-2">
-          <Button label="Cancelar" severity="secondary" size="small" @click="handleCancel" text />
-          <Button label="Salvar Alterações" icon="pi pi-check" size="small" @click="handleSave" />
-        </div>
-      </div>
+      <h2 class="col text-start">Configurações do Sistema</h2>
     </div>
     <TabMenu :model="items" :activeIndex="activeRoute" />
     <RouterView class="mt-2" />

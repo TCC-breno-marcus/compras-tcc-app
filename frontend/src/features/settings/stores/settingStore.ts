@@ -21,10 +21,6 @@ export const useSettingStore = defineStore('setting', () => {
     isLoading.value = true
     try {
       const response = await settingService.getSettings()
-      if (response.prazoSubmissao) {
-        response.prazoSubmissao = new Date(response.prazoSubmissao)
-      }
-
       settings.value = response
       settingsBackup.value = JSON.parse(JSON.stringify(response))
     } catch (error) {

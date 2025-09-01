@@ -1,10 +1,9 @@
 import { apiClient } from '@/services/apiClient'
-import type { PrazoSubmissao } from '../types'
+import type { Setting } from '../types'
 
 interface ISettingService {
-  getSettings(): Promise<PrazoSubmissao>
-  getPrazoSubmissao(): Promise<PrazoSubmissao>
-  editarPrazoSubmissao(newDate: string): void
+  getSettings(): Promise<Setting>
+  updateSettings(settings: string): void
 }
 
 export const settingService: ISettingService = {
@@ -15,7 +14,7 @@ export const settingService: ISettingService = {
   async getSettings() {
     // TODO:
     try {
-      const response = await apiClient.get<PrazoSubmissao>('/configuracao/prazo-submissao')
+      const response = await apiClient.get<Setting>('/configuracao')
       return response.data
     } catch (error) {
       console.error(`Erro ao buscar o prazo de submissão:`, error)
@@ -24,31 +23,15 @@ export const settingService: ISettingService = {
   },
 
   /**
-   * Busca o prazo de submissão (criação e edição) de solicitações.
-   * @returns O prazo.
+   * Altera somente as configurações passadas no param
+   * @param settings Configurações a serem modificadas
    */
-  async getPrazoSubmissao() {
+  async updateSettings(settings) {
     try {
-      const response = await apiClient.get<PrazoSubmissao>('/configuracao/prazo-submissao')
-      return response.data
+      await apiClient.patch('/configuracao', settings)
     } catch (error) {
-      console.error(`Erro ao buscar o prazo de submissão:`, error)
-      throw new Error('Não foi possível buscar o prazo de submissão.')
-    }
-  },
-
-  /**
-   * Altera o prazo de submissão das solicitações.
-   * @param newDate Nova data no formato "2025-08-15T23:57:32.074Z".
-   */
-  async editarPrazoSubmissao(newDate) {
-    try {
-      await apiClient.put('/configuracao/prazo-submissao', {
-        prazoSubmissao: newDate,
-      })
-    } catch (error) {
-      console.error(`Erro ao alterar o prazo de submissão:`, error)
-      throw new Error('Não foi possível alterar o prazo de submissão.')
+      console.error(`Erro ao alterar as configurações:`, error)
+      throw new Error('Não foi possível alterar as configurações.')
     }
   },
 }
