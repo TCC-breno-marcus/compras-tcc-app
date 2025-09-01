@@ -3,7 +3,7 @@ import type { Setting } from '../types'
 
 interface ISettingService {
   getSettings(): Promise<Setting>
-  updateSettings(settings: string): void
+  updateSettings(settings: Partial<Setting>): Promise<Setting>
 }
 
 export const settingService: ISettingService = {
@@ -12,7 +12,6 @@ export const settingService: ISettingService = {
    * @returns .
    */
   async getSettings() {
-    // TODO:
     try {
       const response = await apiClient.get<Setting>('/configuracao')
       return response.data
@@ -28,7 +27,9 @@ export const settingService: ISettingService = {
    */
   async updateSettings(settings) {
     try {
-      await apiClient.patch('/configuracao', settings)
+      
+      const response = await apiClient.patch<Setting>('/configuracao', settings)
+      return response.data
     } catch (error) {
       console.error(`Erro ao alterar as configurações:`, error)
       throw new Error('Não foi possível alterar as configurações.')

@@ -98,3 +98,15 @@ export function parseDateString(dateString: string | null): Date | null {
     return null
   }
 }
+
+/**
+ * Adicionar  a última hora do dia a uma string que representa uma data.
+ * @param dateString A string no formato dd/mm/aaaa.
+ * @returns A data adicionada com time.
+ */
+export const addTimeEndInDate = (dateString: string): string => {
+  if (dateString.includes('T')) {
+    return dateString
+  }
+  return `${dateString}T23:59:00Z`
+}

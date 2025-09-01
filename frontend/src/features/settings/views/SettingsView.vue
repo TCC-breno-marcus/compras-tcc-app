@@ -38,7 +38,6 @@ const activeRoute = computed(() => {
 })
 </script>
 
-// TODO: terminar toda logica desse componente
 <template>
   <div class="flex flex-column w-full h-full p-2">
     <div class="grid align-items-center">

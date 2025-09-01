@@ -12,10 +12,10 @@ import { useSolicitationCartStore } from '@/features/solicitations/stores/solici
 import { useConfirm } from 'primevue'
 import { CHANGE_SOLICITATION_CONFIRMATION } from '@/utils/confirmationFactoryUtils'
 import SettingsView from '@/features/settings/views/SettingsView.vue'
-import Notifications from '@/features/settings/components/Notifications.vue'
-import General from '@/features/settings/components/General.vue'
-import Solicitations from '@/features/settings/components/Solicitations.vue'
-import UsersAndPermissions from '@/features/settings/components/UsersAndPermissions.vue'
+import NotificationsSettings from '@/features/settings/components/NotificationsSettings.vue'
+import GeneralSettings from '@/features/settings/components/GeneralSettings.vue'
+import SolicitationsSettings from '@/features/settings/components/SolicitationsSettings.vue'
+import UsersAndPermissionsSettings from '@/features/settings/components/UsersAndPermissionsSettings.vue'
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -102,19 +102,19 @@ const router = createRouter({
           children: [
             {
               path: 'geral',
-              component: General,
+              component: GeneralSettings,
             },
             {
               path: 'solicitacoes',
-              component: Solicitations,
+              component: SolicitationsSettings,
             },
             {
               path: 'usuarios',
-              component: UsersAndPermissions,
+              component: UsersAndPermissionsSettings,
             },
             {
               path: 'notificacoes',
-              component: Notifications,
+              component: NotificationsSettings,
             },
           ],
         },

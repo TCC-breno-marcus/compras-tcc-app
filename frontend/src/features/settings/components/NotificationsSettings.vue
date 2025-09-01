@@ -6,7 +6,7 @@ import { InputText, Button, Card } from 'primevue'
 import type { Setting } from '../types'
 
 const settingsStore = useSettingStore()
-const { settings, settingsBackup, isLoading } = storeToRefs(settingsStore)
+const { settings, isLoading } = storeToRefs(settingsStore)
 
 const isEditing = ref(false)
 
@@ -45,6 +45,7 @@ watch(
 )
 </script>
 
+<!-- TODO: ajustar a logica pra replicar igual o SolicitationsSettings -->
 <template>
   <div class="flex flex-column w-full gap-2">
     <div class="flex flex-column gap-3">

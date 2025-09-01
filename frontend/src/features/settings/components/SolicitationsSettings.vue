@@ -3,63 +3,27 @@ import { ref, onMounted, watch, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useSettingStore } from '../stores/settingStore'
 import { DatePicker, InputNumber, Button, Card } from 'primevue'
-
-import { formatDate, parseDateString } from '@/utils/dateUtils'
-import type { Setting } from '../types'
+import { formatDate } from '@/utils/dateUtils'
+import { useSettingsForm } from '@/composables/useSettingsForm'
 
 const settingsStore = useSettingStore()
-const { settings, settingsBackup, isLoading } = storeToRefs(settingsStore)
+const { settings } = storeToRefs(settingsStore)
 
-const isEditing = ref(false)
-
-const formData = ref<Partial<Setting>>({
-  maxQuantidadePorItem: 0,
-  maxItensDiferentesPorSolicitacao: 0,
-  emailContatoPrincipal: '',
-  emailParaNotificacoes: '',
-  permitirAutoCadastro: true,
-})
-
-const prazoSubmissaoParaDatePicker = computed({
-  get() {
-    return settings.value ? parseDateString(settings.value.prazoSubmissao) : null
-  },
-
-  set(newValue: Date | null) {
-    if (settings.value) {
-      settings.value.prazoSubmissao = formatDate(newValue, 'iso')
-    }
-  },
-})
+const {
+  isEditing,
+  isLoading,
+  formData,
+  isDirty,
+  prazoSubmissaoDatePicker,
+  handleSave,
+  handleCancel,
+} = useSettingsForm(settings)
 
 onMounted(() => {
   if (!settings.value) {
     settingsStore.fetchSettings()
   }
 })
-
-const handleSave = async () => {
-  // if (!isSettingsValid(settings.value)) return; // Validação
-
-  // await settingsStore.updateSettings(settings.value)
-  isEditing.value = false
-}
-
-const handleCancel = () => {
-  isEditing.value = false
-  // settingsStore.$reset() // Reseta para o valor do backup
-}
-
-watch(
-  settings,
-  (newSettings) => {
-    if (newSettings) {
-      formData.value = { ...newSettings }
-    }
-    console.log(formData)
-  },
-  { immediate: true, deep: true },
-)
 </script>
 
 <template>
@@ -77,18 +41,19 @@ watch(
             <li
               class="flex flex-column sm:flex-row sm:align-items-center justify-content-between mb-2"
             >
-              <span class="text-color-secondary mb-1">Prazo final para edição</span>
+              <span class="text-color-secondary mb-1">Prazo final para criação/edição</span>
               <DatePicker
                 v-if="isEditing"
-                v-model="prazoSubmissaoParaDatePicker"
+                v-model="prazoSubmissaoDatePicker"
                 inputId="prazo-picker"
                 dateFormat="dd/mm/yy"
                 showIcon
                 class="w-full sm:w-10rem"
                 iconDisplay="input"
                 size="small"
+                :invalid="!prazoSubmissaoDatePicker"
               />
-              <strong v-else class="text-lg">{{
+              <strong v-else class="text-base">{{
                 formatDate(formData.prazoSubmissao || null)
               }}</strong>
             </li>
@@ -104,7 +69,7 @@ watch(
                 size="small"
                 inputClass="w-full sm:w-10rem"
               />
-              <strong v-else class="text-lg">{{ formData.maxQuantidadePorItem }}</strong>
+              <strong v-else class="text-base">{{ formData.maxQuantidadePorItem }}</strong>
             </li>
             <li class="flex flex-column sm:flex-row sm:align-items-center justify-content-between">
               <span class="text-color-secondary mb-1"
@@ -118,7 +83,7 @@ watch(
                 size="small"
                 inputClass="w-full sm:w-10rem"
               />
-              <strong v-else class="text-lg">{{
+              <strong v-else class="text-base">{{
                 formData.maxItensDiferentesPorSolicitacao
               }}</strong>
             </li>
@@ -137,7 +102,7 @@ watch(
       />
       <div v-else class="flex gap-2">
         <Button label="Cancelar" severity="secondary" size="small" @click="handleCancel" text />
-        <Button label="Salvar Alterações" icon="pi pi-check" size="small" @click="handleSave" />
+        <Button label="Salvar Alterações" icon="pi pi-check" size="small" @click="handleSave" :disabled="!isDirty" />
       </div>
     </div>
   </div>
