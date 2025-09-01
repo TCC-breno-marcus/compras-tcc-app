@@ -46,7 +46,7 @@ const { currentSolicitation, isLoading, error, currentSolicitationBackup } =
 
 const deadlineHasExpired = computed(() => {
   if (deadline.value) {
-    return new Date() > deadline.value
+    return new Date() > new Date(deadline.value)
   }
   return false
 })
