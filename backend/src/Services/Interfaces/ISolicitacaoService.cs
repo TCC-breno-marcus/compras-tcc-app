@@ -1,3 +1,4 @@
+using ComprasTccApp.Backend.Enums;
 using ComprasTccApp.Models.Entities.Solicitacoes;
 using Models.Dtos;
 
@@ -32,6 +33,7 @@ public interface ISolicitacaoService
         long? solicitanteId,
         long? gestorId,
         string? tipo,
+        string? unidade,
         DateTime? dataInicial,
         DateTime? dataFinal,
         string? externalId,
