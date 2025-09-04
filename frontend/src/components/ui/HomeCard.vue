@@ -66,7 +66,7 @@ const iconStyle = computed(() => ({
           <template v-else>
             <Button
               :label="props.buttonLabel"
-              @click.stop
+              @click.stop="router.push(props.buttonRoute)"
               icon="pi pi-arrow-right"
               icon-pos="right"
               size="small"
