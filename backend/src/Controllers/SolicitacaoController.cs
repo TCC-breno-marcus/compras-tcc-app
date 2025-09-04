@@ -148,9 +148,10 @@ public class SolicitacaoController : ControllerBase
     [HttpGet]
     [Authorize(Roles = "Admin,Gestor")]
     public async Task<IActionResult> GetAllSolicitacoes(
-        [FromQuery] long? solicitanteId,
+        [FromQuery] long? pessoaId,
         [FromQuery] long? gestorId,
         [FromQuery] string? tipo,
+        [FromQuery] string? unidade,
         [FromQuery] DateTime? dataInicial,
         [FromQuery] DateTime? dataFinal,
         [FromQuery] string? externalId,
@@ -160,9 +161,10 @@ public class SolicitacaoController : ControllerBase
     )
     {
         var resultadoPaginado = await _solicitacaoService.GetAllAsync(
-            solicitanteId,
+            pessoaId,
             gestorId,
             tipo,
+            unidade,
             dataInicial,
             dataFinal,
             externalId,

@@ -1,8 +1,8 @@
+using ComprasTccApp.Backend.Enums;
 using ComprasTccApp.Backend.Extensions;
 using ComprasTccApp.Models.Entities.Itens;
-using ComprasTccApp.Models.Entities.Servidores;
 using ComprasTccApp.Models.Entities.Solicitacoes;
-using ComprasTccApp.Models.Entities.Solicitantes;
+using ComprasTccApp.Services.Interfaces;
 using Database;
 using Microsoft.EntityFrameworkCore;
 using Models.Dtos;
@@ -13,16 +13,19 @@ public class SolicitacaoService : ISolicitacaoService
     private readonly AppDbContext _context;
     private readonly ILogger<SolicitacaoService> _logger;
     private readonly IConfiguracaoService _configuracaoService;
+    private readonly IUsuarioService _usuarioService;
 
     public SolicitacaoService(
         AppDbContext context,
         ILogger<SolicitacaoService> logger,
-        IConfiguracaoService configuracaoService
+        IConfiguracaoService configuracaoService,
+        IUsuarioService usuarioService
     )
     {
         _context = context;
         _logger = logger;
         _configuracaoService = configuracaoService;
+        _usuarioService = usuarioService;
     }
 
     public async Task<SolicitacaoResultDto> CreateGeralAsync(
@@ -40,7 +43,7 @@ public class SolicitacaoService : ISolicitacaoService
             );
         }
 
-        var (servidor, solicitante) = await GetSolicitanteInfoAsync(pessoaId);
+        var (servidor, solicitante) = await _usuarioService.GetSolicitanteInfoAsync(pessoaId);
 
         await using var transaction = await _context.Database.BeginTransactionAsync();
         try
@@ -142,7 +145,7 @@ public class SolicitacaoService : ISolicitacaoService
             );
         }
 
-        var (servidor, solicitante) = await GetSolicitanteInfoAsync(pessoaId);
+        var (servidor, solicitante) = await _usuarioService.GetSolicitanteInfoAsync(pessoaId);
 
         await using var transaction = await _context.Database.BeginTransactionAsync();
         try
@@ -259,7 +262,9 @@ public class SolicitacaoService : ISolicitacaoService
 
             if (!isAdmin)
             {
-                var (servidor, solicitante) = await GetSolicitanteInfoAsync(pessoaId);
+                var (servidor, solicitante) = await _usuarioService.GetSolicitanteInfoAsync(
+                    pessoaId
+                );
                 if (solicitacaoDoBanco.SolicitanteId != solicitante.Id)
                 {
                     throw new UnauthorizedAccessException(
@@ -337,29 +342,6 @@ public class SolicitacaoService : ISolicitacaoService
         }
     }
 
-    private async Task<(Servidor servidor, Solicitante solicitante)> GetSolicitanteInfoAsync(
-        long pessoaId
-    )
-    {
-        var servidor = await _context
-            .Servidores.Include(s => s.Pessoa)
-            .FirstOrDefaultAsync(s => s.PessoaId == pessoaId);
-
-        if (servidor == null)
-            throw new Exception($"Pessoa com ID {pessoaId} não encontrada na tabela Servidor.");
-
-        var solicitante = await _context.Solicitantes.FirstOrDefaultAsync(s =>
-            s.ServidorId == servidor.Id
-        );
-
-        if (solicitante == null)
-            throw new Exception(
-                $"Servidor com ID {servidor.Id} não encontrado na tabela Solicitante."
-            );
-
-        return (servidor, solicitante);
-    }
-
     public async Task<SolicitacaoResultDto?> GetByIdAsync(long id)
     {
         _logger.LogInformation("Buscando solicitação com ID: {Id}", id);
@@ -427,7 +409,7 @@ public class SolicitacaoService : ISolicitacaoService
         int pageSize
     )
     {
-        var (servidor, solicitante) = await GetSolicitanteInfoAsync(pessoaId);
+        var (servidor, solicitante) = await _usuarioService.GetSolicitanteInfoAsync(pessoaId);
 
         _logger.LogInformation("Buscando solicitações para o solicitante ID: {Id}", solicitante.Id);
 
@@ -537,28 +519,31 @@ public class SolicitacaoService : ISolicitacaoService
     }
 
     public async Task<PaginatedResultDto<SolicitacaoResultDto>> GetAllAsync(
-        long? solicitanteId,
+        long? pessoaId,
         long? gestorId,
         string? tipo,
+        string? unidade,
         DateTime? dataInicial,
         DateTime? dataFinal,
         string? externalId,
         string? sortOrder,
         int pageNumber,
         int pageSize
-)
+    )
     {
         _logger.LogInformation("Buscando todas as solicitações com filtros administrativos.");
 
         var query = _context
-            .Solicitacoes
-            .Include(s => s.Solicitante.Servidor.Pessoa)
+            .Solicitacoes.Include(s => s.Solicitante.Servidor.Pessoa)
             .Include("ItemSolicitacao.Item")
             .AsNoTracking();
 
-        if (solicitanteId.HasValue)
+        if (pessoaId.HasValue)
         {
-            query = query.Where(s => s.SolicitanteId == solicitanteId.Value);
+            var (servidor, solicitante) = await _usuarioService.GetSolicitanteInfoAsync(
+                (long)pessoaId
+            );
+            query = query.Where(s => s.SolicitanteId == solicitante.Id);
         }
 
         if (gestorId.HasValue)
@@ -568,6 +553,14 @@ public class SolicitacaoService : ISolicitacaoService
         if (!string.IsNullOrWhiteSpace(tipo))
         {
             query = query.Where(s => EF.Property<string>(s, "TipoSolicitacao") == tipo.ToUpper());
+        }
+        if (!string.IsNullOrEmpty(unidade))
+        {
+            DepartamentoEnum? departamentoEnum = unidade.FromString<DepartamentoEnum>();
+            if (departamentoEnum.HasValue)
+            {
+                query = query.Where(s => s.Solicitante.Unidade == departamentoEnum.Value);
+            }
         }
         if (dataInicial.HasValue)
         {
