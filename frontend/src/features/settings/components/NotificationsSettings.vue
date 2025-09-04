@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useSettingStore } from '../stores/settingStore'
 import { InputText, Button, Card } from 'primevue'
-import type { Setting } from '../types'
 import { useSettingsForm } from '@/composables/useSettingsForm'
 
 const settingsStore = useSettingStore()

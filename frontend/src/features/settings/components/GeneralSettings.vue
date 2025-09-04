@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useSettingStore } from '../stores/settingStore'
 import { InputText, Button, Card } from 'primevue'
-import type { Setting } from '../types'
 import { useSettingsForm } from '@/composables/useSettingsForm'
 
 const settingsStore = useSettingStore()
@@ -26,7 +25,6 @@ onMounted(() => {
 })
 </script>
 
-<!-- TODO: ajustar a logica pra replicar igual o SolicitationsSettings -->
 <template>
   <div class="flex flex-column w-full gap-2">
     <div class="flex flex-column gap-3">
