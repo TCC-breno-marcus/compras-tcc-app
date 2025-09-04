@@ -22,8 +22,6 @@ import CustomBreadcrumb from '@/components/ui/CustomBreadcrumb.vue'
 import { useConfirm, useToast } from 'primevue'
 import { SAVE_CONFIRMATION } from '@/utils/confirmationFactoryUtils'
 import type { Solicitation } from '../types'
-import InputText from 'primevue/inputtext'
-import { FloatLabel } from 'primevue'
 import Textarea from 'primevue/textarea'
 
 const solicitationContext = reactive<SolicitationContext>({
@@ -318,10 +316,6 @@ onMounted(() => {
               rows="3"
               :maxlength="500"
             />
-            <!-- <FloatLabel v-else variant="on" class="w-full">
-              
-              <label for="on_label_justification">Justificativa</label>
-            </FloatLabel> -->
           </template>
         </Card>
       </div>

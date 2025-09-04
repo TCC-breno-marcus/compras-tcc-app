@@ -3,7 +3,6 @@ import ItemSolicitation from './ItemSolicitation.vue'
 import { useSolicitationStore } from '../stores/solicitationStore'
 import { storeToRefs } from 'pinia'
 import { useToast } from 'primevue'
-import type { SolicitationItem } from '../types'
 import Button from 'primevue/button'
 import AddItemDialog from './AddItemDialog.vue'
 import { ref } from 'vue'
@@ -28,9 +27,6 @@ const handleItemRemoveFromDetails = (itemId: number) => {
   })
 }
 
-const handleItemUpdate = (updatedItem: SolicitationItem) => {
-  // ... lógica para atualizar o item dentro do array 'solicitation.value.itens'
-}
 </script>
 
 <template>
@@ -52,7 +48,6 @@ const handleItemUpdate = (updatedItem: SolicitationItem) => {
         :item="item"
         :is-editing="props.isEditing"
         @remove-item="handleItemRemoveFromDetails"
-        @update-item="handleItemUpdate"
       />
     </div>
   </div>
