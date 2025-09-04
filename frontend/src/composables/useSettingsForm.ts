@@ -62,7 +62,7 @@ export function useSettingsForm(initialData: Ref<any>) {
       toast.add({
         severity: 'success',
         summary: 'Sucesso',
-        detail: 'O item foi salvo com sucesso.',
+        detail: 'O ajuste foi salvo com sucesso.',
         life: 3000,
       })
       isEditing.value = false
