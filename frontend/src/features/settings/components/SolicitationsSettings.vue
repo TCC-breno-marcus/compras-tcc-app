@@ -33,8 +33,8 @@ onMounted(() => {
       <Card class="mb-4">
         <template #title>
           <div class="flex align-items-center gap-2">
-            <i class="pi pi-file-edit text-xl"></i>
-            <span>Regras Gerais de Solicitação</span>
+            <i class="pi pi-cog text-xl"></i>
+            <span>Regras de Solicitação</span>
           </div>
         </template>
         <template #content>
