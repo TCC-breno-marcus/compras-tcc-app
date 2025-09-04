@@ -1,17 +1,18 @@
 import { defineStore } from 'pinia'
 import { authService } from '@/features/autentication/services/authService'
-import type { UserCredentials, UserData, UserRegistration } from '@/features/autentication/types'
+import type { UserCredentials, UserRegistration } from '@/features/autentication/types'
 import { isTokenExpired } from '@/utils/jwtHelper'
 import { computed, ref } from 'vue'
 import { useMySolicitationListStore } from '@/features/solicitations/stores/mySolicitationList'
 import { useSolicitationStore } from '@/features/solicitations/stores/solicitationStore'
 import { useSolicitationCartStore } from '@/features/solicitations/stores/solicitationCartStore'
 import { useSettingStore } from '@/features/settings/stores/settingStore'
+import type { User } from '@/features/users/types'
 
 export const useAuthStore = defineStore(
   'auth',
   () => {
-    const user = ref<UserData | null>(null)
+    const user = ref<User | null>(null)
     const token = ref<string | null>(null)
     const departamentos = ref<string[]>([])
 
@@ -26,7 +27,6 @@ export const useAuthStore = defineStore(
         token.value = response.token
 
         await useSettingStore().fetchSettings()
-
       } catch (error) {
         console.error('Falha na ação de login da store:', error)
         logout()

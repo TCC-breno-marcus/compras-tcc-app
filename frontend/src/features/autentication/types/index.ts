@@ -26,13 +26,3 @@ export interface AuthResponse {
   message: string
 }
 
-
-export interface UserData {
-  id: string
-  nome: string
-  email: string
-  telefone: string
-  cpf: string
-  role: string
-  departamento: string
-}
