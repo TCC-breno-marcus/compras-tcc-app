@@ -1,8 +1,7 @@
+using ComprasTccApp.Backend.Enums;
 using ComprasTccApp.Backend.Extensions;
 using ComprasTccApp.Models.Entities.Itens;
-using ComprasTccApp.Models.Entities.Servidores;
 using ComprasTccApp.Models.Entities.Solicitacoes;
-using ComprasTccApp.Models.Entities.Solicitantes;
 using ComprasTccApp.Services.Interfaces;
 using Database;
 using Microsoft.EntityFrameworkCore;
@@ -520,9 +519,10 @@ public class SolicitacaoService : ISolicitacaoService
     }
 
     public async Task<PaginatedResultDto<SolicitacaoResultDto>> GetAllAsync(
-        long? solicitanteId,
+        long? pessoaId,
         long? gestorId,
         string? tipo,
+        string? unidade,
         DateTime? dataInicial,
         DateTime? dataFinal,
         string? externalId,
@@ -538,9 +538,12 @@ public class SolicitacaoService : ISolicitacaoService
             .Include("ItemSolicitacao.Item")
             .AsNoTracking();
 
-        if (solicitanteId.HasValue)
+        if (pessoaId.HasValue)
         {
-            query = query.Where(s => s.SolicitanteId == solicitanteId.Value);
+            var (servidor, solicitante) = await _usuarioService.GetSolicitanteInfoAsync(
+                (long)pessoaId
+            );
+            query = query.Where(s => s.SolicitanteId == solicitante.Id);
         }
 
         if (gestorId.HasValue)
@@ -550,6 +553,14 @@ public class SolicitacaoService : ISolicitacaoService
         if (!string.IsNullOrWhiteSpace(tipo))
         {
             query = query.Where(s => EF.Property<string>(s, "TipoSolicitacao") == tipo.ToUpper());
+        }
+        if (!string.IsNullOrEmpty(unidade))
+        {
+            DepartamentoEnum? departamentoEnum = unidade.FromString<DepartamentoEnum>();
+            if (departamentoEnum.HasValue)
+            {
+                query = query.Where(s => s.Solicitante.Unidade == departamentoEnum.Value);
+            }
         }
         if (dataInicial.HasValue)
         {
