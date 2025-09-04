@@ -25,7 +25,6 @@ onMounted(() => {
 })
 </script>
 
-<!-- TODO: ajustar a logica pra replicar igual o SolicitationsSettings -->
 <template>
   <div class="flex flex-column w-full gap-2">
     <div class="flex flex-column gap-3">

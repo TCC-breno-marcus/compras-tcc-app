@@ -26,7 +26,6 @@ onMounted(() => {
 })
 </script>
 
-<!-- TODO: implementar esses parametros em cada lugar do projeto os deve usar (max de itens e quantidade) -->
 <template>
   <div class="flex flex-column w-full gap-2">
     <div class="flex flex-column gap-3">
