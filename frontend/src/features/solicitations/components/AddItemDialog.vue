@@ -9,6 +9,7 @@ import { useToast } from 'primevue'
 import { storeToRefs } from 'pinia'
 import { useSolicitationStore } from '../stores/solicitationStore'
 import { SolicitationContextKey } from '../keys'
+import { useSettingStore } from '@/features/settings/stores/settingStore'
 
 const props = defineProps<{
   visible: boolean
@@ -20,7 +21,8 @@ const isLoading = ref(false)
 const catalogoBrowserRef = ref()
 const toast = useToast()
 const solicitationStore = useSolicitationStore()
-const { currentSolicitation } = storeToRefs(solicitationStore)
+const settingsStore = useSettingStore()
+const { settings } = storeToRefs(settingsStore)
 
 const emit = defineEmits(['update:visible'])
 
@@ -42,6 +44,24 @@ const addItemSolicitation = (item: Item) => {
       severity: 'info',
       summary: 'Atualizado',
       detail: `Quantidade do item ${item.nome} (${item.catMat}) atualizada.`,
+      life: 3000,
+    })
+  } else if (actionReturn === 'item_limit_exceeded') {
+    const maxItens = settings.value?.maxItensDiferentesPorSolicitacao
+
+    toast.add({
+      severity: 'warn',
+      summary: 'Limite Atingido',
+      detail: `A solicitação só pode ter até ${maxItens} itens diferentes.`,
+      life: 3000,
+    })
+  } else if (actionReturn === 'quantity_limit_exceeded') {
+    const maxQuantity = settings.value?.maxQuantidadePorItem
+
+    toast.add({
+      severity: 'warn',
+      summary: 'Limite Atingido',
+      detail: `A quantidade máxima por item é ${maxQuantity}.`,
       life: 3000,
     })
   }

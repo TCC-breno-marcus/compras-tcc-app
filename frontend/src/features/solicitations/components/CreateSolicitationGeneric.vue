@@ -14,6 +14,7 @@ import { DISCARD_SOLICITATION_CONFIRMATION } from '@/utils/confirmationFactoryUt
 import CustomBreadcrumb from '@/components/ui/CustomBreadcrumb.vue'
 import { CATEGORY_ITEMS_GENERAL, CATEGORY_ITEMS_PATRIMONIALS } from '../constants'
 import { SolicitationContextKey } from '../keys'
+import { useSettingStore } from '@/features/settings/stores/settingStore'
 
 const solicitationContext = inject(SolicitationContextKey)
 
@@ -27,6 +28,8 @@ const toast = useToast()
 const confirm = useConfirm()
 const solicitationCartStore = useSolicitationCartStore()
 const { solicitationItems, justification } = storeToRefs(solicitationCartStore)
+const settingsStore = useSettingStore()
+const { settings } = storeToRefs(settingsStore)
 const catalogoBrowserRef = ref()
 
 const addItemSolicitation = (item: Item) => {
@@ -46,6 +49,24 @@ const addItemSolicitation = (item: Item) => {
       severity: 'info',
       summary: 'Atualizado',
       detail: `Quantidade do item ${item.nome} (${item.catMat}) atualizada.`,
+      life: 3000,
+    })
+  } else if (actionReturn === 'item_limit_exceeded') {
+    const maxItens = settings.value?.maxItensDiferentesPorSolicitacao
+
+    toast.add({
+      severity: 'warn',
+      summary: 'Limite Atingido',
+      detail: `A solicitação só pode ter até ${maxItens} itens diferentes.`,
+      life: 3000,
+    })
+  } else if (actionReturn === 'quantity_limit_exceeded') {
+    const maxQuantity = settings.value?.maxQuantidadePorItem
+
+    toast.add({
+      severity: 'warn',
+      summary: 'Limite Atingido',
+      detail: `A quantidade máxima por item é ${maxQuantity}.`,
       life: 3000,
     })
   }

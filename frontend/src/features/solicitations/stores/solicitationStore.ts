@@ -1,10 +1,11 @@
-import { defineStore } from 'pinia'
+import { defineStore, storeToRefs } from 'pinia'
 import { computed, ref } from 'vue'
 import type { Solicitation } from '@/features/solicitations/types'
 import { solicitationService } from '../services/solicitationService'
 import { dataHasBeenChanged } from '@/utils/objectUtils'
 import type { Item } from '@/features/catalogo/types'
 import { useToast } from 'primevue'
+import { useSettingStore } from '@/features/settings/stores/settingStore'
 
 /**
  * Store para gerenciar estados da view Detalhes da Solicitação
@@ -15,6 +16,9 @@ export const useSolicitationStore = defineStore('solicitation', () => {
   const isLoading = ref(false)
   const error = ref<string | null>(null)
   const toast = useToast()
+
+  const settingsStore = useSettingStore()
+  const { settings } = storeToRefs(settingsStore)
 
   /**
    * Busca uma solicitação específica por ID na API.
@@ -90,9 +94,18 @@ export const useSolicitationStore = defineStore('solicitation', () => {
     const itemExistente = currentSolicitation.value?.itens.find((i) => i.id === item.id)
 
     if (itemExistente) {
+      const maxQuantity = settings.value?.maxQuantidadePorItem
+      if (maxQuantity && itemExistente.quantidade >= maxQuantity) {
+        return 'quantity_limit_exceeded'
+      }
       itemExistente.quantidade++
       return 'incremented'
     } else {
+      const maxItens = settings.value?.maxItensDiferentesPorSolicitacao
+      const currentQttItens = currentSolicitation.value?.itens?.length || 0
+      if (maxItens && currentQttItens >= maxItens) {
+        return 'item_limit_exceeded'
+      }
       currentSolicitation.value?.itens.push({ ...item, quantidade: 1 })
       return 'added'
     }

@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { inject, ref, watch } from 'vue'
 import Button from 'primevue/button'
-import InputNumber from 'primevue/inputnumber'
+import InputNumber, { type InputNumberInputEvent } from 'primevue/inputnumber'
 import InputText from 'primevue/inputtext'
-import { FloatLabel } from 'primevue'
+import { FloatLabel, useToast } from 'primevue'
 import type { SolicitationItem } from '../types'
 import { SolicitationContextKey } from '../keys'
+import { useSettingStore } from '@/features/settings/stores/settingStore'
+import { storeToRefs } from 'pinia'
 
 const props = defineProps<{
   item: SolicitationItem
@@ -15,7 +17,9 @@ const props = defineProps<{
 const emit = defineEmits(['removeItem', 'updateItem'])
 
 const solicitationContext = inject(SolicitationContextKey)
-
+const settingsStore = useSettingStore()
+const { settings } = storeToRefs(settingsStore)
+const toast = useToast()
 const localItem = ref<SolicitationItem>({ ...props.item })
 
 watch(
@@ -32,6 +36,19 @@ const removeItem = () => {
 
 const onFieldUpdate = () => {
   emit('updateItem', localItem.value)
+}
+
+const handleQuantityInput = (event: InputNumberInputEvent) => {
+  const newQuantity = event.value
+  const maxQuantity = settings.value?.maxQuantidadePorItem
+  if (maxQuantity && Number(newQuantity) > maxQuantity) {
+    toast.add({
+      severity: 'warn',
+      summary: 'Limite Atingido',
+      detail: `A quantidade máxima por item é ${maxQuantity}.`,
+      life: 3000,
+    })
+  }
 }
 </script>
 <template>
@@ -58,12 +75,13 @@ const onFieldUpdate = () => {
           v-model="item.quantidade"
           inputId="on_label_qtde"
           :min="1"
-          :max="9999"
+          :max="settings?.maxQuantidadePorItem"
           size="small"
           fluid
           class="w-full"
           inputClass="w-full"
           @update:modelValue="onFieldUpdate"
+          @input="handleQuantityInput"
         />
         <label for="on_label_qtde">Qtde.</label>
       </FloatLabel>
@@ -125,6 +143,9 @@ const onFieldUpdate = () => {
         @update:modelValue="onFieldUpdate"
       />
       <label for="on_label_justification">Justificativa</label>
+      <!-- TODO: esse input acima na pagina de criar solicitação está bugado: 
+       uma linha de divider (borda inferior) está aparecendo antes do input de 
+       justificativa -->
     </FloatLabel>
     <div v-else>
       <span class="text-color-secondary">Justificativa: </span>
