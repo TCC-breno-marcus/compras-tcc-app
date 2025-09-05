@@ -1,3 +1,4 @@
+using ComprasTccApp.Backend.Enums;
 using ComprasTccApp.Backend.Extensions;
 using Database;
 using Microsoft.EntityFrameworkCore;
@@ -18,13 +19,46 @@ namespace Services
         }
 
         public async Task<PaginatedResultDto<ItemPorDepartamentoDto>> GetItensPorDepartamentoAsync(
+            string? searchTerm,
+            string? categoriaNome,
+            string? departamento,
+            string? sortOrder,
             int pageNumber,
-            int pageSize,
-            string? sortOrder
+            int pageSize
         )
         {
-            var todosOsItensSolicitados = await _context
-                .SolicitacaoItens.AsNoTracking()
+            var query = _context.SolicitacaoItens.AsNoTracking();
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                var term = searchTerm.ToLower();
+                query = query.Where(si =>
+                    si.Item.Nome.ToLower().Contains(term)
+                    || si.Item.Descricao.ToLower().Contains(term)
+                    || si.Item.CatMat.ToLower().Contains(term)
+                    || si.Item.Especificacao.ToLower().Contains(term)
+                );
+            }
+
+            if (!string.IsNullOrWhiteSpace(categoriaNome))
+            {
+                query = query.Where(si =>
+                    si.Item.Categoria.Nome.ToLower().Contains(categoriaNome.ToLower())
+                );
+            }
+
+            if (!string.IsNullOrEmpty(departamento))
+            {
+                DepartamentoEnum? departamentoEnum = departamento.FromString<DepartamentoEnum>();
+                if (departamentoEnum.HasValue)
+                {
+                    query = query.Where(s =>
+                        s.Solicitacao.Solicitante.Unidade == departamentoEnum.Value
+                    );
+                }
+            }
+
+            var todosOsItensSolicitados = await query
                 .Include(si => si.Item)
                 .ThenInclude(i => i.Categoria)
                 .Include(si => si.Solicitacao)
