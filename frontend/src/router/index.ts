@@ -16,6 +16,8 @@ import NotificationsSettings from '@/features/settings/components/NotificationsS
 import GeneralSettings from '@/features/settings/components/GeneralSettings.vue'
 import SolicitationsSettings from '@/features/settings/components/SolicitationsSettings.vue'
 import UsersAndPermissionsSettings from '@/features/settings/components/UsersAndPermissionsSettings.vue'
+import UserProfileView from '@/features/autentication/views/UserProfileView.vue'
+import ContactUsView from '@/views/ContactUsView.vue'
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -123,6 +125,16 @@ const router = createRouter({
           name: 'Home',
           meta: { requiresAuth: true, roles: ['Solicitante', 'Gestor', 'Admin'] },
           component: HomeView,
+        },
+        {
+          path: '/perfil',
+          meta: { requiresAuth: true, roles: ['Solicitante', 'Gestor', 'Admin'] },
+          component: UserProfileView,
+        },
+        {
+          path: '/fale-conosco',
+          meta: { requiresAuth: true, roles: ['Solicitante', 'Gestor', 'Admin'] },
+          component: ContactUsView,
         },
         {
           path: '/error',

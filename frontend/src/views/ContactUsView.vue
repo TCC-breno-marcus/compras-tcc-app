@@ -1,0 +1,360 @@
+<script setup lang="ts">
+import { ref, reactive } from 'vue'
+import { useToast } from 'primevue/usetoast'
+import InputText from 'primevue/inputtext'
+import Textarea from 'primevue/textarea'
+import Dropdown from 'primevue/dropdown'
+import Button from 'primevue/button'
+import Toast from 'primevue/toast'
+import Accordion from 'primevue/accordion'
+import AccordionTab from 'primevue/accordiontab'
+
+type FormData = {
+  nome: string
+  email: string
+  telefone: string
+  assunto: string
+  mensagem: string
+}
+
+const toast = useToast()
+const loading = ref(false)
+
+const form = reactive<FormData>({
+  nome: '',
+  email: '',
+  telefone: '',
+  assunto: '',
+  mensagem: '',
+})
+
+const assuntos = ref([
+  { label: 'Dúvidas sobre produtos', value: 'produtos' },
+  { label: 'Suporte técnico', value: 'suporte' },
+  { label: 'Vendas e orçamentos', value: 'vendas' },
+  { label: 'Parcerias', value: 'parcerias' },
+  { label: 'Reclamações', value: 'reclamacoes' },
+  { label: 'Outros', value: 'outros' },
+])
+
+const errors = ref<Partial<FormData>>({})
+
+const validateForm = () => {
+  errors.value = {}
+
+  if (!form.nome.trim()) {
+    errors.value.nome = 'Nome é obrigatório'
+  }
+
+  if (!form.email.trim()) {
+    errors.value.email = 'E-mail é obrigatório'
+  } else if (!/\S+@\S+\.\S+/.test(form.email)) {
+    errors.value.email = 'E-mail inválido'
+  }
+
+  if (!form.assunto) {
+    errors.value.assunto = 'Assunto é obrigatório'
+  }
+
+  if (!form.mensagem.trim()) {
+    errors.value.mensagem = 'Mensagem é obrigatória'
+  } else if (form.mensagem.trim().length < 10) {
+    errors.value.mensagem = 'Mensagem deve ter pelo menos 10 caracteres'
+  }
+
+  return Object.keys(errors.value).length === 0
+}
+
+const submitForm = async () => {
+  if (!validateForm()) {
+    toast.add({
+      severity: 'error',
+      summary: 'Erro',
+      detail: 'Por favor, corrija os campos em vermelho',
+      life: 5000,
+    })
+    return
+  }
+
+  loading.value = true
+
+  try {
+    await new Promise((resolve) => setTimeout(resolve, 2000))
+
+    toast.add({
+      severity: 'success',
+      summary: 'Sucesso!',
+      detail: 'Sua mensagem foi enviada com sucesso. Retornaremos em breve!',
+      life: 5000,
+    })
+
+    clearForm()
+  } catch (error) {
+    toast.add({
+      severity: 'error',
+      summary: 'Erro',
+      detail: 'Erro ao enviar mensagem. Tente novamente mais tarde.',
+      life: 5000,
+    })
+  } finally {
+    loading.value = false
+  }
+}
+
+const clearForm = () => {
+  form.nome = ''
+  form.email = ''
+  form.telefone = ''
+  form.assunto = ''
+  form.mensagem = ''
+  errors.value = {}
+}
+</script>
+
+<template>
+  <div class="min-h-screen py-2">
+    <div class="max-w-6xl mx-auto px-2">
+      <!-- Header -->
+      <div class="mb-4">
+        <h2 class="text-xl mb-2">Fale Conosco</h2>
+        <p class="max-w-2xl mx-auto">
+          Estamos aqui para ajudar! Entre em contato conosco através do formulário abaixo ou use uma
+          de nossas outras formas de contato.
+        </p>
+      </div>
+
+      <div class="grid">
+        <!-- Formulário -->
+        <div class="col-12 lg:col-6">
+          <div class="rounded-lg shadow-md p-6">
+            <h3 class="font-semibold mb-6">Envie sua Mensagem</h3>
+
+            <form @submit.prevent="submitForm" class="space-y-4">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="field">
+                  <label for="nome" class="block text-sm font-medium text-gray-700 mb-2">
+                    Nome *
+                  </label>
+                  <InputText
+                    id="nome"
+                    v-model="form.nome"
+                    placeholder="Seu nome completo"
+                    class="w-full"
+                    :class="{ 'p-invalid': errors.nome }"
+                    size="small"
+                  />
+                  <small v-if="errors.nome" class="p-error">{{ errors.nome }}</small>
+                </div>
+
+                <div class="field">
+                  <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                    E-mail *
+                  </label>
+                  <InputText
+                    id="email"
+                    v-model="form.email"
+                    type="email"
+                    placeholder="seu@email.com"
+                    class="w-full"
+                    :class="{ 'p-invalid': errors.email }"
+                    size="small"
+                  />
+                  <small v-if="errors.email" class="p-error">{{ errors.email }}</small>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="field">
+                  <label for="telefone" class="block text-sm font-medium text-gray-700 mb-2">
+                    Telefone
+                  </label>
+                  <InputText
+                    id="telefone"
+                    v-model="form.telefone"
+                    placeholder="(79) 99999-9999"
+                    class="w-full"
+                    size="small"
+                  />
+                </div>
+
+                <div class="field">
+                  <label for="assunto" class="block text-sm font-medium text-gray-700 mb-2">
+                    Assunto *
+                  </label>
+                  <Dropdown
+                    id="assunto"
+                    v-model="form.assunto"
+                    :options="assuntos"
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Selecione um assunto"
+                    class="w-full"
+                    :class="{ 'p-invalid': errors.assunto }"
+                    size="small"
+                  />
+                  <small v-if="errors.assunto" class="p-error">{{ errors.assunto }}</small>
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="mensagem" class="block text-sm font-medium text-gray-700 mb-2">
+                  Mensagem *
+                </label>
+                <Textarea
+                  id="mensagem"
+                  v-model="form.mensagem"
+                  rows="6"
+                  placeholder="Digite sua mensagem aqui..."
+                  class="w-full"
+                  :class="{ 'p-invalid': errors.mensagem }"
+                  size="small"
+                />
+                <small v-if="errors.mensagem" class="p-error">{{ errors.mensagem }}</small>
+              </div>
+
+              <div class="flex justify-content-end gap-2 pt-2">
+                <Button
+                  type="button"
+                  label="Limpar"
+                  icon="pi pi-times"
+                  class="p-button-outlined"
+                  @click="clearForm"
+                  size="small"
+                />
+                <Button
+                  type="submit"
+                  label="Enviar Mensagem"
+                  icon="pi pi-send"
+                  :loading="loading"
+                  size="small"
+                />
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Informações de Contato -->
+        <div class="col-12 lg:col-6 mt-4">
+          <div class="rounded-lg shadow-md p-6 h-fit">
+            <h3 class="font-semibold mb-6">Informações de Contato</h3>
+
+            <div class="flex gap-4">
+              <div class="flex items-start gap-2">
+                <i class="pi pi-phone text-primary mt-1"></i>
+                <div>
+                  <span class="font-semibold">Telefone</span>
+                  <p>(79) 3333-4444</p>
+                  <p>(79) 99999-8888</p>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-2">
+                <i class="pi pi-envelope text-primary mt-1"></i>
+                <div>
+                  <span class="font-semibold">E-mail</span>
+                  <p>contato@empresa.com.br</p>
+                  <p>suporte@empresa.com.br</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FAQ Section -->
+      <div class="mt-12">
+        <div class="rounded-lg shadow-md p-4">
+          <h3 class="font-semibold mb-4">Perguntas Frequentes</h3>
+
+          <Accordion :activeIndex="0">
+            <AccordionTab header="Como posso acompanhar o status do meu pedido?">
+              <p>
+                Você pode acompanhar seu pedido através da área do cliente em nosso site, utilizando
+                o número do pedido que foi enviado por e-mail após a confirmação da compra.
+              </p>
+            </AccordionTab>
+
+            <AccordionTab header="Qual o prazo de entrega?">
+              <p>
+                O prazo de entrega varia de acordo com sua localização. Para Aracaju e região
+                metropolitana, o prazo é de 1 a 2 dias úteis. Para outras localidades, consulte
+                nossa política de entregas.
+              </p>
+            </AccordionTab>
+
+            <AccordionTab header="Como posso trocar ou devolver um produto?">
+              <p>
+                Você tem até 30 dias para trocar ou devolver um produto. Entre em contato conosco
+                através do formulário acima ou pelos nossos canais de atendimento para iniciar o
+                processo.
+              </p>
+            </AccordionTab>
+
+            <AccordionTab header="Vocês atendem em todo o Brasil?">
+              <p>
+                Sim, atendemos em todo território nacional. Os prazos e custos de entrega podem
+                variar de acordo com a localização. Consulte as condições durante o processo de
+                compra.
+              </p>
+            </AccordionTab>
+          </Accordion>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.field {
+  margin-bottom: 1rem;
+}
+
+.field-checkbox {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: flex-start;
+}
+
+.p-error {
+  color: #e24c4c;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  display: block;
+}
+
+.p-invalid {
+  border-color: #e24c4c;
+}
+
+/* Customizações adicionais */
+.p-button {
+  transition: all 0.3s ease;
+}
+
+.p-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.bg-gray-50 {
+  background-color: #f9fafb;
+}
+
+.shadow-md {
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.rounded-lg {
+  border-radius: 0.5rem;
+}
+
+.text-primary {
+  color: var(--primary-color, #007bff);
+}
+
+.hover\:underline:hover {
+  text-decoration: underline;
+}
+</style>
