@@ -26,9 +26,12 @@ namespace Controllers
         [ProducesResponseType(typeof(PaginatedResultDto<ItemPorDepartamentoDto>), 200)]
         [ProducesResponseType(500)]
         public async Task<IActionResult> Get(
+            [FromQuery] string? searchTerm,
+            [FromQuery] string? categoriaNome,
+            [FromQuery] string? departamento,
+            [FromQuery] string? sortOrder = "asc",
             [FromQuery] int pageNumber = 1,
-            [FromQuery] int pageSize = 50,
-            [FromQuery] string? sortOrder = "asc"
+            [FromQuery] int pageSize = 50
         )
         {
             try
@@ -37,9 +40,12 @@ namespace Controllers
                     "Recebida requisição para gerar relatório de itens solicitados por departamento."
                 );
                 var resultado = await _relatorioService.GetItensPorDepartamentoAsync(
+                    searchTerm,
+                    categoriaNome,
+                    departamento,
+                    sortOrder,
                     pageNumber,
-                    pageSize,
-                    sortOrder
+                    pageSize
                 );
                 return Ok(resultado);
             }
