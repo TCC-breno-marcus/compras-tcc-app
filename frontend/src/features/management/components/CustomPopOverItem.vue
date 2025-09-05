@@ -13,7 +13,7 @@ defineProps<{
 </script>
 
 <template>
-  <div v-if="item" class="p-4" style="max-width: 400px; min-width: 350px">
+  <div v-if="item" class="p-4" style="max-width: 450px; min-width: 350px">
     <div class="flex gap-3 mb-4">
       <Avatar
         v-if="item.linkImagem"
@@ -22,7 +22,13 @@ defineProps<{
         size="xlarge"
         class="flex-shrink-0"
       />
-      <Avatar v-else icon="pi pi-image" shape="circle" size="xlarge" class="flex-shrink-0" />
+      <Avatar
+        v-else
+        icon="pi pi-image"
+        shape="circle"
+        size="xlarge"
+        class="flex-shrink-0 bg-transparent"
+      />
 
       <div class="flex-1">
         <h4 class="m-0 mb-0 text-lg font-medium">{{ item.nome }}</h4>
@@ -33,9 +39,17 @@ defineProps<{
         <!-- <p class="m-0 text-sm text-color-secondary line-height-3">
           {{ item.descricao }} especificacao
         </p> -->
-        <p class="m-0 text-sm text-color-secondary line-height-3">
-          Categoria: {{ item.categoriaNome }}
-        </p>
+      </div>
+    </div>
+
+    <div class="space-y-2">
+      <div class="flex justify-content-between align-items-center">
+        <span class="text-sm font-medium">Categoria:</span>
+        <span class="text-sm text-color-secondary">{{ item.categoriaNome }}</span>
+      </div>
+      <div v-if="item.especificacao" class="flex justify-content-between align-items-center">
+        <span class="text-sm font-medium">Especificação:</span>
+        <span class="text-sm text-color-secondary">{{ item.especificacao }}</span>
       </div>
     </div>
 
