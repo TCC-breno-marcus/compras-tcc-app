@@ -6,6 +6,7 @@ namespace Models.Dtos
         public required string Nome { get; set; }
         public required string CatMat { get; set; }
         public string? Descricao { get; set; }
+        public string? Especificacao { get; set; }
         public required string CategoriaNome { get; set; }
         public string? LinkImagem { get; set; }
         public decimal PrecoSugerido { get; set; }

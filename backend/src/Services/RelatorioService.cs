@@ -76,11 +76,8 @@ namespace Services
                         Id = group.Key,
                         Nome = itemExemplo.Nome,
                         CatMat = itemExemplo.CatMat,
-                        // Trunca a descrição para no máximo 100 caracteres, adicionando "..." se for maior
-                        Descricao =
-                            itemExemplo.Descricao.Length > 100
-                                ? itemExemplo.Descricao.Substring(0, 100) + "..."
-                                : itemExemplo.Descricao,
+                        Descricao = itemExemplo.Descricao,
+                        Especificacao = itemExemplo.Especificacao,
                         CategoriaNome = itemExemplo.Categoria.Nome,
                         // TODO: o link abaixo deve estar em variável de ambiente
                         LinkImagem = string.IsNullOrWhiteSpace(itemExemplo.LinkImagem)
