@@ -98,57 +98,109 @@ onMounted(() => {
 <template>
   <div class="flex flex-column w-full gap-2">
     <div class="flex flex-column gap-3">
-      <Card>
-        <template #title>
-          <div class="flex align-items-center gap-2">
-            <i class="pi pi-user-plus text-xl"></i>
-            <span>Criação de Novos Usuários</span>
+      <Card class="shadow-lg border-none">
+        <template #content>
+          <div v-if="isLoading" class="p-4">
+            <div class="flex flex-column gap-4">
+              <div class="flex justify-content-between align-items-center">
+                <Skeleton width="60%" height="1.2rem" />
+                <Skeleton width="4rem" height="2rem" />
+              </div>
+            </div>
+          </div>
+
+          <div v-else class="flex flex-column gap-2">
+            <!-- User Registration Setting -->
+            <div class="flex justify-content-between">
+              <div>
+                <div class="flex align-items-center gap-2">
+                  <i class="pi pi-user-plus text-primary"></i>
+                  <div>
+                    <span class="font-semibold text-gray-900"
+                      >Permitir Auto-Cadastro de Novos Usuários</span
+                    >
+                    <p class="text-sm text-gray-500 mt-1 mb-0">
+                      Permite que novos usuários se cadastrem automaticamente no sistema
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <div v-if="isEditing" class="flex align-items-center">
+                  <ToggleSwitch
+                    v-model="formData.permitirAutoCadastro"
+                    inputId="auto-cadastro-switch"
+                    class="toggle-switch"
+                  />
+                </div>
+                <div v-else class="value-display-toggle">
+                  <div class="flex align-items-center gap-2">
+                    <i
+                      :class="
+                        formData.permitirAutoCadastro
+                          ? 'pi pi-check-circle text-green-500'
+                          : 'pi pi-times-circle text-red-500'
+                      "
+                    ></i>
+                    <span class="font-semibold">
+                      {{ formData.permitirAutoCadastro ? 'Habilitado' : 'Desabilitado' }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </template>
-        <template #content>
-          <ul class="list-none p-0 pt-2 m-0">
-            <li
-              class="flex flex-column sm:flex-row sm:align-items-center justify-content-between mb-2"
-            >
-              <label for="auto-cadastro-switch" class="text-color-secondary">
-                Permitir Auto-Cadastro de Novos Usuários
-              </label>
-              <ToggleSwitch
-                v-model="formData.permitirAutoCadastro"
-                inputId="auto-cadastro-switch"
-                :disabled="!isEditing"
+
+        <template #footer>
+          <div class="flex justify-content-end gap-3 p-3">
+            <Button
+              v-if="!isEditing"
+              label="Editar"
+              icon="pi pi-pencil"
+              size="small"
+              @click="isEditing = true"
+            />
+
+            <template v-else>
+              <Button
+                label="Cancelar"
+                icon="pi pi-times"
+                severity="secondary"
+                @click="handleCancel"
+                size="small"
               />
-            </li>
-          </ul>
+              <Button
+                label="Salvar Alterações"
+                icon="pi pi-check"
+                :disabled="!isDirty"
+                :loading="isLoading"
+                @click="handleSave"
+                size="small"
+              />
+            </template>
+          </div>
         </template>
       </Card>
-      <div class="flex w-full justify-content-end">
-        <Button
-          v-if="!isEditing"
-          label="Editar"
-          icon="pi pi-pencil"
-          size="small"
-          @click="isEditing = true"
-        />
-        <div v-else class="flex gap-2">
-          <Button label="Cancelar" severity="secondary" size="small" @click="handleCancel" text />
-          <Button
-            label="Salvar Alterações"
-            icon="pi pi-check"
-            size="small"
-            @click="handleSave"
-            :disabled="!isDirty"
-          />
-        </div>
-      </div>
+
       <Card>
-        <template #title>
+        <!-- <template #title>
           <div class="flex align-items-center gap-2">
             <i class="pi pi-users text-xl"></i>
             <span>Gerenciar Usuários e Perfis</span>
           </div>
-        </template>
+        </template> -->
         <template #content>
+          <div class="flex align-items-center gap-2 mb-4">
+            <i class="pi pi-sliders-h text-primary"></i>
+            <div>
+              <span class="font-semibold text-gray-900">Gerenciar Usuários e Perfis</span>
+              <p class="text-sm text-gray-500 mt-1 mb-0">
+                Visualizar todos os usuários do sistema e trocar seus perfis.
+              </p>
+            </div>
+          </div>
           <UserListSkeleton v-if="usersLoading" />
           <ul v-else class="list-none p-4 pt-2 m-0 h-25rem overflow-x-auto">
             <template v-for="(user, index) in users" :key="user.id">
@@ -234,5 +286,21 @@ onMounted(() => {
 }
 .user-row:not(.opacity-50):hover .edit-button {
   opacity: 1;
+}
+
+.value-display-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 1rem;
+  background: var(--p-surface-50);
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  min-width: 8rem;
+  justify-content: center;
+}
+
+.toggle-switch {
+  transform: scale(1.2);
 }
 </style>
