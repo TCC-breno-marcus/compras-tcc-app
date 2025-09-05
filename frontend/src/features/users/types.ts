@@ -7,7 +7,7 @@ export interface User {
   email: string
   telefone: string
   cpf: string
-  role: string
+  role: 'Admin' | 'Gestor' | 'Solicitante'
   departamento: string
 }
 
@@ -15,10 +15,10 @@ export interface User {
  * Representa os filtros de parâmetro do serviço get all users
  */
 export interface GetUsersFilters {
-  role: string
-  sortOrder: string | null
-  pageSize: string
-  pageNumber: string
+  role?: 'Admin' | 'Gestor' | 'Solicitante'
+  sortOrder?: string | null
+  pageSize?: string
+  pageNumber?: string
 }
 
 /**

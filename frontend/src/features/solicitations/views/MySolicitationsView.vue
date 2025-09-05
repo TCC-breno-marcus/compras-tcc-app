@@ -72,8 +72,8 @@ const clearFilters = () => {
 
 const columns = [
   { field: 'externalId', header: 'Código' },
-  { field: 'typeDisplay', header: 'Tipo' },
   { field: 'dataCriacao', header: 'Data de Criação' },
+  { field: 'typeDisplay', header: 'Tipo' },
   { field: 'itemsCount', header: 'Itens Únicos' },
   { field: 'totalItemsQuantity', header: 'Total de Itens' },
   { field: 'totalEstimatedPrice', header: 'Preço Total Estimado' },
@@ -111,7 +111,7 @@ const goToCreatePage = (type: 'geral' | 'patrimonial') => {
 watch(
   () => route.query,
   async (newQuery) => {
-    const cleanFilters = mapQueryToFilters(newQuery)
+    const cleanFilters = mapQueryToFilters(newQuery, 'MySolicitationFilters')
     Object.assign(filter, cleanFilters)
     mySolicitationListStore.fetchAll(cleanFilters)
   },
@@ -161,7 +161,6 @@ watch(
           <DatePicker
             v-model="filter.dateRange"
             selectionMode="range"
-            :manualInput="false"
             dateFormat="dd/mm/yy"
             inputId="date-filter"
             showIcon

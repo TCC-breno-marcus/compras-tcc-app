@@ -1,5 +1,10 @@
 import { apiClient } from '@/services/apiClient'
-import type { CreateSolicitationPayload, MySolicitationFilters, Solicitation } from '../types'
+import type {
+  CreateSolicitationPayload,
+  MySolicitationFilters,
+  Solicitation,
+  SolicitationFilters,
+} from '../types'
 import type { PaginatedResponse } from '@/types'
 
 interface ISolicitationService {
@@ -7,6 +12,7 @@ interface ISolicitationService {
   update(id: number, payload: Partial<Solicitation>): Promise<Solicitation>
   getById(id: number): Promise<Solicitation>
   getMySolicitations(filters?: MySolicitationFilters): Promise<PaginatedResponse<Solicitation>>
+  getAllSolicitations(filters?: SolicitationFilters): Promise<PaginatedResponse<Solicitation>>
 }
 
 export const solicitationService: ISolicitationService = {
@@ -92,6 +98,42 @@ export const solicitationService: ISolicitationService = {
     } catch (error) {
       console.error(`Erro ao buscar suas solicitações:`, error)
       throw new Error('Não foi possível buscar suas solicitações.')
+    }
+  },
+
+  /**
+   * Busca todas as solicitações feitas.
+   * @returns As solicitações.
+   */
+  async getAllSolicitations(filters?) {
+    const params = new URLSearchParams()
+
+    if (filters) {
+      Object.entries(filters).forEach(([key, value]) => {
+        if (key === 'dateRange' && Array.isArray(value) && value.length > 0) {
+          if (value[0]) {
+            params.append('dataInicial', value[0].toISOString().split('T')[0])
+          }
+
+          if (value[1]) {
+            params.append('dataFinal', value[1].toISOString().split('T')[0])
+          }
+        } else {
+          if (value != null && value !== '') {
+            params.set(key, String(value))
+          }
+        }
+      })
+    }
+
+    try {
+      const response = await apiClient.get<PaginatedResponse<Solicitation>>(`/solicitacao`, {
+        params,
+      })
+      return response.data
+    } catch (error) {
+      console.error(`Erro ao buscar solicitações:`, error)
+      throw new Error('Não foi possível buscar solicitações.')
     }
   },
 }

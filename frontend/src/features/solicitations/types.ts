@@ -36,7 +36,6 @@ export type CreateSolicitationPayload =
   | CreateSolicitationGeneralPayload
   | CreateSolicitationPatrimonialPayload
 
-
 /**
  * Representa os dados de um solicitante no retorno de uma solicitação
  */
@@ -60,7 +59,6 @@ export interface ItemSolicitationResponse {
   justificativa: string
 }
 
-
 /**
  * Representa uma solicitação no front.
  */
@@ -81,10 +79,12 @@ export interface SolicitationListItem extends Solicitation {
   totalItemsQuantity: number
   totalEstimatedPrice: number
   typeDisplay: 'Geral' | 'Patrimonial'
+  requester?: string
+  department?: string
 }
 
 /**
- *
+ * Filtros de parâmetros do Get My Solicitations
  */
 export interface MySolicitationFilters {
   externalId: string
@@ -93,4 +93,18 @@ export interface MySolicitationFilters {
   sortOrder: string | null
   pageSize: string
   pageNumber: string
+}
+
+/**
+ * Filtro de parâmetros do Get Solicitations
+ */
+export interface SolicitationFilters {
+  externalId: string
+  tipo: 'Geral' | 'Patrimonial' | ''
+  dateRange: (Date | null)[] | Date | null
+  sortOrder: string | null
+  pageSize: string
+  pageNumber: string
+  pessoaId: string
+  unidade: string
 }

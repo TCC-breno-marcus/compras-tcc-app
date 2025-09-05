@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import type {
   MySolicitationFilters,
   Solicitation,
+  SolicitationFilters,
   SolicitationListItem,
 } from '@/features/solicitations/types'
 import { solicitationService } from '../services/solicitationService'
@@ -11,7 +12,7 @@ import { transformSolicitation } from '../utils'
 /**
  * Store para gerenciar estados da view Detalhes da Solicitação
  */
-export const useMySolicitationListStore = defineStore('mySolicitationList', () => {
+export const useSolicitationListStore = defineStore('solicitationList', () => {
   const solicitations = ref<SolicitationListItem[]>([])
   const isLoading = ref(false)
   const error = ref<string | null>(null)
@@ -23,14 +24,14 @@ export const useMySolicitationListStore = defineStore('mySolicitationList', () =
   /**
    * Busca minhas solicitações.
    */
-  const fetchAll = async (filters?: MySolicitationFilters) => {
+  const fetchAll = async (filters?: SolicitationFilters) => {
     isLoading.value = true
     error.value = null
 
     try {
-      const response = await solicitationService.getMySolicitations(filters)
+      const response = await solicitationService.getAllSolicitations(filters)
       solicitations.value = response.data.map((solicitation) =>
-        transformSolicitation(solicitation, 'mySolicitations'),
+        transformSolicitation(solicitation, 'allSolicitations'),
       )
       totalCount.value = response.totalCount
       pageNumber.value = response.pageNumber

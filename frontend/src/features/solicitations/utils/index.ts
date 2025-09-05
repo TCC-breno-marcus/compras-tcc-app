@@ -4,7 +4,10 @@ import type { Solicitation, SolicitationListItem } from '../types'
  * Converte um objeto Solicitation da API para o formato de exibição da lista,
  * calculando os campos derivados.
  */
-export const transformSolicitation = (solicitation: Solicitation): SolicitationListItem => {
+export const transformSolicitation = (
+  solicitation: Solicitation,
+  solicitationListType: 'allSolicitations' | 'mySolicitations',
+): SolicitationListItem => {
   const items = solicitation.itens || []
 
   const itemsCount = items.length
@@ -25,5 +28,9 @@ export const transformSolicitation = (solicitation: Solicitation): SolicitationL
     totalItemsQuantity,
     totalEstimatedPrice,
     typeDisplay,
+    ...(solicitationListType === 'allSolicitations' && {
+      requester: solicitation.solicitante.nome,
+      department: solicitation.solicitante.departamento,
+    }),
   }
 }

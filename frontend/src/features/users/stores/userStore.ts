@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { userService } from '../services/userService'
 import type { GetUsersFilters, User } from '../types'
 
@@ -40,10 +40,17 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
+  const solicitantes = computed(() => users.value.filter((user) => user.role === 'Solicitante'))
+  const gestores = computed(() => users.value.filter((user) => user.role === 'Gestor'))
+  const admins = computed(() => users.value.filter((user) => user.role === 'Admin'))
+
   return {
     users,
     isLoading,
     error,
     fetchUsers,
+    solicitantes,
+    gestores,
+    admins,
   }
 })
