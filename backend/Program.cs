@@ -63,6 +63,7 @@ builder.Services.AddScoped<ICategoriaService, CategoriaService>();
 builder.Services.AddScoped<ISolicitacaoService, SolicitacaoService>();
 builder.Services.AddScoped<IConfiguracaoService, ConfiguracaoService>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+builder.Services.AddScoped<IRelatorioService, RelatorioService>();
 
 //builder.Services.AddScoped<IEmailService, EmailService>();
 
