@@ -2,7 +2,7 @@
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
 import InputText from 'primevue/inputtext'
-import { Button, Tag } from 'primevue'
+import { Button, Tag, FloatLabel, Select } from 'primevue'
 import { computed, nextTick, onMounted, reactive, ref } from 'vue'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
@@ -19,20 +19,21 @@ import { formatCurrency } from '@/utils/currency'
 import { formatQuantity } from '@/utils/number'
 import CustomPopOverItem from './CustomPopOverItem.vue'
 import { Popover } from 'primevue'
+import { useCategoriaStore } from '@/features/catalogo/stores/categoriaStore'
+import CustomPaginator from '@/components/ui/CustomPaginator.vue'
 
 const expandedRows = ref([])
 const route = useRoute()
 const reportStore = useReportStore()
-const { itemsDepartment } = storeToRefs(reportStore)
+const { itemsDepartment, isLoading, totalCount, pageNumber, pageSize, totalPages } =
+  storeToRefs(reportStore)
 const authStore = useAuthStore()
 const { departamentos } = storeToRefs(authStore)
-
 const dt = ref()
 const op = ref()
 const selectedItemDetails = ref<ItemDepartmentResponse | null>(null)
-const exportCSV = () => {
-  dt.value.exportCSV()
-}
+const categoriaStore = useCategoriaStore()
+const { categorias } = storeToRefs(categoriaStore)
 
 const filter = reactive<ItemsDepartmentFilters>({
   searchTerm: '',
@@ -64,8 +65,6 @@ const clearFilters = () => {
 const columns = [
   { field: 'nome', header: 'Item' },
   { field: 'catMat', header: 'CATMAT' },
-  // { field: 'descricao', header: 'Descrição' },
-  { field: 'categoriaNome', header: 'Categoria' },
   { field: 'quantidadeTotalSolicitada', header: 'Qtde. Total' },
   { field: 'numeroDeSolicitacoes', header: 'Nº de Solicitações' },
   { field: 'valorTotalSolicitado', header: 'Valor Total' },
@@ -126,48 +125,101 @@ onMounted(() => {
   if (!authStore.departamentos?.length) {
     authStore.fetchDeptos()
   }
+  if (!categoriaStore.categorias.length) {
+    categoriaStore.fetch()
+  }
 })
 </script>
 
 <template>
   <div class="flex flex-column w-full h-full">
-    <div class="flex flex-wrap align-items-center justify-content-between gap-2 md:gap-4 mt-2">
+    <div
+      class="flex align-items-center justify-content-between lg:justify-content-start w-full gap-2"
+    >
       <div class="flex flex-wrap align-items-center gap-2">
-        <div class="flex flex-column sm:flex-row gap-2">
+        <FloatLabel class="w-full sm:w-16rem" variant="on">
           <IconField iconPosition="left">
             <InputIcon class="pi pi-search"></InputIcon>
-            <InputText size="small" placeholder="Nome/Descrição/CATMAT" />
+            <InputText
+              v-model="filter.searchTerm"
+              size="small"
+              class="w-full"
+              inputId="id-search"
+              @keyup.enter="applyFilters"
+            />
           </IconField>
-        </div>
+          <label for="id-search">Pesquisar item</label>
+        </FloatLabel>
 
-        <div class="flex align-items-center gap-2">
-          <Button type="button" label="Filtrar" icon="pi pi-filter" size="small" />
-        </div>
-      </div>
-      <div class="flex align-items-center">
+        <FloatLabel class="w-full sm:w-16rem" variant="on">
+          <Select
+            v-model="filter.categoriaNome"
+            :options="categorias"
+            optionLabel="nome"
+            optionValue="nome"
+            inputId="categoria"
+            size="small"
+            class="w-full"
+            id="categoria"
+            :showClear="true"
+            filter
+          />
+          <label for="categoria">Categoria do Item</label>
+        </FloatLabel>
+
+        <FloatLabel class="w-full sm:w-16rem" variant="on">
+          <Select
+            v-model="filter.departamento"
+            :options="departamentos"
+            inputId="departamento"
+            size="small"
+            class="w-full"
+            id="departamento"
+            :showClear="true"
+            filter
+          />
+          <label for="departamento">Departamento</label>
+        </FloatLabel>
+
+        <Button
+          :icon="computedSort.icon"
+          @click="toggleSortDirection"
+          :label="computedSort.text"
+          outlined
+          size="small"
+          aria-label="Ordenar"
+          v-tooltip.top="computedSort.text"
+        />
+        <Button
+          label="Limpar"
+          icon="pi pi-filter-slash"
+          severity="danger"
+          text
+          @click="clearFilters"
+          size="small"
+        />
         <Button
           type="button"
-          label="Exportar"
-          icon="pi pi-download"
+          label="Buscar"
+          icon="pi pi-filter"
           size="small"
-          @click="exportCSV"
+          @click="applyFilters"
         />
       </div>
     </div>
 
     <div class="table-container mt-4 gap-2">
       <DataTable
+        v-if="itemsDepartment.length > 0"
         :value="itemsDepartment"
         v-model:expandedRows="expandedRows"
         dataKey="id"
-        tableStyle="min-width: 30rem"
+        tableStyle="min-width: 50rem"
         size="small"
-        paginator
-        :rows="50"
-        :rowsPerPageOptions="[5, 10, 20, 50]"
         scrollable
         scrollHeight="550px"
         ref="dt"
+        removableSort
       >
         <Column :expander="true" style="width: 3rem" />
 
@@ -387,6 +439,32 @@ onMounted(() => {
       <Popover ref="op" :dismissable="true">
         <CustomPopOverItem :item="selectedItemDetails" />
       </Popover>
+
+      <div
+        v-if="itemsDepartment.length === 0 && !isLoading"
+        class="flex flex-column align-items-center mt-6 gap-2"
+      >
+        <div class="w-18rem sm:w-24rem md:w-30rem">
+          <NotFoundSvg />
+        </div>
+        <h3 class="mb-2">Nenhum resultado encontrado.</h3>
+        <p>Tente ajustar seus filtros ou utilize termos de busca diferentes.</p>
+        <Button
+          label="Limpar Filtros"
+          icon="pi pi-filter-slash"
+          @click="clearFilters"
+          size="small"
+        />
+      </div>
+
+      <CustomPaginator
+        v-if="itemsDepartment.length > 0 && !isLoading"
+        :current-url="route.path"
+        :total-count="totalCount"
+        :has-next-page="pageNumber < totalPages"
+        :page-size="pageSize"
+        :page-number="pageNumber"
+      />
     </div>
   </div>
 </template>
