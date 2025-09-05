@@ -244,8 +244,10 @@ onMounted(() => {
                 class="w-full"
                 id="departamento"
                 :invalid="!!errors.departamento"
+                :showClear="true"
+                filter
               />
-              <label for="departamento"><Div></Div>Departamento</label>
+              <label for="departamento">Departamento</label>
             </FloatLabel>
             <Message
               v-if="errors.departamento"

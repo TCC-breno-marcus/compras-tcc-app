@@ -23,6 +23,7 @@ import { useConfirm, useToast } from 'primevue'
 import { SAVE_CONFIRMATION } from '@/utils/confirmationFactoryUtils'
 import type { Solicitation } from '../types'
 import Textarea from 'primevue/textarea'
+import { toTitleCase } from '@/utils/stringUtils'
 
 const solicitationContext = reactive<SolicitationContext>({
   dialogMode: 'selection',
@@ -249,7 +250,7 @@ onMounted(() => {
                   <span class="text-sm text-color-secondary">Requisitante</span>
                   <p class="font-bold m-0">
                     {{ currentSolicitation.solicitante.nome }} ({{
-                      currentSolicitation.solicitante.departamento
+                      toTitleCase(currentSolicitation.solicitante.departamento)
                     }})
                   </p>
                 </div>
