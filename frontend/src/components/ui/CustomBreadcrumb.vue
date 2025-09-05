@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { useAuthStore } from '@/features/autentication/stores/authStore'
+import { useUserStore } from '@/features/users/stores/userStore'
+import { storeToRefs } from 'pinia'
 import Breadcrumb from 'primevue/breadcrumb'
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
@@ -14,6 +17,8 @@ const props = defineProps<{
 }>()
 
 const route = useRoute()
+const authStore = useAuthStore()
+const { isGestor } = storeToRefs(authStore)
 
 const home = ref({
   icon: 'pi pi-home',
@@ -24,7 +29,7 @@ const items = ref<BreadcrumbItem[]>([])
 const routeNamesMap: { [key: string]: { label: string; route?: string } } = {
   gestor: { label: 'Painel do Gestor', route: '/gestor' },
   catalogo: { label: 'Gerenciar Catálogo', route: '/gestor/gerenciar-catalogo' },
-  solicitacoes: { label: 'Solicitações', route: '/solicitacoes' },
+  solicitacoes: { label: 'Solicitações', route: `${isGestor.value ? '/gestor' : ''}/solicitacoes` },
   criar: { label: 'Criar' },
   patrimonial: { label: 'Patrimonial', route: '/solicitacoes/criar/patrimonial' },
   geral: { label: 'Geral', route: '/solicitacoes/criar/geral' },
