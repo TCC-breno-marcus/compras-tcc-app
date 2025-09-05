@@ -84,6 +84,15 @@ export const useMenuStore = defineStore('menu', () => {
         router.push('/fale-conosco')
       },
     },
+    {
+      label: 'Configurações',
+      icon: 'settings',
+      materialIcon: true,
+      roles: ['Admin', 'Gestor'],
+      command: () => {
+        router.push('/configuracoes/geral')
+      },
+    },
   ])
 
   const baseItemsMenuOverlay = ref<AppMenuItem[]>([
@@ -151,6 +160,20 @@ export const useMenuStore = defineStore('menu', () => {
           materialIcon: true,
           command: () => {
             router.push('/fale-conosco')
+          },
+        },
+      ],
+    },
+    {
+      label: 'Configurações',
+      roles: ['Admin', 'Gestor'],
+      items: [
+        {
+          label: 'Geral',
+          icon: 'settings',
+          materialIcon: true,
+          command: () => {
+            router.push('/configuracoes/geral')
           },
         },
       ],

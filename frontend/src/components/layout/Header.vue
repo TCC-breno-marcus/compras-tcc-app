@@ -24,12 +24,6 @@ const actionItems = computed(() => {
       route: '/perfil',
     },
     {
-      // TODO: talvez seja melhor configurações ser ficar no menu lateral ao invés desse menu de user
-      label: 'Configurações',
-      icon: 'pi pi-cog',
-      route: '/configuracoes/geral',
-    },
-    {
       label: 'Alternar Tema',
       icon: themeStore.isDarkMode ? 'pi pi-sun' : 'pi pi-moon',
       command: () => {
