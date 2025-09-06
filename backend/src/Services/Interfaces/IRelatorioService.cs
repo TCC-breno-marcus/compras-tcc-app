@@ -12,5 +12,12 @@ namespace Services.Interfaces
             int pageNumber,
             int pageSize
         );
+
+        Task<byte[]> GetAllItensPorDepartamentoCsvAsync(
+            bool isGeral,
+            string? searchTerm,
+            string? categoriaNome,
+            string? departamento
+        );
     }
 }
