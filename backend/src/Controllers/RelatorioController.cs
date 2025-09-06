@@ -25,7 +25,7 @@ namespace Controllers
         [HttpGet("itens-departamento")]
         [ProducesResponseType(typeof(PaginatedResultDto<ItemPorDepartamentoDto>), 200)]
         [ProducesResponseType(500)]
-        public async Task<IActionResult> Get(
+        public async Task<IActionResult> GetItensPorDepartamento(
             [FromQuery] string? searchTerm,
             [FromQuery] string? categoriaNome,
             [FromQuery] string? departamento,
@@ -54,6 +54,90 @@ namespace Controllers
                 _logger.LogError(
                     ex,
                     "Ocorreu um erro não tratado no endpoint GetItensPorDepartamento."
+                );
+                return StatusCode(
+                    500,
+                    new
+                    {
+                        message = "Ocorreu um erro interno no servidor. Por favor, tente novamente mais tarde.",
+                    }
+                );
+            }
+        }
+
+        [HttpGet("itens-departamento/patrimonial/csv")]
+        [ProducesResponseType(typeof(PaginatedResultDto<ItemPorDepartamentoDto>), 200)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> GetAllItensPatrimoniaisPorDepartamentoCsv(
+            [FromQuery] string? searchTerm,
+            [FromQuery] string? categoriaNome,
+            [FromQuery] string? departamento
+        )
+        {
+            try
+            {
+                _logger.LogInformation(
+                    "Recebida requisição para gerar arquivo csv com um relatório de todos os itens solicitados por departamento."
+                );
+                var csvBytes = await _relatorioService.GetAllItensPorDepartamentoCsvAsync(
+                    false,
+                    searchTerm,
+                    categoriaNome,
+                    departamento
+                );
+                return File(
+                    csvBytes,
+                    "text/csv",
+                    $"relatorio-itens-por-departamento-{DateTime.Now:yyyyMMdd-HHmmss}.csv"
+                );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Ocorreu um erro não tratado no endpoint GetAllItensPorDepartamentoCsv."
+                );
+                return StatusCode(
+                    500,
+                    new
+                    {
+                        message = "Ocorreu um erro interno no servidor. Por favor, tente novamente mais tarde.",
+                    }
+                );
+            }
+        }
+
+        [HttpGet("itens-departamento/geral/csv")]
+        [ProducesResponseType(typeof(PaginatedResultDto<ItemPorDepartamentoDto>), 200)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> GetAllItensGeraisPorDepartamentoCsv(
+            [FromQuery] string? searchTerm,
+            [FromQuery] string? categoriaNome,
+            [FromQuery] string? departamento
+        )
+        {
+            try
+            {
+                _logger.LogInformation(
+                    "Recebida requisição para gerar arquivo csv com um relatório de todos os itens solicitados por departamento."
+                );
+                var csvBytes = await _relatorioService.GetAllItensPorDepartamentoCsvAsync(
+                    true,
+                    searchTerm,
+                    categoriaNome,
+                    departamento
+                );
+                return File(
+                    csvBytes,
+                    "text/csv",
+                    $"relatorio-itens-por-departamento-{DateTime.Now:yyyyMMdd-HHmmss}.csv"
+                );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Ocorreu um erro não tratado no endpoint GetAllItensPorDepartamentoCsv."
                 );
                 return StatusCode(
                     500,
