@@ -108,6 +108,7 @@ const handleClickInfo = (event: MouseEvent) => {
                 </div>
               </Tag>
             </div>
+            <!-- TODO: deve mostrar um campo de justificativa por departamento também pra itens do tipo mobiliario e eletrodomesticos -->
             <p v-else class="text-sm text-color-secondary">Não há dados de departamento.</p>
           </div>
         </AccordionContent>

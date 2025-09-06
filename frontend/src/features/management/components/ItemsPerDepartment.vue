@@ -137,7 +137,7 @@ onMounted(() => {
 <template>
   <div class="flex flex-column w-full h-full">
     <div
-      class="flex align-items-center justify-content-between lg:justify-content-start w-full gap-2"
+      class="flex flex-column sm:flex-row w-full justify-content-between align-items-center sm:align-items-start gap-2"
     >
       <div class="flex flex-wrap align-items-center gap-2">
         <FloatLabel class="w-full sm:w-16rem" variant="on">
@@ -208,6 +208,13 @@ onMounted(() => {
           size="small"
           @click="applyFilters"
         />
+      </div>
+
+      <div
+        class="flex flex-order-1 sm:flex-order-3 flex-row align-items-center gap-2 p-3 pb-0 sm:pb-3 xl:p-0"
+      >
+        <!-- TODO: adicionar funcionalidade para exportar csv e xlsx -->
+        <Button type="button" label="Exportar" icon="pi pi-download" size="small" text />
       </div>
     </div>
 
