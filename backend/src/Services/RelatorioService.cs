@@ -87,12 +87,24 @@ namespace Services
                         // Soma a quantidade de todas as ocorrências deste item
                         QuantidadeTotalSolicitada = group.Sum(si => si.Quantidade),
                         // Cria o detalhamento por departamento
-                        QuantidadesPorDepartamento = group
+                        DemandaPorDepartamento = group
                             .GroupBy(si => si.Solicitacao.Solicitante.Unidade) // Sub-agrupamento por departamento
-                            .Select(deptGroup => new QuantidadePorDepartamentoDto
+                            .Select(deptGroup => new DemandaPorDepartamentoDto
                             {
                                 Departamento = deptGroup.Key.ToFriendlyString(),
                                 QuantidadeTotal = deptGroup.Sum(si => si.Quantidade),
+                                Justificativa =
+                                    deptGroup.First().Solicitacao is SolicitacaoGeral
+                                        ? string.Empty
+                                        : string.Join(
+                                            "; ",
+                                            deptGroup
+                                                .Where(si =>
+                                                    !string.IsNullOrWhiteSpace(si.Justificativa)
+                                                )
+                                                .Select(si => si.Justificativa)
+                                                .Distinct()
+                                        ),
                             })
                             .OrderBy(d => d.Departamento)
                             .ToList(),
