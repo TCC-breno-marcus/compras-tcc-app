@@ -19,6 +19,6 @@ namespace Models.Dtos
 
         // Insight de Demanda
         public int NumeroDeSolicitacoes { get; set; }
-        public required List<QuantidadePorDepartamentoDto> QuantidadesPorDepartamento { get; set; }
+        public required List<DemandaPorDepartamentoDto> DemandaPorDepartamento { get; set; }
     }
 }
