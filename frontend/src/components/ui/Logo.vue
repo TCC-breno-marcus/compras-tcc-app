@@ -2,6 +2,7 @@
   <div class="logo-link logo-avancado-wrapper">
     <span class="material-symbols-outlined">shopping_cart</span>
     <h2 class="logo-gradiente">Compras TCC</h2>
+    <!-- TODO: alterar nome do sistema para o nome real -->
   </div>
 </template>
 
