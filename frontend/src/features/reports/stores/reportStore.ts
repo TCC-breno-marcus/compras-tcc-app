@@ -14,6 +14,7 @@ export const useReportStore = defineStore('report', () => {
   const pageNumber = ref<number>(1)
   const pageSize = ref<number>(10)
   const totalPages = ref<number>(1)
+  
   /**
    * Busca os itens solicitados organizados por departamento.
    * @param filters Os possíveis filtros.

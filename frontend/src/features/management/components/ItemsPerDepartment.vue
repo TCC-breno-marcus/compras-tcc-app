@@ -2,7 +2,7 @@
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
 import InputText from 'primevue/inputtext'
-import { Button, Tag, FloatLabel, Select } from 'primevue'
+import { Button, Tag, FloatLabel, Select, useToast } from 'primevue'
 import { computed, nextTick, onMounted, reactive, ref } from 'vue'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
@@ -22,10 +22,12 @@ import { Popover } from 'primevue'
 import { useCategoriaStore } from '@/features/catalogo/stores/categoriaStore'
 import CustomPaginator from '@/components/ui/CustomPaginator.vue'
 import ItemPerDepartmentCard from './ItemPerDepartmentCard.vue'
+import { reportService } from '@/features/reports/services/reportService'
 
 // TODO: esse componente é um backup pra o caso de decidir usar tabela pra visualizar esses dados ao invés de cards
 
 const expandedRows = ref([])
+const reportLoading = ref(false)
 const route = useRoute()
 const reportStore = useReportStore()
 const { itemsDepartment, isLoading, totalCount, pageNumber, pageSize, totalPages } =
@@ -37,6 +39,7 @@ const op = ref()
 const selectedItemDetails = ref<ItemDepartmentResponse | null>(null)
 const categoriaStore = useCategoriaStore()
 const { categorias } = storeToRefs(categoriaStore)
+const toast = useToast()
 
 const filter = reactive<ItemsDepartmentFilters>({
   searchTerm: '',
@@ -114,6 +117,41 @@ const showPopOverItem = (event: MouseEvent, item: ItemDepartmentResponse) => {
   })
 }
 
+const handleExportCsv = async () => {
+  try {
+    reportLoading.value = true
+
+    const reportType = 'geral'
+    const csvBlob = await reportService.getCsvItemsPerDepartment(reportType)
+
+    const url = window.URL.createObjectURL(csvBlob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `relatorio_itens_por_departamento_${reportType}.csv`
+
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+    toast.add({
+      severity: 'success',
+      summary: 'Sucesso',
+      detail: 'Relatório exportado com sucesso.',
+      life: 3000,
+    })
+  } catch (error) {
+    console.error('Erro ao exportar CSV:', error)
+    toast.add({
+      severity: 'error',
+      summary: 'Erro',
+      detail: 'Falha ao exportar relatório.',
+      life: 3000,
+    })
+  } finally {
+    reportLoading.value = false
+  }
+}
+
 watch(
   () => route.query,
   async (newQuery) => {
@@ -134,6 +172,7 @@ onMounted(() => {
 })
 </script>
 
+<!-- TODO: devo separar esse componente em dois, deve ser duas paginas pra visualizar separadamente items patrimoniais e items gerais -->
 <template>
   <div class="flex flex-column w-full h-full">
     <div
@@ -214,7 +253,15 @@ onMounted(() => {
         class="flex flex-order-1 sm:flex-order-3 flex-row align-items-center gap-2 p-3 pb-0 sm:pb-3 xl:p-0"
       >
         <!-- TODO: adicionar funcionalidade para exportar csv e xlsx -->
-        <Button type="button" label="Exportar" icon="pi pi-download" size="small" text />
+        <Button
+          type="button"
+          label="Exportar"
+          icon="pi pi-download"
+          size="small"
+          text
+          :onClick="handleExportCsv"
+          :loading="reportLoading"
+        />
       </div>
     </div>
 

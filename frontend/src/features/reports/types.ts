@@ -43,5 +43,5 @@ export type ItemDepartmentResponse = Partial<Item> & {
   precoMinimo: number
   precoMaximo: number
   numeroDeSolicitacoes: number
-  quantidadesPorDepartamento: ItemQuantityPerDepartment[]
+  demandaPorDepartamento: ItemQuantityPerDepartment[]
 }

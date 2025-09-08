@@ -84,7 +84,7 @@ onMounted(() => {
                 />
                 <div v-else class="value-display">
                   <span class="value-text">
-                    {{ formatDate(formData.prazoSubmissao || null) }}
+                    {{ formatDate(formData.prazoSubmissao || 'Não cadastrado') }}
                   </span>
                 </div>
               </div>

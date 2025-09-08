@@ -6,6 +6,7 @@ interface IReportService {
   getItemsPerDepartment(
     filters?: ItemsDepartmentFilters,
   ): Promise<PaginatedResponse<ItemDepartmentResponse>>
+  getCsvItemsPerDepartment(reportType: 'geral' | 'patrimonial'): Promise<Blob>
 }
 
 export const reportService: IReportService = {
@@ -35,6 +36,31 @@ export const reportService: IReportService = {
     } catch (error) {
       console.error(`Erro ao buscar itens solicitados e agrupados por departamento:`, error)
       throw new Error('Não foi possível buscar itens solicitados e agrupados por departamento.')
+    }
+  },
+
+  /**
+   * Gerar um relatório com todos os itens patrimoniais solicitados agrupados por departamento na API e retornar um CSV.
+   * @param reportType O tipo de relatório (geral ou patrimonial)
+   * @returns Um Blob contendo o arquivo CSV.
+   */
+  async getCsvItemsPerDepartment(reportType) {
+    try {
+      const response = await apiClient.get<Blob>(
+        `/relatorio/itens-departamento/${reportType}/csv`,
+        {
+          responseType: 'blob',
+        },
+      )
+      return response.data
+    } catch (error) {
+      console.error(
+        `Erro ao gerar relatório de itens patrimoniais solicitados e agrupados por departamento:`,
+        error,
+      )
+      throw new Error(
+        'Não foi possível gerar relatório de itens patrimoniais solicitados e agrupados por departamento.',
+      )
     }
   },
 }

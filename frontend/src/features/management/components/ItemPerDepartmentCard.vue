@@ -96,9 +96,9 @@ const handleClickInfo = (event: MouseEvent) => {
           <Divider class="my-3" />
           <div>
             <div class="text-sm font-medium mb-2">Distribuição por Departamento</div>
-            <div v-if="item.quantidadesPorDepartamento?.length > 0" class="flex flex-wrap gap-2">
+            <div v-if="item.demandaPorDepartamento?.length > 0" class="flex flex-wrap gap-2">
               <Tag
-                v-for="dept in item.quantidadesPorDepartamento"
+                v-for="dept in item.demandaPorDepartamento"
                 :key="dept.departamento"
                 severity="secondary"
               >
