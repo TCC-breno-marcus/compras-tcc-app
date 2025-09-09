@@ -7,6 +7,7 @@ namespace Services.Interfaces
         Task<PaginatedResultDto<ItemPorDepartamentoDto>> GetItensPorDepartamentoAsync(
             string? searchTerm,
             string? categoriaNome,
+            string? itemsType,
             string? departamento,
             string? sortOrder,
             int pageNumber,
@@ -14,9 +15,9 @@ namespace Services.Interfaces
         );
 
         Task<byte[]> GetAllItensPorDepartamentoCsvAsync(
-            bool isGeral,
             string? searchTerm,
             string? categoriaNome,
+            string? itemsType,
             string? departamento
         );
     }
