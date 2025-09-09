@@ -27,6 +27,7 @@ namespace Services
         public async Task<PaginatedResultDto<ItemPorDepartamentoDto>> GetItensPorDepartamentoAsync(
             string? searchTerm,
             string? categoriaNome,
+            string? itemsType,
             string? departamento,
             string? sortOrder,
             int pageNumber,
@@ -34,9 +35,9 @@ namespace Services
         )
         {
             var itens = await GetItensPorDepartamentoInternalAsync(
-                null,
                 searchTerm,
                 categoriaNome,
+                itemsType,
                 departamento,
                 sortOrder
             );
@@ -53,17 +54,17 @@ namespace Services
         }
 
         public async Task<List<ItemPorDepartamentoDto>> GetAllItensPorDepartamentoAsync(
-            bool isGeral,
             string? searchTerm = null,
             string? categoriaNome = null,
+            string? itemsType = null,
             string? departamento = null,
             string? sortOrder = null
         )
         {
             var itens = await GetItensPorDepartamentoInternalAsync(
-                isGeral,
                 searchTerm,
                 categoriaNome,
+                itemsType,
                 departamento,
                 sortOrder
             );
@@ -72,14 +73,14 @@ namespace Services
         }
 
         private async Task<IQueryable<ItemPorDepartamentoDto>> GetItensPorDepartamentoInternalAsync(
-            bool? isGeral,
             string? searchTerm,
             string? categoriaNome,
+            string? itemsType,
             string? departamento,
             string? sortOrder
         )
         {
-            var query = BuildBaseQuery(isGeral, searchTerm, categoriaNome, departamento);
+            var query = BuildBaseQuery(searchTerm, categoriaNome, itemsType, departamento);
 
             var todosOsItensSolicitados = await query
                 .Include(si => si.Item)
@@ -97,9 +98,9 @@ namespace Services
         }
 
         private IQueryable<SolicitacaoItem> BuildBaseQuery(
-            bool? isGeral,
             string? searchTerm,
             string? categoriaNome,
+            string? itemsType,
             string? departamento
         )
         {
@@ -123,6 +124,22 @@ namespace Services
                 );
             }
 
+            if (!string.IsNullOrWhiteSpace(itemsType))
+            {
+                var categoriasPatrimoniais = new[] { "Mobiliário", "Eletrodomésticos" };
+                if (itemsType.Equals("patrimonial", StringComparison.OrdinalIgnoreCase))
+                {
+                    query = query.Where(si =>
+                        categoriasPatrimoniais.Contains(si.Item.Categoria.Nome)
+                    );
+                }
+                else if (itemsType.Equals("geral", StringComparison.OrdinalIgnoreCase))
+                {
+                    query = query.Where(si =>
+                        !categoriasPatrimoniais.Contains(si.Item.Categoria.Nome)
+                    );
+                }
+            }
             if (!string.IsNullOrEmpty(departamento))
             {
                 DepartamentoEnum? departamentoEnum = departamento.FromString<DepartamentoEnum>();
@@ -131,18 +148,6 @@ namespace Services
                     query = query.Where(s =>
                         s.Solicitacao.Solicitante.Unidade == departamentoEnum.Value
                     );
-                }
-            }
-
-            if (isGeral.HasValue)
-            {
-                if (isGeral.Value)
-                {
-                    query = query.Where(si => si.Solicitacao is SolicitacaoGeral);
-                }
-                else
-                {
-                    query = query.Where(si => si.Solicitacao is SolicitacaoPatrimonial);
                 }
             }
 
@@ -205,16 +210,16 @@ namespace Services
         }
 
         public async Task<byte[]> GetAllItensPorDepartamentoCsvAsync(
-            bool isGeral,
             string? searchTerm = null,
             string? categoriaNome = null,
+            string? itemsType = null,
             string? departamento = null
         )
         {
             var itens = await GetAllItensPorDepartamentoAsync(
-                isGeral,
                 searchTerm,
                 categoriaNome,
+                itemsType,
                 departamento
             );
 
