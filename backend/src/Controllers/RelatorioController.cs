@@ -28,6 +28,7 @@ namespace Controllers
         public async Task<IActionResult> GetItensPorDepartamento(
             [FromQuery] string? searchTerm,
             [FromQuery] string? categoriaNome,
+            [FromQuery] string? itemsType,
             [FromQuery] string? departamento,
             [FromQuery] string? sortOrder = "asc",
             [FromQuery] int pageNumber = 1,
@@ -42,6 +43,7 @@ namespace Controllers
                 var resultado = await _relatorioService.GetItensPorDepartamentoAsync(
                     searchTerm,
                     categoriaNome,
+                    itemsType,
                     departamento,
                     sortOrder,
                     pageNumber,
@@ -80,9 +82,9 @@ namespace Controllers
                     "Recebida requisição para gerar arquivo csv com um relatório de todos os itens solicitados por departamento."
                 );
                 var csvBytes = await _relatorioService.GetAllItensPorDepartamentoCsvAsync(
-                    false,
                     searchTerm,
                     categoriaNome,
+                    "patrimonial",
                     departamento
                 );
                 return File(
@@ -122,9 +124,9 @@ namespace Controllers
                     "Recebida requisição para gerar arquivo csv com um relatório de todos os itens solicitados por departamento."
                 );
                 var csvBytes = await _relatorioService.GetAllItensPorDepartamentoCsvAsync(
-                    true,
                     searchTerm,
                     categoriaNome,
+                    "geral",
                     departamento
                 );
                 return File(
