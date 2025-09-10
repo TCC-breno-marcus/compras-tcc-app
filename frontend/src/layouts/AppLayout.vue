@@ -19,7 +19,6 @@ const { isLargeScreen } = useBreakpoint();
       <main class="main-container flex flex-column h-full px-2 md:px-4 py-2">
         <RouterView />
       </main>
-      <Footer />
     </div>
 
   </div>
