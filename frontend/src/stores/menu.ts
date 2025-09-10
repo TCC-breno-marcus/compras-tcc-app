@@ -16,6 +16,15 @@ export const useMenuStore = defineStore('menu', () => {
 
   const baseItemsMenu = ref<AppMenuItem[]>([
     {
+      label: 'Início',
+      icon: 'home',
+      materialIcon: true,
+      roles: ['Admin', 'Gestor', 'Solicitante'],
+      command: () => {
+        router.push('/')
+      },
+    },
+    {
       label: 'Solicitações',
       icon: 'assignment',
       materialIcon: true,
@@ -75,9 +84,32 @@ export const useMenuStore = defineStore('menu', () => {
         router.push('/fale-conosco')
       },
     },
+    {
+      label: 'Configurações',
+      icon: 'settings',
+      materialIcon: true,
+      roles: ['Admin', 'Gestor'],
+      command: () => {
+        router.push('/configuracoes/geral')
+      },
+    },
   ])
 
   const baseItemsMenuOverlay = ref<AppMenuItem[]>([
+    {
+      label: 'Página Inicial',
+      roles: ['Admin', 'Gestor', 'Solicitante'],
+      items: [
+        {
+          label: 'Início',
+          icon: 'home',
+          materialIcon: true,
+          command: () => {
+            router.push('/')
+          },
+        },
+      ],
+    },
     {
       label: 'Solicitações',
       roles: ['Admin', 'Solicitante'],
@@ -128,6 +160,20 @@ export const useMenuStore = defineStore('menu', () => {
           materialIcon: true,
           command: () => {
             router.push('/fale-conosco')
+          },
+        },
+      ],
+    },
+    {
+      label: 'Configurações',
+      roles: ['Admin', 'Gestor'],
+      items: [
+        {
+          label: 'Geral',
+          icon: 'settings',
+          materialIcon: true,
+          command: () => {
+            router.push('/configuracoes/geral')
           },
         },
       ],

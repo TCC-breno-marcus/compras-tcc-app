@@ -22,7 +22,7 @@ const goBack = () => {
 
         <div class="flex gap-2 mt-1 sm:justify-content-start">
           <router-link to="/" class="button primary">
-            Ir para a Home
+            Ir para o Início
           </router-link>
           <button @click="goBack" class="button secondary">
             Voltar

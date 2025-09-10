@@ -1,7 +1,7 @@
 <template>
   <div class="logo-link logo-avancado-wrapper">
     <span class="material-symbols-outlined">shopping_cart</span>
-    <h2 class="logo-gradiente">Compras TCC</h2>
+    <h2 class="logo-gradiente">SIGAM-UFS</h2>
   </div>
 </template>
 

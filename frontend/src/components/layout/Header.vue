@@ -24,11 +24,6 @@ const actionItems = computed(() => {
       route: '/perfil',
     },
     {
-      label: 'Configurações',
-      icon: 'pi pi-cog',
-      route: '/configuracoes',
-    },
-    {
       label: 'Alternar Tema',
       icon: themeStore.isDarkMode ? 'pi pi-sun' : 'pi pi-moon',
       command: () => {

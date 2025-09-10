@@ -14,29 +14,38 @@ import { SolicitationContextKey, type SolicitationContext } from '../keys'
 import { useAuthStore } from '@/features/autentication/stores/authStore'
 import { storeToRefs } from 'pinia'
 import { useRoute } from 'vue-router'
-import { useSettingStore } from '@/stores/settingStore'
+import { useSettingStore } from '@/features/settings/stores/settingStore'
 import { formatDate } from '@/utils/dateUtils'
 import SolicitationDetailsSkeleton from '../components/SolicitationDetailsSkeleton.vue'
 import { useSolicitationStore } from '../stores/solicitationStore'
 import CustomBreadcrumb from '@/components/ui/CustomBreadcrumb.vue'
+import { useConfirm, useToast } from 'primevue'
+import { SAVE_CONFIRMATION } from '@/utils/confirmationFactoryUtils'
+import type { Solicitation } from '../types'
+import Textarea from 'primevue/textarea'
+import { toTitleCase } from '@/utils/stringUtils'
 
 const solicitationContext = reactive<SolicitationContext>({
   dialogMode: 'selection',
+  isGeneral: false, // initial
 })
 
 provide(SolicitationContextKey, readonly(solicitationContext))
 
 const route = useRoute()
 const authStore = useAuthStore()
+const toast = useToast()
+const confirm = useConfirm()
 const settingStore = useSettingStore()
 const { deadline } = storeToRefs(settingStore)
 const { user } = storeToRefs(authStore)
 const solicitationStore = useSolicitationStore()
-const { currentSolicitation, isLoading, error } = storeToRefs(solicitationStore)
+const { currentSolicitation, isLoading, error, currentSolicitationBackup } =
+  storeToRefs(solicitationStore)
 
 const deadlineHasExpired = computed(() => {
   if (deadline.value) {
-    return new Date() > deadline.value
+    return new Date() > new Date(deadline.value)
   }
   return false
 })
@@ -50,10 +59,99 @@ const isEditing = ref<boolean>(false)
 const handleCancel = () => {
   const id = currentSolicitation.value?.id
   if (id && solicitationStore.isDirty) {
-    console.log('oi')
     solicitationStore.fetchById(id)
   }
   isEditing.value = false
+}
+
+const acceptSaveChanges = async () => {
+  if (!currentSolicitation.value) return
+  const success = await solicitationStore.update(currentSolicitation.value)
+  if (success) {
+    isEditing.value = false
+  }
+}
+
+const saveChanges = () => {
+  if (!isSolicitationValid(currentSolicitation?.value)) return
+  confirm.require({
+    ...SAVE_CONFIRMATION,
+    accept: async () => acceptSaveChanges(),
+  })
+}
+
+const isSolicitationValid = (solicitation: Solicitation | null): boolean => {
+  if (!solicitation) {
+    toast.add({
+      severity: 'error',
+      summary: 'Erro de Validação',
+      detail: 'Não há dados da solicitação para validar.',
+      life: 3000,
+    })
+    return false
+  }
+
+  if (!solicitation.itens || solicitation.itens.length === 0) {
+    toast.add({
+      severity: 'error',
+      summary: 'Nenhum Item',
+      detail: 'A solicitação deve conter pelo menos um item.',
+      life: 3000,
+    })
+    return false
+  }
+
+  let isValid = true
+
+  if (
+    solicitationContext.isGeneral &&
+    (!solicitation.justificativaGeral || solicitation.justificativaGeral.trim() === '')
+  ) {
+    toast.add({
+      severity: 'error',
+      summary: 'Campo Obrigatório',
+      detail: 'A "Justificativa Geral" é obrigatória para solicitações do tipo Geral.',
+      life: 3000,
+    })
+    isValid = false
+  }
+
+  for (const item of solicitation.itens) {
+    if (!item.quantidade || item.quantidade <= 0) {
+      toast.add({
+        severity: 'error',
+        summary: 'Quantidade Inválida',
+        detail: `O item "${item.nome}" deve ter uma quantidade maior que zero.`,
+        life: 3000,
+      })
+      isValid = false
+    }
+
+    if (!item.precoSugerido || item.precoSugerido <= 0) {
+      toast.add({
+        severity: 'error',
+        summary: 'Preço Inválido',
+        detail: `O item "${item.nome}" deve ter um preço sugerido maior que zero.`,
+        life: 3000,
+      })
+      isValid = false
+    }
+
+    if (
+      !solicitationContext.isGeneral &&
+      (!item.justificativa || item.justificativa.trim() === '')
+    ) {
+      toast.add({
+        severity: 'error',
+        summary: 'Campo Obrigatório',
+        detail: `A justificativa é obrigatória para o item "${item.nome}" em solicitações patrimoniais.`,
+        life: 3000,
+      })
+      isValid = false
+    }
+  }
+
+  return isValid
 }
 
 watch(
@@ -68,8 +166,22 @@ watch(
   },
 )
 
+watch(
+  currentSolicitationBackup,
+  (newSolicitation) => {
+    if (newSolicitation) {
+      solicitationContext.isGeneral = !!newSolicitation.justificativaGeral
+    } else {
+      solicitationContext.isGeneral = false
+    }
+  },
+  {
+    deep: true,
+  },
+)
+
 onMounted(() => {
-  settingStore.fetchPrazoSubmissao()
+  settingStore.fetchSettings()
 })
 </script>
 
@@ -121,7 +233,7 @@ onMounted(() => {
           icon="pi pi-save"
           label="Salvar"
           size="small"
-          @click="isEditing = false"
+          @click="saveChanges()"
           :disabled="!solicitationStore.isDirty"
         />
       </div>
@@ -138,7 +250,7 @@ onMounted(() => {
                   <span class="text-sm text-color-secondary">Requisitante</span>
                   <p class="font-bold m-0">
                     {{ currentSolicitation.solicitante.nome }} ({{
-                      currentSolicitation.solicitante.departamento
+                      toTitleCase(currentSolicitation.solicitante.departamento)
                     }})
                   </p>
                 </div>
@@ -173,7 +285,7 @@ onMounted(() => {
                 <div>
                   <span class="text-sm text-color-secondary">Tipo da Solicitação</span>
                   <p class="font-bold m-0">
-                    {{ currentSolicitation.justificativaGeral ? 'Geral' : 'Patrimonial' }}
+                    {{ solicitationContext.isGeneral ? 'Geral' : 'Patrimonial' }}
                   </p>
                 </div>
               </li>
@@ -182,7 +294,7 @@ onMounted(() => {
         </Card>
       </div>
 
-      <div v-if="currentSolicitation.justificativaGeral" class="col-12 lg:col-4">
+      <div v-if="solicitationContext.isGeneral" class="col-12 lg:col-4">
         <Card class="h-full">
           <template #title>
             <div class="flex align-items-center">
@@ -191,9 +303,20 @@ onMounted(() => {
             </div>
           </template>
           <template #content>
-            <em class="m-0">
+            <em v-if="!isEditing" class="m-0">
               {{ currentSolicitation.justificativaGeral }}
             </em>
+            <Textarea
+              v-else
+              id="textarea_label"
+              class="w-full h-full"
+              size="small"
+              v-model="currentSolicitation.justificativaGeral"
+              :invalid="currentSolicitation.justificativaGeral?.trim() === ''"
+              style="resize: none"
+              rows="3"
+              :maxlength="500"
+            />
           </template>
         </Card>
       </div>

@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { inject, ref, watch } from 'vue'
 import Button from 'primevue/button'
-import InputNumber from 'primevue/inputnumber'
+import InputNumber, { type InputNumberInputEvent } from 'primevue/inputnumber'
 import InputText from 'primevue/inputtext'
-import { FloatLabel } from 'primevue'
-import type { SolicitationItem } from '..'
+import { FloatLabel, useToast } from 'primevue'
+import type { SolicitationItem } from '../types'
 import { SolicitationContextKey } from '../keys'
+import { useSettingStore } from '@/features/settings/stores/settingStore'
+import { storeToRefs } from 'pinia'
 
 const props = defineProps<{
   item: SolicitationItem
@@ -15,7 +17,9 @@ const props = defineProps<{
 const emit = defineEmits(['removeItem', 'updateItem'])
 
 const solicitationContext = inject(SolicitationContextKey)
-
+const settingsStore = useSettingStore()
+const { settings } = storeToRefs(settingsStore)
+const toast = useToast()
 const localItem = ref<SolicitationItem>({ ...props.item })
 
 watch(
@@ -33,11 +37,26 @@ const removeItem = () => {
 const onFieldUpdate = () => {
   emit('updateItem', localItem.value)
 }
+
+const handleQuantityInput = (event: InputNumberInputEvent) => {
+  const newQuantity = event.value
+  const maxQuantity = settings.value?.maxQuantidadePorItem
+  if (maxQuantity && Number(newQuantity) > maxQuantity) {
+    toast.add({
+      severity: 'warn',
+      summary: 'Limite Atingido',
+      detail: `A quantidade máxima por item é ${maxQuantity}.`,
+      life: 3000,
+    })
+  }
+}
 </script>
+
+<!-- TODO: quantidades e valores em reais exibir com o componente Tag -->
 <template>
   <div
     class="flex md:flex-column lg:flex-row justify-content-between lg:justify-content-between p-2 w-full gap-2"
-    :class="item.justificativa ? '' : 'custom-border'"
+    :class="item.justificativa || !solicitationContext?.isGeneral ? '' : 'custom-border'"
   >
     <div class="flex justify-content-start align-items-center gap-2 mr-2">
       <div class="image-preview-container flex justify-content-center align-items-center">
@@ -58,12 +77,13 @@ const onFieldUpdate = () => {
           v-model="item.quantidade"
           inputId="on_label_qtde"
           :min="1"
-          :max="9999"
+          :max="settings?.maxQuantidadePorItem"
           size="small"
           fluid
           class="w-full"
           inputClass="w-full"
           @update:modelValue="onFieldUpdate"
+          @input="handleQuantityInput"
         />
         <label for="on_label_qtde">Qtde.</label>
       </FloatLabel>

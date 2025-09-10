@@ -17,7 +17,7 @@ const goToHome = () => {
       </div>
       <h1 class="text-4xl font-bold text-900 mt-0 mb-2">Erro Interno do Servidor</h1>
       <p class="text-color-secondary mb-5">Por favor, tente novamente mais tarde ou volte para a página inicial.</p>
-      <Button label="Home" icon="pi pi-home" @click="goToHome"></Button>
+      <Button label="Início" icon="pi pi-home" @click="goToHome"></Button>
     </div>
   </div>
 </template>

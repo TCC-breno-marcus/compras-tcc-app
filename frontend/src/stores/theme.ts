@@ -3,6 +3,8 @@ import { defineStore } from 'pinia'
 
 type Theme = 'light' | 'dark'
 
+// TODO: validar todas as paginas pra ajustar o tema escuro
+
 export const useThemeStore = defineStore(
   'theme',
   () => {

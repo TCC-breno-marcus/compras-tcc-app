@@ -5,6 +5,7 @@ import { ref, watch } from 'vue'
 import { useMenuStore } from '@/stores/menu'
 import Menu from 'primevue/menu'
 import { useRoute } from 'vue-router'
+import Footer from './Footer.vue'
 
 const { itemsMenuOverlay } = useMenuStore()
 const route = useRoute()
@@ -33,6 +34,13 @@ watch(
             border: 0,
           },
         },
+        content: {
+          style: {
+            display: 'flex',
+            flexDirection: 'column',
+            height: '100%',
+          },
+        },
       }"
     >
       <div class="card flex justify-center text-sm" style="color: var(--p-text-color)">
@@ -55,7 +63,11 @@ watch(
           </template>
         </Menu>
       </div>
+      <div class="mt-auto">
+        <Footer />
+      </div>
     </Drawer>
+
     <Button class="button-menu-overlay p-1" @click="visible = true" text>
       <template #icon>
         <span class="material-symbols-outlined">menu</span>

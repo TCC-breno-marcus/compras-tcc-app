@@ -1,6 +1,7 @@
 import { apiClient } from '@/services/apiClient'
-import type { UserCredentials, UserRegistration, AuthResponse, UserData } from '../types'
+import type { UserCredentials, UserRegistration, AuthResponse } from '../types'
 import axios from 'axios'
+import type { User } from '@/features/users/types'
 
 export const authService = {
   async login(credentials: UserCredentials): Promise<AuthResponse> {
@@ -24,7 +25,7 @@ export const authService = {
       throw new Error('Erro de conexão com a API ao tentar registrar usuário.')
     }
   },
-  async getMyData(): Promise<UserData> {
+  async getMyData(): Promise<User> {
     try {
       const response = await apiClient.get('/auth/me')
       return response.data

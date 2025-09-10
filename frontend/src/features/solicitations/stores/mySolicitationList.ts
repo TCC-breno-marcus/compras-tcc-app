@@ -1,6 +1,10 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-import type { MySolicitationFilters, Solicitation, SolicitationListItem } from '@/features/solicitations'
+import type {
+  MySolicitationFilters,
+  Solicitation,
+  SolicitationListItem,
+} from '@/features/solicitations/types'
 import { solicitationService } from '../services/solicitationService'
 import { transformSolicitation } from '../utils'
 
@@ -25,7 +29,9 @@ export const useMySolicitationListStore = defineStore('mySolicitationList', () =
 
     try {
       const response = await solicitationService.getMySolicitations(filters)
-      solicitations.value = response.data.map(transformSolicitation)
+      solicitations.value = response.data.map((solicitation) =>
+        transformSolicitation(solicitation, 'mySolicitations'),
+      )
       totalCount.value = response.totalCount
       pageNumber.value = response.pageNumber
       pageSize.value = response.pageSize

@@ -169,6 +169,8 @@ watch(
 )
 </script>
 
+<!-- TODO: quantidades e valores em reais exibir com o componente Tag -->
+
 <template>
   <Dialog
     :visible="visible"

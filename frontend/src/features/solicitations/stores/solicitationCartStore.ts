@@ -1,8 +1,9 @@
-import { defineStore } from 'pinia'
+import { defineStore, storeToRefs } from 'pinia'
 import { ref } from 'vue'
 import type { Item } from '@/features/catalogo/types'
-import type { CreateSolicitationPayload, SolicitationItem } from '@/features/solicitations'
+import type { CreateSolicitationPayload, SolicitationItem } from '@/features/solicitations/types'
 import { solicitationService } from '../services/solicitationService'
+import { useSettingStore } from '@/features/settings/stores/settingStore'
 
 export const useSolicitationCartStore = defineStore('solicitationCart', () => {
   const solicitationItems = ref<SolicitationItem[]>([])
@@ -10,6 +11,9 @@ export const useSolicitationCartStore = defineStore('solicitationCart', () => {
   const solicitationType = ref<'geral' | 'patrimonial' | null>(null)
   const isLoading = ref(false)
   const error = ref<string | null>(null)
+
+  const settingsStore = useSettingStore()
+  const { settings } = storeToRefs(settingsStore)
 
   const addItem = (item: Item, type: 'geral' | 'patrimonial') => {
     if (solicitationItems.value.length === 0) {
@@ -19,9 +23,17 @@ export const useSolicitationCartStore = defineStore('solicitationCart', () => {
     const itemExistente = solicitationItems.value.find((i) => i.id === item.id)
 
     if (itemExistente) {
+      const maxQuantity = settings.value?.maxQuantidadePorItem
+      if (maxQuantity && itemExistente.quantidade >= maxQuantity) {
+        return 'quantity_limit_exceeded'
+      }
       itemExistente.quantidade++
       return 'incremented'
     } else {
+      const maxItens = settings.value?.maxItensDiferentesPorSolicitacao
+      if (maxItens && solicitationItems.value.length >= maxItens) {
+        return 'item_limit_exceeded'
+      }
       solicitationItems.value.push({ ...item, quantidade: 1 })
       return 'added'
     }

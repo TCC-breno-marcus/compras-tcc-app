@@ -1,23 +1,28 @@
 <script setup lang="ts">
 import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
-import { ref } from 'vue'
+import { inject, ref } from 'vue'
 import CatalogoBrowser from '@/features/catalogo/components/CatalogoBrowser.vue'
 import { CATEGORY_ITEMS_GENERAL, CATEGORY_ITEMS_PATRIMONIALS } from '../constants'
 import type { Item } from '@/features/catalogo/types'
 import { useToast } from 'primevue'
 import { storeToRefs } from 'pinia'
 import { useSolicitationStore } from '../stores/solicitationStore'
+import { SolicitationContextKey } from '../keys'
+import { useSettingStore } from '@/features/settings/stores/settingStore'
 
 const props = defineProps<{
   visible: boolean
 }>()
 
+const solicitationContext = inject(SolicitationContextKey)
+
 const isLoading = ref(false)
 const catalogoBrowserRef = ref()
 const toast = useToast()
 const solicitationStore = useSolicitationStore()
-const { currentSolicitation } = storeToRefs(solicitationStore)
+const settingsStore = useSettingStore()
+const { settings } = storeToRefs(settingsStore)
 
 const emit = defineEmits(['update:visible'])
 
@@ -41,6 +46,24 @@ const addItemSolicitation = (item: Item) => {
       detail: `Quantidade do item ${item.nome} (${item.catMat}) atualizada.`,
       life: 3000,
     })
+  } else if (actionReturn === 'item_limit_exceeded') {
+    const maxItens = settings.value?.maxItensDiferentesPorSolicitacao
+
+    toast.add({
+      severity: 'warn',
+      summary: 'Limite Atingido',
+      detail: `A solicitação só pode ter até ${maxItens} itens diferentes.`,
+      life: 3000,
+    })
+  } else if (actionReturn === 'quantity_limit_exceeded') {
+    const maxQuantity = settings.value?.maxQuantidadePorItem
+
+    toast.add({
+      severity: 'warn',
+      summary: 'Limite Atingido',
+      detail: `A quantidade máxima por item é ${maxQuantity}.`,
+      life: 3000,
+    })
   }
 
   closeModal()
@@ -59,9 +82,7 @@ const addItemSolicitation = (item: Item) => {
       <CatalogoBrowser
         ref="catalogoBrowserRef"
         :category-names="
-          currentSolicitation?.justificativaGeral !== ''
-            ? CATEGORY_ITEMS_GENERAL
-            : CATEGORY_ITEMS_PATRIMONIALS
+          solicitationContext?.isGeneral ? CATEGORY_ITEMS_GENERAL : CATEGORY_ITEMS_PATRIMONIALS
         "
       >
         <template #actions="{ item }">

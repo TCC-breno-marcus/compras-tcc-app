@@ -96,7 +96,7 @@ const handleRegister = async () => {
 
   isLoading.value = true
   try {
-    const hasRegistered = await authStore.register({
+    await authStore.register({
       email: email.value,
       password: password.value,
       nome: nome.value,
@@ -104,27 +104,19 @@ const handleRegister = async () => {
       cpf: cpf.value.replace(/\D/g, ''),
       departamento: departamento.value!,
     })
-    if (hasRegistered) {
-      toast.add({
-        severity: 'success',
-        summary: 'Sucesso',
-        detail: 'Usuário criado com sucesso.',
-        life: 3000,
-      })
-      router.push('/')
-    } else {
-      toast.add({
-        severity: 'error',
-        summary: 'Erro',
-        detail: 'Não foi possível criar o usuário.',
-        life: 3000,
-      })
-    }
-  } catch (error: any) {
+
+    toast.add({
+      severity: 'success',
+      summary: 'Sucesso',
+      detail: 'Usuário criado com sucesso.',
+      life: 3000,
+    })
+    router.push('/')
+  } catch (error: unknown) {
     toast.add({
       severity: 'error',
       summary: 'Erro',
-      detail: error.message,
+      detail: error,
       life: 3000,
     })
   } finally {
@@ -252,8 +244,10 @@ onMounted(() => {
                 class="w-full"
                 id="departamento"
                 :invalid="!!errors.departamento"
+                :showClear="true"
+                filter
               />
-              <label for="departamento"><Div></Div>Departamento</label>
+              <label for="departamento">Departamento</label>
             </FloatLabel>
             <Message
               v-if="errors.departamento"
