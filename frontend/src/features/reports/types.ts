@@ -24,6 +24,7 @@ export interface ItemSolicitationResponse {
 export interface ItemsDepartmentFilters {
   searchTerm: string
   categoriaNome: string
+  itemsType: 'geral' | 'patrimonial' | null
   departamento: string
   sortOrder: string | null
   pageSize: string
@@ -33,6 +34,7 @@ export interface ItemsDepartmentFilters {
 export type ItemQuantityPerDepartment = {
   departamento: string
   quantidadeTotal: number
+  justificativa: string
 }
 
 export type ItemDepartmentResponse = Partial<Item> & {

@@ -6,6 +6,7 @@ export const mapQueryToFilters = (query: LocationQuery): ItemsDepartmentFilters 
   return {
     searchTerm: getFirstQueryValue(query.searchTerm),
     categoriaNome: getFirstQueryValue(query.categoriaNome),
+    itemsType: getFirstQueryValue(query.itemsType) as 'geral' | 'patrimonial' | null,
     departamento: getFirstQueryValue(query.departamento),
     sortOrder: getSortOrderFromQuery(query.sortOrder),
     pageSize: getFirstQueryValue(query.pageSize),

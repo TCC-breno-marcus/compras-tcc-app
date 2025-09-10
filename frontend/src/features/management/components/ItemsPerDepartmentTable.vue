@@ -38,6 +38,7 @@ const { categorias } = storeToRefs(categoriaStore)
 const filter = reactive<ItemsDepartmentFilters>({
   searchTerm: '',
   categoriaNome: '',
+  itemsType: null,
   departamento: '',
   sortOrder: null,
   pageNumber: '1',

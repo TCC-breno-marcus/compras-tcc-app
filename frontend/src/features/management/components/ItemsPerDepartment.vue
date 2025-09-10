@@ -2,7 +2,7 @@
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
 import InputText from 'primevue/inputtext'
-import { Button, Tag, FloatLabel, Select, useToast } from 'primevue'
+import { Button, ButtonGroup, Tag, FloatLabel, Select, useToast } from 'primevue'
 import { computed, nextTick, onMounted, reactive, ref } from 'vue'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
@@ -40,10 +40,12 @@ const selectedItemDetails = ref<ItemDepartmentResponse | null>(null)
 const categoriaStore = useCategoriaStore()
 const { categorias } = storeToRefs(categoriaStore)
 const toast = useToast()
+const reportType = ref<'geral' | 'patrimonial'>('geral')
 
 const filter = reactive<ItemsDepartmentFilters>({
   searchTerm: '',
   categoriaNome: '',
+  itemsType: null,
   departamento: '',
   sortOrder: null,
   pageNumber: '1',
@@ -68,15 +70,6 @@ const clearFilters = () => {
   router.push({ query: {} })
 }
 
-const columns = [
-  { field: 'nome', header: 'Item' },
-  { field: 'catMat', header: 'CATMAT' },
-  { field: 'quantidadeTotalSolicitada', header: 'Qtde. Total' },
-  { field: 'numeroDeSolicitacoes', header: 'Nº de Solicitações' },
-  { field: 'valorTotalSolicitado', header: 'Valor Total' },
-  { field: 'precoMedio', header: 'Preço Médio' },
-]
-
 const toggleSortDirection = () => {
   if (filter.sortOrder === null) {
     filter.sortOrder = 'asc'
@@ -90,12 +83,12 @@ const toggleSortDirection = () => {
 
 const computedSort = computed(() => {
   if (filter.sortOrder === 'asc') {
-    return { text: 'Mais Antigos', icon: 'pi pi-sort-amount-up' }
+    return { text: 'Ordenar de A-Z', icon: 'pi pi-sort-amount-up' }
   }
   if (filter.sortOrder === 'desc') {
-    return { text: 'Mais Recentes', icon: 'pi pi-sort-amount-down' }
+    return { text: 'Ordenar de Z-A', icon: 'pi pi-sort-amount-down' }
   }
-  return { text: 'Ordenar por Data', icon: 'pi pi-sort-alt' }
+  return { text: 'Ordenar por Nome', icon: 'pi pi-sort-alt' }
 })
 
 const showPopOverItem = (event: MouseEvent, item: ItemDepartmentResponse) => {
@@ -121,13 +114,12 @@ const handleExportCsv = async () => {
   try {
     reportLoading.value = true
 
-    const reportType = 'geral'
-    const csvBlob = await reportService.getCsvItemsPerDepartment(reportType)
+    const csvBlob = await reportService.getCsvItemsPerDepartment(reportType.value)
 
     const url = window.URL.createObjectURL(csvBlob)
     const link = document.createElement('a')
     link.href = url
-    link.download = `relatorio_itens_por_departamento_${reportType}.csv`
+    link.download = `relatorio_itens_por_departamento_${reportType.value}.csv`
 
     document.body.appendChild(link)
     link.click()
@@ -153,9 +145,12 @@ const handleExportCsv = async () => {
 }
 
 watch(
-  () => route.query,
-  async (newQuery) => {
+  [() => route.query, reportType],
+  async ([newQuery, newReportType]) => {
     const cleanFilters = mapQueryToFilters(newQuery)
+
+    cleanFilters.itemsType = newReportType
+
     Object.assign(filter, cleanFilters)
     reportStore.fetchItemsPerDepartment(cleanFilters)
   },
@@ -172,7 +167,6 @@ onMounted(() => {
 })
 </script>
 
-<!-- TODO: devo separar esse componente em dois, deve ser duas paginas pra visualizar separadamente items patrimoniais e items gerais -->
 <template>
   <div class="flex flex-column w-full h-full">
     <div
@@ -193,7 +187,7 @@ onMounted(() => {
           <label for="id-search">Pesquisar item</label>
         </FloatLabel>
 
-        <FloatLabel class="w-full sm:w-16rem" variant="on">
+        <!-- <FloatLabel class="w-full sm:w-16rem" variant="on">
           <Select
             v-model="filter.categoriaNome"
             :options="categorias"
@@ -207,7 +201,7 @@ onMounted(() => {
             filter
           />
           <label for="categoria">Categoria do Item</label>
-        </FloatLabel>
+        </FloatLabel> -->
 
         <FloatLabel class="w-full sm:w-16rem" variant="on">
           <Select
@@ -234,25 +228,25 @@ onMounted(() => {
         />
         <Button
           label="Limpar"
-          icon="pi pi-filter-slash"
+          icon="pi pi-times"
           severity="danger"
           text
           @click="clearFilters"
           size="small"
         />
+        <!-- TODO: trocar icones dos filtros de busca e clear pra esses que estão aqui -->
         <Button
           type="button"
           label="Buscar"
-          icon="pi pi-filter"
+          icon="pi pi-search"
           size="small"
           @click="applyFilters"
         />
       </div>
 
-      <div
+      <!-- <div
         class="flex flex-order-1 sm:flex-order-3 flex-row align-items-center gap-2 p-3 pb-0 sm:pb-3 xl:p-0"
       >
-        <!-- TODO: adicionar funcionalidade para exportar csv e xlsx -->
         <Button
           type="button"
           label="Exportar"
@@ -262,10 +256,42 @@ onMounted(() => {
           :onClick="handleExportCsv"
           :loading="reportLoading"
         />
-      </div>
+      </div> -->
     </div>
 
-    <div class="table-container mt-4">
+    <div class="flex justify-content-between w-full mt-4 mb-2">
+      <div class="flex">
+        <ButtonGroup>
+          <Button
+            type="button"
+            label="Itens Gerais"
+            icon="pi pi-box"
+            size="small"
+            :outlined="reportType !== 'geral'"
+            @click="reportType = 'geral'"
+          />
+          <Button
+            type="button"
+            label="Itens Patrimoniais"
+            icon="pi pi-building"
+            size="small"
+            :outlined="reportType !== 'patrimonial'"
+            @click="reportType = 'patrimonial'"
+          />
+        </ButtonGroup>
+      </div>
+      <Button
+        type="button"
+        label="Exportar"
+        icon="pi pi-download"
+        size="small"
+        text
+        :onClick="handleExportCsv"
+        :loading="reportLoading"
+      />
+    </div>
+
+    <div class="table-container">
       <ItemPerDepartmentCard
         v-if="itemsDepartment.length > 0"
         v-for="item in itemsDepartment"
@@ -305,7 +331,7 @@ onMounted(() => {
 <style scoped>
 .table-container {
   justify-content: center;
-  max-height: calc(100vh - 320px);
+  max-height: calc(100vh - 340px);
   overflow-y: auto;
   /* Para Firefox */
   scrollbar-width: thin;
