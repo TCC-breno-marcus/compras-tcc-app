@@ -47,6 +47,17 @@ const disabledSendSolicitation = computed(() => {
     )
   }
 })
+
+const handleItemRemove = (itemId: number) => {
+  if (!solicitationItems.value || solicitationItems.value.length === 0) return
+  solicitationCartStore.removeItem(itemId)
+  toast.add({
+    severity: 'warn',
+    summary: 'Removido',
+    detail: `Item removido da solicitação.`,
+    life: 3000,
+  })
+}
 </script>
 
 <template>
@@ -57,6 +68,7 @@ const disabledSendSolicitation = computed(() => {
         :key="item.catMat"
         :item="item"
         :is-editing="true"
+        @remove-item="handleItemRemove"
       />
     </div>
     <div v-else class="flex flex-column align-items-center text-center p-4">

@@ -51,10 +51,12 @@ const handleQuantityInput = (event: InputNumberInputEvent) => {
   }
 }
 </script>
+
+<!-- TODO: quantidades e valores em reais exibir com o componente Tag -->
 <template>
   <div
     class="flex md:flex-column lg:flex-row justify-content-between lg:justify-content-between p-2 w-full gap-2"
-    :class="item.justificativa ? '' : 'custom-border'"
+    :class="item.justificativa || !solicitationContext?.isGeneral ? '' : 'custom-border'"
   >
     <div class="flex justify-content-start align-items-center gap-2 mr-2">
       <div class="image-preview-container flex justify-content-center align-items-center">
@@ -143,9 +145,6 @@ const handleQuantityInput = (event: InputNumberInputEvent) => {
         @update:modelValue="onFieldUpdate"
       />
       <label for="on_label_justification">Justificativa</label>
-      <!-- TODO: esse input acima na pagina de criar solicitação está bugado: 
-       uma linha de divider (borda inferior) está aparecendo antes do input de 
-       justificativa -->
     </FloatLabel>
     <div v-else>
       <span class="text-color-secondary">Justificativa: </span>
