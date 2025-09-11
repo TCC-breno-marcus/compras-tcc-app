@@ -94,6 +94,17 @@ const { user, isAdmin, isGestor, isSolicitante } = storeToRefs(authStore)
           color="#f26c4f"
         />
       </div>
+
+      <div v-if="isAdmin || isGestor" class="col-12 md:col-6 lg:col-4">
+        <HomeCard
+          title="Usuários"
+          title-icon="group"
+          content-text="Crie e visualize usuários do sistema e gerencie seus perfis de acesso."
+          button-label="Gerenciar Usuários"
+          button-route="/gestor/usuarios"
+          color="#f26c4f"
+        />
+      </div>
     </div>
   </div>
 </template>

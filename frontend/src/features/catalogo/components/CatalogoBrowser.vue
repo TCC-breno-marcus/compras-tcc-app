@@ -15,7 +15,6 @@ import { useCategoriaStore } from '../stores/categoriaStore'
 import { mapQueryToFilters, applyPreFilters } from '../utils/queryHelper'
 import { SolicitationContextKey } from '@/features/solicitations/keys'
 import CreateItemDialog from './CreateItemDialog.vue'
-import CatalogUpload from './CatalogUpload.vue'
 
 const props = defineProps<{
   /**

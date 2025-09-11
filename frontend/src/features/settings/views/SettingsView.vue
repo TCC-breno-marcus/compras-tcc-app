@@ -20,12 +20,6 @@ const items = ref([
     path: '/configuracoes/solicitacoes',
   },
   {
-    label: 'Usuários e Permissões',
-    icon: 'pi pi-users',
-    command: () => router.push('/configuracoes/usuarios'),
-    path: '/configuracoes/usuarios',
-  },
-  {
     label: 'Notificações',
     icon: 'pi pi-bell',
     command: () => router.push('/configuracoes/notificacoes'),

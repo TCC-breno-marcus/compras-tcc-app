@@ -123,9 +123,16 @@ const handleLogin = async () => {
             :loading="isLoading"
             class="w-full mt-2"
           />
-          <router-link to="/register" class="text-center text-sm text-primary-500 hover:underline">
-            Não tem uma conta? Cadastre-se
-          </router-link>
+          <p class="text-center text-color-secondary">
+            Ainda não possui acesso? Solicite junto à gestão do seu centro pelo e-mail
+            <!-- TODO: deve ser o email setado na entidade CENTRO -->
+            <a
+              href="mailto:gestao@exemplo.br"
+              class="hover:underline text-primary-500"
+              aria-label="Enviar email para gestao@exemplo.br"
+              >centro@academico.ufs.br</a
+            >.
+          </p>
         </form>
       </div>
     </div>
