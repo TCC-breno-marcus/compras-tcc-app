@@ -26,7 +26,6 @@ const props = defineProps<{
 }>()
 
 const solicitationContext = inject(SolicitationContextKey)
-// Todo: Injetar também depois o contexto de management
 
 const route = useRoute()
 const router = useRouter()
@@ -135,8 +134,6 @@ defineExpose({
         v-if="!solicitationContext"
         class="flex flex-order-1 sm:flex-order-3 flex-row align-items-center gap-2 p-3 pb-0 sm:pb-3 xl:p-0"
       >
-        <!-- TODO: ao invés de dois botões, explorar outras ideias como talvez um botão só que abre um menu e escolhe 
-         entre criar um item ou múltiplos itens com a planilha -->
         <Button
           type="button"
           label="Criar"
@@ -145,8 +142,6 @@ defineExpose({
           text
           @click="isCreateDialogVisible = true"
         />
-        <!-- TODO: Removi a opção de importar. Mais info: https://github.com/TCC-breno-marcus/compras-tcc-app/issues/53-->
-        <!-- <CatalogUpload /> -->
       </div>
     </div>
     <div v-if="loading" class="items-grid mt-2 mb-6 gap-2">
