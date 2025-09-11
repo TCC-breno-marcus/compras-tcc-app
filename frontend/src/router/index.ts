@@ -15,9 +15,9 @@ import SettingsView from '@/features/settings/views/SettingsView.vue'
 import NotificationsSettings from '@/features/settings/components/NotificationsSettings.vue'
 import GeneralSettings from '@/features/settings/components/GeneralSettings.vue'
 import SolicitationsSettings from '@/features/settings/components/SolicitationsSettings.vue'
-import UsersAndPermissionsSettings from '@/features/settings/components/UsersAndPermissionsSettings.vue'
 import UserProfileView from '@/features/autentication/views/UserProfileView.vue'
 import ContactUsView from '@/views/ContactUsView.vue'
+import Usuarios from '@/features/management/components/Usuarios.vue'
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -95,6 +95,10 @@ const router = createRouter({
               path: 'relatorios',
               component: () => import('@/features/management/components/Reports.vue'),
             },
+            {
+              path: 'usuarios',
+              component: Usuarios,
+            },
           ],
         },
         {
@@ -109,10 +113,6 @@ const router = createRouter({
             {
               path: 'solicitacoes',
               component: SolicitationsSettings,
-            },
-            {
-              path: 'usuarios',
-              component: UsersAndPermissionsSettings,
             },
             {
               path: 'notificacoes',
@@ -158,11 +158,6 @@ const router = createRouter({
       path: '/login',
       name: 'Login',
       component: () => import('../features/autentication/views/LoginView.vue'),
-    },
-    {
-      path: '/register',
-      name: 'Register',
-      component: () => import('../features/autentication/views/RegisterView.vue'),
     },
     {
       path: '/not-found',

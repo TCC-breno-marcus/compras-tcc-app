@@ -1,39 +1,26 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
-import { useSettingStore } from '../stores/settingStore'
-import { Button, Card, ToggleSwitch, Tag, useConfirm, useToast } from 'primevue'
-import { useSettingsForm } from '@/composables/useSettingsForm'
+import { Button, Card, Tag, useConfirm, useToast } from 'primevue'
 import Avatar from 'primevue/avatar'
 import Select from 'primevue/select'
 import Divider from 'primevue/divider'
 import { useUserStore } from '@/features/users/stores/userStore'
 import { toTitleCase } from '@/utils/stringUtils'
-import UserListSkeleton from './UserListSkeleton.vue'
+import UserListSkeleton from '@/features/users/components/UserListSkeleton.vue'
 import { SAVE_CONFIRMATION } from '@/utils/confirmationFactoryUtils'
 import type { User } from '@/features/users/types'
 import { roleService } from '@/features/users/services/roleService'
+import UserRegister from '@/features/users/components/UserRegister.vue'
 
-const settingsStore = useSettingStore()
-const { settings } = storeToRefs(settingsStore)
 const userStore = useUserStore()
 const { users, isLoading: usersLoading } = storeToRefs(userStore)
 const confirm = useConfirm()
 const toast = useToast()
-
 const editingUserId = ref<number | null>(null)
-
-const {
-  isEditing,
-  isLoading,
-  formData,
-  isDirty,
-  prazoSubmissaoDatePicker,
-  handleSave,
-  handleCancel,
-} = useSettingsForm(settings)
-
 const roleOptions = ref(['Admin', 'Gestor', 'Solicitante'])
+const tempRole = ref<string>('')
+const isCreateDialogVisible = ref(false)
 
 const getRoleTagSeverity = (role: string) => {
   if (role === 'Admin') return 'danger'
@@ -41,16 +28,12 @@ const getRoleTagSeverity = (role: string) => {
   return 'secondary'
 }
 
-const tempRole = ref<string>('')
-
 const startEditing = (user: any) => {
   editingUserId.value = user.id
   tempRole.value = user.role
 }
 
 const acceptSaveChanges = async (user: User) => {
-  console.log(`Perfil do usuário ${user.nome} alterado para ${user.role}. Salvando...`)
-
   try {
     await roleService.updateUserRole({
       email: user.email,
@@ -70,6 +53,7 @@ const acceptSaveChanges = async (user: User) => {
       detail: 'Não foi possível salvar as alterações.',
       life: 3000,
     })
+    handleCancelEditRole(user)
   }
 
   editingUserId.value = null
@@ -87,119 +71,38 @@ const handleRoleChange = (user: User) => {
   })
 }
 
-onMounted(() => {
-  if (!settings.value) {
-    settingsStore.fetchSettings()
-  }
+const updateUserList = () => {
   userStore.fetchUsers()
+}
+
+onMounted(() => {
+  updateUserList
 })
 </script>
 
 <template>
   <div class="flex flex-column w-full gap-2">
     <div class="flex flex-column gap-3">
-      <Card class="shadow-lg border-none">
-        <template #content>
-          <div v-if="isLoading" class="p-4">
-            <div class="flex flex-column gap-4">
-              <div class="flex justify-content-between align-items-center">
-                <Skeleton width="60%" height="1.2rem" />
-                <Skeleton width="4rem" height="2rem" />
-              </div>
-            </div>
-          </div>
-
-          <div v-else class="flex flex-column gap-2">
-            <!-- User Registration Setting -->
-            <div class="flex justify-content-between">
-              <div>
-                <div class="flex align-items-center gap-2">
-                  <i class="pi pi-user-plus text-primary"></i>
-                  <div>
-                    <span class="font-semibold text-gray-900"
-                      >Permitir Auto-Cadastro de Novos Usuários</span
-                    >
-                    <p class="text-sm text-gray-500 mt-1 mb-0">
-                      Permite que novos usuários se cadastrem automaticamente no sistema
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <div v-if="isEditing" class="flex align-items-center">
-                  <ToggleSwitch
-                    v-model="formData.permitirAutoCadastro"
-                    inputId="auto-cadastro-switch"
-                    class="toggle-switch"
-                  />
-                </div>
-                <div v-else class="value-display-toggle">
-                  <div class="flex align-items-center gap-2">
-                    <i
-                      :class="
-                        formData.permitirAutoCadastro
-                          ? 'pi pi-check-circle text-green-500'
-                          : 'pi pi-times-circle text-red-500'
-                      "
-                    ></i>
-                    <span class="font-semibold">
-                      {{ formData.permitirAutoCadastro ? 'Habilitado' : 'Desabilitado' }}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </template>
-
-        <template #footer>
-          <div class="flex justify-content-end gap-3 p-3">
-            <Button
-              v-if="!isEditing"
-              label="Editar"
-              icon="pi pi-pencil"
-              size="small"
-              @click="isEditing = true"
-            />
-
-            <template v-else>
-              <Button
-                label="Cancelar"
-                icon="pi pi-times"
-                severity="secondary"
-                @click="handleCancel"
-                size="small"
-              />
-              <Button
-                label="Salvar Alterações"
-                icon="pi pi-check"
-                :disabled="!isDirty"
-                :loading="isLoading"
-                @click="handleSave"
-                size="small"
-              />
-            </template>
-          </div>
-        </template>
-      </Card>
-
       <Card>
-        <!-- <template #title>
-          <div class="flex align-items-center gap-2">
-            <i class="pi pi-users text-xl"></i>
-            <span>Gerenciar Usuários e Perfis</span>
-          </div>
-        </template> -->
         <template #content>
-          <div class="flex align-items-center gap-2 mb-4">
-            <i class="pi pi-sliders-h text-primary"></i>
-            <div>
-              <span class="font-semibold text-gray-900">Gerenciar Usuários e Perfis</span>
-              <p class="text-sm text-gray-500 mt-1 mb-0">
-                Visualizar todos os usuários do sistema e trocar seus perfis.
-              </p>
+          <div class="flex align-items-center justify-content-between mb-4">
+            <div class="flex gap-2">
+              <i class="pi pi-users text-primary text-2xl"></i>
+              <div>
+                <span class="font-semibold text-gray-900">Gerenciar Usuários e Perfis</span>
+                <p class="text-sm text-gray-500 mt-1 mb-0">
+                  Visualizar todos os usuários do sistema e trocar seus perfis.
+                </p>
+              </div>
             </div>
+            <Button
+              type="button"
+              label="Novo Usuário"
+              icon="pi pi-plus"
+              size="small"
+              text
+              @click="isCreateDialogVisible = true"
+            />
           </div>
           <UserListSkeleton v-if="usersLoading" />
           <ul v-else class="list-none p-4 pt-2 m-0 h-25rem overflow-x-auto">
@@ -274,6 +177,12 @@ onMounted(() => {
       </Card>
     </div>
   </div>
+
+  <UserRegister
+    v-model:visible="isCreateDialogVisible"
+    @update:visible="isCreateDialogVisible = false"
+    @update:user-list="updateUserList"
+  />
 </template>
 
 <style scoped>
@@ -286,21 +195,5 @@ onMounted(() => {
 }
 .user-row:not(.opacity-50):hover .edit-button {
   opacity: 1;
-}
-
-.value-display-toggle {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.4rem 1rem;
-  background: var(--p-surface-50);
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-  min-width: 8rem;
-  justify-content: center;
-}
-
-.toggle-switch {
-  transform: scale(1.2);
 }
 </style>

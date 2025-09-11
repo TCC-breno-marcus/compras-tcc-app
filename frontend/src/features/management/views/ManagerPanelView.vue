@@ -27,8 +27,8 @@ const items = ref([
     path: '/gestor/solicitacoes',
   },
   {
-    label: 'Gerenciar Catálogo',
-    icon: 'pi pi-book',
+    label: 'Catálogo',
+    icon: 'pi pi-box',
     command: () => router.push('/gestor/catalogo'),
     path: '/gestor/catalogo',
   },
@@ -37,6 +37,12 @@ const items = ref([
     icon: 'pi pi-book',
     command: () => router.push('/gestor/relatorios'),
     path: '/gestor/relatorios',
+  },
+  {
+    label: 'Usuários',
+    icon: 'pi pi-users',
+    command: () => router.push('/gestor/usuarios'),
+    path: '/gestor/usuarios',
   },
 ])
 
