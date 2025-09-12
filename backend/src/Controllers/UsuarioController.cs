@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using ComprasTccApp.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -26,7 +27,8 @@ namespace ComprasTccApp.Backend.Controllers
             [FromQuery] string? role = null,
             [FromQuery] int pageNumber = 1,
             [FromQuery] int pageSize = 50,
-            [FromQuery] string? sortOrder = "asc"
+            [FromQuery] string? sortOrder = "asc",
+            [FromQuery] bool? isActive = null
         )
         {
             try
@@ -35,7 +37,8 @@ namespace ComprasTccApp.Backend.Controllers
                     role,
                     pageNumber,
                     pageSize,
-                    sortOrder
+                    sortOrder,
+                    isActive
                 );
                 return Ok(users);
             }
@@ -43,6 +46,61 @@ namespace ComprasTccApp.Backend.Controllers
             {
                 _logger.LogError(ex, "Erro ao buscar a lista de usuários.");
                 return StatusCode(500, new { message = "Ocorreu um erro interno no servidor." });
+            }
+        }
+
+        [HttpPatch("{id}/inativar")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        [Authorize(Roles = "Admin,Gestor")]
+        public async Task<IActionResult> InativarUsuario(long id)
+        {
+            try
+            {
+                var pessoaId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+                if (id == pessoaId)
+                {
+                    return BadRequest(new { message = "Você não pode inativar a si mesmo." });
+                }
+
+                var sucesso = await _usuarioService.InativarUsuarioAsync(id);
+                if (!sucesso)
+                {
+                    return NotFound(new { message = $"Usuário com ID {id} não encontrado." });
+                }
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro ao inativar usuário com ID {Id}", id);
+                return StatusCode(500, new { message = "Ocorreu um erro interno." });
+            }
+        }
+
+        [HttpPatch("{id}/ativar")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        [Authorize(Roles = "Admin,Gestor")]
+        public async Task<IActionResult> AtivarUsuario(long id)
+        {
+            try
+            {
+                var sucesso = await _usuarioService.AtivarUsuarioAsync(id);
+                if (!sucesso)
+                {
+                    return NotFound(new { message = $"Usuário com ID {id} não encontrado." });
+                }
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro ao ativar usuário com ID {Id}", id);
+                return StatusCode(500, new { message = "Ocorreu um erro interno." });
             }
         }
     }

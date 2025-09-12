@@ -10,10 +10,12 @@ namespace ComprasTccApp.Backend.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
+        private readonly ILogger<AuthController> _logger;
 
-        public AuthController(IAuthService authService)
+        public AuthController(IAuthService authService, ILogger<AuthController> logger)
         {
             _authService = authService;
+            _logger = logger;
         }
 
         [HttpPost("register")]
@@ -37,13 +39,30 @@ namespace ComprasTccApp.Backend.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
-            var token = await _authService.LoginAsync(loginDto);
-            if (token == null)
+            try
             {
-                return Unauthorized(new { message = "Credenciais inválidas." });
-            }
+                var loginResponse = await _authService.LoginAsync(loginDto);
 
-            return Ok(new { token, message = "Login bem-sucedido!" });
+                if (loginResponse == null)
+                {
+                    return Unauthorized(new { message = "Email ou senha inválidos." });
+                }
+
+                return Ok(loginResponse);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Erro inesperado durante o login para o email {Email}",
+                    loginDto.Email
+                );
+                return StatusCode(500, new { message = "Ocorreu um erro interno no servidor." });
+            }
         }
 
         [HttpGet("me")]

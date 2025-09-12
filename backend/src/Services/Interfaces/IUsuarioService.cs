@@ -10,9 +10,15 @@ namespace ComprasTccApp.Services.Interfaces
             string? role,
             int pageNumber,
             int pageSize,
-            string? sortOrder
+            string? sortOrder,
+            bool? isActive
         );
 
         Task<(Servidor servidor, Solicitante solicitante)> GetSolicitanteInfoAsync(long pessoaId);
+
+        Task<bool> InativarUsuarioAsync(long id);
+
+        Task<bool> AtivarUsuarioAsync(long id);
+
     }
 }
