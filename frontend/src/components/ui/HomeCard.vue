@@ -78,3 +78,9 @@ const iconStyle = computed(() => ({
     </template>
   </Card>
 </template>
+
+<style scoped>
+.p-dark .p-card:hover {
+  background-color: var(--p-surface-800);
+}
+</style>

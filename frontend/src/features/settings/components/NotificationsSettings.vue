@@ -47,7 +47,7 @@ onMounted(() => {
                   <i class="pi pi-envelope text-primary"></i>
                   <div>
                     <span class="font-semibold">Email de Notificações</span>
-                    <p class="text-sm text-gray-500 mt-1 mb-0">
+                    <p class="text-sm text-color-secondary mt-1 mb-0">
                       Email usado para envio de notificações
                     </p>
                   </div>
@@ -111,19 +111,19 @@ onMounted(() => {
         <template #content>
           <div class="flex align-items-start gap-3 p-2">
             <i class="pi pi-info-circle text-blue-500 text-lg flex-shrink-0 mt-1"></i>
-            <div class="text-sm text-gray-600 line-height-3">
-              <p class="font-medium text-gray-800 mb-2">Informações importantes:</p>
+            <div class="text-sm line-height-3">
+              <p class="font-medium mb-2">Informações importantes:</p>
               <ul class="list-none p-0 m-0 flex flex-column gap-1">
                 <li class="flex align-items-start gap-2">
                   <i
-                    class="pi pi-circle-fill text-xs text-gray-400 flex-shrink-0"
+                    class="pi pi-circle-fill text-xs text-color-secondary flex-shrink-0"
                     style="margin-top: 0.4rem"
                   ></i>
                   <span>Certifique-se de que o email esteja válido e ativo</span>
                 </li>
                 <li class="flex align-items-start gap-2">
                   <i
-                    class="pi pi-circle-fill text-xs text-gray-400 flex-shrink-0"
+                    class="pi pi-circle-fill text-xs text-color-secondary flex-shrink-0"
                     style="margin-top: 0.4rem"
                   ></i>
                   <span>Alterações entram em vigor imediatamente</span>
@@ -148,5 +148,10 @@ onMounted(() => {
   border: 1px solid #e2e8f0;
   min-width: 12rem;
   justify-content: center;
+}
+
+.p-dark .value-display {
+  background: var(--p-surface-900);
+  border: 1px solid var(--p-surface-600);
 }
 </style>

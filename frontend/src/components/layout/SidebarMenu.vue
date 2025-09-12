@@ -89,7 +89,7 @@ const { itemsMenu } = useMenuStore()
 
 <style scoped>
 .sidebar-container {
-  background-color: var(--p-surface-800);
+  background-color: var(--p-surface-900);
   /* background-color: #1B325F; */
   color: var(--p-surface-100);
   /* padding: 1rem 0; */
@@ -220,7 +220,7 @@ const { itemsMenu } = useMenuStore()
 /* Hover states */
 :deep(.p-tieredmenu-item-content:hover),
 .menu-open-icon:hover {
-  background-color: var(--p-surface-900) !important;
+  background-color: var(--p-surface-800) !important;
 }
 
 :deep(.p-tieredmenu-submenu .p-tieredmenu-item-content:hover) {
@@ -230,7 +230,7 @@ const { itemsMenu } = useMenuStore()
 /* Focus states */
 :deep(.p-tieredmenu-item-content:focus),
 .menu-open-icon:focus {
-  background-color: var(--p-surface-900) !important;
+  background-color: var(--p-surface-800) !important;
 }
 
 :deep(.p-tieredmenu-submenu .p-tieredmenu-item-content:focus) {

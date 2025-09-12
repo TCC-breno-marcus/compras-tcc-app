@@ -133,7 +133,7 @@ const clearForm = () => {
             <form @submit.prevent="submitForm" class="space-y-4">
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="field">
-                  <label for="nome" class="block text-sm font-medium text-gray-700 mb-2">
+                  <label for="nome" class="block text-sm font-medium mb-2">
                     Nome *
                   </label>
                   <InputText
@@ -148,7 +148,7 @@ const clearForm = () => {
                 </div>
 
                 <div class="field">
-                  <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                  <label for="email" class="block text-sm font-medium mb-2">
                     E-mail *
                   </label>
                   <InputText
@@ -166,7 +166,7 @@ const clearForm = () => {
 
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="field">
-                  <label for="telefone" class="block text-sm font-medium text-gray-700 mb-2">
+                  <label for="telefone" class="block text-sm font-medium mb-2">
                     Telefone
                   </label>
                   <InputText
@@ -179,7 +179,7 @@ const clearForm = () => {
                 </div>
 
                 <div class="field">
-                  <label for="assunto" class="block text-sm font-medium text-gray-700 mb-2">
+                  <label for="assunto" class="block text-sm font-medium mb-2">
                     Assunto *
                   </label>
                   <Dropdown
@@ -198,7 +198,7 @@ const clearForm = () => {
               </div>
 
               <div class="field">
-                <label for="mensagem" class="block text-sm font-medium text-gray-700 mb-2">
+                <label for="mensagem" class="block text-sm font-medium mb-2">
                   Mensagem *
                 </label>
                 <Textarea
@@ -327,7 +327,6 @@ const clearForm = () => {
   border-color: #e24c4c;
 }
 
-/* Customizações adicionais */
 .p-button {
   transition: all 0.3s ease;
 }
@@ -335,10 +334,6 @@ const clearForm = () => {
 .p-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.bg-gray-50 {
-  background-color: #f9fafb;
 }
 
 .shadow-md {

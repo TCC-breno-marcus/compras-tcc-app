@@ -29,7 +29,7 @@ watch(
       :pt="{
         root: {
           style: {
-            background: 'var(--p-surface-800)',
+            background: 'var(--p-surface-900)',
             color: 'var(--p-surface-100)',
             border: 0,
           },
@@ -44,7 +44,7 @@ watch(
       }"
     >
       <div class="card flex justify-center text-sm" style="color: var(--p-text-color)">
-        <Menu :model="itemsMenuOverlay" style="background-color: var(--p-surface-800); border: 0">
+        <Menu :model="itemsMenuOverlay" style="background-color: var(--p-surface-900); border: 0">
           <template #item="{ item, props }">
             <router-link v-if="item.route" v-slot="{ href, navigate }" :to="item.route" custom>
               <a v-ripple :href="href" v-bind="props.action" @click="navigate">
@@ -104,7 +104,7 @@ watch(
 /* Hover states */
 :deep(.p-menu-item-content:hover),
 .menu-open-icon:hover {
-  background-color: var(--p-surface-900) !important;
+  background-color: var(--p-surface-800) !important;
 }
 
 :deep(.p-menu-submenu .p-menu-item-content:hover) {
@@ -114,7 +114,7 @@ watch(
 /* Focus states */
 :deep(.p-menu-item-content:focus),
 .menu-open-icon:focus {
-  background-color: var(--p-surface-900) !important;
+  background-color: var(--p-surface-800) !important;
 }
 
 :deep(.p-menu-submenu .p-menu-item-content:focus) {
@@ -122,6 +122,6 @@ watch(
 }
 
 :deep(.p-menu-submenu-label) {
-  color: var(--p-surface-400);
+  color: var(--p-surface-500);
 }
 </style>

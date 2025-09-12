@@ -89,7 +89,7 @@ onMounted(() => {
             <div class="flex gap-2">
               <i class="pi pi-users text-primary text-2xl"></i>
               <div>
-                <span class="font-semibold text-gray-900">Gerenciar Usuários e Perfis</span>
+                <span class="font-semibold">Gerenciar Usuários e Perfis</span>
                 <p class="text-sm text-gray-500 mt-1 mb-0">
                   Visualizar todos os usuários do sistema e trocar seus perfis.
                 </p>
