@@ -175,3 +175,24 @@ export const CHANGE_SOLICITATION_CONFIRMATION: ConfirmationOptions = {
     severity: 'danger',
   },
 }
+
+/**
+ * Configuração padrão para um diálogo de confirmação ao tentar trocar o status de um usuário.
+ */
+export const UPDATE_STATUS_USER_CONFIRMATION: ConfirmationOptions = {
+  header: `Confirmar Alteração de Status`,
+  icon: 'pi pi-exclamation-triangle',
+  rejectProps: {
+    label: 'Cancelar',
+    severity: 'secondary',
+    text: true,
+    icon: 'pi pi-times',
+    size: 'small',
+  },
+  acceptProps: {
+    label: 'Confirmar',
+    icon: 'pi pi-save',
+    size: 'small',
+    severity: 'success',
+  },
+}

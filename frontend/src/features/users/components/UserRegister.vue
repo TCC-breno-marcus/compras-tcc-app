@@ -320,7 +320,7 @@ watch(
       />
       <Button
         icon="pi pi-user-plus"
-        label="Registrar"
+        label="Criar"
         :loading="isLoading"
         size="small"
         @click="handleRegister"

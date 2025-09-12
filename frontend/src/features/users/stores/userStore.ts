@@ -40,6 +40,8 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
+  const activeUsers = computed(() => users.value.filter((user) => user.isActive))
+  const inactiveUsers = computed(() => users.value.filter((user) => !user.isActive))
   const solicitantes = computed(() => users.value.filter((user) => user.role === 'Solicitante'))
   const gestores = computed(() => users.value.filter((user) => user.role === 'Gestor'))
   const admins = computed(() => users.value.filter((user) => user.role === 'Admin'))
@@ -49,6 +51,8 @@ export const useUserStore = defineStore('user', () => {
     isLoading,
     error,
     fetchUsers,
+    activeUsers,
+    inactiveUsers,
     solicitantes,
     gestores,
     admins,

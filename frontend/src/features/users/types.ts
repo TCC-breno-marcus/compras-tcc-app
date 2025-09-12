@@ -9,6 +9,7 @@ export interface User {
   cpf: string
   role: 'Admin' | 'Gestor' | 'Solicitante'
   departamento: string
+  isActive: boolean
 }
 
 /**
@@ -17,6 +18,7 @@ export interface User {
 export interface GetUsersFilters {
   role?: 'Admin' | 'Gestor' | 'Solicitante'
   sortOrder?: string | null
+  isActive?: boolean
   pageSize?: string
   pageNumber?: string
 }
@@ -30,5 +32,9 @@ export interface UpdateUserRoleRequest {
 }
 
 export interface UpdateUserRoleResponse {
+  message: string
+}
+
+export interface UpdateUserStatusResponse {
   message: string
 }
