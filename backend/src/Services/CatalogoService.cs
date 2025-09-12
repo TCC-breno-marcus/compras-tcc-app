@@ -10,11 +10,17 @@ namespace Services
     {
         private readonly AppDbContext _context;
         private readonly ILogger<CatalogoService> _logger;
+        private readonly string _imageBaseUrl;
 
-        public CatalogoService(AppDbContext context, ILogger<CatalogoService> logger)
+        public CatalogoService(
+            AppDbContext context,
+            ILogger<CatalogoService> logger,
+            IConfiguration configuration
+        )
         {
             _context = context;
             _logger = logger;
+            _imageBaseUrl = configuration["ImageBaseUrl"] ?? "";
         }
 
         public async Task<PaginatedResultDto<ItemDto>> GetAllItensAsync(
@@ -124,10 +130,9 @@ namespace Services
                             Descricao = item.Categoria.Descricao,
                             IsActive = item.Categoria.IsActive,
                         },
-                        // TODO: o link abaixo deve estar em variável de ambiente
                         LinkImagem = string.IsNullOrWhiteSpace(item.LinkImagem)
                             ? item.LinkImagem
-                            : $"http://localhost:8088/images/{item.LinkImagem}",
+                            : $"{_imageBaseUrl}{item.LinkImagem}",
                         PrecoSugerido = item.PrecoSugerido,
                         Especificacao = item.Especificacao,
                         IsActive = item.IsActive,
@@ -373,10 +378,9 @@ namespace Services
                         Descricao = item.Categoria.Descricao,
                         IsActive = item.Categoria.IsActive,
                     },
-                    // TODO: o link abaixo deve estar em variável de ambiente
                     LinkImagem = string.IsNullOrWhiteSpace(item.LinkImagem)
                         ? item.LinkImagem
-                        : $"http://localhost:8088/images/{item.LinkImagem}",
+                        : $"{_imageBaseUrl}{item.LinkImagem}",
                     PrecoSugerido = item.PrecoSugerido,
                     Especificacao = item.Especificacao,
                     IsActive = item.IsActive,
@@ -514,10 +518,9 @@ namespace Services
                             Descricao = item.Categoria.Descricao,
                             IsActive = item.Categoria.IsActive,
                         },
-                        // TODO: o link abaixo deve estar em variável de ambiente
                         LinkImagem = string.IsNullOrWhiteSpace(item.LinkImagem)
                             ? item.LinkImagem
-                            : $"http://localhost:8088/images/{item.LinkImagem}",
+                            : $"{_imageBaseUrl}{item.LinkImagem}",
                         PrecoSugerido = item.PrecoSugerido,
                         Especificacao = item.Especificacao,
                         IsActive = item.IsActive,
@@ -577,10 +580,9 @@ namespace Services
                     Descricao = item.Categoria.Descricao,
                     IsActive = item.Categoria.IsActive,
                 },
-                // TODO: o link abaixo deve estar em variável de ambiente
                 LinkImagem = string.IsNullOrWhiteSpace(item.LinkImagem)
                     ? item.LinkImagem
-                    : $"http://localhost:8088/images/{item.LinkImagem}",
+                    : $"{_imageBaseUrl}{item.LinkImagem}",
                 PrecoSugerido = item.PrecoSugerido,
                 Especificacao = item.Especificacao,
                 IsActive = item.IsActive,

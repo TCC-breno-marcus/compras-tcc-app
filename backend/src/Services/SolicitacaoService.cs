@@ -14,18 +14,21 @@ public class SolicitacaoService : ISolicitacaoService
     private readonly ILogger<SolicitacaoService> _logger;
     private readonly IConfiguracaoService _configuracaoService;
     private readonly IUsuarioService _usuarioService;
+    private readonly string _imageBaseUrl;
 
     public SolicitacaoService(
         AppDbContext context,
         ILogger<SolicitacaoService> logger,
         IConfiguracaoService configuracaoService,
-        IUsuarioService usuarioService
+        IUsuarioService usuarioService,
+        IConfiguration configuration
     )
     {
         _context = context;
         _logger = logger;
         _configuracaoService = configuracaoService;
         _usuarioService = usuarioService;
+        _imageBaseUrl = configuration["ImageBaseUrl"] ?? "";
     }
 
     public async Task<SolicitacaoResultDto> CreateGeralAsync(
@@ -110,10 +113,9 @@ public class SolicitacaoService : ISolicitacaoService
                         Nome = item.Item.Nome,
                         CatMat = item.Item.CatMat,
                         Quantidade = item.Quantidade,
-                        // TODO: o link abaixo deve estar em variável de ambiente
                         LinkImagem = string.IsNullOrWhiteSpace(item.Item.LinkImagem)
                             ? item.Item.LinkImagem
-                            : $"http://localhost:8088/images/{item.Item.LinkImagem}",
+                            : $"{_imageBaseUrl}{item.Item.LinkImagem}",
                         PrecoSugerido = item.ValorUnitario,
                         Justificativa = item.Justificativa,
                     })
@@ -211,10 +213,9 @@ public class SolicitacaoService : ISolicitacaoService
                         Nome = item.Item.Nome,
                         CatMat = item.Item.CatMat,
                         Quantidade = item.Quantidade,
-                        // TODO: o link abaixo deve estar em variável de ambiente
                         LinkImagem = string.IsNullOrWhiteSpace(item.Item.LinkImagem)
                             ? item.Item.LinkImagem
-                            : $"http://localhost:8088/images/{item.Item.LinkImagem}",
+                            : $"{_imageBaseUrl}{item.Item.LinkImagem}",
                         PrecoSugerido = item.ValorUnitario,
                         Justificativa = item.Justificativa,
                     })
@@ -384,10 +385,9 @@ public class SolicitacaoService : ISolicitacaoService
                     Nome = item.Item.Nome,
                     CatMat = item.Item.CatMat,
                     Quantidade = item.Quantidade,
-                    // TODO: o link abaixo deve estar em variável de ambiente
                     LinkImagem = string.IsNullOrWhiteSpace(item.Item.LinkImagem)
                         ? item.Item.LinkImagem
-                        : $"http://localhost:8088/images/{item.Item.LinkImagem}",
+                        : $"{_imageBaseUrl}{item.Item.LinkImagem}",
                     PrecoSugerido = item.ValorUnitario,
                     Justificativa = item.Justificativa,
                 })
@@ -485,10 +485,9 @@ public class SolicitacaoService : ISolicitacaoService
                         Nome = item.Item.Nome,
                         CatMat = item.Item.CatMat,
                         Quantidade = item.Quantidade,
-                        // TODO: o link abaixo deve estar em variável de ambiente
                         LinkImagem = string.IsNullOrWhiteSpace(item.Item.LinkImagem)
                             ? item.Item.LinkImagem
-                            : $"http://localhost:8088/images/{item.Item.LinkImagem}",
+                            : $"{_imageBaseUrl}{item.Item.LinkImagem}",
                         PrecoSugerido = item.ValorUnitario,
                         Justificativa = item.Justificativa,
                     })
@@ -622,7 +621,7 @@ public class SolicitacaoService : ISolicitacaoService
                         Quantidade = item.Quantidade,
                         LinkImagem = string.IsNullOrWhiteSpace(item.Item.LinkImagem)
                             ? item.Item.LinkImagem
-                            : $"http://localhost:8088/images/{item.Item.LinkImagem}",
+                            : $"{_imageBaseUrl}{item.Item.LinkImagem}",
                         PrecoSugerido = item.ValorUnitario,
                         Justificativa = item.Justificativa,
                     })
