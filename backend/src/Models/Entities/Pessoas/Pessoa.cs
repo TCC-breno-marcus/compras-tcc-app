@@ -26,5 +26,8 @@ namespace ComprasTccApp.Models.Entities.Pessoas
 
         [Required, StringLength(50)]
         public required string Role { get; set; }
+
+        [Required]
+        public bool IsActive { get; set; } = true;
     }
 }
