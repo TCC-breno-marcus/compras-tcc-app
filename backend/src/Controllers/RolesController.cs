@@ -7,7 +7,7 @@ namespace Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin, Gestor")]
     public class RolesController : ControllerBase
     {
         private readonly IRoleService _roleService;
