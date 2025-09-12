@@ -4,5 +4,4 @@ export interface Setting {
   maxItensDiferentesPorSolicitacao: number
   emailContatoPrincipal: string
   emailParaNotificacoes: string
-  permitirAutoCadastro: boolean
 }

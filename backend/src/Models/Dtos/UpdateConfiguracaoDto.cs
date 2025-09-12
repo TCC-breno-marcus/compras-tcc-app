@@ -7,6 +7,5 @@ namespace Models.Dtos
         public int? MaxItensDiferentesPorSolicitacao { get; set; }
         public string? EmailContatoPrincipal { get; set; }
         public string? EmailParaNotificacoes { get; set; }
-        public bool? PermitirAutoCadastro { get; set; }
     }
 }
