@@ -50,6 +50,10 @@ namespace ComprasTccApp.Backend.Controllers
         }
 
         [HttpPatch("{id}/inativar")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
         [Authorize(Roles = "Admin,Gestor")]
         public async Task<IActionResult> InativarUsuario(long id)
         {
@@ -67,11 +71,35 @@ namespace ComprasTccApp.Backend.Controllers
                 {
                     return NotFound(new { message = $"Usuário com ID {id} não encontrado." });
                 }
-                return NoContent(); // Sucesso
+                return NoContent();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Erro ao inativar usuário com ID {Id}", id);
+                return StatusCode(500, new { message = "Ocorreu um erro interno." });
+            }
+        }
+
+        [HttpPatch("{id}/ativar")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        [Authorize(Roles = "Admin,Gestor")]
+        public async Task<IActionResult> AtivarUsuario(long id)
+        {
+            try
+            {
+                var sucesso = await _usuarioService.AtivarUsuarioAsync(id);
+                if (!sucesso)
+                {
+                    return NotFound(new { message = $"Usuário com ID {id} não encontrado." });
+                }
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro ao ativar usuário com ID {Id}", id);
                 return StatusCode(500, new { message = "Ocorreu um erro interno." });
             }
         }

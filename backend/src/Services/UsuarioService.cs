@@ -137,5 +137,20 @@ namespace ComprasTccApp.Backend.Services
             _logger.LogInformation("Usuário com ID {Id} foi inativado.", id);
             return true;
         }
+
+         public async Task<bool> AtivarUsuarioAsync(long id)
+        {
+            var pessoa = await _context.Pessoas.FindAsync(id);
+            if (pessoa == null)
+            {
+                return false;
+            }
+
+            pessoa.IsActive = true;
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation("Usuário com ID {Id} foi ativado.", id);
+            return true;
+        }
     }
 }

@@ -162,6 +162,7 @@ namespace ComprasTccApp.Backend.Services
                 CPF = pessoa.CPF,
                 Role = pessoa.Role,
                 Departamento = unidadeDoSolicitante ?? "não disponível",
+                IsActive = pessoa.IsActive
             };
 
             return userProfile;

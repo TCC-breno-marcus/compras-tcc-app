@@ -17,5 +17,8 @@ namespace ComprasTccApp.Services.Interfaces
         Task<(Servidor servidor, Solicitante solicitante)> GetSolicitanteInfoAsync(long pessoaId);
 
         Task<bool> InativarUsuarioAsync(long id);
+
+        Task<bool> AtivarUsuarioAsync(long id);
+
     }
 }
