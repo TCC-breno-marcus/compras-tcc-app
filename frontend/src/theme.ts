@@ -91,7 +91,6 @@ const MyPreset = definePreset(Aura, {
     mutedTextColor: '#6C757D', // Text2
   },
 
-  // Suas personalizações de componentes
   components: {
     button: {
       root: {

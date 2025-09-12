@@ -9,6 +9,7 @@ import Card from 'primevue/card'
 import InputMask from 'primevue/inputmask'
 import Tag from 'primevue/tag'
 import type { User } from '@/features/users/types'
+import Message from 'primevue/message'
 
 const authStore = useAuthStore()
 const { user } = storeToRefs(authStore)
@@ -57,7 +58,7 @@ const handleSave = async () => {
       throw new Error('Telefone e CPF são obrigatórios')
     }
 
-    console.log('Salvando dados:', formData.value)
+    // console.log('Salvando dados:', formData.value)
 
     await new Promise((resolve) => setTimeout(resolve, 1000))
 
@@ -121,7 +122,7 @@ const changePassword = () => {
       <!-- Main Content -->
       <div class="col-12 lg:col-8 xl:col-9">
         <!-- Action Buttons -->
-        <div class="flex justify-content-end">
+        <div class="flex justify-content-end mb-2">
           <Button
             v-if="!isEditing"
             label="Editar Perfil"
@@ -302,18 +303,16 @@ const changePassword = () => {
               />
             </div>
 
-            <div class="mt-4 p-3 bg-orange-50 border-1 border-orange-200 border-round">
-              <div class="flex align-items-start gap-2">
-                <i class="pi pi-exclamation-triangle text-orange-600 mt-1"></i>
-                <div>
-                  <p class="m-0 font-semibold text-orange-800">Mantenha sua conta segura</p>
-                  <p class="m-0 mt-1 text-sm text-orange-700">
-                    Altere sua senha regularmente e nunca compartilhe suas credenciais com
-                    terceiros.
-                  </p>
-                </div>
-              </div>
-            </div>
+            <Message
+              severity="warn"
+              class="mt-4 p-2"
+              size="small"
+              icon="pi pi-exclamation-triangle"
+            >
+              <p>
+                Altere sua senha regularmente e nunca compartilhe suas credenciais com terceiros.
+              </p>
+            </Message>
           </template>
         </Card>
       </div>

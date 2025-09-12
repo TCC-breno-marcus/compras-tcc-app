@@ -61,8 +61,8 @@ onMounted(() => {
                 <div class="flex align-items-center gap-2">
                   <i class="pi pi-calendar text-primary"></i>
                   <div>
-                    <span class="font-semibold text-gray-900">Prazo final para criação/edição</span>
-                    <p class="text-sm text-gray-500 mt-1 mb-0">
+                    <span class="font-semibold">Prazo final para criação/edição</span>
+                    <p class="text-sm text-color-secondary mt-1 mb-0">
                       Define até quando solicitações podem ser criadas ou modificadas
                     </p>
                   </div>
@@ -83,7 +83,7 @@ onMounted(() => {
                   placeholder="Selecione a data"
                 />
                 <div v-else class="value-display">
-                  <span class="value-text">
+                  <span class="text-base font-semibold">
                     {{ formatDate(formData.prazoSubmissao || 'Não cadastrado') }}
                   </span>
                 </div>
@@ -99,8 +99,8 @@ onMounted(() => {
                 <div class="flex align-items-center gap-2">
                   <i class="pi pi-box text-primary"></i>
                   <div>
-                    <span class="font-semibold text-gray-900">Quantidade máxima por item</span>
-                    <p class="text-sm text-gray-500 mt-1 mb-0">
+                    <span class="font-semibold">Quantidade máxima por item</span>
+                    <p class="text-sm text-color-secondary mt-1 mb-0">
                       Número máximo de unidades que podem ser solicitadas por item
                     </p>
                   </div>
@@ -117,8 +117,8 @@ onMounted(() => {
                   inputClass="w-full sm:w-10rem"
                 />
                 <div v-else class="value-display">
-                  <span class="value-text">{{ formData.maxQuantidadePorItem }}</span>
-                  <span class="value-unit">unidades/item</span>
+                  <span class="text-base font-semibold">{{ formData.maxQuantidadePorItem }}</span>
+                  <span class="text-color-secondary">unidades/item</span>
                 </div>
               </div>
             </div>
@@ -131,10 +131,8 @@ onMounted(() => {
                 <div class="flex align-items-center gap-2">
                   <i class="pi pi-list text-primary"></i>
                   <div>
-                    <span class="font-semibold text-gray-900"
-                      >Itens diferentes por solicitação</span
-                    >
-                    <p class="text-sm text-gray-500 mt-1 mb-0">
+                    <span class="font-semibold">Itens diferentes por solicitação</span>
+                    <p class="text-sm text-color-secondary mt-1 mb-0">
                       Número máximo de tipos de itens diferentes em uma solicitação
                     </p>
                   </div>
@@ -151,8 +149,10 @@ onMounted(() => {
                   inputClass="w-full sm:w-10rem"
                 />
                 <div v-else class="value-display">
-                  <span class="value-text">{{ formData.maxItensDiferentesPorSolicitacao }}</span>
-                  <span class="value-unit">itens/solicitação</span>
+                  <span class="text-base font-semibold">{{
+                    formData.maxItensDiferentesPorSolicitacao
+                  }}</span>
+                  <span class="text-color-secondary">itens/solicitação</span>
                 </div>
               </div>
             </div>
@@ -195,30 +195,30 @@ onMounted(() => {
         <template #content>
           <div class="flex align-items-start gap-3 p-2">
             <i class="pi pi-info-circle text-blue-500 text-lg flex-shrink-0 mt-1"></i>
-            <div class="text-sm text-gray-600 line-height-3">
-              <p class="font-medium text-gray-800 mb-2">Informações importantes:</p>
+            <div class="text-sm line-height-3">
+              <p class="font-medium mb-2">Informações importantes:</p>
               <ul class="list-none p-0 m-0 flex flex-column gap-1">
                 <li class="flex align-items-start gap-2">
                   <i
-                    class="pi pi-circle-fill text-xs text-gray-400 flex-shrink-0"
+                    class="pi pi-circle-fill text-xs text-color-secondary flex-shrink-0"
                     style="margin-top: 0.4rem"
                   ></i>
                   <span>Alterações nas configurações entram em vigor imediatamente</span>
                 </li>
                 <li class="flex align-items-start gap-2">
                   <i
-                    class="pi pi-circle-fill text-xs text-gray-400 flex-shrink-0"
+                    class="pi pi-circle-fill text-xs text-color-secondary flex-shrink-0"
                     style="margin-top: 0.4rem"
                   ></i>
                   <span>Solicitações já criadas não são afetadas pelas mudanças</span>
                 </li>
-                <!-- <li class="flex align-items-start gap-2">
+                <li class="flex align-items-start gap-2">
                   <i
-                    class="pi pi-circle-fill text-xs text-gray-400 flex-shrink-0"
+                    class="pi pi-circle-fill text-xs text-color-secondary flex-shrink-0"
                     style="margin-top: 0.4rem"
                   ></i>
                   <span>Todas as alterações são registradas no log do sistema</span>
-                </li> -->
+                </li>
               </ul>
             </div>
           </div>
@@ -241,24 +241,8 @@ onMounted(() => {
   justify-content: center;
 }
 
-.value-text {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #1e293b;
-}
-
-.value-unit {
-  font-size: 0.875rem;
-  color: #64748b;
-  font-weight: 500;
-}
-
-/* Responsive */
-@media (min-width: 768px) {
-  .setting-content {
-    flex-direction: row;
-    align-items: flex-start;
-    justify-content: space-between;
-  }
+.p-dark .value-display {
+  background: var(--p-surface-900);
+  border: 1px solid var(--p-surface-600);
 }
 </style>

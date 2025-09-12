@@ -100,7 +100,7 @@ const handleClickInfo = (event: MouseEvent) => {
         <AccordionContent class="accordion-content">
           <div>
             <div>
-              <p class="font-semibold mt-0 mb-1">Análise de Custos</p>
+              <p class="font-semibold pt-3 mb-1">Análise de Custos</p>
               <ul class="list-none p-0 m-0">
                 <li class="flex align-items-center justify-content-between mb-1">
                   <span class="text-color-secondary">Preço Médio</span>
@@ -163,9 +163,11 @@ const handleClickInfo = (event: MouseEvent) => {
 
 :deep(.p-accordionheader) {
   padding: 1rem;
+  background-color: transparent !important;
 }
 
 .accordion-content {
   padding-left: 1.75rem;
+  margin-bottom: 0.75rem;
 }
 </style>

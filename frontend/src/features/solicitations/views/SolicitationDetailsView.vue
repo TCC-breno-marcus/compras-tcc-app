@@ -343,8 +343,4 @@ onMounted(() => {
 .p-card {
   height: 100%;
 }
-
-.p-dark .p-card {
-  background-color: transparent;
-}
 </style>
