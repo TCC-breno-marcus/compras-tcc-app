@@ -39,6 +39,15 @@ namespace ComprasTccApp.Backend.Services
                 throw new Exception("Este email já está em uso.");
             }
 
+            if (await _context.Pessoas.AnyAsync(p => p.CPF == registerDto.CPF))
+            {
+                _logger.LogWarning(
+                    "Tentativa de registro com CPF já existente: {CPF}",
+                    registerDto.Email
+                );
+                throw new Exception("Este CPF já está em uso.");
+            }
+
             var passwordHash = BCrypt.Net.BCrypt.HashPassword(registerDto.Password);
 
             var novaPessoa = new Pessoa
