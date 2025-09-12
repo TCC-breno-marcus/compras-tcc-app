@@ -17,11 +17,17 @@ namespace Services
     {
         private readonly AppDbContext _context;
         private readonly ILogger<RelatorioService> _logger;
+        private readonly string _imageBaseUrl;
 
-        public RelatorioService(AppDbContext context, ILogger<RelatorioService> logger)
+        public RelatorioService(
+            AppDbContext context,
+            ILogger<RelatorioService> logger,
+            IConfiguration configuration
+        )
         {
             _context = context;
             _logger = logger;
+            _imageBaseUrl = configuration["ImageBaseUrl"] ?? "";
         }
 
         public async Task<PaginatedResultDto<ItemPorDepartamentoDto>> GetItensPorDepartamentoAsync(
@@ -154,7 +160,7 @@ namespace Services
             return query;
         }
 
-        private static ItemPorDepartamentoDto TransformToDto(IGrouping<long, SolicitacaoItem> group)
+        private ItemPorDepartamentoDto TransformToDto(IGrouping<long, SolicitacaoItem> group)
         {
             var itemExemplo = group.First().Item;
 
@@ -166,10 +172,9 @@ namespace Services
                 Descricao = itemExemplo.Descricao,
                 Especificacao = itemExemplo.Especificacao,
                 CategoriaNome = itemExemplo.Categoria.Nome,
-                // TODO: o link abaixo deve estar em variável de ambiente
                 LinkImagem = string.IsNullOrWhiteSpace(itemExemplo.LinkImagem)
                     ? itemExemplo.LinkImagem
-                    : $"http://localhost:8088/images/{itemExemplo.LinkImagem}",
+                    : $"{_imageBaseUrl}{itemExemplo.LinkImagem}",
                 PrecoSugerido = itemExemplo.PrecoSugerido,
                 QuantidadeTotalSolicitada = group.Sum(si => si.Quantidade),
                 DemandaPorDepartamento = group
