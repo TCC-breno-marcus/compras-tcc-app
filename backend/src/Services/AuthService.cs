@@ -87,7 +87,7 @@ namespace ComprasTccApp.Backend.Services
             return novaPessoa;
         }
 
-        public async Task<string?> LoginAsync(LoginDto loginDto)
+        public async Task<LoginResponseDto?> LoginAsync(LoginDto loginDto)
         {
             var pessoa = await _context.Pessoas.FirstOrDefaultAsync(p => p.Email == loginDto.Email);
             if (pessoa == null)
@@ -97,6 +97,17 @@ namespace ComprasTccApp.Backend.Services
                     loginDto.Email
                 );
                 return null;
+            }
+
+            if (!pessoa.IsActive) 
+            {
+                _logger.LogWarning(
+                    "Tentativa de login de usuário inativo: {Email}",
+                    loginDto.Email
+                );
+                throw new InvalidOperationException(
+                    "O usuário está inativo e não possui mais acesso ao sistema."
+                );
             }
 
             var passwordIsValid = BCrypt.Net.BCrypt.Verify(loginDto.Password, pessoa.PasswordHash);
@@ -114,7 +125,8 @@ namespace ComprasTccApp.Backend.Services
                 "Login bem-sucedido para {Email}. Gerando token.",
                 loginDto.Email
             );
-            return _tokenService.GenerateJwtToken(pessoa);
+            var token = _tokenService.GenerateJwtToken(pessoa);
+            return new LoginResponseDto { Token = token, Message = "Login bem-sucedido!" };
         }
 
         public async Task<UserProfileDto?> GetMyProfileAsync(ClaimsPrincipal user)
