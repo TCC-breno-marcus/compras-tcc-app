@@ -29,7 +29,8 @@ namespace ComprasTccApp.Backend.Services
             string? role,
             int pageNumber,
             int pageSize,
-            string? sortOrder
+            string? sortOrder,
+            bool? isActive
         )
         {
             var query = _context.Pessoas.AsNoTracking().AsQueryable();
@@ -50,6 +51,11 @@ namespace ComprasTccApp.Backend.Services
             else
             {
                 query = query.OrderBy(p => p.Nome);
+            }
+
+            if (isActive.HasValue)
+            {
+                query = query.Where(p => p.IsActive == isActive.Value);
             }
 
             var totalCount = await query.CountAsync();
@@ -82,6 +88,7 @@ namespace ComprasTccApp.Backend.Services
                     CPF = pessoa.CPF,
                     Role = pessoa.Role,
                     Departamento = unidadesPorPessoa.GetValueOrDefault(pessoa.Id, "não disponível"),
+                    IsActive = pessoa.IsActive
                 })
                 .ToList();
 
@@ -114,6 +121,21 @@ namespace ComprasTccApp.Backend.Services
                 );
 
             return (servidor, solicitante);
+        }
+
+        public async Task<bool> InativarUsuarioAsync(long id)
+        {
+            var pessoa = await _context.Pessoas.FindAsync(id);
+            if (pessoa == null)
+            {
+                return false;
+            }
+
+            pessoa.IsActive = false;
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation("Usuário com ID {Id} foi inativado.", id);
+            return true;
         }
     }
 }
