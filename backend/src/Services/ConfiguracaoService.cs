@@ -17,7 +17,6 @@ public class ConfiguracaoService : IConfiguracaoService
         public const string MaxItens = "MaxItensDiferentesPorSolicitacao";
         public const string EmailContato = "EmailContatoPrincipal";
         public const string EmailNotificacoes = "EmailParaNotificacoes";
-        public const string AutoCadastro = "PermitirAutoCadastro";
     }
 
     public ConfiguracaoService(AppDbContext context, ILogger<ConfiguracaoService> logger)
@@ -57,11 +56,6 @@ public class ConfiguracaoService : IConfiguracaoService
                 Keys.EmailNotificacoes,
                 "nao-configurado@sistema.com"
             ),
-
-            PermitirAutoCadastro =
-                configs.TryGetValue(Keys.AutoCadastro, out string? autoCadastroStr)
-                && bool.TryParse(autoCadastroStr, out var autoCadastro)
-                && autoCadastro,
         };
 
         return dto;
@@ -76,7 +70,6 @@ public class ConfiguracaoService : IConfiguracaoService
             Keys.MaxQuantidade,
             Keys.EmailContato,
             Keys.EmailNotificacoes,
-            Keys.AutoCadastro,
         };
 
         var configsDoBanco = await _context
@@ -154,21 +147,6 @@ public class ConfiguracaoService : IConfiguracaoService
             {
                 await _context.Configuracoes.AddAsync(
                     new Configuracao { Chave = Keys.EmailNotificacoes, Valor = valor }
-                );
-            }
-        }
-
-        if (dto.PermitirAutoCadastro.HasValue)
-        {
-            var valor = dto.PermitirAutoCadastro.Value.ToString();
-            if (configsDoBanco.TryGetValue(Keys.AutoCadastro, out var config))
-            {
-                config.Valor = valor;
-            }
-            else
-            {
-                await _context.Configuracoes.AddAsync(
-                    new Configuracao { Chave = Keys.AutoCadastro, Valor = valor }
                 );
             }
         }
