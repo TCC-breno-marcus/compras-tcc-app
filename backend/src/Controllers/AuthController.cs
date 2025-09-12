@@ -19,6 +19,7 @@ namespace ComprasTccApp.Backend.Controllers
         }
 
         [HttpPost("register")]
+        [Authorize(Roles = "Admin, Gestor")]
         public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
         {
             try
