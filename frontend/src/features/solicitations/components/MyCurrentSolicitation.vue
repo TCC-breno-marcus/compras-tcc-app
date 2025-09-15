@@ -7,14 +7,83 @@ import Textarea from 'primevue/textarea'
 import { useSolicitationCartStore } from '../stores/solicitationCartStore'
 import { storeToRefs } from 'pinia'
 import { SolicitationContextKey } from '../keys'
+import { useSettingStore } from '@/features/settings/stores/settingStore'
 
 const solicitationContext = inject(SolicitationContextKey)
 
 const solicitationCartStore = useSolicitationCartStore()
 const { solicitationItems, justification, error, isLoading } = storeToRefs(solicitationCartStore)
 const toast = useToast()
+const settingStore = useSettingStore()
+const { deadline, deadlineHasExpired } = storeToRefs(settingStore)
+
+const isSolicitationValid = (): boolean => {
+  if (!solicitationItems.value || solicitationItems.value.length === 0) {
+    toast.add({
+      severity: 'error',
+      summary: 'Nenhum Item',
+      detail: 'A solicitação deve conter pelo menos um item.',
+      life: 3000,
+    })
+    return false
+  }
+
+  let isValid = true
+
+  if (
+    solicitationContext?.isGeneral &&
+    (!justification.value || justification.value.trim() === '')
+  ) {
+    toast.add({
+      severity: 'error',
+      summary: 'Campo Obrigatório',
+      detail: 'A "Justificativa Geral" é obrigatória para solicitações do tipo Geral.',
+      life: 3000,
+    })
+    isValid = false
+  }
+
+  for (const item of solicitationItems.value) {
+    if (!item.quantidade || item.quantidade <= 0) {
+      toast.add({
+        severity: 'error',
+        summary: 'Quantidade Inválida',
+        detail: `O item "${item.nome}" deve ter uma quantidade maior que zero.`,
+        life: 3000,
+      })
+      isValid = false
+    }
+
+    if (!item.precoSugerido || item.precoSugerido <= 0) {
+      toast.add({
+        severity: 'error',
+        summary: 'Preço Inválido',
+        detail: `O item "${item.nome}" deve ter um preço sugerido maior que zero.`,
+        life: 3000,
+      })
+      isValid = false
+    }
+
+    if (
+      !solicitationContext?.isGeneral &&
+      (!item.justificativa || item.justificativa.trim() === '')
+    ) {
+      toast.add({
+        severity: 'error',
+        summary: 'Campo Obrigatório',
+        detail: `A justificativa é obrigatória para o item "${item.nome}" em solicitações patrimoniais.`,
+        life: 3000,
+      })
+      isValid = false
+    }
+  }
+
+  return isValid
+}
 
 const createSolicitation = async () => {
+  if (!isSolicitationValid()) return
+
   const success = await solicitationCartStore.createSolicitation(solicitationContext?.isGeneral)
 
   if (success) {
@@ -38,6 +107,8 @@ const disabledSendSolicitation = computed(() => {
   if (solicitationItems.value.length === 0) {
     return true
   }
+
+  if (deadlineHasExpired.value) return true
 
   if (solicitationContext?.isGeneral) {
     return !justification.value || justification.value.trim() === ''
@@ -96,6 +167,9 @@ const handleItemRemove = (itemId: number) => {
           size="small"
           @click="createSolicitation"
           :disabled="disabledSendSolicitation"
+          v-tooltip.top="
+            deadlineHasExpired ? 'O prazo para submissão de solicitações foi encerrado.' : ''
+          "
         />
       </div>
     </div>

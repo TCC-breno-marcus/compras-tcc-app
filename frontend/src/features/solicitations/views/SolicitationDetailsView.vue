@@ -37,18 +37,11 @@ const authStore = useAuthStore()
 const toast = useToast()
 const confirm = useConfirm()
 const settingStore = useSettingStore()
-const { deadline } = storeToRefs(settingStore)
+const { deadline, deadlineHasExpired } = storeToRefs(settingStore)
 const { user } = storeToRefs(authStore)
 const solicitationStore = useSolicitationStore()
 const { currentSolicitation, isLoading, error, currentSolicitationBackup } =
   storeToRefs(solicitationStore)
-
-const deadlineHasExpired = computed(() => {
-  if (deadline.value) {
-    return new Date() > new Date(deadline.value)
-  }
-  return false
-})
 
 const loggedUserCreatedIt = computed(() => {
   return currentSolicitation.value?.solicitante.departamento === user.value?.departamento
@@ -208,8 +201,8 @@ onMounted(() => {
         >
           {{
             deadlineHasExpired
-              ? 'O prazo final para ajustes foi encerrado.'
-              : `Prazo final para ajustes: ${formatDate(deadline, 'short')}`
+              ? 'O prazo para ajustes foi encerrado.'
+              : `Prazo para ajustes: ${formatDate(deadline, 'short')}`
           }}
         </Message>
         <Button
