@@ -11,6 +11,13 @@ export const useSettingStore = defineStore('setting', () => {
 
   const deadline = computed(() => settings.value?.prazoSubmissao || null)
 
+  const deadlineHasExpired = computed(() => {
+    if (deadline.value) {
+      return new Date() > new Date(deadline.value)
+    }
+    return false
+  })
+
   /**
    * Busca TODAS as configurações da API.
    */
@@ -54,5 +61,5 @@ export const useSettingStore = defineStore('setting', () => {
     }
   }
 
-  return { settings, isLoading, deadline, fetchSettings, updateSettings }
+  return { settings, isLoading, deadline, deadlineHasExpired, fetchSettings, updateSettings }
 })

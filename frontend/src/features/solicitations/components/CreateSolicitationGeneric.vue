@@ -6,7 +6,7 @@ import { ref, computed, inject } from 'vue'
 import CatalogoBrowser from '@/features/catalogo/components/CatalogoBrowser.vue'
 import type { Item } from '@/features/catalogo/types'
 import { useSolicitationCartStore } from '../stores/solicitationCartStore'
-import { Button, useConfirm } from 'primevue'
+import { Button, Message, useConfirm } from 'primevue'
 import { useToast } from 'primevue/usetoast'
 import { storeToRefs } from 'pinia'
 import { useLeaveConfirmation } from '@/composables/useLeaveConfirmation'
@@ -15,6 +15,7 @@ import CustomBreadcrumb from '@/components/ui/CustomBreadcrumb.vue'
 import { CATEGORY_ITEMS_GENERAL, CATEGORY_ITEMS_PATRIMONIALS } from '../constants'
 import { SolicitationContextKey } from '../keys'
 import { useSettingStore } from '@/features/settings/stores/settingStore'
+import { formatDate } from '@/utils/dateUtils'
 
 const solicitationContext = inject(SolicitationContextKey)
 
@@ -31,6 +32,8 @@ const { solicitationItems, justification } = storeToRefs(solicitationCartStore)
 const settingsStore = useSettingStore()
 const { settings } = storeToRefs(settingsStore)
 const catalogoBrowserRef = ref()
+const settingStore = useSettingStore()
+const { deadline, deadlineHasExpired } = storeToRefs(settingStore)
 
 const addItemSolicitation = (item: Item) => {
   const actionReturn = solicitationCartStore.addItem(
@@ -137,17 +140,33 @@ useLeaveConfirmation()
       <Divider :layout="isMobileView ? 'horizontal' : 'vertical'" />
 
       <div class="flex flex-column align-content-end w-full md:w-5">
-        <div class="flex justify-content-between align-items-center w-full mb-4">
+        <div
+          class="flex flex-column md:flex-row md:align-items-center md:justify-content-between w-full mb-4 gap-2"
+        >
           <h3>Sua Solicitação</h3>
-          <Button
-            v-if="hasUnsavedChanges"
-            icon="pi pi-eraser"
-            severity="danger"
-            label="Limpar Solicitação"
-            size="small"
-            text
-            @click="resetSolicitation"
-          />
+          <div class="flex align-items-center justify-content-end gap-2">
+            <Message
+              icon="pi pi-info-circle"
+              :severity="deadlineHasExpired ? 'error' : 'warn'"
+              size="small"
+              :closable="false"
+            >
+              {{
+                deadlineHasExpired
+                  ? 'Prazo para envio encerrado.'
+                  : `Prazo final: ${formatDate(deadline, 'short')}`
+              }}
+            </Message>
+            <Button
+              v-if="hasUnsavedChanges"
+              icon="pi pi-eraser"
+              severity="danger"
+              label="Limpar Solicitação"
+              size="small"
+              text
+              @click="resetSolicitation"
+            />
+          </div>
         </div>
         <MyCurrentSolicitation />
       </div>
