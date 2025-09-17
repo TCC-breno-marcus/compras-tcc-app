@@ -10,6 +10,7 @@ import InputMask from 'primevue/inputmask'
 import Tag from 'primevue/tag'
 import type { User } from '@/features/users/types'
 import Message from 'primevue/message'
+import { unitOrganizationalFormatString } from '@/utils/organizationalUnit'
 
 const authStore = useAuthStore()
 const { user } = storeToRefs(authStore)
@@ -33,13 +34,6 @@ const getRoleTagSeverity = (role: string) => {
     default:
       return 'secondary'
   }
-}
-
-const formatDepartment = (department: string) => {
-  if (!department || department === 'não disponível') {
-    return 'Não informado'
-  }
-  return department.toLowerCase().replace(/\b\w/g, (l) => l.toUpperCase())
 }
 
 onMounted(() => {
@@ -247,10 +241,10 @@ const changePassword = () => {
               <div class="col-12 md:col-6">
                 <div class="field">
                   <label class="block text-sm font-semibold mb-2 text-color-secondary"
-                    >Departamento</label
+                    >Unidade Organizacional</label
                   >
                   <div class="p-2 border-1 border-gray-300 border-round bg-surface-50">
-                    {{ formatDepartment(formData.departamento || '') }}
+                    {{ unitOrganizationalFormatString(formData.unidade) }}
                   </div>
                 </div>
               </div>

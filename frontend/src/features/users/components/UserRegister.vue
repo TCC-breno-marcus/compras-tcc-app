@@ -7,12 +7,14 @@ import FloatLabel from 'primevue/floatlabel'
 import { useToast } from 'primevue/usetoast'
 import { useRouter } from 'vue-router'
 import Password from 'primevue/password'
-import { Dialog, Message } from 'primevue'
+import { ButtonGroup, Dialog, Message } from 'primevue'
 import { reactive } from 'vue'
 import InputMask from 'primevue/inputmask'
 import Select from 'primevue/select'
 import { cpfValidator, emailValidator } from '@/utils/validators'
 import { storeToRefs } from 'pinia'
+import { useUnitOrganizationalStore } from '@/features/unitOrganizational/stores/unitOrganizationalStore'
+import type { UnitOrganizational } from '@/features/unitOrganizational/types'
 
 const props = defineProps<{
   visible: boolean
@@ -21,14 +23,16 @@ const props = defineProps<{
 const emit = defineEmits(['update:visible', 'update:user-list'])
 
 const authStore = useAuthStore()
-const { departamentos } = storeToRefs(authStore)
+const unitOrganizationalStore = useUnitOrganizationalStore()
+const { centers, departments } = storeToRefs(unitOrganizationalStore)
 const toast = useToast()
 const email = ref('')
 const password = ref('')
 const nome = ref('')
 const telefone = ref('')
 const cpf = ref('')
-const departamento = ref(null)
+const unitOrganizational = ref<UnitOrganizational | null>(null)
+const role = ref<'Gestor' | 'Solicitante' | ''>('')
 const isLoading = ref(false)
 
 const errors = reactive({
@@ -37,7 +41,8 @@ const errors = reactive({
   telefone: '',
   cpf: '',
   password: '',
-  departamento: '',
+  unitOrganizational: '',
+  role: '',
 })
 
 const resetErrors = () => {
@@ -46,7 +51,8 @@ const resetErrors = () => {
   errors.nome = ''
   errors.telefone = ''
   errors.cpf = ''
-  errors.departamento = ''
+  errors.unitOrganizational = ''
+  errors.role = ''
 }
 
 const validateForm = (): boolean => {
@@ -76,16 +82,21 @@ const validateForm = (): boolean => {
     isValid = false
   }
 
-  if (!departamento.value) {
-    errors.departamento = 'O departamento é obrigatório.'
-    isValid = false
-  }
-
   if (!cpf.value) {
     errors.cpf = 'O CPF é obrigatório.'
     isValid = false
   } else if (!cpfValidator(cpf.value)) {
     errors.cpf = 'O CPF informado é inválido.'
+    isValid = false
+  }
+
+  if (!role.value) {
+    errors.role = 'O perfil de acesso é obrigatório.'
+    isValid = false
+  }
+
+  if (!unitOrganizational.value) {
+    errors.unitOrganizational = 'A unidade organizacional é obrigatória.'
     isValid = false
   }
 
@@ -105,7 +116,10 @@ const handleRegister = async () => {
       nome: nome.value,
       telefone: telefone.value.replace(/\D/g, ''),
       cpf: cpf.value.replace(/\D/g, ''),
-      departamento: departamento.value!,
+      role: role.value as 'Gestor' | 'Solicitante',
+      ...(role.value === 'Gestor'
+        ? { centroSigla: unitOrganizational.value?.sigla }
+        : { departamentoSigla: unitOrganizational.value?.sigla }),
     })
 
     toast.add({
@@ -136,7 +150,8 @@ const resetAllStates = () => {
   nome.value = ''
   telefone.value = ''
   cpf.value = ''
-  departamento.value = null
+  role.value = ''
+  unitOrganizational.value = null
   isLoading.value = false
 }
 
@@ -150,16 +165,20 @@ watch(
   (isNowVisible: boolean) => {
     if (isNowVisible) {
       resetAllStates()
-      if (departamentos.value.length == 0) {
-        authStore.fetchDeptos()
+      if (departments.value.length == 0) {
+        unitOrganizationalStore.fetchDepartments()
+      }
+
+      if (centers.value.length == 0) {
+        unitOrganizationalStore.fetchCenters()
       }
     }
   },
 )
 
 watch(
-  [email, password, nome, telefone, cpf, departamento],
-  ([newEmail, newPassword, newNome, newTelefone, newCpf, newDepartamento]) => {
+  [email, password, nome, telefone, cpf, unitOrganizational, role],
+  ([newEmail, newPassword, newNome, newTelefone, newCpf, newUnitOrganizational, newRole]) => {
     if (newEmail) {
       errors.email = ''
     }
@@ -175,8 +194,11 @@ watch(
     if (newCpf) {
       errors.cpf = ''
     }
-    if (newDepartamento) {
-      errors.departamento = ''
+    if (newUnitOrganizational) {
+      errors.unitOrganizational = ''
+    }
+    if (newRole) {
+      errors.role = ''
     }
   },
 )
@@ -193,9 +215,23 @@ watch(
     <form class="flex flex-column gap-3">
       <div class="flex align-items-center mb-3 gap-3">
         <i class="pi pi-user-plus text-2xl text-primary"></i>
-        <p class="text-color-secondary">
-          Preencha os dados abaixo. O perfil padrão para novos usuários será "Solicitante".
-        </p>
+        <p class="text-color-secondary">Preencha os dados abaixo.</p>
+      </div>
+      <div class="flex flex-column gap-1">
+        <FloatLabel variant="on">
+          <InputText
+            name="nome"
+            v-model="nome"
+            type="nome"
+            class="w-full"
+            size="small"
+            :invalid="!!errors.nome"
+          />
+          <label for="nome">Nome</label>
+        </FloatLabel>
+        <Message v-if="errors.nome" class="ml-1" severity="error" size="small" variant="simple"
+          >{{ errors.nome }}
+        </Message>
       </div>
       <div class="flex flex-column gap-1">
         <FloatLabel variant="on">
@@ -212,6 +248,42 @@ watch(
         </FloatLabel>
         <Message v-if="errors.email" class="ml-1" severity="error" size="small" variant="simple"
           >{{ errors.email }}
+        </Message>
+      </div>
+
+      <div class="flex flex-column gap-1">
+        <FloatLabel variant="on">
+          <InputMask
+            id="cpf"
+            name="cpf"
+            v-model="cpf"
+            mask="999.999.999-99"
+            class="w-full"
+            size="small"
+            :invalid="!!errors.cpf"
+          />
+          <label for="cpf">CPF</label>
+        </FloatLabel>
+        <Message v-if="errors.cpf" class="ml-1" severity="error" size="small" variant="simple"
+          >{{ errors.cpf }}
+        </Message>
+      </div>
+
+      <div class="flex flex-column gap-1">
+        <FloatLabel variant="on">
+          <InputMask
+            id="telefone"
+            name="telefone"
+            v-model="telefone"
+            mask="(99) 99999-9999"
+            class="w-full"
+            size="small"
+            :invalid="!!errors.telefone"
+          />
+          <label for="telefone">Telefone</label>
+        </FloatLabel>
+        <Message v-if="errors.telefone" class="ml-1" severity="error" size="small" variant="simple"
+          >{{ errors.telefone }}
         </Message>
       </div>
       <div class="flex flex-column gap-1">
@@ -233,77 +305,52 @@ watch(
         </Message>
       </div>
       <div class="flex flex-column gap-1">
-        <FloatLabel variant="on">
-          <InputText
-            name="nome"
-            v-model="nome"
-            type="nome"
-            class="w-full"
-            size="small"
-            :invalid="!!errors.nome"
-          />
-          <label for="nome">Nome</label>
-        </FloatLabel>
-        <Message v-if="errors.nome" class="ml-1" severity="error" size="small" variant="simple"
-          >{{ errors.nome }}
+        <div class="flex align-items-center gap-3 w-full">
+          <label for="role">Perfil de Acesso:</label>
+          <ButtonGroup id="role">
+            <Button
+              type="button"
+              label="Solicitante"
+              size="small"
+              :outlined="role !== 'Solicitante'"
+              @click="role = 'Solicitante'"
+            />
+            <Button
+              type="button"
+              label="Gestor"
+              size="small"
+              :outlined="role !== 'Gestor'"
+              @click="role = 'Gestor'"
+            />
+          </ButtonGroup>
+        </div>
+        <Message v-if="errors.role" class="ml-1" severity="error" size="small" variant="simple"
+          >{{ errors.role }}
         </Message>
       </div>
-      <div class="flex flex-column gap-1">
-        <FloatLabel variant="on">
-          <InputMask
-            id="cpf"
-            name="cpf"
-            v-model="cpf"
-            mask="999.999.999-99"
-            class="w-full"
-            size="small"
-            :invalid="!!errors.cpf"
-          />
-          <label for="cpf">CPF</label>
-        </FloatLabel>
-        <Message v-if="errors.cpf" class="ml-1" severity="error" size="small" variant="simple"
-          >{{ errors.cpf }}
-        </Message>
-      </div>
-      <div class="flex flex-column gap-1">
-        <FloatLabel variant="on">
-          <InputMask
-            id="telefone"
-            name="telefone"
-            v-model="telefone"
-            mask="(99) 99999-9999"
-            class="w-full"
-            size="small"
-            :invalid="!!errors.telefone"
-          />
-          <label for="telefone">Telefone</label>
-        </FloatLabel>
-        <Message v-if="errors.telefone" class="ml-1" severity="error" size="small" variant="simple"
-          >{{ errors.telefone }}
-        </Message>
-      </div>
-      <div class="flex flex-column gap-1">
+      <div v-if="role" class="flex flex-column gap-1">
         <FloatLabel variant="on">
           <Select
-            v-model="departamento"
-            :options="departamentos"
-            inputId="departamento"
+            v-model="unitOrganizational"
+            :options="role === 'Solicitante' ? departments : centers"
+            optionLabel="nome"
+            inputId="unitOrganizational"
             size="small"
             class="w-full"
-            id="departamento"
-            :invalid="!!errors.departamento"
+            id="unitOrganizational"
+            :invalid="!!errors.unitOrganizational"
             :showClear="true"
             filter
           />
-          <label for="departamento">Departamento</label>
+          <label for="unitOrganizational">Unidade Organizacional</label>
         </FloatLabel>
         <Message
-          v-if="errors.departamento"
+          v-if="errors.unitOrganizational"
           class="ml-1"
           severity="error"
           size="small"
           variant="simple"
-          >{{ errors.departamento }}
+          >{{ errors.unitOrganizational }}
         </Message>
       </div>
     </form>
