@@ -25,8 +25,9 @@ namespace Models.Dtos
 
         [Required, MinLength(6), MaxLength(24)]
         public required string Password { get; set; }
+        public required string Role { get; set; }
 
-        [Required]
-        public required string Departamento { get; set; }
+        public string? DepartamentoSigla { get; set; }
+        public string? CentroSigla { get; set; }
     }
 }

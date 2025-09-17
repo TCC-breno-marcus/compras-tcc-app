@@ -8,7 +8,7 @@ namespace Models.Dtos
         public required string Telefone { get; set; }
         public required string CPF { get; set; }
         public required string Role { get; set; }
-        public string? Departamento { get; set; }
+        public UnidadeOrganizacionalDto? Unidade { get; set; }
         public required bool IsActive { get; set; }
     }
 }

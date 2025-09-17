@@ -93,6 +93,8 @@ public class SolicitacaoService : ISolicitacaoService
 
             await transaction.CommitAsync();
 
+            _logger.LogInformation("abcdefg: {Id}", solicitante.Departamento);
+
             var respostaDto = new SolicitacaoResultDto
             {
                 Id = novaSolicitacao.Id,
@@ -104,7 +106,18 @@ public class SolicitacaoService : ISolicitacaoService
                     Id = solicitante.Id,
                     Nome = servidor.Pessoa.Nome,
                     Email = servidor.Pessoa.Email,
-                    Departamento = solicitante.Unidade.ToFriendlyString(),
+                    Unidade =
+                        solicitante.Departamento != null
+                            ? new UnidadeOrganizacionalDto
+                            {
+                                Id = solicitante.Departamento.Id,
+                                Nome = solicitante.Departamento.Nome,
+                                Sigla = solicitante.Departamento.Sigla,
+                                Email = solicitante.Departamento.Email,
+                                Telefone = solicitante.Departamento.Telefone,
+                                Tipo = "Departamento",
+                            }
+                            : null,
                 },
                 Itens = novaSolicitacao
                     .ItemSolicitacao.Select(item => new ItemSolicitacaoResultDto
@@ -204,7 +217,18 @@ public class SolicitacaoService : ISolicitacaoService
                     Id = solicitante.Id,
                     Nome = servidor.Pessoa.Nome,
                     Email = servidor.Pessoa.Email,
-                    Departamento = solicitante.Unidade.ToFriendlyString(),
+                    Unidade =
+                        solicitante.Departamento != null
+                            ? new UnidadeOrganizacionalDto
+                            {
+                                Id = solicitante.Departamento.Id,
+                                Nome = solicitante.Departamento.Nome,
+                                Sigla = solicitante.Departamento.Sigla,
+                                Email = solicitante.Departamento.Email,
+                                Telefone = solicitante.Departamento.Telefone,
+                                Tipo = "Departamento",
+                            }
+                            : null,
                 },
                 Itens = novaSolicitacao
                     .ItemSolicitacao.Select(item => new ItemSolicitacaoResultDto
@@ -348,12 +372,14 @@ public class SolicitacaoService : ISolicitacaoService
         _logger.LogInformation("Buscando solicitação com ID: {Id}", id);
 
         var solicitacao = await _context
-            .Solicitacoes.Include(s => s.Solicitante)
+            .Solicitacoes.AsNoTracking()
+            .Include(s => s.Solicitante)
             .ThenInclude(sol => sol.Servidor)
             .ThenInclude(serv => serv.Pessoa)
+            .Include(s => s.Solicitante)
+            .ThenInclude(sol => sol.Departamento)
             .Include(s => s.ItemSolicitacao)
             .ThenInclude(si => si.Item)
-            .AsNoTracking()
             .FirstOrDefaultAsync(s => s.Id == id);
 
         if (solicitacao == null)
@@ -376,7 +402,18 @@ public class SolicitacaoService : ISolicitacaoService
                 Id = solicitacao.Solicitante.Id,
                 Nome = solicitacao.Solicitante.Servidor.Pessoa.Nome,
                 Email = solicitacao.Solicitante.Servidor.Pessoa.Email,
-                Departamento = solicitacao.Solicitante.Unidade.ToFriendlyString(),
+                Unidade =
+                    solicitacao.Solicitante.Departamento != null
+                        ? new UnidadeOrganizacionalDto
+                        {
+                            Id = solicitacao.Solicitante.Departamento.Id,
+                            Nome = solicitacao.Solicitante.Departamento.Nome,
+                            Sigla = solicitacao.Solicitante.Departamento.Sigla,
+                            Email = solicitacao.Solicitante.Departamento.Email,
+                            Telefone = solicitacao.Solicitante.Departamento.Telefone,
+                            Tipo = "Departamento",
+                        }
+                        : null,
             },
             Itens = solicitacao
                 .ItemSolicitacao.Select(item => new ItemSolicitacaoResultDto
@@ -415,8 +452,13 @@ public class SolicitacaoService : ISolicitacaoService
 
         var query = _context
             .Solicitacoes.Where(s => s.SolicitanteId == solicitante.Id)
-            .Include(s => s.Solicitante.Servidor.Pessoa)
-            .Include("ItemSolicitacao.Item")
+            .Include(s => s.Solicitante)
+            .ThenInclude(sol => sol.Servidor)
+            .ThenInclude(serv => serv.Pessoa)
+            .Include(s => s.Solicitante)
+            .ThenInclude(sol => sol.Departamento)
+            .Include(s => s.ItemSolicitacao)
+            .ThenInclude(si => si.Item)
             .AsNoTracking();
 
         if (gestorId.HasValue)
@@ -471,7 +513,18 @@ public class SolicitacaoService : ISolicitacaoService
                     Id = solicitacao.Solicitante.Id,
                     Nome = solicitacao.Solicitante.Servidor.Pessoa.Nome,
                     Email = solicitacao.Solicitante.Servidor.Pessoa.Email,
-                    Departamento = solicitacao.Solicitante.Unidade.ToFriendlyString(),
+                    Unidade =
+                        solicitacao.Solicitante.Departamento != null
+                            ? new UnidadeOrganizacionalDto
+                            {
+                                Id = solicitacao.Solicitante.Departamento.Id,
+                                Nome = solicitacao.Solicitante.Departamento.Nome,
+                                Sigla = solicitacao.Solicitante.Departamento.Sigla,
+                                Email = solicitacao.Solicitante.Departamento.Email,
+                                Telefone = solicitacao.Solicitante.Departamento.Telefone,
+                                Tipo = "Departamento",
+                            }
+                            : null,
                 },
                 Itens = (
                     (solicitacao is SolicitacaoGeral geral) ? geral.ItemSolicitacao
@@ -521,7 +574,7 @@ public class SolicitacaoService : ISolicitacaoService
         long? pessoaId,
         long? gestorId,
         string? tipo,
-        string? unidade,
+        string? siglaDepartamento,
         DateTime? dataInicial,
         DateTime? dataFinal,
         string? externalId,
@@ -533,8 +586,13 @@ public class SolicitacaoService : ISolicitacaoService
         _logger.LogInformation("Buscando todas as solicitações com filtros administrativos.");
 
         var query = _context
-            .Solicitacoes.Include(s => s.Solicitante.Servidor.Pessoa)
-            .Include("ItemSolicitacao.Item")
+            .Solicitacoes.Include(s => s.Solicitante)
+            .ThenInclude(sol => sol.Servidor)
+            .ThenInclude(serv => serv.Pessoa)
+            .Include(s => s.Solicitante)
+            .ThenInclude(sol => sol.Departamento)
+            .Include(s => s.ItemSolicitacao)
+            .ThenInclude(si => si.Item)
             .AsNoTracking();
 
         if (pessoaId.HasValue)
@@ -553,13 +611,11 @@ public class SolicitacaoService : ISolicitacaoService
         {
             query = query.Where(s => EF.Property<string>(s, "TipoSolicitacao") == tipo.ToUpper());
         }
-        if (!string.IsNullOrEmpty(unidade))
+        if (!string.IsNullOrWhiteSpace(siglaDepartamento))
         {
-            DepartamentoEnum? departamentoEnum = unidade.FromString<DepartamentoEnum>();
-            if (departamentoEnum.HasValue)
-            {
-                query = query.Where(s => s.Solicitante.Unidade == departamentoEnum.Value);
-            }
+            query = query.Where(s =>
+                s.Solicitante.Departamento.Sigla.ToUpper() == siglaDepartamento.ToUpper()
+            );
         }
         if (dataInicial.HasValue)
         {
@@ -605,7 +661,18 @@ public class SolicitacaoService : ISolicitacaoService
                     Id = solicitacao.Solicitante.Id,
                     Nome = solicitacao.Solicitante.Servidor.Pessoa.Nome,
                     Email = solicitacao.Solicitante.Servidor.Pessoa.Email,
-                    Departamento = solicitacao.Solicitante.Unidade.ToFriendlyString(),
+                    Unidade =
+                        solicitacao.Solicitante.Departamento != null
+                            ? new UnidadeOrganizacionalDto
+                            {
+                                Id = solicitacao.Solicitante.Departamento.Id,
+                                Nome = solicitacao.Solicitante.Departamento.Nome,
+                                Sigla = solicitacao.Solicitante.Departamento.Sigla,
+                                Email = solicitacao.Solicitante.Departamento.Email,
+                                Telefone = solicitacao.Solicitante.Departamento.Telefone,
+                                Tipo = "Departamento",
+                            }
+                            : null,
                 },
                 Itens = (
                     (solicitacao is SolicitacaoGeral geral) ? geral.ItemSolicitacao

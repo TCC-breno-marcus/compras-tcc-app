@@ -34,7 +34,7 @@ namespace Services
             string? searchTerm,
             string? categoriaNome,
             string? itemsType,
-            string? departamento,
+            string? siglaDepartamento,
             string? sortOrder,
             int pageNumber,
             int pageSize
@@ -44,7 +44,7 @@ namespace Services
                 searchTerm,
                 categoriaNome,
                 itemsType,
-                departamento,
+                siglaDepartamento,
                 sortOrder
             );
 
@@ -63,7 +63,7 @@ namespace Services
             string? searchTerm = null,
             string? categoriaNome = null,
             string? itemsType = null,
-            string? departamento = null,
+            string? siglaDepartamento = null,
             string? sortOrder = null
         )
         {
@@ -71,7 +71,7 @@ namespace Services
                 searchTerm,
                 categoriaNome,
                 itemsType,
-                departamento,
+                siglaDepartamento,
                 sortOrder
             );
 
@@ -82,17 +82,18 @@ namespace Services
             string? searchTerm,
             string? categoriaNome,
             string? itemsType,
-            string? departamento,
+            string? siglaDepartamento,
             string? sortOrder
         )
         {
-            var query = BuildBaseQuery(searchTerm, categoriaNome, itemsType, departamento);
+            var query = BuildBaseQuery(searchTerm, categoriaNome, itemsType, siglaDepartamento);
 
             var todosOsItensSolicitados = await query
                 .Include(si => si.Item)
                 .ThenInclude(i => i.Categoria)
                 .Include(si => si.Solicitacao)
                 .ThenInclude(s => s.Solicitante)
+                .ThenInclude(sol => sol.Departamento)
                 .ToListAsync();
 
             var itensSolicitados = todosOsItensSolicitados
@@ -107,7 +108,7 @@ namespace Services
             string? searchTerm,
             string? categoriaNome,
             string? itemsType,
-            string? departamento
+            string? siglaDepartamento
         )
         {
             var query = _context.SolicitacaoItens.AsNoTracking();
@@ -146,15 +147,12 @@ namespace Services
                     );
                 }
             }
-            if (!string.IsNullOrEmpty(departamento))
+            if (!string.IsNullOrEmpty(siglaDepartamento))
             {
-                DepartamentoEnum? departamentoEnum = departamento.FromString<DepartamentoEnum>();
-                if (departamentoEnum.HasValue)
-                {
-                    query = query.Where(s =>
-                        s.Solicitacao.Solicitante.Unidade == departamentoEnum.Value
-                    );
-                }
+                query = query.Where(s =>
+                    s.Solicitacao.Solicitante.Departamento.Sigla.ToUpper()
+                    == siglaDepartamento.ToUpper()
+                );
             }
 
             return query;
@@ -178,10 +176,18 @@ namespace Services
                 PrecoSugerido = itemExemplo.PrecoSugerido,
                 QuantidadeTotalSolicitada = group.Sum(si => si.Quantidade),
                 DemandaPorDepartamento = group
-                    .GroupBy(si => si.Solicitacao.Solicitante.Unidade)
+                    .GroupBy(si => si.Solicitacao.Solicitante.Departamento)
                     .Select(deptGroup => new DemandaPorDepartamentoDto
                     {
-                        Departamento = deptGroup.Key.ToFriendlyString(),
+                        Unidade = new UnidadeOrganizacionalDto
+                        {
+                            Id = deptGroup.Key.Id,
+                            Nome = deptGroup.Key.Nome,
+                            Sigla = deptGroup.Key.Sigla,
+                            Email = deptGroup.Key.Email,
+                            Telefone = deptGroup.Key.Telefone,
+                            Tipo = "Departamento",
+                        },
                         QuantidadeTotal = deptGroup.Sum(si => si.Quantidade),
                         Justificativa =
                             deptGroup.First().Solicitacao is SolicitacaoGeral
@@ -194,7 +200,7 @@ namespace Services
                                         .Distinct()
                                 ),
                     })
-                    .OrderBy(d => d.Departamento)
+                    .OrderBy(d => d.Unidade.Nome)
                     .ToList(),
                 ValorTotalSolicitado = group.Sum(si => si.Quantidade * si.ValorUnitario),
                 PrecoMedio = group.Average(si => si.ValorUnitario),
@@ -218,14 +224,14 @@ namespace Services
             string? searchTerm = null,
             string? categoriaNome = null,
             string? itemsType = null,
-            string? departamento = null
+            string? siglaDepartamento = null
         )
         {
             var itens = await GetAllItensPorDepartamentoAsync(
                 searchTerm,
                 categoriaNome,
                 itemsType,
-                departamento
+                siglaDepartamento
             );
 
             return GerarCsv(itens);
@@ -241,7 +247,10 @@ namespace Services
                     Descricao = item.Descricao,
                     Especificacao = item.Especificacao,
                     Categoria = item.CategoriaNome,
-                    Departamento = depto.Departamento,
+
+                    // TODO: ajustar logica de gerar csv e deptos por colunas
+                    Departamento = depto.Unidade.Sigla,
+
                     QuantidadeSolicitada = depto.QuantidadeTotal,
                     Justificativa = depto.Justificativa,
                     PrecoMedioItem = item.PrecoMedio,

@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using ComprasTccApp.Backend.Enums;
+using ComprasTccApp.Models.Entities.Departamentos;
 using ComprasTccApp.Models.Entities.Servidores;
 using ComprasTccApp.Models.Entities.Solicitacoes;
 
@@ -14,12 +15,12 @@ namespace ComprasTccApp.Models.Entities.Solicitantes
         [Required]
         public required Servidor Servidor { get; set; }
 
-        public List<Solicitacao> Solicitacoes { get; set; } = new List<Solicitacao>();
+        public int DepartamentoId { get; set; }
+        public Departamento Departamento { get; set; } = null!;
+
+        public List<Solicitacao> Solicitacoes { get; set; } = [];
 
         [Required]
         public DateTime DataUltimaSolicitacao { get; set; }
-
-        [Required]
-        public required DepartamentoEnum Unidade { get; set; }
     }
 }
