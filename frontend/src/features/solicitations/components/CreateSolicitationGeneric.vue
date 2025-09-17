@@ -154,7 +154,7 @@ useLeaveConfirmation()
               {{
                 deadlineHasExpired
                   ? 'Prazo para envio encerrado.'
-                  : `Prazo final: ${formatDate(deadline, 'short')}`
+                  : `Prazo final: ${deadline ? formatDate(deadline, 'short') : 'Não definido'}`
               }}
             </Message>
             <Button

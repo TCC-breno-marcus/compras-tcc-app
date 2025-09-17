@@ -201,8 +201,8 @@ onMounted(() => {
         >
           {{
             deadlineHasExpired
-              ? 'O prazo para ajustes foi encerrado.'
-              : `Prazo para ajustes: ${formatDate(deadline, 'short')}`
+              ? 'Prazo para ajustes encerrado.'
+              : `Prazo para ajustes: ${deadline ? formatDate(deadline, 'short') : 'Não definido'}`
           }}
         </Message>
         <Button
