@@ -22,12 +22,14 @@ import { useSolicitationListStore } from '@/features/solicitations/stores/Solici
 import { useAuthStore } from '@/features/autentication/stores/authStore'
 import AllSolicitationsSkeleton from '@/features/solicitations/components/AllSolicitationsSkeleton.vue'
 import { useUserStore } from '@/features/users/stores/userStore'
+import { useUnitOrganizationalStore } from '@/features/unitOrganizational/stores/unitOrganizationalStore'
 
 const route = useRoute()
 const authStore = useAuthStore()
-const { departamentos } = storeToRefs(authStore)
+const unitOrganizationalStore = useUnitOrganizationalStore()
+const { departments } = storeToRefs(unitOrganizationalStore)
 const userStore = useUserStore()
-const { solicitantes } = storeToRefs(userStore)
+const { users, solicitantes } = storeToRefs(userStore)
 const solicitationListStore = useSolicitationListStore()
 const { solicitations, isLoading, error, totalCount, pageNumber, pageSize, totalPages } =
   storeToRefs(solicitationListStore)
@@ -40,7 +42,7 @@ const filter = reactive<SolicitationFilters>({
   pageNumber: '1',
   pageSize: '10',
   pessoaId: '',
-  unidade: '',
+  siglaDepartamento: '',
 })
 
 const typeOptions = ref(['Geral', 'Patrimonial'])
@@ -67,8 +69,8 @@ const applyFilters = () => {
 
   if (filter.sortOrder) query.sortOrder = filter.sortOrder
   if (filter.pessoaId) query.pessoaId = filter.pessoaId
-  if (filter.unidade) query.unidade = filter.unidade
-
+  if (filter.siglaDepartamento) query.siglaDepartamento = filter.siglaDepartamento
+  
   // Reseta para a primeira página
   query.pageNumber = '1'
 
@@ -130,10 +132,10 @@ watch(
 )
 
 onMounted(() => {
-  if (!authStore.departamentos?.length) {
-    authStore.fetchDeptos()
+  if (!departments.value.length) {
+    unitOrganizationalStore.fetchDepartments()
   }
-  if (!userStore.users?.length) {
+  if (!users.value.length) {
     userStore.fetchUsers()
   }
 })
@@ -191,8 +193,10 @@ onMounted(() => {
 
         <FloatLabel class="w-full sm:w-18rem" variant="on">
           <Select
-            v-model="filter.unidade"
-            :options="departamentos"
+            v-model="filter.siglaDepartamento"
+            :options="departments"
+            optionLabel="nome"
+            option-value="sigla"
             inputId="departamento"
             size="small"
             class="w-full"

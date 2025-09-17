@@ -88,16 +88,16 @@ defineProps<{
         </div>
       </div>
 
-      <div v-if="item.quantidadesPorDepartamento && item.quantidadesPorDepartamento.length > 0">
+      <div v-if="item.demandaPorDepartamento && item.demandaPorDepartamento.length > 0">
         <Divider class="my-3" />
         <h5 class="m-0 mb-2 text-sm font-medium">Departamentos:</h5>
         <div class="space-y-2">
           <div
-            v-for="dept in item.quantidadesPorDepartamento"
-            :key="dept.departamento"
+            v-for="dept in item.demandaPorDepartamento"
+            :key="dept.unidade.id"
             class="flex justify-content-between align-items-center text-sm"
           >
-            <span>{{ dept.departamento }}</span>
+            <span>{{ dept.unidade.sigla }}</span>
             <Badge :value="dept.quantidadeTotal" />
           </div>
         </div>

@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using ComprasTccApp.Backend.Enums;
 using ComprasTccApp.Backend.Extensions;
+using ComprasTccApp.Models.Entities.Gestores;
 using ComprasTccApp.Models.Entities.Pessoas;
 using ComprasTccApp.Models.Entities.Servidores;
 using ComprasTccApp.Models.Entities.Solicitantes;
@@ -58,10 +59,8 @@ namespace ComprasTccApp.Backend.Services
                 CPF = registerDto.CPF,
                 DataAtualizacao = DateTime.UtcNow,
                 PasswordHash = passwordHash,
-                Role = "Solicitante",
+                Role = registerDto.Role,
             };
-
-            var departamentoEnum = registerDto.Departamento.FromString<DepartamentoEnum>();
 
             var novoServidor = new Servidor
             {
@@ -70,19 +69,62 @@ namespace ComprasTccApp.Backend.Services
                 IsGestor = false,
             };
 
-            var novoSolicitante = new Solicitante
+            if (registerDto.Role == "Solicitante")
             {
-                Servidor = novoServidor,
-                Unidade = departamentoEnum,
-                DataUltimaSolicitacao = DateTime.UtcNow,
-            };
+                if (string.IsNullOrWhiteSpace(registerDto.DepartamentoSigla))
+                    throw new ArgumentException(
+                        "A sigla do departamento é obrigatória para o perfil Solicitante."
+                    );
 
-            await _context.Solicitantes.AddAsync(novoSolicitante);
+                var depto = await _context.Departamentos.FirstOrDefaultAsync(d =>
+                    d.Sigla == registerDto.DepartamentoSigla
+                );
+                if (depto == null)
+                    throw new Exception(
+                        $"Departamento com sigla '{registerDto.DepartamentoSigla}' não encontrado."
+                    );
+
+                var novoSolicitante = new Solicitante
+                {
+                    Servidor = novoServidor,
+                    DepartamentoId = depto.Id,
+                    DataUltimaSolicitacao = DateTime.UtcNow,
+                };
+
+                await _context.Solicitantes.AddAsync(novoSolicitante);
+            }
+            else
+            {
+                if (string.IsNullOrWhiteSpace(registerDto.CentroSigla))
+                    throw new ArgumentException(
+                        "A sigla do centro é obrigatória para o perfil Gestor."
+                    );
+
+                var centro = await _context.Centros.FirstOrDefaultAsync(c =>
+                    c.Sigla == registerDto.CentroSigla
+                );
+
+                if (centro == null)
+                    throw new Exception(
+                        $"Centro com sigla '{registerDto.CentroSigla}' não encontrado."
+                    );
+
+                var novoGestor = new Gestor
+                {
+                    Servidor = novoServidor,
+                    CentroId = centro.Id,
+                    DataUltimaSolicitacao = DateTime.UtcNow,
+                };
+
+                await _context.Gestores.AddAsync(novoGestor);
+            }
+
             await _context.SaveChangesAsync();
 
             _logger.LogInformation(
-                "Usuário {Email} registrado com sucesso com a role 'Solicitante'.",
-                registerDto.Email
+                "Usuário {Email} registrado com sucesso com a role {Role}.",
+                registerDto.Email,
+                registerDto.Role
             );
             return novaPessoa;
         }
@@ -99,7 +141,7 @@ namespace ComprasTccApp.Backend.Services
                 return null;
             }
 
-            if (!pessoa.IsActive) 
+            if (!pessoa.IsActive)
             {
                 _logger.LogWarning(
                     "Tentativa de login de usuário inativo: {Email}",
@@ -132,25 +174,64 @@ namespace ComprasTccApp.Backend.Services
         public async Task<UserProfileDto?> GetMyProfileAsync(ClaimsPrincipal user)
         {
             var userIdString = user.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (string.IsNullOrEmpty(userIdString) || !long.TryParse(userIdString, out var userId))
-                return null;
-
-            var pessoa = await _context.Pessoas.FindAsync(userId);
-            if (pessoa == null)
-                return null;
-
-            var servidor = await _context.Servidores.FirstOrDefaultAsync(s => s.PessoaId == userId);
-
-            string? unidadeDoSolicitante = null;
-            if (servidor != null)
+            if (!long.TryParse(userIdString, out var userId))
             {
-                var solicitante = await _context.Solicitantes.FirstOrDefaultAsync(sol =>
-                    sol.ServidorId == servidor.Id
-                );
+                return null;
+            }
 
-                if (solicitante != null)
-                    unidadeDoSolicitante = solicitante.Unidade.ToFriendlyString();
+            _logger.LogInformation("Buscando perfil para o usuário ID: {UserId}", userId);
+
+            var pessoa = await _context
+                .Pessoas.AsNoTracking()
+                .FirstOrDefaultAsync(p => p.Id == userId);
+
+            if (pessoa == null)
+            {
+                _logger.LogWarning("Pessoa com ID: {UserId} não encontrada.", userId);
+                return null;
+            }
+
+            UnidadeOrganizacionalDto? unidadeDto = null;
+
+            if (pessoa.Role == "Solicitante")
+            {
+                var solicitante = await _context
+                    .Solicitantes.Include(sol => sol.Departamento)
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(sol => sol.Servidor.PessoaId == userId);
+
+                if (solicitante?.Departamento != null)
+                {
+                    unidadeDto = new UnidadeOrganizacionalDto
+                    {
+                        Id = solicitante.Departamento.Id,
+                        Nome = solicitante.Departamento.Nome,
+                        Sigla = solicitante.Departamento.Sigla,
+                        Email = solicitante.Departamento.Email,
+                        Telefone = solicitante.Departamento.Telefone,
+                        Tipo = "Departamento",
+                    };
+                }
+            }
+            else if (pessoa.Role == "Gestor")
+            {
+                var gestor = await _context
+                    .Gestores.Include(g => g.Centro)
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(g => g.Servidor.PessoaId == userId);
+
+                if (gestor?.Centro != null)
+                {
+                    unidadeDto = new UnidadeOrganizacionalDto
+                    {
+                        Id = gestor.Centro.Id,
+                        Nome = gestor.Centro.Nome,
+                        Sigla = gestor.Centro.Sigla,
+                        Email = gestor.Centro.Email,
+                        Telefone = gestor.Centro.Telefone,
+                        Tipo = "Centro",
+                    };
+                }
             }
 
             var userProfile = new UserProfileDto
@@ -161,8 +242,8 @@ namespace ComprasTccApp.Backend.Services
                 Telefone = pessoa.Telefone,
                 CPF = pessoa.CPF,
                 Role = pessoa.Role,
-                Departamento = unidadeDoSolicitante ?? "não disponível",
-                IsActive = pessoa.IsActive
+                IsActive = pessoa.IsActive,
+                Unidade = unidadeDto,
             };
 
             return userProfile;

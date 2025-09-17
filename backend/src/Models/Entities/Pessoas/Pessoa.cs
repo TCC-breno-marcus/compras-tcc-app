@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using ComprasTccApp.Models.Entities.Servidores;
 
 namespace ComprasTccApp.Models.Entities.Pessoas
 {
@@ -29,5 +30,7 @@ namespace ComprasTccApp.Models.Entities.Pessoas
 
         [Required]
         public bool IsActive { get; set; } = true;
+
+        public Servidor? Servidor { get; set; }
     }
 }

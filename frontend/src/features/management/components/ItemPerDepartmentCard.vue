@@ -125,11 +125,13 @@ const handleClickInfo = (event: MouseEvent) => {
                 <ul class="list-none p-0 m-0">
                   <li
                     v-for="dept in item.demandaPorDepartamento"
-                    :key="dept.departamento"
+                    :key="dept.unidade.id"
                     class="pb-1"
                   >
                     <div class="flex align-items-center justify-content-between">
-                      <span class="text-color-secondary">{{ toTitleCase(dept.departamento) }}</span>
+                      <span class="text-color-secondary"
+                        >{{ toTitleCase(dept.unidade.nome) }} ({{ dept.unidade.sigla }})</span
+                      >
                       <!-- <Badge :value="formatQuantity(dept.quantidadeTotal)" severity="info" /> -->
                       <Tag :value="formatQuantity(dept.quantidadeTotal)" severity="info" />
                     </div>

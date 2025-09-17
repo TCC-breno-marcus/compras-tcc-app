@@ -67,28 +67,65 @@ namespace ComprasTccApp.Backend.Services
 
             var pessoaIds = pessoasPaginadas.Select(p => p.Id).ToList();
 
-            var unidadesPorPessoa = await _context
-                .Servidores.Where(s => pessoaIds.Contains(s.PessoaId))
-                .Join(
-                    _context.Solicitantes,
-                    servidor => servidor.Id,
-                    solicitante => solicitante.ServidorId,
-                    (servidor, solicitante) =>
-                        new { PessoaId = servidor.PessoaId, Unidade = solicitante.Unidade }
-                )
-                .ToDictionaryAsync(x => x.PessoaId, x => x.Unidade.ToFriendlyString());
+            var solicitantesInfo = await _context
+                .Solicitantes.Include(s => s.Servidor)
+                .Where(s => pessoaIds.Contains(s.Servidor.PessoaId))
+                .Include(s => s.Departamento)
+                .ToDictionaryAsync(s => s.Servidor.PessoaId);
+
+            var gestoresInfo = await _context
+                .Gestores.Include(s => s.Servidor)
+                .Where(g => pessoaIds.Contains(g.Servidor.PessoaId))
+                .Include(g => g.Centro)
+                .ToDictionaryAsync(g => g.Servidor.PessoaId);
 
             var userProfiles = pessoasPaginadas
-                .Select(pessoa => new UserProfileDto
+                .Select(pessoa =>
                 {
-                    Id = pessoa.Id,
-                    Nome = pessoa.Nome,
-                    Email = pessoa.Email,
-                    Telefone = pessoa.Telefone,
-                    CPF = pessoa.CPF,
-                    Role = pessoa.Role,
-                    Departamento = unidadesPorPessoa.GetValueOrDefault(pessoa.Id, "não disponível"),
-                    IsActive = pessoa.IsActive
+                    UnidadeOrganizacionalDto? unidadeDto = null;
+
+                    if (
+                        pessoa.Role == "Solicitante"
+                        && solicitantesInfo.TryGetValue(pessoa.Id, out var solicitante)
+                    )
+                    {
+                        unidadeDto = new UnidadeOrganizacionalDto
+                        {
+                            Id = solicitante.Departamento.Id,
+                            Nome = solicitante.Departamento.Nome,
+                            Sigla = solicitante.Departamento.Sigla,
+                            Email = solicitante.Departamento.Email,
+                            Telefone = solicitante.Departamento.Telefone,
+                            Tipo = "Departamento",
+                        };
+                    }
+                    else if (
+                        (pessoa.Role == "Gestor" || pessoa.Role == "Admin")
+                        && gestoresInfo.TryGetValue(pessoa.Id, out var gestor)
+                    )
+                    {
+                        unidadeDto = new UnidadeOrganizacionalDto
+                        {
+                            Id = gestor.Centro.Id,
+                            Nome = gestor.Centro.Nome,
+                            Sigla = gestor.Centro.Sigla,
+                            Email = gestor.Centro.Email,
+                            Telefone = gestor.Centro.Telefone,
+                            Tipo = "Centro",
+                        };
+                    }
+
+                    return new UserProfileDto
+                    {
+                        Id = pessoa.Id,
+                        Nome = pessoa.Nome,
+                        Email = pessoa.Email,
+                        Telefone = pessoa.Telefone,
+                        CPF = pessoa.CPF,
+                        Role = pessoa.Role,
+                        IsActive = pessoa.IsActive,
+                        Unidade = unidadeDto,
+                    };
                 })
                 .ToList();
 
@@ -111,9 +148,9 @@ namespace ComprasTccApp.Backend.Services
             if (servidor == null)
                 throw new Exception($"Pessoa com ID {pessoaId} não encontrada na tabela Servidor.");
 
-            var solicitante = await _context.Solicitantes.FirstOrDefaultAsync(s =>
-                s.ServidorId == servidor.Id
-            );
+            var solicitante = await _context
+                .Solicitantes.Include(s => s.Departamento)
+                .FirstOrDefaultAsync(s => s.ServidorId == servidor.Id);
 
             if (solicitante == null)
                 throw new Exception(
@@ -138,7 +175,7 @@ namespace ComprasTccApp.Backend.Services
             return true;
         }
 
-         public async Task<bool> AtivarUsuarioAsync(long id)
+        public async Task<bool> AtivarUsuarioAsync(long id)
         {
             var pessoa = await _context.Pessoas.FindAsync(id);
             if (pessoa == null)

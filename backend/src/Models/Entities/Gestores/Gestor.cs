@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using ComprasTccApp.Models.Entities.Centros;
 using ComprasTccApp.Models.Entities.Servidores;
 using ComprasTccApp.Models.Entities.Solicitacoes;
 
@@ -12,6 +13,9 @@ namespace ComprasTccApp.Models.Entities.Gestores
 
         [Required]
         public required Servidor Servidor { get; set; }
+
+        public int CentroId { get; set; }
+        public Centro Centro { get; set; } = null!;
 
         public List<Solicitacao> Solicitacoes { get; set; } = new List<Solicitacao>();
 

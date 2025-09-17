@@ -14,7 +14,6 @@ export const useAuthStore = defineStore(
   () => {
     const user = ref<User | null>(null)
     const token = ref<string | null>(null)
-    const departamentos = ref<string[]>([])
 
     const isAuthenticated = computed(() => !!token.value && !isTokenExpired(token.value))
     const isAdmin = computed(() => user.value?.role === 'Admin')
@@ -62,19 +61,9 @@ export const useAuthStore = defineStore(
       token.value = null
     }
 
-    const fetchDeptos = async () => {
-      try {
-        const data = await authService.getDeptos()
-        departamentos.value = data
-      } catch (error) {
-        console.error('Falha na ação de fetchDataUser da store:', error)
-      }
-    }
-
     return {
       user,
       token,
-      departamentos,
       isAuthenticated,
       isAdmin,
       isGestor,
@@ -83,7 +72,6 @@ export const useAuthStore = defineStore(
       fetchDataUser,
       register,
       logout,
-      fetchDeptos,
     }
   },
   {

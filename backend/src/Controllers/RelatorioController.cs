@@ -29,7 +29,7 @@ namespace Controllers
             [FromQuery] string? searchTerm,
             [FromQuery] string? categoriaNome,
             [FromQuery] string? itemsType,
-            [FromQuery] string? departamento,
+            [FromQuery] string? siglaDepartamento,
             [FromQuery] string? sortOrder = "asc",
             [FromQuery] int pageNumber = 1,
             [FromQuery] int pageSize = 50
@@ -44,7 +44,7 @@ namespace Controllers
                     searchTerm,
                     categoriaNome,
                     itemsType,
-                    departamento,
+                    siglaDepartamento,
                     sortOrder,
                     pageNumber,
                     pageSize
@@ -73,7 +73,7 @@ namespace Controllers
         public async Task<IActionResult> GetAllItensPatrimoniaisPorDepartamentoCsv(
             [FromQuery] string? searchTerm,
             [FromQuery] string? categoriaNome,
-            [FromQuery] string? departamento
+            [FromQuery] string? siglaDepartamento
         )
         {
             try
@@ -85,7 +85,7 @@ namespace Controllers
                     searchTerm,
                     categoriaNome,
                     "patrimonial",
-                    departamento
+                    siglaDepartamento
                 );
                 return File(
                     csvBytes,
@@ -115,7 +115,7 @@ namespace Controllers
         public async Task<IActionResult> GetAllItensGeraisPorDepartamentoCsv(
             [FromQuery] string? searchTerm,
             [FromQuery] string? categoriaNome,
-            [FromQuery] string? departamento
+            [FromQuery] string? siglaDepartamento
         )
         {
             try
@@ -127,7 +127,7 @@ namespace Controllers
                     searchTerm,
                     categoriaNome,
                     "geral",
-                    departamento
+                    siglaDepartamento
                 );
                 return File(
                     csvBytes,

@@ -1,6 +1,8 @@
 using ComprasTccApp.Backend.Models.Entities.Items;
 using ComprasTccApp.Models.Entities.Categorias;
+using ComprasTccApp.Models.Entities.Centros;
 using ComprasTccApp.Models.Entities.Configuracoes;
+using ComprasTccApp.Models.Entities.Departamentos;
 using ComprasTccApp.Models.Entities.Gestores;
 using ComprasTccApp.Models.Entities.Itens;
 using ComprasTccApp.Models.Entities.Pessoas;
@@ -27,6 +29,8 @@ public class AppDbContext : DbContext
     public DbSet<SolicitacaoPatrimonial> SolicitacoesPatrimoniais { get; set; }
     public DbSet<SolicitacaoItem> SolicitacaoItens { get; set; }
     public DbSet<Configuracao> Configuracoes { get; set; }
+    public DbSet<Centro> Centros { get; set; }
+    public DbSet<Departamento> Departamentos { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -44,21 +48,20 @@ public class AppDbContext : DbContext
         modelBuilder
             .Entity<Servidor>()
             .HasOne(servidor => servidor.Pessoa)
-            .WithOne()
-            .HasForeignKey<Servidor>(servidor => servidor.PessoaId)
-            .IsRequired();
+            .WithOne(pessoa => pessoa.Servidor)
+            .HasForeignKey<Servidor>(servidor => servidor.PessoaId);
 
         modelBuilder
             .Entity<Solicitante>()
             .HasOne(solicitante => solicitante.Servidor)
-            .WithOne()
+            .WithOne(servidor => servidor.Solicitante)
             .HasForeignKey<Solicitante>(solicitante => solicitante.ServidorId)
             .IsRequired();
 
         modelBuilder
             .Entity<Gestor>()
             .HasOne(gestor => gestor.Servidor)
-            .WithOne()
+            .WithOne(servidor => servidor.Gestor)
             .HasForeignKey<Gestor>(gestor => gestor.ServidorId)
             .IsRequired();
 
@@ -156,6 +159,11 @@ public class AppDbContext : DbContext
                     IsActive = true,
                 }
             );
+        });
+
+        modelBuilder.Entity<Departamento>(entity =>
+        {
+            entity.HasIndex(d => d.Sigla).IsUnique();
         });
     }
 }

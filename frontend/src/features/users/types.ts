@@ -1,3 +1,5 @@
+import type { UnitOrganizational } from '../unitOrganizational/types'
+
 /**
  * Representa os dados de um usuário
  */
@@ -8,8 +10,8 @@ export interface User {
   telefone: string
   cpf: string
   role: 'Admin' | 'Gestor' | 'Solicitante'
-  departamento: string
   isActive: boolean
+  unidade: UnitOrganizational | null
 }
 
 /**

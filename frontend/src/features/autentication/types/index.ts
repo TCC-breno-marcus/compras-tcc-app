@@ -15,7 +15,9 @@ export interface UserRegistration {
   telefone: string
   cpf: string
   password: string
-  departamento: string
+  departamentoSigla?: string
+  centroSigla?: string
+  role: 'Solicitante' | 'Gestor'
 }
 
 /**
@@ -25,4 +27,3 @@ export interface AuthResponse {
   token: string
   message: string
 }
-

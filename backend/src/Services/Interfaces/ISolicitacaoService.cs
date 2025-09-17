@@ -33,7 +33,7 @@ public interface ISolicitacaoService
         long? solicitanteId,
         long? gestorId,
         string? tipo,
-        string? unidade,
+        string? siglaDepartamento,
         DateTime? dataInicial,
         DateTime? dataFinal,
         string? externalId,

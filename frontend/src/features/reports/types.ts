@@ -1,4 +1,5 @@
 import type { Item } from '@/features/catalogo/types'
+import type { UnitOrganizational } from '../unitOrganizational/types'
 
 export type SolicitationItem = Partial<Item> & {
   quantidade: number
@@ -25,14 +26,14 @@ export interface ItemsDepartmentFilters {
   searchTerm: string
   categoriaNome: string
   itemsType: 'geral' | 'patrimonial' | null
-  departamento: string
+  siglaDepartamento: string
   sortOrder: string | null
   pageSize: string
   pageNumber: string
 }
 
 export type ItemQuantityPerDepartment = {
-  departamento: string
+  unidade: UnitOrganizational
   quantidadeTotal: number
   justificativa: string
 }

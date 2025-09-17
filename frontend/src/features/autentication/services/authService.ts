@@ -36,15 +36,4 @@ export const authService = {
       throw new Error('Erro de conexão com a API ao tentar buscar dados do usuário.')
     }
   },
-  async getDeptos(): Promise<string[]> {
-    try {
-      const response = await apiClient.get('/departamentos')
-      return response.data
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        throw new Error(error.response.data.message)
-      }
-      throw new Error('Erro de conexão com a API ao tentar buscar departamentos.')
-    }
-  },
 }

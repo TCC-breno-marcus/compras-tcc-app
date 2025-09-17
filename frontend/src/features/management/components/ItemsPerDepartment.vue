@@ -23,6 +23,7 @@ import { useCategoriaStore } from '@/features/catalogo/stores/categoriaStore'
 import CustomPaginator from '@/components/ui/CustomPaginator.vue'
 import ItemPerDepartmentCard from './ItemPerDepartmentCard.vue'
 import { reportService } from '@/features/reports/services/reportService'
+import { useUnitOrganizationalStore } from '@/features/unitOrganizational/stores/unitOrganizationalStore'
 
 // TODO: esse componente é um backup pra o caso de decidir usar tabela pra visualizar esses dados ao invés de cards
 
@@ -33,8 +34,8 @@ const reportStore = useReportStore()
 const { itemsDepartment, isLoading, totalCount, pageNumber, pageSize, totalPages } =
   storeToRefs(reportStore)
 const authStore = useAuthStore()
-const { departamentos } = storeToRefs(authStore)
-const dt = ref()
+const unitOrganizationalStore = useUnitOrganizationalStore()
+const { departments } = storeToRefs(unitOrganizationalStore)
 const op = ref()
 const selectedItemDetails = ref<ItemDepartmentResponse | null>(null)
 const categoriaStore = useCategoriaStore()
@@ -46,7 +47,7 @@ const filter = reactive<ItemsDepartmentFilters>({
   searchTerm: '',
   categoriaNome: '',
   itemsType: null,
-  departamento: '',
+  siglaDepartamento: '',
   sortOrder: null,
   pageNumber: '1',
   pageSize: '50',
@@ -57,7 +58,7 @@ const applyFilters = () => {
 
   if (filter.searchTerm) query.searchTerm = filter.searchTerm
   if (filter.categoriaNome) query.categoriaNome = filter.categoriaNome
-  if (filter.departamento) query.departamento = filter.departamento
+  if (filter.siglaDepartamento) query.siglaDepartamento = filter.siglaDepartamento
   if (filter.sortOrder) query.sortOrder = filter.sortOrder
 
   // Reseta para a primeira página
@@ -158,8 +159,8 @@ watch(
 )
 
 onMounted(() => {
-  if (!authStore.departamentos?.length) {
-    authStore.fetchDeptos()
+  if (!departments.value.length) {
+    unitOrganizationalStore.fetchDepartments()
   }
   if (!categoriaStore.categorias.length) {
     categoriaStore.fetch()
@@ -205,8 +206,10 @@ onMounted(() => {
 
         <FloatLabel class="w-full sm:w-16rem" variant="on">
           <Select
-            v-model="filter.departamento"
-            :options="departamentos"
+            v-model="filter.siglaDepartamento"
+            :options="departments"
+            optionLabel="nome"
+            option-value="sigla"
             inputId="departamento"
             size="small"
             class="w-full"
