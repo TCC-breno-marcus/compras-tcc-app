@@ -20,7 +20,7 @@ public static class DataSeeder
 
         var centro = new Centro
         {
-            Nome = "Centro de Ciência Exatas e Tecnologia",
+            Nome = "Centro de Ciências Exatas e Tecnologia",
             Sigla = "CCET",
             Email = "ccet@academico.ufs.br",
             Telefone = "7931946684",
@@ -33,9 +33,8 @@ public static class DataSeeder
     public static async Task SeedDepartamentosAsync(AppDbContext context)
     {
         if (await context.Departamentos.AnyAsync())
-            return; // Já populado
+            return;
 
-        // Primeiro, precisamos garantir que o centro CCET existe para pegarmos seu ID
         var ccet = await context.Centros.FirstOrDefaultAsync(c => c.Sigla == "CCET");
         if (ccet == null)
         {
