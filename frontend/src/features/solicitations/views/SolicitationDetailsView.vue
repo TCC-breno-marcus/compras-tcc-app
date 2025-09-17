@@ -44,7 +44,7 @@ const { currentSolicitation, isLoading, error, currentSolicitationBackup } =
   storeToRefs(solicitationStore)
 
 const loggedUserCreatedIt = computed(() => {
-  return currentSolicitation.value?.solicitante.departamento === user.value?.departamento
+  return currentSolicitation.value?.solicitante.unidade.sigla === user.value?.unidade?.sigla
 })
 
 const isEditing = ref<boolean>(false)
@@ -242,17 +242,19 @@ onMounted(() => {
                 <div>
                   <span class="text-sm text-color-secondary">Requisitante</span>
                   <p class="font-bold m-0">
-                    {{ currentSolicitation.solicitante.nome }} ({{
-                      toTitleCase(currentSolicitation.solicitante.departamento)
-                    }})
+                    {{ currentSolicitation.solicitante.nome }}
                   </p>
                 </div>
               </li>
               <li class="flex align-items-center">
                 <i class="pi pi-envelope text-primary text-xl mr-3"></i>
                 <div>
-                  <span class="text-sm text-color-secondary">Contato</span>
-                  <p class="font-bold m-0">{{ currentSolicitation.solicitante.email }}</p>
+                  <span class="text-sm text-color-secondary">Departamento</span>
+                  <p class="font-bold m-0">
+                    {{ toTitleCase(currentSolicitation.solicitante.unidade.nome) }} ({{
+                      currentSolicitation.solicitante.unidade.sigla
+                    }})
+                  </p>
                 </div>
               </li>
             </ul>

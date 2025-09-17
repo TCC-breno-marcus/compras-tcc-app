@@ -31,7 +31,7 @@ export const mapQueryToFilters = (
     pageNumber: getFirstQueryValue(query.pageNumber),
     ...(filterParamsType === 'SolicitationFilters' && {
       pessoaId,
-      unidade: getFirstQueryValue(query.unidade),
+      siglaDepartamento: getFirstQueryValue(query.siglaDepartamento),
     }),
   }
 }

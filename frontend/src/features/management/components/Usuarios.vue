@@ -52,7 +52,8 @@ const listUsers = computed(() => {
     (user) =>
       user.nome?.toLowerCase().includes(searchTerm) ||
       user.email?.toLowerCase().includes(searchTerm) ||
-      user.departamento?.toLowerCase().includes(searchTerm) ||
+      user.unidade?.nome.toLowerCase().includes(searchTerm) ||
+      user.unidade?.sigla.toLowerCase().includes(searchTerm) ||
       user.cpf?.includes(searchTerm),
   )
 })
@@ -214,11 +215,9 @@ watch(
                       <div class="flex flex-column gap-">
                         <p class="font-bold m-0">{{ user.nome }}</p>
                         <span class="text-color-secondary">{{ user.email }}</span>
-                        <span class="text-color-secondary">{{
-                          user.departamento === 'não disponível'
-                            ? 'N/A'
-                            : toTitleCase(user.departamento)
-                        }}</span>
+                        <span class="text-color-secondary">
+                          {{ user.unidade ? `${user.unidade?.nome } (${user.unidade?.sigla})` : '' }}</span
+                        >
                       </div>
                     </div>
 

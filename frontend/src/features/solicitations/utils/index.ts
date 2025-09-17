@@ -30,7 +30,7 @@ export const transformSolicitation = (
     typeDisplay,
     ...(solicitationListType === 'allSolicitations' && {
       requester: solicitation.solicitante.nome,
-      department: solicitation.solicitante.departamento,
+      department: solicitation.solicitante.unidade.sigla,
     }),
   }
 }
