@@ -151,6 +151,39 @@ namespace backend.Migrations
                         });
                 });
 
+            modelBuilder.Entity("ComprasTccApp.Models.Entities.Centros.Centro", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Sigla")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<string>("Telefone")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Centros");
+                });
+
             modelBuilder.Entity("ComprasTccApp.Models.Entities.Configuracoes.Configuracao", b =>
                 {
                     b.Property<string>("Chave")
@@ -166,6 +199,47 @@ namespace backend.Migrations
                     b.ToTable("Configuracoes");
                 });
 
+            modelBuilder.Entity("ComprasTccApp.Models.Entities.Departamentos.Departamento", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CentroId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Sigla")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<string>("Telefone")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CentroId");
+
+                    b.HasIndex("Sigla")
+                        .IsUnique();
+
+                    b.ToTable("Departamentos");
+                });
+
             modelBuilder.Entity("ComprasTccApp.Models.Entities.Gestores.Gestor", b =>
                 {
                     b.Property<long>("Id")
@@ -174,6 +248,9 @@ namespace backend.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
+                    b.Property<int>("CentroId")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("DataUltimaSolicitacao")
                         .HasColumnType("timestamp with time zone");
 
@@ -181,6 +258,8 @@ namespace backend.Migrations
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CentroId");
 
                     b.HasIndex("ServidorId")
                         .IsUnique();
@@ -338,13 +417,15 @@ namespace backend.Migrations
                     b.Property<DateTime>("DataUltimaSolicitacao")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("DepartamentoId")
+                        .HasColumnType("integer");
+
                     b.Property<long>("ServidorId")
                         .HasColumnType("bigint");
 
-                    b.Property<int>("Unidade")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("DepartamentoId");
 
                     b.HasIndex("ServidorId")
                         .IsUnique();
@@ -382,13 +463,32 @@ namespace backend.Migrations
                     b.Navigation("Categoria");
                 });
 
+            modelBuilder.Entity("ComprasTccApp.Models.Entities.Departamentos.Departamento", b =>
+                {
+                    b.HasOne("ComprasTccApp.Models.Entities.Centros.Centro", "Centro")
+                        .WithMany("Departamentos")
+                        .HasForeignKey("CentroId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Centro");
+                });
+
             modelBuilder.Entity("ComprasTccApp.Models.Entities.Gestores.Gestor", b =>
                 {
+                    b.HasOne("ComprasTccApp.Models.Entities.Centros.Centro", "Centro")
+                        .WithMany("Gestores")
+                        .HasForeignKey("CentroId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("ComprasTccApp.Models.Entities.Servidores.Servidor", "Servidor")
-                        .WithOne()
+                        .WithOne("Gestor")
                         .HasForeignKey("ComprasTccApp.Models.Entities.Gestores.Gestor", "ServidorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Centro");
 
                     b.Navigation("Servidor");
                 });
@@ -415,7 +515,7 @@ namespace backend.Migrations
             modelBuilder.Entity("ComprasTccApp.Models.Entities.Servidores.Servidor", b =>
                 {
                     b.HasOne("ComprasTccApp.Models.Entities.Pessoas.Pessoa", "Pessoa")
-                        .WithOne()
+                        .WithOne("Servidor")
                         .HasForeignKey("ComprasTccApp.Models.Entities.Servidores.Servidor", "PessoaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -442,11 +542,19 @@ namespace backend.Migrations
 
             modelBuilder.Entity("ComprasTccApp.Models.Entities.Solicitantes.Solicitante", b =>
                 {
+                    b.HasOne("ComprasTccApp.Models.Entities.Departamentos.Departamento", "Departamento")
+                        .WithMany("Solicitantes")
+                        .HasForeignKey("DepartamentoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("ComprasTccApp.Models.Entities.Servidores.Servidor", "Servidor")
-                        .WithOne()
+                        .WithOne("Solicitante")
                         .HasForeignKey("ComprasTccApp.Models.Entities.Solicitantes.Solicitante", "ServidorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Departamento");
 
                     b.Navigation("Servidor");
                 });
@@ -461,9 +569,33 @@ namespace backend.Migrations
                     b.Navigation("Itens");
                 });
 
+            modelBuilder.Entity("ComprasTccApp.Models.Entities.Centros.Centro", b =>
+                {
+                    b.Navigation("Departamentos");
+
+                    b.Navigation("Gestores");
+                });
+
+            modelBuilder.Entity("ComprasTccApp.Models.Entities.Departamentos.Departamento", b =>
+                {
+                    b.Navigation("Solicitantes");
+                });
+
             modelBuilder.Entity("ComprasTccApp.Models.Entities.Gestores.Gestor", b =>
                 {
                     b.Navigation("Solicitacoes");
+                });
+
+            modelBuilder.Entity("ComprasTccApp.Models.Entities.Pessoas.Pessoa", b =>
+                {
+                    b.Navigation("Servidor");
+                });
+
+            modelBuilder.Entity("ComprasTccApp.Models.Entities.Servidores.Servidor", b =>
+                {
+                    b.Navigation("Gestor");
+
+                    b.Navigation("Solicitante");
                 });
 
             modelBuilder.Entity("ComprasTccApp.Models.Entities.Solicitacoes.Solicitacao", b =>

@@ -30,6 +30,34 @@ namespace backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Centros",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Nome = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Sigla = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
+                    Email = table.Column<string>(type: "character varying(120)", maxLength: 120, nullable: false),
+                    Telefone = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Centros", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Configuracoes",
+                columns: table => new
+                {
+                    Chave = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Valor = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Configuracoes", x => x.Chave);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Pessoas",
                 columns: table => new
                 {
@@ -41,7 +69,8 @@ namespace backend.Migrations
                     CPF = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
                     DataAtualizacao = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     PasswordHash = table.Column<string>(type: "text", nullable: false),
-                    Role = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false)
+                    Role = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -75,6 +104,29 @@ namespace backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Departamentos",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Nome = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Sigla = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
+                    Email = table.Column<string>(type: "character varying(120)", maxLength: 120, nullable: false),
+                    Telefone = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    CentroId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Departamentos", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Departamentos_Centros_CentroId",
+                        column: x => x.CentroId,
+                        principalTable: "Centros",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Servidores",
                 columns: table => new
                 {
@@ -102,11 +154,18 @@ namespace backend.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     ServidorId = table.Column<long>(type: "bigint", nullable: false),
+                    CentroId = table.Column<int>(type: "integer", nullable: false),
                     DataUltimaSolicitacao = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Gestores", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Gestores_Centros_CentroId",
+                        column: x => x.CentroId,
+                        principalTable: "Centros",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Gestores_Servidores_ServidorId",
                         column: x => x.ServidorId,
@@ -122,12 +181,18 @@ namespace backend.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     ServidorId = table.Column<long>(type: "bigint", nullable: false),
-                    DataUltimaSolicitacao = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Unidade = table.Column<int>(type: "integer", nullable: false)
+                    DepartamentoId = table.Column<int>(type: "integer", nullable: false),
+                    DataUltimaSolicitacao = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Solicitantes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Solicitantes_Departamentos_DepartamentoId",
+                        column: x => x.DepartamentoId,
+                        principalTable: "Departamentos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Solicitantes_Servidores_ServidorId",
                         column: x => x.ServidorId,
@@ -144,6 +209,7 @@ namespace backend.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     SolicitanteId = table.Column<long>(type: "bigint", nullable: false),
                     GestorId = table.Column<long>(type: "bigint", nullable: true),
+                    ExternalId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     DataCriacao = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     TipoSolicitacao = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
                     JustificativaGeral = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true)
@@ -212,6 +278,22 @@ namespace backend.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Departamentos_CentroId",
+                table: "Departamentos",
+                column: "CentroId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Departamentos_Sigla",
+                table: "Departamentos",
+                column: "Sigla",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Gestores_CentroId",
+                table: "Gestores",
+                column: "CentroId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Gestores_ServidorId",
                 table: "Gestores",
                 column: "ServidorId",
@@ -244,6 +326,11 @@ namespace backend.Migrations
                 column: "SolicitanteId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Solicitantes_DepartamentoId",
+                table: "Solicitantes",
+                column: "DepartamentoId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Solicitantes_ServidorId",
                 table: "Solicitantes",
                 column: "ServidorId",
@@ -253,6 +340,9 @@ namespace backend.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Configuracoes");
+
             migrationBuilder.DropTable(
                 name: "SolicitacaoItens");
 
@@ -272,7 +362,13 @@ namespace backend.Migrations
                 name: "Solicitantes");
 
             migrationBuilder.DropTable(
+                name: "Departamentos");
+
+            migrationBuilder.DropTable(
                 name: "Servidores");
+
+            migrationBuilder.DropTable(
+                name: "Centros");
 
             migrationBuilder.DropTable(
                 name: "Pessoas");

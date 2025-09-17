@@ -1,6 +1,8 @@
 using ComprasTccApp.Backend.Enums;
 using ComprasTccApp.Backend.Extensions;
 using ComprasTccApp.Models.Entities.Categorias;
+using ComprasTccApp.Models.Entities.Centros;
+using ComprasTccApp.Models.Entities.Departamentos;
 using ComprasTccApp.Models.Entities.Gestores;
 using ComprasTccApp.Models.Entities.Pessoas;
 using ComprasTccApp.Models.Entities.Servidores;
@@ -11,7 +13,164 @@ namespace Database;
 
 public static class DataSeeder
 {
-    public static async Task SeedUsers(AppDbContext context)
+    public static async Task SeedCentrosAsync(AppDbContext context)
+    {
+        if (await context.Centros.AnyAsync())
+            return; // Já populado
+
+        var centro = new Centro
+        {
+            Nome = "Centro de Ciência Exatas e Tecnologia",
+            Sigla = "CCET",
+            Email = "ccet@academico.ufs.br",
+            Telefone = "7931946684",
+        };
+
+        await context.Centros.AddAsync(centro);
+        await context.SaveChangesAsync();
+    }
+
+    public static async Task SeedDepartamentosAsync(AppDbContext context)
+    {
+        if (await context.Departamentos.AnyAsync())
+            return; // Já populado
+
+        // Primeiro, precisamos garantir que o centro CCET existe para pegarmos seu ID
+        var ccet = await context.Centros.FirstOrDefaultAsync(c => c.Sigla == "CCET");
+        if (ccet == null)
+        {
+            throw new Exception("O Centro 'CCET' precisa ser semeado antes dos departamentos.");
+        }
+
+        var departamentos = new List<Departamento>
+        {
+            new()
+            {
+                Nome = "Departamento de Ciência e Engenharia de Materiais",
+                Sigla = "DCEM",
+                Email = "dcem@academico.ufs.br",
+                Telefone = "7931946888",
+                CentroId = ccet.Id,
+            },
+            new()
+            {
+                Nome = "Departamento de Engenharia Mecânica",
+                Sigla = "DMEC",
+                Email = "dmec@academico.ufs.br",
+                Telefone = "7931946310",
+                CentroId = ccet.Id,
+            },
+            new()
+            {
+                Nome = "Departamento de Tecnologia de Alimentos",
+                Sigla = "DTA",
+                Email = "dta@academico.ufs.br",
+                Telefone = "7931946903",
+                CentroId = ccet.Id,
+            },
+            new()
+            {
+                Nome = "Departamento de Engenharia Civil",
+                Sigla = "DEC",
+                Email = "dec@academico.ufs.br",
+                Telefone = "7931946700",
+                CentroId = ccet.Id,
+            },
+            new()
+            {
+                Nome = "Departamento de Engenharia Química",
+                Sigla = "DEQ",
+                Email = "deq@academico.ufs.br",
+                Telefone = "7931946676",
+                CentroId = ccet.Id,
+            },
+            new()
+            {
+                Nome = "Departamento de Computação",
+                Sigla = "DCOMP",
+                Email = "secretaria@dcomp.ufs.br",
+                Telefone = "7931946678",
+                CentroId = ccet.Id,
+            },
+            new()
+            {
+                Nome = "Departamento de Engenharia de Produção",
+                Sigla = "DEPRO",
+                Email = "depro@academico.ufs.br",
+                Telefone = "7931946320",
+                CentroId = ccet.Id,
+            },
+            new()
+            {
+                Nome = "Departamento de Matemática",
+                Sigla = "DMA",
+                Email = "dma@mat.ufs.br",
+                Telefone = "7931946707",
+                CentroId = ccet.Id,
+            },
+            new()
+            {
+                Nome = "Departamento de Química",
+                Sigla = "DQI",
+                Email = "dqi@academico.ufs.br",
+                Telefone = "7931946650",
+                CentroId = ccet.Id,
+            },
+            new()
+            {
+                Nome = "Departamento de Engenharia Ambiental",
+                Sigla = "DEAM",
+                Email = "deam@academico.ufs.br",
+                Telefone = "7931946896",
+                CentroId = ccet.Id,
+            },
+            new()
+            {
+                Nome = "Departamento de Geologia",
+                Sigla = "DGEOL",
+                Email = "dgeol@academico.ufs.br",
+                Telefone = "7931947500",
+                CentroId = ccet.Id,
+            },
+            new()
+            {
+                Nome = "Departamento de Física",
+                Sigla = "DFI",
+                Email = "dfi@academico.ufs.br",
+                Telefone = "7931946630",
+                CentroId = ccet.Id,
+            },
+            new()
+            {
+                Nome = "Departamento de Estatística e Ciências Atuariais",
+                Sigla = "DECAT",
+                Email = "decat@academico.ufs.br",
+                Telefone = "7931946729",
+                CentroId = ccet.Id,
+            },
+            new()
+            {
+                Nome = "Departamento de Engenharia Elétrica",
+                Sigla = "DEL",
+                Email = "del@academico.ufs.br",
+                Telefone = "7931946837",
+                CentroId = ccet.Id,
+            },
+            new()
+            {
+                Nome = "Departamento de Engenharia de Petróleo",
+                Sigla = "DEPET",
+                Email = "depet@academico.ufs.br",
+                Telefone = "7931946598",
+                CentroId = ccet.Id,
+            },
+        };
+
+        await context.Departamentos.AddRangeAsync(departamentos);
+        await context.SaveChangesAsync();
+    }
+
+    public static async Task SeedUsersAsync(AppDbContext context)
     {
         await context.Database.MigrateAsync();
 
@@ -52,10 +211,21 @@ public static class DataSeeder
                 IsGestor = false,
             };
 
+            var deptoComputacao = await context.Departamentos.FirstOrDefaultAsync(d =>
+                d.Sigla == "DCOMP"
+            );
+
+            if (deptoComputacao == null)
+            {
+                throw new Exception(
+                    "Departamento de Computação (DCOMP) não encontrado. Rode o seeder de departamentos primeiro."
+                );
+            }
+
             var solicitante = new Solicitante
             {
                 Servidor = solicitanteServidor,
-                Unidade = "DEPARTAMENTO DE COMPUTAÇÃO".FromString<DepartamentoEnum>(),
+                DepartamentoId = deptoComputacao.Id,
                 DataUltimaSolicitacao = DateTime.UtcNow,
             };
 
@@ -83,9 +253,20 @@ public static class DataSeeder
                 IsGestor = true,
             };
 
+            var centroCcet = await context.Centros.FirstOrDefaultAsync(c => c.Sigla == "CCET");
+            if (centroCcet == null)
+            {
+                throw new Exception(
+                    "Centro CCET não encontrado. Rode o seeder de centros primeiro."
+                );
+            }
+
+            // ... (criação da Pessoa e do Servidor para o gestor)
+
             var gestor = new Gestor
             {
                 Servidor = gestorServidor,
+                CentroId = centroCcet.Id, // <-- Atribui o ID do centro
                 DataUltimaSolicitacao = DateTime.UtcNow,
             };
             await context.Gestores.AddAsync(gestor);

@@ -64,6 +64,8 @@ builder.Services.AddScoped<ISolicitacaoService, SolicitacaoService>();
 builder.Services.AddScoped<IConfiguracaoService, ConfiguracaoService>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IRelatorioService, RelatorioService>();
+builder.Services.AddScoped<IDepartamentoService, DepartamentoService>();
+builder.Services.AddScoped<ICentroService, CentroService>();
 
 //builder.Services.AddScoped<IEmailService, EmailService>();
 
@@ -86,7 +88,10 @@ if (app.Environment.IsDevelopment())
             "Iniciando o seeding do banco de dados na inicialização (ambiente de desenvolvimento)..."
         );
 
-        await DataSeeder.SeedUsers(context);
+        await context.Database.MigrateAsync();
+        await DataSeeder.SeedCentrosAsync(context);
+        await DataSeeder.SeedDepartamentosAsync(context);
+        await DataSeeder.SeedUsersAsync(context);
 
         logger.LogInformation("Seeding concluído com sucesso.");
     }
