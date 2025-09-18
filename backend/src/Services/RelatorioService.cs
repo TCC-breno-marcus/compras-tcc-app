@@ -1,9 +1,6 @@
 using System.Globalization;
 using System.IO;
-using System.IO;
 using System.Text;
-using ComprasTccApp.Backend.Enums;
-using ComprasTccApp.Backend.Extensions;
 using ComprasTccApp.Models.Entities.Itens;
 using CsvHelper;
 using Database;
@@ -234,40 +231,101 @@ namespace Services
                 siglaDepartamento
             );
 
-            return GerarCsv(itens);
+            return GerarCsv(itens, itemsType!);
         }
 
-        private static byte[] GerarCsv(List<ItemPorDepartamentoDto> itens)
+        private static byte[] GerarCsv(List<ItemPorDepartamentoDto> itens, string itemsType)
         {
-            var recordsParaCsv = itens.SelectMany(item =>
-                item.DemandaPorDepartamento.Select(depto => new
-                {
-                    CATMAT = item.CatMat,
-                    Item = item.Nome,
-                    Descricao = item.Descricao,
-                    Especificacao = item.Especificacao,
-                    Categoria = item.CategoriaNome,
-
-                    // TODO: ajustar logica de gerar csv e deptos por colunas
-                    Departamento = depto.Unidade.Sigla,
-
-                    QuantidadeSolicitada = depto.QuantidadeTotal,
-                    Justificativa = depto.Justificativa,
-                    PrecoMedioItem = item.PrecoMedio,
-                    NumeroTotalDeSolicitacoes = item.NumeroDeSolicitacoes,
-                })
-            );
-
             using (var memoryStream = new MemoryStream())
             {
                 using (var writer = new StreamWriter(memoryStream, new UTF8Encoding(true)))
                 {
                     using (var csv = new CsvWriter(writer, new CultureInfo("pt-BR")))
                     {
-                        csv.WriteRecords(recordsParaCsv);
+                        // --- PASSO 1: DESCOBRIR TODAS AS COLUNAS DE DEPARTAMENTO ---
+                        var todosOsDepartamentos = itens
+                            .SelectMany(i => i.DemandaPorDepartamento.Select(d => d.Unidade.Sigla))
+                            .Distinct()
+                            .OrderBy(sigla => sigla)
+                            .ToList();
+
+                        // --- PASSO 2: ESCREVER A LINHA DE CABEÇALHO ---
+
+                        // Escreve as colunas fixas
+                        csv.WriteField("CATMAT");
+                        csv.WriteField("Item");
+                        csv.WriteField("Descrição");
+                        csv.WriteField("Especificação");
+                        csv.WriteField("Categoria");
+                        csv.WriteField("Qtde. Total Solicitada");
+
+                        // Escreve as colunas dinâmicas para cada departamento
+                        foreach (var siglaDepto in todosOsDepartamentos)
+                        {
+                            csv.WriteField($"Qtde {siglaDepto}");
+                        }
+
+                        // Adiciona a coluna de Justificativas apenas se for patrimonial
+                        bool isPatrimonial = itemsType.Equals(
+                            "patrimonial",
+                            StringComparison.OrdinalIgnoreCase
+                        );
+                        if (isPatrimonial)
+                        {
+                            csv.WriteField("Justificativas");
+                        }
+
+                        csv.NextRecord(); // Finaliza a linha de cabeçalho
+
+                        // --- PASSO 3: ESCREVER AS LINHAS DE DADOS ---
+                        foreach (var item in itens)
+                        {
+                            // Escreve os dados das colunas fixas
+                            csv.WriteField(item.CatMat);
+                            csv.WriteField(item.Nome);
+                            csv.WriteField(item.Descricao);
+                            csv.WriteField(item.Especificacao);
+                            csv.WriteField(item.CategoriaNome);
+                            csv.WriteField(item.QuantidadeTotalSolicitada);
+
+                            // Cria um dicionário para busca rápida da quantidade por departamento
+                            var demandaDict = item.DemandaPorDepartamento.ToDictionary(
+                                d => d.Unidade.Sigla,
+                                d => d.QuantidadeTotal
+                            );
+
+                            // Escreve os dados nas colunas dinâmicas
+                            foreach (var siglaDepto in todosOsDepartamentos)
+                            {
+                                // Tenta encontrar a quantidade para o depto/coluna atual
+                                if (demandaDict.TryGetValue(siglaDepto, out var quantidade))
+                                {
+                                    csv.WriteField(quantidade);
+                                }
+                                else
+                                {
+                                    csv.WriteField(0); // Coloca 0 se o item não foi solicitado por este depto
+                                }
+                            }
+
+                            if (isPatrimonial)
+                            {
+                                var justificativas = string.Join(
+                                    "; ",
+                                    item.DemandaPorDepartamento.Where(d =>
+                                            !string.IsNullOrWhiteSpace(d.Justificativa)
+                                        )
+                                        .Select(d => $"{d.Unidade.Sigla}: {d.Justificativa}") // Adiciona a sigla para contexto
+                                        .Distinct()
+                                );
+
+                                csv.WriteField(justificativas);
+                            }
+
+                            csv.NextRecord(); // Finaliza a linha do item
+                        }
                     }
                 }
-
                 return memoryStream.ToArray();
             }
         }
