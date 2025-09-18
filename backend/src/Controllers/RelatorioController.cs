@@ -67,10 +67,10 @@ namespace Controllers
             }
         }
 
-        [HttpGet("itens-departamento/patrimonial/csv")]
-        [ProducesResponseType(typeof(PaginatedResultDto<ItemPorDepartamentoDto>), 200)]
-        [ProducesResponseType(500)]
-        public async Task<IActionResult> GetAllItensPatrimoniaisPorDepartamentoCsv(
+        [HttpGet("itens-departamento/{itemsType}/exportar")]
+        public async Task<IActionResult> ExportarItensPorDepartamento(
+            [FromRoute] string itemsType,
+            [FromQuery] string formatoArquivo,
             [FromQuery] string? searchTerm,
             [FromQuery] string? categoriaNome,
             [FromQuery] string? siglaDepartamento
@@ -79,61 +79,55 @@ namespace Controllers
             try
             {
                 _logger.LogInformation(
-                    "Recebida requisição para gerar arquivo csv com um relatório de todos os itens solicitados por departamento."
+                    "Recebida requisição para exportar relatório de itens solicitados por departamento."
                 );
-                var csvBytes = await _relatorioService.GetAllItensPorDepartamentoCsvAsync(
-                    searchTerm,
-                    categoriaNome,
-                    "patrimonial",
-                    siglaDepartamento
-                );
-                return File(
-                    csvBytes,
-                    "text/csv",
-                    $"relatorio-itens-por-departamento-{DateTime.Now:yyyyMMdd-HHmmss}.csv"
-                );
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(
-                    ex,
-                    "Ocorreu um erro não tratado no endpoint GetAllItensPorDepartamentoCsv."
-                );
-                return StatusCode(
-                    500,
-                    new
-                    {
-                        message = "Ocorreu um erro interno no servidor. Por favor, tente novamente mais tarde.",
-                    }
-                );
-            }
-        }
 
-        [HttpGet("itens-departamento/geral/csv")]
-        [ProducesResponseType(typeof(PaginatedResultDto<ItemPorDepartamentoDto>), 200)]
-        [ProducesResponseType(500)]
-        public async Task<IActionResult> GetAllItensGeraisPorDepartamentoCsv(
-            [FromQuery] string? searchTerm,
-            [FromQuery] string? categoriaNome,
-            [FromQuery] string? siglaDepartamento
-        )
-        {
-            try
-            {
-                _logger.LogInformation(
-                    "Recebida requisição para gerar arquivo csv com um relatório de todos os itens solicitados por departamento."
-                );
-                var csvBytes = await _relatorioService.GetAllItensPorDepartamentoCsvAsync(
-                    searchTerm,
-                    categoriaNome,
-                    "geral",
-                    siglaDepartamento
-                );
-                return File(
-                    csvBytes,
-                    "text/csv",
-                    $"relatorio-itens-por-departamento-{DateTime.Now:yyyyMMdd-HHmmss}.csv"
-                );
+                bool isGeral = itemsType.Equals("geral", StringComparison.OrdinalIgnoreCase);
+                if (
+                    !isGeral && !itemsType.Equals("patrimonial", StringComparison.OrdinalIgnoreCase)
+                )
+                {
+                    return BadRequest(
+                        new { message = "O tipo de itens deve ser 'geral' ou 'patrimonial'." }
+                    );
+                }
+
+                if (formatoArquivo.Equals("csv", StringComparison.OrdinalIgnoreCase))
+                {
+                    var csvBytes = await _relatorioService.ExportarItensPorDepartamentoAsync(
+                        itemsType,
+                        formatoArquivo,
+                        searchTerm,
+                        categoriaNome,
+                        siglaDepartamento
+                    );
+                    return File(
+                        csvBytes,
+                        "text/csv",
+                        $"relatorio-itens-por-departamento-{DateTime.Now:yyyyMMdd-HHmmss}.csv"
+                    );
+                }
+                else if (formatoArquivo.Equals("excel", StringComparison.OrdinalIgnoreCase))
+                {
+                    var excelBytes = await _relatorioService.ExportarItensPorDepartamentoAsync(
+                        itemsType,
+                        formatoArquivo,
+                        searchTerm,
+                        categoriaNome,
+                        siglaDepartamento
+                    );
+                    return File(
+                        excelBytes,
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        $"relatorio-{itemsType}-{DateTime.Now:yyyyMMdd}.xlsx"
+                    );
+                }
+                else
+                {
+                    return BadRequest(
+                        new { message = "O formatoArquivo de arquivo deve ser 'csv' ou 'excel'." }
+                    );
+                }
             }
             catch (Exception ex)
             {
