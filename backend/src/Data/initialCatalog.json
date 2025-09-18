@@ -1,0 +1,2882 @@
+[
+  {
+    "nome": "AGULHA BACTERIOLÓGICA",
+    "descricao": "Agulha bacteriológica em platina, sem cabo.",
+    "codigo": "408828",
+    "especificacao": "5 cm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "ALÇA DE DRIGALSKI",
+    "descricao": "Alça de Drigalski em vidro, usada para espalhar microorganismos na placa de petri.",
+    "codigo": "420447",
+    "especificacao": "30 X 180 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "ALÇA DE DRIGALSKI",
+    "descricao": "Alça de Drigalski em plástico, usada para espalhar microorganismos na placa de petri. Autoclavável.",
+    "codigo": "420705",
+    "especificacao": "30 X 200 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "ALÇA DE NÍQUEL-CROMO",
+    "descricao": "Alça de níquel-cromo, calibrada. ",
+    "codigo": "408809",
+    "especificacao": "10 µL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "ALÇA DE PLATINA",
+    "descricao": "Alça de Platina, calibrada.",
+    "codigo": "408813",
+    "especificacao": "10 µL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "ALCOÔMETRO",
+    "descricao": "Alcoômetro de vidro, com termômetro.",
+    "codigo": "408548",
+    "especificacao": "-",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "ALONGA",
+    "descricao": "Alonga de borracha para usar em kitassato.",
+    "codigo": "421643",
+    "especificacao": "20 x 40 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "ALONGA",
+    "descricao": "Alonga de borracha para usar em kitassato.",
+    "codigo": "421644",
+    "especificacao": "15 x 40 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "ANEL COM MUFA",
+    "descricao": "Anel de ferro com mufa",
+    "codigo": "421658",
+    "especificacao": "50mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "ANEL COM MUFA",
+    "descricao": "Anel de ferro com mufa",
+    "codigo": "421251",
+    "especificacao": "70 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "ANEL COM MUFA",
+    "descricao": "Anel de ferro com mufa",
+    "codigo": "431837",
+    "especificacao": "100 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "ANEL COM MUFA",
+    "descricao": "Anel de ferro com mufa",
+    "codigo": "432682",
+    "especificacao": "150 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BALÃO FUNDO CHATO",
+    "descricao": "Balão de vidro com fundo chato, fabricado em vidro borossilicato 3.3. Altamente resistente a choques térmicos e ao calor, resistente à água, ácidos fortes, soluções alcalinas e salinas. Classe A.",
+    "codigo": "409255",
+    "especificacao": "1000 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BALÃO FUNDO CHATO",
+    "descricao": "Balão de vidro com fundo chato, fabricado em vidro borossilicato 3.3. Altamente resistente a choques térmicos e ao calor, resistente à água, ácidos fortes, soluções alcalinas e salinas. Classe A.",
+    "codigo": "409256",
+    "especificacao": "2000 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BALÃO FUNDO CHATO",
+    "descricao": "Balão de vidro com fundo chato, fabricado em vidro borossilicato 3.3. Altamente resistente a choques térmicos e ao calor, resistente à água, ácidos fortes, soluções alcalinas e salinas. Classe A.",
+    "codigo": "413186",
+    "especificacao": "6000 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BALÃO FUNDO CHATO COM JUNTA E GARGALO CURTO",
+    "descricao": "Balão de vidro com fundo chato, com junta esmerilhada intercambiável (24/40) cônica e com gargalo curto. Fabricado em vidro borossilicato 3.3. Altamente resistente a choques térmicos e ao calor, resistente à água, ácidos fortes, soluções alcalinas e salinas. Classe A.",
+    "codigo": "409838",
+    "especificacao": "250 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BALÃO FUNDO CHATO COM JUNTA E GARGALO CURTO",
+    "descricao": "Balão de vidro com fundo chato, com junta esmerilhada intercambiável (24/40) cônica e com gargalo curto. Fabricado em vidro borossilicato 3.3. Altamente resistente a choques térmicos e ao calor, resistente à água, ácidos fortes, soluções alcalinas e salinas. Classe A.",
+    "codigo": "409839",
+    "especificacao": "500 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BALÃO FUNDO CHATO COM JUNTA E GARGALO CURTO",
+    "descricao": "Balão de vidro com fundo chato, com junta esmerilhada intercambiável (24/40) cônica e com gargalo curto. Fabricado em vidro borossilicato 3.3. Altamente resistente a choques térmicos e ao calor, resistente à água, ácidos fortes, soluções alcalinas e salinas. Classe A.",
+    "codigo": "409842",
+    "especificacao": "1000 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BALÃO FUNDO REDONDO COM JUNTA E GARGALO CURTO",
+    "descricao": "Balão de vidro com fundo redondo, com junta esmerilhada intercambiável 24/40 cônica e com gargalo curto. Fabricado com vidro borosilicato 3.3. Extremamente resistente à corrosão química, a choques térmicos e ao calor. Classe A.",
+    "codigo": "409261",
+    "especificacao": "250 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BALÃO FUNDO REDONDO COM JUNTA E GARGALO CURTO",
+    "descricao": "Balão de vidro com fundo redondo, com junta esmerilhada intercambiável 24/40 cônica e com gargalo curto. Fabricado com vidro borosilicato 3.3. Extremamente resistente à corrosão química, a choques térmicos e ao calor. Classe A.",
+    "codigo": "409262",
+    "especificacao": "500 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BALÃO FUNDO REDONDO COM JUNTA E GARGALO CURTO",
+    "descricao": "Balão de vidro com fundo redondo, com junta esmerilhada intercambiável 24/40 cônica e com gargalo curto. Fabricado com vidro borosilicato 3.3. Extremamente resistente à corrosão química, a choques térmicos e ao calor. Classe A.",
+    "codigo": "409263",
+    "especificacao": "1000 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BALÃO PARA DESTILAÇÃO",
+    "descricao": "Balão de vidro para destilação com fundo redondo, gargalo longo e saída lateral. Fabricado com vidro borosilicato 3.3. Extremamente resistente à corrosão química, a choques térmicos e ao calor. Classe A.",
+    "codigo": "409280",
+    "especificacao": "250 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BALÃO PARA DESTILAÇÃO",
+    "descricao": "Balão de vidro para destilação com fundo redondo, gargalo longo e saída lateral. Fabricado com vidro borosilicato 3.3. Extremamente resistente à corrosão química, a choques térmicos e ao calor. Classe A.",
+    "codigo": "409281",
+    "especificacao": "500 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BALÃO PARA DESTILAÇÃO",
+    "descricao": "Balão de vidro para destilação com fundo redondo, gargalo longo e saída lateral. Fabricado com vidro borosilicato 3.3. Extremamente resistente à corrosão química, a choques térmicos e ao calor. Classe A.",
+    "codigo": "409282",
+    "especificacao": "1000 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BALÃO VOLUMÉTRICO",
+    "descricao": "Balão volumétrico de vidro com rolha de polietileno. Conforme normas DIN 12664 e ISO 1042. Fabricado com vidro borosilicato 3.3. Extremamente resistente à corrosão química, a choques térmicos e ao calor. Classe A.",
+    "codigo": "409250",
+    "especificacao": "10 mL  - 0,025mL – 10/19",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BALÃO VOLUMÉTRICO",
+    "descricao": "Balão volumétrico de vidro com rolha de polietileno. Conforme normas DIN 12664 e ISO 1042. Fabricado com vidro borosilicato 3.3. Extremamente resistente à corrosão química, a choques térmicos e ao calor. Classe A.",
+    "codigo": "409287",
+    "especificacao": "25 mL – 0,040mL - 10/19",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BALÃO VOLUMÉTRICO",
+    "descricao": "Balão volumétrico de vidro com rolha de polietileno. Conforme normas DIN 12664 e ISO 1042. Fabricado com vidro borosilicato 3.3. Extremamente resistente à corrosão química, a choques térmicos e ao calor. Classe A.",
+    "codigo": "409251",
+    "especificacao": "50 mL – 0,060mL – 12/21",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BALÃO VOLUMÉTRICO",
+    "descricao": "Balão volumétrico de vidro com rolha de polietileno. Conforme normas DIN 12664 e ISO 1042. Fabricado com vidro borosilicato 3.3. Extremamente resistente à corrosão química, a choques térmicos e ao calor. Classe A.",
+    "codigo": "409252",
+    "especificacao": "100 mL – 0,100mL – 14/23",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BALÃO VOLUMÉTRICO",
+    "descricao": "Balão volumétrico de vidro com rolha de polietileno. Conforme normas DIN 12664 e ISO 1042. Fabricado com vidro borosilicato 3.3. Extremamente resistente à corrosão química, a choques térmicos e ao calor. Classe A.",
+    "codigo": "413184",
+    "especificacao": "200 mL – 0,150mL –14/23",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BALÃO VOLUMÉTRICO",
+    "descricao": "Balão volumétrico de vidro com rolha de polietileno. Conforme normas DIN 12664 e ISO 1042. Fabricado com vidro borosilicato 3.3. Extremamente resistente à corrosão química, a choques térmicos e ao calor. Classe A.",
+    "codigo": "409245",
+    "especificacao": "250 mL – 0,150mL – 14/23",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BALÃO VOLUMÉTRICO",
+    "descricao": "Balão volumétrico de vidro com rolha de polietileno. Conforme normas DIN 12664 e ISO 1042. Fabricado com vidro borosilicato 3.3. Extremamente resistente à corrosão química, a choques térmicos e ao calor. Classe A.",
+    "codigo": "409247",
+    "especificacao": "500 mL – 0,250mL – 19/26",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BALÃO VOLUMÉTRICO",
+    "descricao": "Balão volumétrico de vidro com rolha de polietileno. Conforme normas DIN 12664 e ISO 1042. Fabricado com vidro borosilicato 3.3. Extremamente resistente à corrosão química, a choques térmicos e ao calor. Classe A.",
+    "codigo": "409248",
+    "especificacao": "1000 mL – 0,400mL – 24/29",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BALÃO VOLUMÉTRICO",
+    "descricao": "Balão volumétrico de plástico com rolha de plástico.",
+    "codigo": "409413",
+    "especificacao": "250 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BALÃO VOLUMÉTRICO",
+    "descricao": "Balão volumétrico de plástico com rolha de plástico.",
+    "codigo": "409414",
+    "especificacao": "500 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BALÃO VOLUMÉTRICO",
+    "descricao": "Balão volumétrico de plástico com rolha de plástico.",
+    "codigo": "409415",
+    "especificacao": "1000 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BALÃO VOLUMÉTRICO ÂMBAR",
+    "descricao": "Balão volumétrico frasco âmbar, com rolha de polietileno. Conforme normas DIN 12664 e ISO 1042. Fabricado com vidro borosilicato 3.3. Extremamente resistente à corrosão química, a choques térmicos e ao calor. Classe A.",
+    "codigo": "414224",
+    "especificacao": "5 mL – 0,025mL – 10/19",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BALÃO VOLUMÉTRICO ÂMBAR",
+    "descricao": "Balão volumétrico frasco âmbar, com rolha de polietileno. Conforme normas DIN 12664 e ISO 1042. Fabricado com vidro borosilicato 3.3. Extremamente resistente à corrosão química, a choques térmicos e ao calor. Classe A.",
+    "codigo": "414225",
+    "especificacao": "10 mL  - 0,025mL – 10/19",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BALÃO VOLUMÉTRICO ÂMBAR",
+    "descricao": "Balão volumétrico frasco âmbar, com rolha de polietileno. Conforme normas DIN 12664 e ISO 1042. Fabricado com vidro borosilicato 3.3. Extremamente resistente à corrosão química, a choques térmicos e ao calor. Classe A.",
+    "codigo": "415399",
+    "especificacao": "25 mL – 0,040mL - 10/19",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BALÃO VOLUMÉTRICO ÂMBAR",
+    "descricao": "Balão volumétrico frasco âmbar, com rolha de polietileno. Conforme normas DIN 12664 e ISO 1042. Fabricado com vidro borosilicato 3.3. Extremamente resistente à corrosão química, a choques térmicos e ao calor. Classe A.",
+    "codigo": "415402",
+    "especificacao": "50 mL – 0,060mL – 12/21",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BALÃO VOLUMÉTRICO ÂMBAR",
+    "descricao": "Balão volumétrico frasco âmbar, com rolha de polietileno. Conforme normas DIN 12664 e ISO 1042. Fabricado com vidro borosilicato 3.3. Extremamente resistente à corrosão química, a choques térmicos e ao calor. Classe A.",
+    "codigo": "415403",
+    "especificacao": "100 mL – 0,100mL – 14/23",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BALDE",
+    "descricao": "Balde de polietileno com alça de metal.",
+    "codigo": "419110",
+    "especificacao": "8 L",
+    "link_imagem": "",
+    "categoria_id": 7
+  },
+  {
+    "nome": "BANDEJA",
+    "descricao": "Bandeja retangular de plástico para uso diversos.",
+    "codigo": "408559",
+    "especificacao": "30 cm X 20 cm X 5 cm",
+    "link_imagem": "",
+    "categoria_id": 7
+  },
+  {
+    "nome": "BANDEJA",
+    "descricao": "Bandeja retangular de plástico para uso diversos.",
+    "codigo": "408562",
+    "especificacao": "55 cm X 40 cm X 10 cm",
+    "link_imagem": "",
+    "categoria_id": 7
+  },
+  {
+    "nome": "BANDEJA",
+    "descricao": "Bandeja retangular de plástico para uso diversos.",
+    "codigo": "417387",
+    "especificacao": "100 cm X 80 cm X 15 cm",
+    "link_imagem": "",
+    "categoria_id": 7
+  },
+  {
+    "nome": "BARRA MAGNÉTICA",
+    "descricao": "Barra magnética cilíndrica lisa (sem anel) recoberta com teflon.",
+    "codigo": "419145",
+    "especificacao": "7 mm X 20mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BARRA MAGNÉTICA",
+    "descricao": "Barra magnética cilíndrica lisa (sem anel) recoberta com teflon.",
+    "codigo": "420743",
+    "especificacao": "7 mm X 50 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BARRA MAGNÉTICA",
+    "descricao": "Barra magnética cilíndrica lisa (sem anel) recoberta com teflon.",
+    "codigo": "434729",
+    "especificacao": "10 mm x 40 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BARRILETE",
+    "descricao": "Barrilete de plástico graduado, com tampa e com torneira.",
+    "codigo": "412657",
+    "especificacao": "5 L",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BARRILETE",
+    "descricao": "Barrilete de plástico graduado, com tampa e com torneira.",
+    "codigo": "412658",
+    "especificacao": "10 L",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BARRILETE",
+    "descricao": "Barrilete de plástico graduado, com tampa e com torneira.",
+    "codigo": "412659",
+    "especificacao": "50 L",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BASTÃO DE VIDRO",
+    "descricao": "Bastão de vidro com pontas polidas.",
+    "codigo": "409529",
+    "especificacao": "5 mm X 300mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BASTÃO DE VIDRO",
+    "descricao": "Bastão de vidro com pontas polidas.",
+    "codigo": "409530",
+    "especificacao": "10 mm X 300mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BÉQUER DE POLIPROPILENO",
+    "descricao": "Béquer fabricado em polipropileno, forma baixa, com graduação em silk-screen.",
+    "codigo": "411101",
+    "especificacao": "50 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BÉQUER DE POLIPROPILENO",
+    "descricao": "Béquer fabricado em polipropileno, forma baixa, com graduação em silk-screen.",
+    "codigo": "408289",
+    "especificacao": "100 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BÉQUER DE POLIPROPILENO",
+    "descricao": "Béquer fabricado em polipropileno, forma baixa, com graduação em silk-screen.",
+    "codigo": "433505",
+    "especificacao": "250 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BÉQUER DE POLIPROPILENO",
+    "descricao": "Béquer fabricado em polipropileno, forma baixa, com graduação em silk-screen.",
+    "codigo": "418811",
+    "especificacao": "500 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BÉQUER DE POLIPROPILENO",
+    "descricao": "Béquer fabricado em polipropileno, forma baixa, com graduação em silk-screen.",
+    "codigo": "408286",
+    "especificacao": "1000 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BÉQUER DE POLIPROPILENO",
+    "descricao": "Béquer fabricado em polipropileno, forma baixa, com graduação em silk-screen.",
+    "codigo": "408287",
+    "especificacao": "2000mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BÉQUER DE POLIPROPILENO",
+    "descricao": "Béquer fabricado em polipropileno, forma baixa, com graduação em silk-screen.",
+    "codigo": "408288",
+    "especificacao": "4000mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BÉQUER DE VIDRO",
+    "descricao": "Béquer de vidro, forma alta, com graduação. Fabricado em vidro borossilicato 3.3. ",
+    "codigo": "408258",
+    "especificacao": "10mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BÉQUER DE VIDRO",
+    "descricao": "Béquer de vidro, forma alta, com graduação. Fabricado em vidro borossilicato 3.3. ",
+    "codigo": "408251",
+    "especificacao": "25mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BÉQUER DE VIDRO",
+    "descricao": "Béquer de vidro, forma alta, com graduação. Fabricado em vidro borossilicato 3.3. ",
+    "codigo": "408260",
+    "especificacao": "50mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BÉQUER DE VIDRO",
+    "descricao": "Béquer de vidro, forma alta, com graduação. Fabricado em vidro borossilicato 3.3. ",
+    "codigo": "408261",
+    "especificacao": "100mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BÉQUER DE VIDRO",
+    "descricao": "Béquer de vidro, forma alta, com graduação. Fabricado em vidro borossilicato 3.3. ",
+    "codigo": "419771",
+    "especificacao": "250mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BÉQUER DE VIDRO",
+    "descricao": "Béquer de vidro, forma alta, com graduação. Fabricado em vidro borossilicato 3.3. ",
+    "codigo": "408252",
+    "especificacao": "500mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BÉQUER DE VIDRO",
+    "descricao": "Béquer de vidro, forma alta, com graduação. Fabricado em vidro borossilicato 3.3. ",
+    "codigo": "408255",
+    "especificacao": "1000mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BÉQUER DE VIDRO",
+    "descricao": "Béquer de vidro, forma alta, com graduação. Fabricado em vidro borossilicato 3.3. ",
+    "codigo": "408257",
+    "especificacao": "2000 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BÉQUER DE VIDRO",
+    "descricao": "Béquer de vidro, forma alta, com graduação. Fabricado em vidro borossilicato 3.3. ",
+    "codigo": "419077",
+    "especificacao": "4000 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BICO DE BUNSEN",
+    "descricao": "Bico de Bunsen com base em ferro, com registro para regulagem da chama e altura de cerca de 15cm.",
+    "codigo": "408553",
+    "especificacao": "15 cm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BOMBONA",
+    "descricao": "Recipiente de polietileno com tampa.",
+    "codigo": "242845",
+    "especificacao": "5 L",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BOMBONA",
+    "descricao": "Recipiente de polietileno com tampa.",
+    "codigo": "255949",
+    "especificacao": "10 L",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BOMBONA",
+    "descricao": "Recipiente de polietileno com tampa.",
+    "codigo": "242846",
+    "especificacao": "20 L",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BURETA DE VIDRO",
+    "descricao": "Bureta de vidro, graduada, aferida a 20°C, incolor, com torneira em polietileno. Fabricada em vidro borossilicato 3.3.",
+    "codigo": "421038",
+    "especificacao": "10mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BURETA DE VIDRO",
+    "descricao": "Bureta de vidro, graduada, aferida a 20°C, incolor, com torneira em polietileno. Fabricada em vidro borossilicato 3.3.",
+    "codigo": "421039",
+    "especificacao": "25mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "BURETA DE VIDRO",
+    "descricao": "Bureta de vidro, graduada, aferida a 20°C, incolor, com torneira em polietileno. Fabricada em vidro borossilicato 3.3.",
+    "codigo": "421040",
+    "especificacao": "50mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "CABO DE KOLLE",
+    "descricao": "Cabo de Kolle para fixar alça de platina, corpo fabricado em latão polido e cabo com material isolante térmico.",
+    "codigo": "408988",
+    "especificacao": "250 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "CADINHO DE FUSÃO EM PORCELANA",
+    "descricao": "Cadinho de fusão em porcelana, forma alta.",
+    "codigo": "438281",
+    "especificacao": "30mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "CADINHO DE FUSÃO EM PORCELANA",
+    "descricao": "Cadinho de fusão em porcelana, forma alta.",
+    "codigo": "425426",
+    "especificacao": "45mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "CADINHO DE GOOCH",
+    "descricao": "Cadinho fabricado em vidro com placa porosa, capacidade de 30mL.",
+    "codigo": "437730",
+    "especificacao": "3 (15 a 40 micras)",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "CADINHO DE GOOCH",
+    "descricao": "Cadinho fabricado em vidro com placa porosa, capacidade de 30mL.",
+    "codigo": "437759",
+    "especificacao": "4 (10 a 15 micras)",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "CADINHO DE ALUMÍNIO",
+    "descricao": "Cadinho fabricado em alumínio.",
+    "codigo": "603999",
+    "especificacao": "50 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "CÂMARA DE NEUBAUER",
+    "descricao": "Câmara contagem, tipo:neubauer, material:vidro, profundidade:profundidade cerca de 0,1 mm.",
+    "codigo": "410859",
+    "especificacao": "-",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "CÁPSULA DE EVAPORAÇÃO",
+    "descricao": "Cápsula de evaporação em porcelana.",
+    "codigo": "409493",
+    "especificacao": "60 mm - fundo redondo",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "CÁPSULA DE EVAPORAÇÃO",
+    "descricao": "Cápsula de evaporação em porcelana.",
+    "codigo": "409484",
+    "especificacao": "150 mm - fundo redondo",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "CÁPSULA DE EVAPORAÇÃO",
+    "descricao": "Cápsula de evaporação em porcelana.",
+    "codigo": "409483",
+    "especificacao": "150 mm - fundo chato",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "COLUNA DE VIGREAUX COM 1 JUNTA",
+    "descricao": "Coluna tipo Vigreaux com 1 junta para destilação.",
+    "codigo": "426373",
+    "especificacao": "2,5 x 50 cm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "COLUNA DE VIGREAUX COM 2 JUNTAS",
+    "descricao": "Coluna tipo Vigreaux com 2 juntas para destilação.",
+    "codigo": "437651",
+    "especificacao": "3,5 x 30 cm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "CONDENSADOR DE BOLAS",
+    "descricao": "Condensador de bolas, também conhecido como condensador tipo ALLIHN, com duas juntas esmerilhadas 24/40. Fabricado em vidro borossilicato 3.3.",
+    "codigo": "409191",
+    "especificacao": "44mm X 500mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "CONDENSADOR RETO",
+    "descricao": "Condensador reto, também conhecido como condensador tipo LIEBIG, com duas juntas esmerilhadas 24/40. Fabricado em vidro borossilicato 3.3.",
+    "codigo": "409203",
+    "especificacao": "44mm X 500mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "CONDENSADOR SERPENTINA",
+    "descricao": "Condensador tipo Graham em serpentina juntas esmerilhadas macho e fêmea (24/40) intercambiáveis em vidro boro silicato.",
+    "codigo": "409215",
+    "especificacao": "44mm X 500mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "CONECTOR PARA SISTEMA DE DESTILAÇÃO",
+    "descricao": "Conector com três bocas, juntas cônicas 24/40 esmerilhadas, com uma junta macho e duas juntas fêmeas. Em vidro borossilicato.",
+    "codigo": "480731",
+    "especificacao": "75°",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "CONECTOR PARA SISTEMA DE DESTILAÇÃO",
+    "descricao": "Conector com duas juntas cônicas 24/40 esmerilhadas, com uma junta macho e uma junta fêmea. Em vidro borossilicato.",
+    "codigo": "426153",
+    "especificacao": "75°",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "CONECTOR PARA SISTEMA DE DESTILAÇÃO",
+    "descricao": "Conector com duas juntas cônicas 24/40 esmerilhadas, com uma junta macho e uma junta fêmea. Em vidro borossilicato.",
+    "codigo": "426988",
+    "especificacao": "105°",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "CUBETA EM VIDRO",
+    "descricao": "Cubeta em vidro com tampa de teflon, caminho óptico de 10mm, com duas faces polidas.",
+    "codigo": "409914",
+    "especificacao": "3,5mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "CUBETA EM PLÁSTICO",
+    "descricao": "Cubeta fabricada em poliestireno transparente, caminho óptico de 10mm, com duas faces polidas.",
+    "codigo": "414522",
+    "especificacao": "1,5 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "DENSÍMETRO - GASOLINA",
+    "descricao": "Densímetro, material: vidro, densidade máxima: 0,7600  gasolina comum/aditivada, densidade mínima:0,7200  gasolina comum/aditivada, percentagem máxima:21% álcool anídro, percentagem mínima:19% álcool anídro, graduação: 0,700 a 0,750/0,750 a 0,800 gasolina comum/aditiva, faixa escala:-10 a +50 ºC/precisão 0,5ºC gasolina comum/aditi-, componentes: termômetro/provetas 1000ml graduada/100ml graduda, normas técnicas:padrão ANP, aplicação:teste ensaio gasolina comum/aditivada.",
+    "codigo": "305638",
+    "especificacao": "-",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "DENSÍMETRO - ÁLCOOL",
+    "descricao": "Densímetro, material:vidro, graduação:0,750 a 0,800/0,800 a 0,850 álcool e suas misturas, faixa escala:-10 a +40 ºC/precisão 0,5 ºC álcool etílico hidratado, componentes:termômetro, normas técnicas:padrão anp, aplicação:teste ensaio álcool etílico hidratado carburante.",
+    "codigo": "305642",
+    "especificacao": "-",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "DESSECADOR",
+    "descricao": "Dessecador em vidro completo, com fundo, tampa com luva e placa em porcelana perfurada.",
+    "codigo": "436530",
+    "especificacao": "150 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "DESSECADOR",
+    "descricao": "Dessecador em vidro completo, com fundo, tampa com luva e placa em porcelana perfurada.",
+    "codigo": "409584",
+    "especificacao": "200 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "DESSECADOR",
+    "descricao": "Dessecador em vidro completo, com fundo, tampa com luva e placa em porcelana perfurada.",
+    "codigo": "409585",
+    "especificacao": "250 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "DESSECADOR",
+    "descricao": "Dessecador em vidro completo, com fundo, tampa com luva e placa em porcelana perfurada.",
+    "codigo": "436423",
+    "especificacao": "300 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "ELETRODO VIDRO",
+    "descricao": "Eletrodo combinado universal de vidro recarregável (não selado); compatível com vários tipos de phmetros existentes no mercado; conector tipo bnc; ph 0-14; temperatura de medição de 0 a 80 graus c; resistência interna= 250 m (25 graus c); tempo de resposta menor que um segundo para 95% do valor de equilíbrio; solução de referência kcl.",
+    "codigo": "282057",
+    "especificacao": "-",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "ELETRODO PLÁSTICO",
+    "descricao": "Eletrodo medição ph, tipo:combinado universal, componentes:corpo plástico / conexão bnc, temperatura trabalho:0 a 60 ºC, faixa operação acidez:0 a 14",
+    "codigo": "435858",
+    "especificacao": "-",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "ESCOVA PARA LIMPEZA",
+    "descricao": "Escova para limpeza de vidrarias de modo geral..",
+    "codigo": "484009",
+    "especificacao": "0,2 cm X 40 cm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "ESCOVA PARA LIMPEZA",
+    "descricao": "Escova para limpeza de vidrarias de modo geral..",
+    "codigo": "425468",
+    "especificacao": "1,5 cm X 30 cm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "ESCOVA PARA LIMPEZA",
+    "descricao": "Escova para limpeza de vidrarias de modo geral..",
+    "codigo": "452274",
+    "especificacao": "4 cm X 45 cm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "ESCOVA PARA LIMPEZA",
+    "descricao": "Escova para limpeza de vidrarias de modo geral..",
+    "codigo": "452273",
+    "especificacao": "2,5 cm X 20 cm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "ESPÁTULA",
+    "descricao": "Espátula inox com colher.",
+    "codigo": "420830",
+    "especificacao": "150 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "ESPÁTULA",
+    "descricao": "Espátula inox com colher.",
+    "codigo": "420358",
+    "especificacao": "250 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "ESPÁTULA DE PLÁSTICO",
+    "descricao": "Espátula laboratório, material:plástico, formato:chata com colher, comprimento:cerca de 15 cm.",
+    "codigo": "427124",
+    "especificacao": "150 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "ESPÁTULA",
+    "descricao": "Espátula inox com colher, largura de 3 mm.",
+    "codigo": "443618",
+    "especificacao": "350 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "ESTANTE PARA TUBOS DE ENSAIO",
+    "descricao": "Estante para tubos de ensaio em polipropileno.",
+    "codigo": "420832",
+    "especificacao": "60 furos (tubos até 20mm)",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "ESTANTE PARA TUBOS DE ENSAIO",
+    "descricao": "Estante para tubos de ensaio em polipropileno.",
+    "codigo": "429291",
+    "especificacao": "90 furos (tubos até 15mm)",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "ESTANTE PARA TUBOS DE ENSAIO",
+    "descricao": "Estante em aço inoxidável para tubos de ensaios.",
+    "codigo": "419995",
+    "especificacao": "60 furos (tubos até 15 mm)",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "ESTANTE PARA TUBOS DE ENSAIO",
+    "descricao": "Estante em aço inoxidável para tubos de ensaios.",
+    "codigo": "419961",
+    "especificacao": "25 furos (tubos até 20 mm)",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "ESTANTE PARA TUBOS DE ENSAIO",
+    "descricao": "Estante para tubo de ensaio em arame revestido em pvc branco.",
+    "codigo": "421510",
+    "especificacao": "25 furos (tubos até 30 mm)",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "ESTANTE PARA TUBOS FALCON",
+    "descricao": "Estante para tubos falcon em polipropileno, para tubos de 15 mL a 50 mL.",
+    "codigo": "425783",
+    "especificacao": "50 furos",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "ERLENMEYER BOCA LARGA",
+    "descricao": "Erlenmeyer com boca larga, graduado. Fabricado em vidro borossilicato 3.3.",
+    "codigo": "409400",
+    "especificacao": "50 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "ERLENMEYER BOCA LARGA",
+    "descricao": "Erlenmeyer com boca larga, graduado. Fabricado em vidro borossilicato 3.3.",
+    "codigo": "409397",
+    "especificacao": "125 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "ERLENMEYER BOCA LARGA",
+    "descricao": "Erlenmeyer com boca larga, graduado. Fabricado em vidro borossilicato 3.3.",
+    "codigo": "409395",
+    "especificacao": "250 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "ERLENMEYER BOCA LARGA",
+    "descricao": "Erlenmeyer com boca larga, graduado. Fabricado em vidro borossilicato 3.3.",
+    "codigo": "409396",
+    "especificacao": "500 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "ERLENMEYER BOCA LARGA",
+    "descricao": "Erlenmeyer com boca larga, graduado. Fabricado em vidro borossilicato 3.3.",
+    "codigo": "409398",
+    "especificacao": "1000 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "ERLENMEYER COM TAMPA",
+    "descricao": "Erlenmeyer, material: vidro, graduação: graduado, acessórios: com rolha de vidro",
+    "codigo": "409407",
+    "especificacao": "125 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "ERLENMEYER COM TAMPA",
+    "descricao": "Erlenmeyer, material: vidro, graduação: graduado, acessórios: com rolha de vidro",
+    "codigo": "409495",
+    "especificacao": "250 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "FITA INDICADORA DE pH",
+    "descricao": "Fitas indicadoras de pH, 0 a 14. Indicador Universal. Caixa com 100 unidades.",
+    "codigo": "412644",
+    "especificacao": "-",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "FRASCO DE POLIPROPILENO",
+    "descricao": "Frasco de polipropileno transparente para armazenamento de soluções, com tampa rosqueável e autoclavável.",
+    "codigo": "409454",
+    "especificacao": "125 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "FRASCO DE POLIPROPILENO",
+    "descricao": "Frasco de polipropileno transparente para armazenamento de soluções, com tampa rosqueável e autoclavável.",
+    "codigo": "409452",
+    "especificacao": "250 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "FRASCO DE POLIPROPILENO",
+    "descricao": "Frasco de polipropileno transparente para armazenamento de soluções, com tampa rosqueável e autoclavável.",
+    "codigo": "409453",
+    "especificacao": "500 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "FRASCO DE POLIPROPILENO",
+    "descricao": "Frasco de polipropileno transparente para armazenamento de soluções, com tampa rosqueável e autoclavável.",
+    "codigo": "409455",
+    "especificacao": "1000 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "FRASCO DE VIDRO ÂMBAR",
+    "descricao": "Frasco de vidro âmbar para armazenamento de soluções, com tampa rosqueável e batoque.",
+    "codigo": "452276",
+    "especificacao": "30 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "FRASCO DE VIDRO ÂMBAR",
+    "descricao": "Frasco de vidro âmbar para armazenamento de soluções, com tampa rosqueável e batoque.",
+    "codigo": "409441",
+    "especificacao": "50 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "FRASCO DE VIDRO ÂMBAR",
+    "descricao": "Frasco de vidro âmbar para armazenamento de soluções, com tampa rosqueável e batoque.",
+    "codigo": "409442",
+    "especificacao": "100 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "FRASCO DE VIDRO ÂMBAR",
+    "descricao": "Frasco de vidro âmbar para armazenamento de soluções, com tampa rosqueável e batoque.",
+    "codigo": "409438",
+    "especificacao": "250 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "FRASCO DE VIDRO ÂMBAR",
+    "descricao": "Frasco de vidro âmbar para armazenamento de soluções, com tampa rosqueável e batoque.",
+    "codigo": "409439",
+    "especificacao": "500 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "FRASCO DE VIDRO ÂMBAR",
+    "descricao": "Frasco de vidro âmbar para armazenamento de soluções, com tampa rosqueável e batoque.",
+    "codigo": "409440",
+    "especificacao": "1000 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "FRASCO REAGENTE GRADUADO",
+    "descricao": "Frasco reagente graduado, incolor, com tampa rosqueável azul e anel de vedação. Fabricado em vidro borossilicato.",
+    "codigo": "419971",
+    "especificacao": "250 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "FRASCO REAGENTE GRADUADO",
+    "descricao": "Frasco reagente graduado, incolor, com tampa rosqueável azul e anel de vedação. Fabricado em vidro borossilicato.",
+    "codigo": "419972",
+    "especificacao": "500 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "FRASCO REAGENTE GRADUADO",
+    "descricao": "Frasco reagente graduado, incolor, com tampa rosqueável azul e anel de vedação. Fabricado em vidro borossilicato.",
+    "codigo": "419973",
+    "especificacao": "1000 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "FUNDO PENEIRA GRANULOMÉTRICA",
+    "descricao": "Fundo peneira granulométrica, material: aço inoxidável, diâmetro:8 pol, altura:2 pol.",
+    "codigo": "230677",
+    "especificacao": "8 x 2 POLEGADAS",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "FUNDO PARA DESSECADOR",
+    "descricao": "Fundo para dessecador em vidro.",
+    "codigo": "438297",
+    "especificacao": "150 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "FUNDO PARA DESSECADOR",
+    "descricao": "Fundo para dessecador em vidro.",
+    "codigo": "438296",
+    "especificacao": "200 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "FUNDO PARA DESSECADOR",
+    "descricao": "Fundo para dessecador em vidro.",
+    "codigo": "438298",
+    "especificacao": "250 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "FUNDO PARA DESSECADOR",
+    "descricao": "Fundo para dessecador em vidro.",
+    "codigo": "438295",
+    "especificacao": "300 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "FUNIL ANALÍTICO DE PLÁSTICO",
+    "descricao": "Funil analítico liso com haste longa, fabricado em plástico.",
+    "codigo": "427148",
+    "especificacao": "125 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "FUNIL ANALÍTICO LISO HASTE CURTA",
+    "descricao": "Funil analítico liso com haste curta, fabricado em vidro.",
+    "codigo": "429234",
+    "especificacao": "15 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "FUNIL ANALÍTICO LISO HASTE CURTA",
+    "descricao": "Funil analítico liso com haste curta, fabricado em vidro.",
+    "codigo": "410108",
+    "especificacao": "30 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "FUNIL ANALÍTICO LISO HASTE CURTA",
+    "descricao": "Funil analítico liso com haste curta, fabricado em vidro.",
+    "codigo": "410112",
+    "especificacao": "60 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "FUNIL ANALÍTICO LISO HASTE CURTA",
+    "descricao": "Funil analítico liso com haste curta, fabricado em vidro.",
+    "codigo": "410110",
+    "especificacao": "150 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "FUNIL ANALÍTICO LISO HASTE LONGA",
+    "descricao": "Funil analítico liso com haste longa, fabricado em vidro.",
+    "codigo": "419676",
+    "especificacao": "15 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "FUNIL ANALÍTICO LISO HASTE LONGA",
+    "descricao": "Funil analítico liso com haste longa, fabricado em vidro.",
+    "codigo": "410107",
+    "especificacao": "30 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "FUNIL ANALÍTICO LISO HASTE LONGA",
+    "descricao": "Funil analítico liso com haste longa, fabricado em vidro.",
+    "codigo": "410111",
+    "especificacao": "60 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "FUNIL ANALÍTICO LISO HASTE LONGA",
+    "descricao": "Funil analítico liso com haste longa, fabricado em vidro.",
+    "codigo": "410114",
+    "especificacao": "125 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "FUNIL DE BUCHNER",
+    "descricao": "Funil de buchner fabricado em porcelana, com placa perfurada, todo esmaltado com exceção das bordas porosas.",
+    "codigo": "467068",
+    "especificacao": "230 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "FUNIL DE BUCHNER",
+    "descricao": "Funil de buchner fabricado em porcelana, com placa perfurada, todo esmaltado com exceção das bordas porosas.",
+    "codigo": "410196",
+    "especificacao": "550 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "FUNIL DE SEPARAÇÃO TIPO PERA",
+    "descricao": "Funil de separação tipo pera, com torneira e rolha de polietileno, fabricado em vidro borossilicato 3.3.",
+    "codigo": "427022",
+    "especificacao": "60 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "FUNIL DE SEPARAÇÃO TIPO PERA",
+    "descricao": "Funil de separação tipo pera, com torneira e rolha de polietileno, fabricado em vidro borossilicato 3.3.",
+    "codigo": "423365",
+    "especificacao": "125 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "FUNIL DE SEPARAÇÃO TIPO PERA",
+    "descricao": "Funil de separação tipo pera, com torneira e rolha de polietileno, fabricado em vidro borossilicato 3.3.",
+    "codigo": "410080",
+    "especificacao": "250 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "FUNIL DE SEPARAÇÃO TIPO PERA",
+    "descricao": "Funil de separação tipo pera, com torneira e rolha de polietileno, fabricado em vidro borossilicato 3.3.",
+    "codigo": "426510",
+    "especificacao": "500 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "GARRA PARA BURETA",
+    "descricao": "Garra dupla para bureta, tipo Castaloy fabricada em zamak.",
+    "codigo": "440497",
+    "especificacao": "25 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "GARRA PARA CONDENSADOR",
+    "descricao": "Garra para condensador com três dedos e mufa, abertura até 90mm. Fabricada em alumínio, os dedos revestidos em PVC.",
+    "codigo": "410726",
+    "especificacao": "-",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "GARRA PARA CONDENSADOR",
+    "descricao": "Garra laboratório, material:metal, tipo garra: 3 dedos, tipo ponta: ponta revestida em pvc, abertura:abertura até 100 mm, sem mufa.",
+    "codigo": "426234",
+    "especificacao": "-",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "GRAL COM PISTILO",
+    "descricao": "Gral com pistilo em porcelana de alta resistência.",
+    "codigo": "408957",
+    "especificacao": "60 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "GRAL COM PISTILO",
+    "descricao": "Gral com pistilo em porcelana de alta resistência.",
+    "codigo": "408958",
+    "especificacao": "100 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "GRAL COM PISTILO",
+    "descricao": "Gral com pistilo em porcelana de alta resistência.",
+    "codigo": "421491",
+    "especificacao": "200 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "GRAL COM PISTILO",
+    "descricao": "Gral com pistilo em porcelana de alta resistência.",
+    "codigo": "408955",
+    "especificacao": "300 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "GRAL COM PISTILO",
+    "descricao": "Gral com pistilo em porcelana de alta resistência.",
+    "codigo": "408960",
+    "especificacao": "600 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "LÂMINA PARA MICROSCOPIA LAPIDADA",
+    "descricao": "Lâminas feitas em vidro especial, lapidada com ponta fosca.",
+    "codigo": "409705",
+    "especificacao": "25 mm X 75 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "LAMÍNULA PARA MICROSCOPIA RETANGULAR",
+    "descricao": "Lamínulas retangulares de vidro para microscopia.",
+    "codigo": "412600",
+    "especificacao": "20 mm X 30 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "KITASSATO",
+    "descricao": "Kitassato graduado com saída superior, fabricado em vidro borossilicato 3.3.                 ",
+    "codigo": "408774",
+    "especificacao": "250 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "KITASSATO",
+    "descricao": "Kitassato graduado com saída superior, fabricado em vidro borossilicato 3.3.                 ",
+    "codigo": "408775",
+    "especificacao": "500 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "KITASSATO",
+    "descricao": "Kitassato graduado com saída superior, fabricado em vidro borossilicato 3.3.                 ",
+    "codigo": "408777",
+    "especificacao": "1000 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "LAMPARINA A ALCÓOL",
+    "descricao": "Lamparina de vidro, acompanha pavio e tampa de baquelite.",
+    "codigo": "375074",
+    "especificacao": "60 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "MANGUEIRA DE SILICONE",
+    "descricao": "Mangueira de silicone.",
+    "codigo": "297580",
+    "especificacao": "6mm X 10 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "MANGUEIRA DE SILICONE",
+    "descricao": "Mangueira de silicone.",
+    "codigo": "339265",
+    "especificacao": "6mm X 12 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "MANGUEIRA DE SILICONE",
+    "descricao": "Mangueira de silicone.",
+    "codigo": "326906",
+    "especificacao": "5mm X 10 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "MANGUEIRA DE SILICONE",
+    "descricao": "Mangueira de silicone.",
+    "codigo": "290445",
+    "especificacao": "9,5mm X 14,66 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "MANGUEIRA DE SILICONE",
+    "descricao": "Mangueira de silicone.",
+    "codigo": "297579",
+    "especificacao": "3mm X 5 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "MANGUEIRA DE SILICONE",
+    "descricao": "Mangueira de silicone.",
+    "codigo": "339263",
+    "especificacao": "4mm X 8 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "MANGUEIRA DE SILICONE",
+    "descricao": "Mangueira de silicone.",
+    "codigo": "",
+    "especificacao": "10mm X 12 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "MICROPIPETA AUTOMÁTICA",
+    "descricao": "Micropipeta automática com volume variável, com ejetor de ponteiras destacável no corpo da micropipeta. Alta precisão e exatidão.",
+    "codigo": "415014",
+    "especificacao": "10 a 100 microlitros",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "MICROPIPETA AUTOMÁTICA",
+    "descricao": "Micropipeta automática com volume variável, com ejetor de ponteiras destacável no corpo da micropipeta. Alta precisão e exatidão.",
+    "codigo": "408630",
+    "especificacao": "100 a 1000 microlitros",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "MICROPIPETA AUTOMÁTICA",
+    "descricao": "Micropipeta automática com volume variável, com ejetor de ponteiras destacável no corpo da micropipeta. Alta precisão e exatidão.",
+    "codigo": "408631",
+    "especificacao": "1000 a 5000 microlitros",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "MICROTUBOS PARA CENTRÍFUGA",
+    "descricao": "Microtubos para centrífuga, também conhecidos por eppendorffs. Graduados e incolores. Fabricados em polipropileno de alta pureza, livres de DNA/RNAse, DNA Humano, pirogênico e inibidores de PCR. ",
+    "codigo": "451047",
+    "especificacao": "2 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "MUFA",
+    "descricao": "Mufa para laboratório tipo dupla.",
+    "codigo": "420905",
+    "especificacao": "-",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PAPEL DE FILTRO QUALITATIVO",
+    "descricao": "Papel de filtro qualitativo. Alta concentração de alfa-celulose de algodão. Caixa com 100 unidades.",
+    "codigo": "408322",
+    "especificacao": "9 cm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PAPEL DE FILTRO QUALITATIVO",
+    "descricao": "Papel de filtro qualitativo. Alta concentração de alfa-celulose de algodão. Caixa com 100 unidades.",
+    "codigo": "471775",
+    "especificacao": "11 cm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PAPEL DE FILTRO QUALITATIVO",
+    "descricao": "Papel de filtro qualitativo. Alta concentração de alfa-celulose de algodão. Caixa com 100 unidades.",
+    "codigo": "408318",
+    "especificacao": "15 cm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PAPEL DE FILTRO QUANTITATIVO FAIXA AZUL",
+    "descricao": "Papel de filtro quantitativo faixa azul. Filtração lenta. Caixa com 100 unidades.",
+    "codigo": "408340",
+    "especificacao": "9 cm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PAPEL DE FILTRO QUANTITATIVO FAIXA AZUL",
+    "descricao": "Papel de filtro quantitativo faixa azul. Filtração lenta. Caixa com 100 unidades.",
+    "codigo": "419295",
+    "especificacao": "11 cm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PAPEL DE FILTRO QUANTITATIVO FAIXA BRANCA",
+    "descricao": "Papel de filtro quantitativo faixa branca. Filtração com velocidade moderada. Caixa com 100 unidades.",
+    "codigo": "408337",
+    "especificacao": "9 cm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PAPEL DE FILTRO QUANTITATIVO FAIXA BRANCA",
+    "descricao": "Papel de filtro quantitativo faixa branca. Filtração com velocidade moderada. Caixa com 100 unidades.",
+    "codigo": "419294",
+    "especificacao": "11 cm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PAPEL DE FILTRO QUANTITATIVO FAIXA PRETA",
+    "descricao": "Papel de filtro quantitativo faixa preta. Filtração rápida. Caixa com 100 unidades.",
+    "codigo": "408328",
+    "especificacao": "10 cm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PAPEL DE FILTRO QUANTITATIVO FAIXA PRETA",
+    "descricao": "Papel de filtro quantitativo faixa preta. Filtração rápida. Caixa com 100 unidades.",
+    "codigo": "419293",
+    "especificacao": "11 cm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PAPEL TORNASSOL",
+    "descricao": "Papel tornassol para determinação de soluções ácidas (azul) e básicas (vermelho). Pacote com 100 unidades.",
+    "codigo": "410421",
+    "especificacao": "Vermelho",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PAPEL TORNASSOL",
+    "descricao": "Papel tornassol para determinação de soluções ácidas (azul) e básicas (vermelho). Pacote com 100 unidades.",
+    "codigo": "410420",
+    "especificacao": "Azul",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PENEIRA GRANULOMÉTRICA",
+    "descricao": "Peneira Granulométrica, material: aço inoxidável, Diâmetro: 8 Polegadas, altura: 2 Polegadas.",
+    "codigo": "245332",
+    "especificacao": "115 Mesh/Tyler",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PENEIRA GRANULOMÉTRICA",
+    "descricao": "Peneira Granulométrica, material: aço inoxidável, Diâmetro: 8 Polegadas, altura: 2 Polegadas.",
+    "codigo": "245333",
+    "especificacao": "250 Mesh/Tyler",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PENEIRA GRANULOMÉTRICA",
+    "descricao": "Peneira Granulométrica, material: aço inoxidável, Diâmetro: 8 Polegadas, altura: 2 Polegadas.",
+    "codigo": "245334",
+    "especificacao": "60 Mesh/Tyler",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PENEIRA GRANULOMÉTRICA",
+    "descricao": "Peneira Granulométrica, material: aço inoxidável, Diâmetro: 8 Polegadas, altura: 2 Polegadas.",
+    "codigo": "245335",
+    "especificacao": "80 Mesh/Tyler",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PENEIRA GRANULOMÉTRICA",
+    "descricao": "Peneira Granulométrica, material: aço inoxidável, Diâmetro: 8 Polegadas, altura: 2 Polegadas.",
+    "codigo": "245336",
+    "especificacao": "170 Mesh/Tyler",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PENEIRA GRANULOMÉTRICA",
+    "descricao": "Peneira Granulométrica, material: aço inoxidável, Diâmetro: 8 Polegadas, altura: 2 Polegadas.",
+    "codigo": "249370",
+    "especificacao": "½ Mesh/Tyler",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PENEIRA GRANULOMÉTRICA",
+    "descricao": "Peneira Granulométrica, material: aço inoxidável, Diâmetro: 8 Polegadas, altura: 2 Polegadas.",
+    "codigo": "249372",
+    "especificacao": "6 Mesh/Tyler",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PENEIRA GRANULOMÉTRICA",
+    "descricao": "Peneira Granulométrica, material: aço inoxidável, Diâmetro: 8 Polegadas, altura: 2 Polegadas.",
+    "codigo": "249373",
+    "especificacao": "8 Mesh/Tyler",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PENEIRA GRANULOMÉTRICA",
+    "descricao": "Peneira Granulométrica, material: aço inoxidável, Diâmetro: 8 Polegadas, altura: 2 Polegadas.",
+    "codigo": "249374",
+    "especificacao": "42 Mesh/Tyler",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PENEIRA GRANULOMÉTRICA",
+    "descricao": "Peneira Granulométrica, material: aço inoxidável, Diâmetro: 8 Polegadas, altura: 2 Polegadas.",
+    "codigo": "249375",
+    "especificacao": "100 Mesh/Tyler",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PENEIRA GRANULOMÉTRICA",
+    "descricao": "Peneira Granulométrica, material: aço inoxidável, Diâmetro: 8 Polegadas, altura: 2 Polegadas.",
+    "codigo": "249376",
+    "especificacao": "270 Mesh/Tyler",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PENEIRA GRANULOMÉTRICA",
+    "descricao": "Peneira Granulométrica, material: aço inoxidável, Diâmetro: 8 Polegadas, altura: 2 Polegadas.",
+    "codigo": "269103",
+    "especificacao": "20 Mesh/Tyler",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PENEIRA GRANULOMÉTRICA",
+    "descricao": "Peneira Granulométrica, material: aço inoxidável, Diâmetro: 8 Polegadas, altura: 2 Polegadas.",
+    "codigo": "269133",
+    "especificacao": "24 Mesh/Tyler",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PENEIRA GRANULOMÉTRICA",
+    "descricao": "Peneira Granulométrica, material: aço inoxidável, Diâmetro: 8 Polegadas, altura: 2 Polegadas.",
+    "codigo": "269134",
+    "especificacao": "28 Mesh/Tyler",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PENEIRA GRANULOMÉTRICA",
+    "descricao": "Peneira Granulométrica, material: aço inoxidável, Diâmetro: 8 Polegadas, altura: 2 Polegadas.",
+    "codigo": "269135",
+    "especificacao": "32 Mesh/Tyler",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PENEIRA GRANULOMÉTRICA",
+    "descricao": "Peneira Granulométrica, material: aço inoxidável, Diâmetro: 8 Polegadas, altura: 2 Polegadas.",
+    "codigo": "269136",
+    "especificacao": "35 Mesh/Tyler",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PENEIRA GRANULOMÉTRICA",
+    "descricao": "Peneira Granulométrica, material: aço inoxidável, Diâmetro: 8 Polegadas, altura: 2 Polegadas.",
+    "codigo": "269137",
+    "especificacao": "48 Mesh/Tyler",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PENEIRA GRANULOMÉTRICA",
+    "descricao": "Peneira Granulométrica, material: aço inoxidável, Diâmetro: 8 Polegadas, altura: 2 Polegadas.",
+    "codigo": "269139",
+    "especificacao": "65 Mesh/Tyler",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PENEIRA GRANULOMÉTRICA",
+    "descricao": "Peneira Granulométrica, material: aço inoxidável, Diâmetro: 8 Polegadas, altura: 2 Polegadas.",
+    "codigo": "269142",
+    "especificacao": "150 Mesh/Tyler",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PENEIRA GRANULOMÉTRICA",
+    "descricao": "Peneira Granulométrica, material: aço inoxidável, Diâmetro: 8 Polegadas, altura: 2 Polegadas.",
+    "codigo": "269143",
+    "especificacao": "200 Mesh/Tyler",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PENEIRA GRANULOMÉTRICA",
+    "descricao": "Peneira Granulométrica, material: aço inoxidável, Diâmetro: 8 Polegadas, altura: 2 Polegadas.",
+    "codigo": "356868",
+    "especificacao": "9 Mesh/Tyler",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PENEIRA GRANULOMÉTRICA",
+    "descricao": "Peneira Granulométrica, material: aço inoxidável, Diâmetro: 8 Polegadas, altura: 2 Polegadas.",
+    "codigo": "356870",
+    "especificacao": "16 Mesh/Tyler",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PENEIRA GRANULOMÉTRICA",
+    "descricao": "Peneira Granulométrica, material: aço inoxidável, Diâmetro: 8 Polegadas, altura: 2 Polegadas.",
+    "codigo": "375673",
+    "especificacao": "4 Mesh/Tyler",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PENEIRA GRANULOMÉTRICA",
+    "descricao": "Peneira Granulométrica, material: aço inoxidável, Diâmetro: 8 Polegadas, altura: 2 Polegadas.",
+    "codigo": "375675",
+    "especificacao": "7 Mesh/Tyler",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PENEIRA GRANULOMÉTRICA",
+    "descricao": "Peneira Granulométrica, material: aço inoxidável, Diâmetro: 8 Polegadas, altura: 2 Polegadas.",
+    "codigo": "375678",
+    "especificacao": "14 Mesh/Tyler",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PENEIRA GRANULOMÉTRICA",
+    "descricao": "Peneira Granulométrica, material: aço inoxidável, Diâmetro: 8 Polegadas, altura: 2 Polegadas.",
+    "codigo": "414037",
+    "especificacao": "70 Mesh/Tyler",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PERA DE SUCÇÃO",
+    "descricao": "Pipetador manual com 3 vias em borracha. Acoplamento em pipetas até 100 mL.",
+    "codigo": "411171",
+    "especificacao": "-",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PESA FILTRO",
+    "descricao": "Pesa filtro de vidro de forma alta com tampa.",
+    "codigo": "409776",
+    "especificacao": "50 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PESCADOR DE BARRAS MAGNÉTICAS",
+    "descricao": "Pescador de barras magnéticas revestido com teflon.",
+    "codigo": "423366",
+    "especificacao": "10 mm X 250 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PICNÔMETRO",
+    "descricao": "Picnômetro, material: vidro, calibragem: calibrado",
+    "codigo": "409508",
+    "especificacao": "25 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PICNÔMETRO",
+    "descricao": "Picnômetro, material: vidro, calibragem: calibrado",
+    "codigo": "409510",
+    "especificacao": "50 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PICNÔMETRO",
+    "descricao": "Picnômetro, material: vidro, calibragem: calibrado",
+    "codigo": "409511",
+    "especificacao": "100 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PICNÔMETRO COM TERMÔMETRO",
+    "descricao": "Picnômetro de vidro Gay Lussac, com rolha esmerilhada com um tubo termômetro e saída lateral. Fabricado em vidro borossilicato 3.3.",
+    "codigo": "409505",
+    "especificacao": "10 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PICNÔMETRO COM TERMÔMETRO",
+    "descricao": "Picnômetro de vidro Gay Lussac, com rolha esmerilhada com um tubo termômetro e saída lateral. Fabricado em vidro borossilicato 3.3.",
+    "codigo": "409504",
+    "especificacao": "25 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PICNÔMETRO COM TERMÔMETRO",
+    "descricao": "Picnômetro de vidro Gay Lussac, com rolha esmerilhada com um tubo termômetro e saída lateral. Fabricado em vidro borossilicato 3.3.",
+    "codigo": "409506",
+    "especificacao": "50 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PINÇA ANATÔMICA",
+    "descricao": "Pinça anatômica histológica com ponta fina e curvada em aço inox. ",
+    "codigo": "411111",
+    "especificacao": "150 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PINÇA ANATÔMICA RETA",
+    "descricao": "Pinça anatômica, modelo 1:dissecção, formato ponta:ponta reta, tipo ponta:serrilhada, comprimento total:cerca de 16 cm, componente:s/ cremalheira, material:aço inoxidável, esterilidade:esterilizável. ",
+    "codigo": "467746",
+    "especificacao": "160 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PINÇA PARA CADINHO",
+    "descricao": "Pinça para cadinho em aço inox.  Ponta curva.",
+    "codigo": "428968",
+    "especificacao": "220 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PINÇA PARA CADINHO",
+    "descricao": "Pinça para cadinho em aço inox.  Ponta curva.",
+    "codigo": "420791",
+    "especificacao": "350 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PINÇA PARA CADINHO",
+    "descricao": "Pinça para cadinho em aço inox.  Ponta curva.",
+    "codigo": "410916",
+    "especificacao": "500 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PINÇA PARA TUBO DE ENSAIO",
+    "descricao": "Pinça de madeira para tubo de ensaio.",
+    "codigo": "419313",
+    "especificacao": "200 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PIPETADOR",
+    "descricao": "Pipetador manual de plástico tipo roldana.",
+    "codigo": "408655",
+    "especificacao": "Até 10 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PIPETADOR",
+    "descricao": "Pipetador manual de plástico tipo roldana.",
+    "codigo": "408656",
+    "especificacao": "Até 25 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PIPETADOR DE SILICONE",
+    "descricao": "Pipetador de silicone tipo bulbo para pipeta Pasteur.",
+    "codigo": "419922",
+    "especificacao": "Até 3 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PIPETA GRADUADA",
+    "descricao": "Pipeta graduada em vidro borossilicato, Classe A.",
+    "codigo": "410570",
+    "especificacao": "1 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PIPETA GRADUADA",
+    "descricao": "Pipeta graduada em vidro borossilicato, Classe A.",
+    "codigo": "410565",
+    "especificacao": "2 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PIPETA GRADUADA",
+    "descricao": "Pipeta graduada em vidro borossilicato, Classe A.",
+    "codigo": "410493",
+    "especificacao": "5 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PIPETA GRADUADA",
+    "descricao": "Pipeta graduada em vidro borossilicato, Classe A.",
+    "codigo": "410500",
+    "especificacao": "10 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PIPETA GRADUADA",
+    "descricao": "Pipeta graduada em vidro borossilicato, Classe A.",
+    "codigo": "410564",
+    "especificacao": "25 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PIPETA VOLUMÉTRICA",
+    "descricao": "Pipeta tipo volumétrica em vidro borossilicato, Classe A.",
+    "codigo": "414248",
+    "especificacao": "1 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PIPETA VOLUMÉTRICA",
+    "descricao": "Pipeta tipo volumétrica em vidro borossilicato, Classe A.",
+    "codigo": "414249",
+    "especificacao": "2 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PIPETA VOLUMÉTRICA",
+    "descricao": "Pipeta tipo volumétrica em vidro borossilicato, Classe A.",
+    "codigo": "414250",
+    "especificacao": "3 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PIPETA VOLUMÉTRICA",
+    "descricao": "Pipeta tipo volumétrica em vidro borossilicato, Classe A.",
+    "codigo": "414266",
+    "especificacao": "5 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PIPETA VOLUMÉTRICA",
+    "descricao": "Pipeta tipo volumétrica em vidro borossilicato, Classe A.",
+    "codigo": "414251",
+    "especificacao": "10 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PIPETA VOLUMÉTRICA",
+    "descricao": "Pipeta tipo volumétrica em vidro borossilicato, Classe A.",
+    "codigo": "414252",
+    "especificacao": "20 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PIPETA VOLUMÉTRICA",
+    "descricao": "Pipeta tipo volumétrica em vidro borossilicato, Classe A.",
+    "codigo": "414255",
+    "especificacao": "25 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PIPETA VOLUMÉTRICA",
+    "descricao": "Pipeta tipo volumétrica em vidro borossilicato, Classe A.",
+    "codigo": "414253",
+    "especificacao": "50 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PIPETA VOLUMÉTRICA",
+    "descricao": "Pipeta tipo volumétrica em vidro borossilicato, Classe A.",
+    "codigo": "414254",
+    "especificacao": "100 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PIPETA PASTEUR",
+    "descricao": "Pipeta Pasteur descartável, graduada. Fabricada em polietileno.",
+    "codigo": "423975",
+    "especificacao": "3 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PISSETA",
+    "descricao": "Pisseta em polietileno com graduação e bico curvo.",
+    "codigo": "150171",
+    "especificacao": "250 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PISSETA",
+    "descricao": "Pisseta em polietileno com graduação e bico curvo.",
+    "codigo": "420663",
+    "especificacao": "500 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PLACA DE PETRI",
+    "descricao": "Placa de Petri com superfície plana. Fabricada em vidro borossilicato 3.3.",
+    "codigo": "410069",
+    "especificacao": "90 mm X 15 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PLACA DE PETRI",
+    "descricao": "Placa de Petri com superfície plana. Fabricada em vidro borossilicato 3.3.",
+    "codigo": "414290",
+    "especificacao": "100 mm X 20 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PLATAFORMA ELEVATÓRIA - MATERIAL PERMANENTE",
+    "descricao": "Plataforma de elevação manual ajustável, elevador de laboratório, aço inoxidável, plataforma de elevação, tesoura de mesa, mini elevador,",
+    "codigo": "480919",
+    "especificacao": "150 X 150 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PLATAFORMA ELEVATÓRIA - MATERIAL PERMANENTE",
+    "descricao": "Plataforma de elevação manual ajustável, elevador de laboratório, aço inoxidável, plataforma de elevação, tesoura de mesa, mini elevador,",
+    "codigo": "480920",
+    "especificacao": "200 x 200 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PLACA PARA DESSECADOR",
+    "descricao": "Placa de porcelana para dessecador.",
+    "codigo": "436716",
+    "especificacao": "200 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PLACA PARA DESSECADOR",
+    "descricao": "Placa de porcelana para dessecador.",
+    "codigo": "436424",
+    "especificacao": "300 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PONTEIRAS DESCARTÁVEIS TIPO GILSON",
+    "descricao": "Ponteiras descartáveis tipo Gilson. Uso em micropipetas automáticas, com seus respectivos volumes.",
+    "codigo": "408723",
+    "especificacao": "10 – 100 µL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PONTEIRAS DESCARTÁVEIS TIPO GILSON",
+    "descricao": "Ponteiras descartáveis tipo Gilson. Uso em micropipetas automáticas, com seus respectivos volumes.",
+    "codigo": "408700",
+    "especificacao": "100 – 1000 µL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PONTEIRAS DESCARTÁVEIS TIPO GILSON",
+    "descricao": "Ponteiras descartáveis tipo Gilson. Uso em micropipetas automáticas, com seus respectivos volumes.",
+    "codigo": "408693",
+    "especificacao": "1000 - 5000 µL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PROVETA EM POLIPROPILENO",
+    "descricao": "Proveta em polipropileno transparente, graduada.",
+    "codigo": "409899",
+    "especificacao": "50 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PROVETA EM POLIPROPILENO",
+    "descricao": "Proveta em polipropileno transparente, graduada.",
+    "codigo": "409900",
+    "especificacao": "100 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PROVETA EM POLIPROPILENO",
+    "descricao": "Proveta em polipropileno transparente, graduada.",
+    "codigo": "409894",
+    "especificacao": "250 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PROVETA EM POLIPROPILENO",
+    "descricao": "Proveta em polipropileno transparente, graduada.",
+    "codigo": "409895",
+    "especificacao": "500 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PROVETA EM POLIPROPILENO",
+    "descricao": "Proveta em polipropileno transparente, graduada.",
+    "codigo": "409896",
+    "especificacao": "1000 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PROVETA EM VIDRO",
+    "descricao": "Proveta em vidro, graduada, sem rolha, com base em vidro. Fabricada com vidro borossilicato 3.3.",
+    "codigo": "409887",
+    "especificacao": "10 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PROVETA EM VIDRO",
+    "descricao": "Proveta em vidro, graduada, sem rolha, com base em vidro. Fabricada com vidro borossilicato 3.3.",
+    "codigo": "409877",
+    "especificacao": "25 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PROVETA EM VIDRO",
+    "descricao": "Proveta em vidro, graduada, sem rolha, com base em vidro. Fabricada com vidro borossilicato 3.3.",
+    "codigo": "409889",
+    "especificacao": "50 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PROVETA EM VIDRO",
+    "descricao": "Proveta em vidro, graduada, sem rolha, com base em vidro. Fabricada com vidro borossilicato 3.3.",
+    "codigo": "409891",
+    "especificacao": "100 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PROVETA EM VIDRO",
+    "descricao": "Proveta em vidro, graduada, sem rolha, com base em vidro. Fabricada com vidro borossilicato 3.3.",
+    "codigo": "409879",
+    "especificacao": "250 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PROVETA EM VIDRO",
+    "descricao": "Proveta em vidro, graduada, sem rolha, com base em vidro. Fabricada com vidro borossilicato 3.3.",
+    "codigo": "409881",
+    "especificacao": "500 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "PROVETA EM VIDRO",
+    "descricao": "Proveta em vidro, graduada, sem rolha, com base em vidro. Fabricada com vidro borossilicato 3.3.",
+    "codigo": "409883",
+    "especificacao": "1000 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "RACK PARA PONTEIRAS",
+    "descricao": "Rack vazio para ponteiras tipo Gilson.",
+    "codigo": "",
+    "especificacao": "10 – 100 µL (P/ 96 ponteiras)",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "RACK PARA PONTEIRAS",
+    "descricao": "Rack vazio para ponteiras tipo Gilson.",
+    "codigo": "",
+    "especificacao": "100 - 1000 µL (P/ 96 ponteiras)",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "RACK PARA PONTEIRAS",
+    "descricao": "Rack vazio para ponteiras tipo Gilson.",
+    "codigo": "",
+    "especificacao": "1000 – 5000µL (P/ 28 ponteiras)",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "SOXHLET",
+    "descricao": "Extrator laboratório completo tipo soxhlet, vidro, com duas juntas, com condensador ALLHIN e balão fundo chato.",
+    "codigo": "414446",
+    "especificacao": "100ml",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "SOXHLET",
+    "descricao": "Extrator laboratório completo tipo soxhlet, vidro, com duas juntas, com condensador ALLHIN e balão fundo chato.",
+    "codigo": "414445",
+    "especificacao": "250ml",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "SOXHLET",
+    "descricao": "Extrator laboratório completo tipo soxhlet, vidro, com duas juntas, com condensador ALLHIN e balão fundo chato.",
+    "codigo": "414447",
+    "especificacao": "500ml",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "SUPORTE PARA BURETA",
+    "descricao": "Suporte para bureta com haste de alumínio e base em ferro.",
+    "codigo": "414306",
+    "especificacao": "70 cm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "SUPORTE PARA PIPETAS",
+    "descricao": "Suporte para pipetas, com base giratória.",
+    "codigo": "410846",
+    "especificacao": "55 furos",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "TAMPA PARA DESSECADOR",
+    "descricao": "Tampa em vidro com junta para dessecador.",
+    "codigo": "429301",
+    "especificacao": "150 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "TAMPA PARA DESSECADOR",
+    "descricao": "Tampa em vidro com junta para dessecador.",
+    "codigo": "429302",
+    "especificacao": "250 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "TELA DE AMIANTO",
+    "descricao": "Tela de amianto fabricada com arame galvanizado e com disco de fibra cerâmica refratária.",
+    "codigo": "414676",
+    "especificacao": "15 cm X 15 cm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "TELA DE AMIANTO",
+    "descricao": "Tela de amianto fabricada com arame galvanizado e com disco de fibra cerâmica refratária.",
+    "codigo": "414677",
+    "especificacao": "20 cm X 20 cm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "TERMÔMETRO ESPETO",
+    "descricao": "Termômetro digital tipo espeto para alimentos.",
+    "codigo": "238194",
+    "especificacao": "-50° C a 150° C",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "TERMÔMETRO PARA ESTUFA",
+    "descricao": "Termômetro para estufas com escala interna, bulbo de vidro, capilar redondo branco ou amarelo, enchimento de mercúrio (Hg)e fechamento redondo. Dimensões 150mm/120mm/7mm.",
+    "codigo": "441020",
+    "especificacao": "-10° C a 260° C",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "TERMÔMETRO QUÍMICO",
+    "descricao": "Termômetro químico para uso geral. Com escala interna, bulbo de vidro, capilar redondo branco ou amarelo, enchimento de corante vermelho e fechamento redondo.",
+    "codigo": "452542",
+    "especificacao": "-10° C a 110° C",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "TERMÔMETRO QUÍMICO",
+    "descricao": "Termômetro químico para uso geral. Com escala interna, bulbo de vidro, capilar redondo branco ou amarelo, enchimento de corante vermelho e fechamento redondo.",
+    "codigo": "456177",
+    "especificacao": "-10° C a 250° C",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "TERMÔMETRO QUÍMICO",
+    "descricao": "Termômetro, tipo: analógico, aplicação: laboratório, elemento expansão: mercúrio, material: vidro.",
+    "codigo": "440188",
+    "especificacao": "-10 ° C a 360° C",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "TERMÔMETRO QUÍMICO",
+    "descricao": "Termômetro, tipo: analógico, aplicação: laboratório, elemento expansão: mercúrio, material: vidro.",
+    "codigo": "470351",
+    "especificacao": "0° C a 300° C",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "TUBO CAPILAR",
+    "descricao": "Tubo capilar de vidro sem heparina.",
+    "codigo": "414714",
+    "especificacao": "1,5 x 75 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "TUBO DE ENSAIO",
+    "descricao": "Tubo de ensaio simples em vidro borossilicato, fundo redondo, sem orla.",
+    "codigo": "409034",
+    "especificacao": "15 mm X 100 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "TUBO DE ENSAIO",
+    "descricao": "Tubo de ensaio simples em vidro borossilicato, fundo redondo, sem orla.",
+    "codigo": "409036",
+    "especificacao": "15 mm X 150 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "TUBO DE ENSAIO",
+    "descricao": "Tubo de ensaio simples em vidro borossilicato, fundo redondo, sem orla.",
+    "codigo": "409038",
+    "especificacao": "20 mm X 150 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "TUBO DE ENSAIO COM TAMPA",
+    "descricao": "Tubo de ensaio em vidro borossilicato, fundo redondo, com tampa de rosca.",
+    "codigo": "409837",
+    "especificacao": "10 mm X 100 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "TUBO DE ENSAIO COM TAMPA",
+    "descricao": "Tubo de ensaio em vidro borossilicato, fundo redondo, com tampa de rosca.",
+    "codigo": "433903",
+    "especificacao": "10 mm X 150 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "TUBO DE ENSAIO COM TAMPA",
+    "descricao": "Tubo de ensaio em vidro borossilicato, fundo redondo, com tampa de rosca.",
+    "codigo": "409073",
+    "especificacao": "15 mm X 150 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "TUBO FALCON",
+    "descricao": "Tubo falcon fabricado em polipropileno com tampa rosqueável de polietileno. Autoclavável, graduado e fundo cônico.",
+    "codigo": "409760",
+    "especificacao": "15 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "TUBO FALCON",
+    "descricao": "Tubo falcon fabricado em polipropileno com tampa rosqueável de polietileno. Autoclavável, graduado e fundo cônico.",
+    "codigo": "409759",
+    "especificacao": "50 mL",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "VIDRO DE RELÓGIO",
+    "descricao": "Vidro de relógio em vidro lapidado.",
+    "codigo": "423500",
+    "especificacao": "7,5 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "VIDRO DE RELÓGIO",
+    "descricao": "Vidro de relógio em vidro lapidado.",
+    "codigo": "408486",
+    "especificacao": "100 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "Armário de Aço",
+    "descricao": "Armário de aço confeccionado em chapa de aço, contendo: duas laterais em chapa de aço com, no mínimo, 0,60 mm; um fundo e duas bandejas (superior e inferior). A porta da esquerda deverá conter um reforço com, no mínimo, 0,90 mm e dois trincos (superior e inferior). A porta da direita deverá conter um reforço com, no mínimo, 0,90 mm e uma fechadura. Dimensões: 190 cm (altura) x 90 cm (largura) x 40 cm (profundidade).",
+    "codigo": "468665",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 6
+  },
+  {
+    "nome": "Armário Alto",
+    "descricao": "Armário de madeira com duas portas. Medidas aproximadas: 800 mm (largura) x 490 mm (profundidade) x 200 mm (altura), com variação máxima de 5%. Tampo em madeira MDP de 25 mm de espessura com raio mínimo de 2,5 mm em todo seu perímetro. Fundo de madeira MDP de 18 mm de espessura, revestida em laminado melamínico.",
+    "codigo": "393010",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 6
+  },
+  {
+    "nome": "Arquivo de Aço",
+    "descricao": "Arquivo de aço com 4 gavetas. Características: 2 aparadores por gaveta, 2 porta-etiquetas em cada gaveta, puxadores estampados e cromados, fechadura cilíndrica tipo Yale com travamento simultâneo. Sistema de deslizamento por carrinho telescópico com 8 rolamentos. Tratamento anticorrosivo à base de fosfato de zinco e pintura eletrostática a pó. Medidas aproximadas: 1.335 mm (altura) x 470 mm (largura) x 710 mm (profundidade). Cor: cinza.",
+    "codigo": "350105",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 6
+  },
+  {
+    "nome": "Cadeira Fixa",
+    "descricao": "Cadeira fixa sem braços. Revestimento em tecido crepe ou couro ecológico na cor azul. Estrutura fixa contínua em tubo de aço com diâmetro de, no mínimo, 25,40 mm e espessura de, no mínimo, 2,25 mm. Placa do assento em aço estampado de, no mínimo, 3,00 mm, soldada por sistema MIG e acabamento pintado. Sapatas envolventes injetadas em polipropileno.",
+    "codigo": "469126",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 6
+  },
+  {
+    "nome": "Poltrona Diretor",
+    "descricao": "Poltrona modelo diretor com braços e sistema relax. Assento e encosto estofados em espuma de poliuretano injetado, revestido em couro ecológico azul. Base giratória em alumínio com acabamento polido, 5 rodízios de duplo giro e capa telescópica com mecanismo de regulagem. Braços reguláveis.",
+    "codigo": "150664",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 6
+  },
+  {
+    "nome": "Gaveteiro",
+    "descricao": "Módulo gaveteiro com 4 gavetas. Medidas aproximadas: 400 mm (largura) x 600 mm (profundidade) x 740 mm (altura), com variação máxima de 5%. Em madeira MDP de 25 mm de espessura; fundo, laterais e base inferior em MDP de 18 mm de espessura.",
+    "codigo": "462076",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 6
+  },
+  {
+    "nome": "Mesa de Escritório com Gaveteiro",
+    "descricao": "Mesa com superfície sobreposta à estrutura. Medidas aproximadas: 1400 mm (largura) x 600 mm (profundidade) x 740 mm (altura). Tampo em madeira MDP de, no mínimo, 25 mm de espessura, revestida em laminado melamínico. Bordas com acabamento em fita de PVC. Passagem de fiação com acabamento em PVC. Acompanha gaveteiro fixo com 3 gavetas (medidas aproximadas: 400 x 450 x 435 mm).",
+    "codigo": "399163",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 6
+  },
+  {
+    "nome": "Mesa de Escritório 1000x600x750 mm",
+    "descricao": "Mesa para sala de aula, padrão linear 1000 mm. Medidas aproximadas: 1000 mm (largura) x 600 mm (profundidade) x 740 mm (altura), com variação máxima de 5%. Superfície em madeira MDP de 25 mm e painel frontal em MDP de 18 mm. Estruturas laterais em chapa de aço (chapa 18, espessura mínima de 1,20 mm).",
+    "codigo": "420661",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 6
+  },
+  {
+    "nome": "Mesa em L",
+    "descricao": "Mesa em L padrão medindo 1,40 x 1,40 x 0,60 x 0,74 m. Confeccionada em MDF de 18 mm, na cor branco gelo. Composta por gaveteiro fixo com duas gavetas e chave. Contém calha para fiação.",
+    "codigo": "376750",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 6
+  },
+  {
+    "nome": "Mesa Redonda",
+    "descricao": "Mesa de reunião redonda, medindo 1,25 m (diâmetro) x 0,74 m (altura). Tampo confeccionado em MDP com 25 mm, revestida com melamínico de 2,5 mm, na cor branco gelo. Estrutura com 4 pés na cor branco gelo.",
+    "codigo": "449676",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 6
+  },
+  {
+    "nome": "Longarina de 3 Lugares",
+    "descricao": "Longarina de 3 lugares, sem braço, com pés fixos. Encosto e assento revestidos em couro ecológico na cor orion marinho.",
+    "codigo": "264520",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 6
+  },
+  {
+    "nome": "Carteira Escolar",
+    "descricao": "Carteira universitária. Encosto fundido em polipropileno na cor azul, com alta pressão, aditivado, suportando esforço mecânico de até 420 kg. Possui de 3 a 4 fileiras de respiradores. Moldado em contorno vertebral com encaixes retangulares e travamento com pino tampão.",
+    "codigo": "26441",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 6
+  },
+  {
+    "nome": "Mesa sem Gaveta",
+    "descricao": "Mesa de escritório em aço galvanizado, com tampo em MDF de 25 mm de espessura na cor cinza. Medidas: 1,20 m x 0,60 m x 0,75 m. Sapatas com regulagem de altura.",
+    "codigo": "357003",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 6
+  },
+  {
+    "nome": "Banqueta de Madeira",
+    "descricao": "Banqueta com estrutura em madeira e acabamento envernizado na cor mogno. Assento fixo, circular, em madeira bruta com acabamento envernizado e sem revestimento. Altura: 70 cm. Diâmetro do assento: 30 cm.",
+    "codigo": "235709",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 6
+  },
+  {
+    "nome": "Armário de Escritório (8 portas)",
+    "descricao": "Armário de escritório em aço com 8 portas de abrir e porta-cadeado. Acabamento em pintura epóxi na cor cinza. Largura: 120 cm, altura: 198 cm, profundidade: 0,42 m.",
+    "codigo": "243964",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 6
+  },
+  {
+    "nome": "Banqueta para Laboratório Giratória",
+    "descricao": "Banqueta para laboratório com altura regulável entre 60 cm e 80 cm. Assento giratório em PVC com 30 cm de diâmetro. Capacidade para até 120 kg. Garantia mínima e assistência técnica de 5 anos.",
+    "codigo": "74829",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 6
+  },
+  {
+    "nome": "Cadeira Presidente",
+    "descricao": "Cadeira modelo presidente. Estrutura em conchas bi-partidas de compensado multilaminado (15 mm) e lâmina de aço estrutural. Encosto de espaldar alto com apoio de cabeça integrado, revestido em espuma de poliuretano (45 mm, D40). Acabamento frontal em couro natural e posterior em couro ecológico. Mecanismo de reclinação excêntrico sincronizado (2:1) em alumínio injetado, com travamento em cinco posições e sistema antipânico.",
+    "codigo": "150664",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 6
+  },
+  {
+    "nome": "Capela de Exaustão",
+    "descricao": "Capela de exaustão de gases. Material: madeira revestida em melamínico. Dimensões: cerca de 150 x 90 x 250 cm. Componentes: janela corrediça com contrapeso, em formato de guilhotina. Vazão: até 1500 m³/h.",
+    "codigo": "439135",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 6
+  },
+  {
+    "nome": "Poltrona para Auditório",
+    "descricao": "Poltrona para auditório com estrutura de metal. Assento individual, rebatível, com articulação sincronizada. Revestimento em tecido com proteção impermeabilizante. Assento em espuma de poliuretano injetado e pintura eletrostática.",
+    "codigo": "293118",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 6
+  },
+  {
+    "nome": "Mesa de Reunião",
+    "descricao": "Mesa de reunião retangular em madeira MDF. Comprimento: 3,50 m, largura: 1,00 m, altura: 0,74 m. Cor: argila. Revestimento: post forming.",
+    "codigo": "239306",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 6
+  },
+  {
+    "nome": "Persianas Horizontais",
+    "descricao": "Persiana horizontal em alumínio para ambiente profissional. Espessura da lâmina: 25 mm. Altura: 1,50 m. Largura: 3,70 m. Cor: cinza.",
+    "codigo": "483684",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 6
+  },
+  {
+    "nome": "Armário de Aço (16 portas)",
+    "descricao": "Armário de aço com 16 portas. Acabamento em pintura epóxi na cor cinza. Fechamento com pitão para cadeado. Material: chapa de aço 26/24. Altura: 1,93 m, largura: 1,38 m, profundidade: 40 cm.",
+    "codigo": "483429",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 6
+  },
+  {
+    "nome": "Sofá de 3 Lugares",
+    "descricao": "Sofá de 3 lugares. Estrutura em madeira, estofamento em espuma injetada e revestimento em courvin na cor azul-marinho. Modelo sem braços, com pés de aço na cor preto-cromo.",
+    "codigo": "236165",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 6
+  },
+  {
+    "nome": "Mesa para Copa/Cozinha",
+    "descricao": "Mesa para copa/cozinha em aço com acabamento em pintura epóxi, cor cinza. (Descrição parece incorreta, replicada de um armário).",
+    "codigo": "481142",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 6
+  },
+  {
+    "nome": "Cadeira Giratória sem Braço",
+    "descricao": "Cadeira giratória sem braço. Assento e encosto internos em compensado multilâminas de madeira, moldados anatomicamente. Espuma em poliuretano flexível (isento de CFC, densidade D50-55 no assento e D45-50 no encosto). Capas de proteção em polipropileno texturizado. Revestimento em tecido crepe ou couro ecológico na cor azul.",
+    "codigo": "20680",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 6
+  },
+  {
+    "nome": "Cadeira de Base Fixa",
+    "descricao": "Cadeira com base fixa em formato trapezoidal, sem braços.",
+    "codigo": "14273",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 6
+  },
+  {
+    "nome": "Quadro Branco",
+    "descricao": "Quadro branco magnético para fixação em parede. Material: fórmica branca brilhante. Moldura em alumínio na cor natural. Finalidade: lançamento de informações. Largura: 120 cm. Comprimento: 200 cm.",
+    "codigo": "228661",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 6
+  },
+  {
+    "nome": "Frigobar",
+    "descricao": "Características mínimas: Volume do compartimento refrigerado com capacidade mínima de 120 litros. Cor branca. Tensão 110 V / 60 Hz. Refrigeração com compressor para gás R134a. Porta reversível e aproveitável. Prateleiras removíveis. Gaveta de legumes com tampa aproveitável. Selo INMETRO / PROCEL classe \"A\".",
+    "codigo": "222841",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 2
+  },
+  {
+    "nome": "Refrigerador",
+    "descricao": "Refrigerador doméstico (geladeira), cor branca, com capacidade mínima de 239 L, de uma porta, consumo de energia (A) de 110 V, garantia mínima de um ano.",
+    "codigo": "425202",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 2
+  },
+  {
+    "nome": "Refrigerador",
+    "descricao": "Refrigerador frost free de 1 porta. Características mínimas: Capacidade 300 L. Tensão 110 V. Cor branca. Compressor hermético. Completo com grades e prateleiras. Classificação energética “A”. Garantia mínima de um ano.",
+    "codigo": "409972",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 2
+  },
+  {
+    "nome": "Refrigerador",
+    "descricao": "Refrigerador, modelo duplex frost free. Características mínimas: Capacidade mínima de 420 litros, tensão 110 V, cor branca, sistema de refrigeração com compressor hermético, selo INMETRO classe \"A\", garantia mínima de um ano.",
+    "codigo": "291026",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 2
+  },
+  {
+    "nome": "Bebedouro",
+    "descricao": "Bebedouro de coluna para garrafão. Características mínimas: Potência 105 W, tensão 110 V, sistema de refrigeração com gás R134a, termostato regulável externo, torneiras de água natural e gelada, para uso com garrafão de 20 litros, cor inox, selo de segurança do INMETRO.",
+    "codigo": "400860",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 2
+  },
+  {
+    "nome": "Bebedouro",
+    "descricao": "Bebedouro de pressão, modelo de coluna conjugado para uso de adultos e crianças. Características mínimas: Gabinete externo todo em aço inox. Saída de água gelada em três torneiras de latão cromado, sendo duas de jato para boca e uma de jato para copo, todas com regulagem. Duas pias em aço inoxidável polido, compressor de refrigeração a gás, potência 120 W, reservatório de água em aço inoxidável de 1,2 L com serpentina externa, rendimento 6 L/h, filtro de água com carvão ativado, termostato de regulagem externo, 110 V. Com selo de segurança do INMETRO. Garantia mínima de um ano.",
+    "codigo": "328487",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 2
+  },
+  {
+    "nome": "Bebedouro",
+    "descricao": "Bebedouro industrial. Características mínimas: Bebedouro com 4 torneiras rosqueadas em inox ou latão cromado. Reservatório de 200 litros confeccionado em PP atóxico próprio para alimentos. Gabinete e aparador de água em aço inox. Aparador removível para limpeza. Sistema de resfriamento através de serpentina em aço inox. Controle de nível de água refrigerada com boia. Termostato externo regulável. Unidade de refrigeração embutida no gabinete para proteção. Compressor 1/4 HP com ar forçado. Alimentação 110 V. Garantia mínima de um ano.",
+    "codigo": "311387",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 2
+  },
+  {
+    "nome": "Fogão",
+    "descricao": "Fogão com 4 bocas, acendimento automático. Fogão a gás, material aço inoxidável, aplicação doméstica, tipo convencional. Normas técnicas INMETRO. Características adicionais: Mesa de vidro, isolamento térmico, acendimento automático, forno. Voltagem 110/220 V, cor branca.",
+    "codigo": "425200",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 2
+  },
+  {
+    "nome": "Micro-ondas",
+    "descricao": "Micro-ondas, tipo bancada (mesa). Capacidade útil: 34 L. Painel de comando eletrônico. Nível de potência: 10. Eficiência energética (INMETRO) A. Potência: 1.500 W. Tensão 127 V. Com trava de segurança.",
+    "codigo": "373860",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 2
+  },
+  {
+    "nome": "Ventilador",
+    "descricao": "Ventilador oscilante de parede, tamanho: 60 cm, cor preta. Potência: 150 W. Hélice: 58 cm com 3 pás. Tipo: oscilante. Grade: 60 cm em aço. Área de abrangência: 120 graus. Classificação energética: A.",
+    "codigo": "302522",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 2
+  },
+  {
+    "nome": "Ventilador",
+    "descricao": "Ventilador de coluna oscilante, New Premium, preto, 60 cm, 127 V. Etiqueta Nacional de Eficiência Energética (ENCE): A. Dimensões do produto: 80 x 80 x 190 cm; 4.85 kg.",
+    "codigo": "470674",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 2
+  },
+  {
+    "nome": "Cafeteira",
+    "descricao": "Máquina de café. Potência: 1.400 W, tensão de alimentação: Bivolt, capacidade de água: 1,8 L, capacidade de grãos de café: 250 g. Características adicionais: Utilização de café em pó ou grãos. Largura: 430 mm, altura: 238 mm, profundidade: 338 mm. Pressão da bomba d'água: 15 bar. Cor: preta.",
+    "codigo": "444161",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 2
+  },
+  {
+    "nome": "Cafeteira",
+    "descricao": "Cafeteira elétrica. Material: aço inoxidável; capacidade: 30 cafés; voltagem: 110 V; características adicionais: corta-pingo; potência: 1.000 W.",
+    "codigo": "481301",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 2
+  },
+  {
+    "nome": "Multiprocessador",
+    "descricao": "Multiprocessador de alimentos. Material: aço inox/alumínio. Função: pulsar (cortar, fatiar, ralar, moer, misturar). Potência: 700 W. Tensão: 110/220 V. Características adicionais: tigela com capacidade de 2 litros ou 3 kg de massa.",
+    "codigo": "452433",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 2
+  },
+  {
+    "nome": "Forno Elétrico",
+    "descricao": "Forno elétrico de aplicação doméstica. Voltagem: 220 V, capacidade: 44 L. Características adicionais: grill, vidro duplo, termostato, pés antiaderentes. Potência: 1.750 W.",
+    "codigo": "405328",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 2
+  },
+  {
+    "nome": "Freezer",
+    "descricao": "Freezer vertical. Capacidade: 210 L, altura: 146,90 cm, largura: 54,30 cm, profundidade: 62,80 cm. Quantidade de tampas: 1. Portas reversíveis, sistema de degelo frost free, cor bege. Temperatura de operação: 0 a 10 °C. Tensão de alimentação: 110 V. Características adicionais: dreno de degelo.",
+    "codigo": "222822",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 2
+  },
+  {
+    "nome": "Liquidificador",
+    "descricao": "Liquidificador de uso doméstico. Capacidade: 1,5 L, potência: 800 W, voltagem: 220 V. Material: aço inoxidável. Características adicionais: com acoplamento metálico, lâmina de aço inoxidável.",
+    "codigo": "439372",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 2
+  },
+  {
+    "nome": "Freezer",
+    "descricao": "Freezer vertical. Capacidade: 420 L, tensão de alimentação: 127 V.",
+    "codigo": "275644",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 2
+  },
+  {
+    "nome": "Sanduicheira",
+    "descricao": "Sanduicheira. Material: plástico, tensão: 120 V, potência: 600 W, peso: 1,398 kg, cor: branca. Largura: 232 mm, altura: 106,60 mm, comprimento: 251 mm. Características adicionais: aceita qualquer tipo de pão.",
+    "codigo": "219485",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 2
+  },
+  {
+    "nome": "Ar-Condicionado de 90 Mil BTU's",
+    "descricao": "Ar-condicionado split.",
+    "codigo": "10961",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 2
+  },
+  {
+    "nome": "Centrífuga",
+    "descricao": "Centrífuga para ser utilizada com tubos, volume até 100 mL, rotação até 15.000 rpm. Adaptadores para tubos de 5, 10, 15, e 50 mL.",
+    "codigo": "442192",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 2
+  },
+  {
+    "nome": "Destilador",
+    "descricao": "Destilador de água.",
+    "codigo": "234308",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 2
+  },
+  {
+    "nome": "Deionizador",
+    "descricao": "Deionizador.",
+    "codigo": "452468",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 2
+  },
+  {
+    "nome": "Banho Termostático",
+    "descricao": "Banho termostático, ajuste digital, com painel de controle. Temperatura: até 150 °C. Componentes: com bomba de circulação externa. Vazão: até 10 L/min. Adicional: com sensor de temperatura e controle de gradiente.",
+    "codigo": "415147",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 2
+  },
+  {
+    "nome": "Banho Ultassônico",
+    "descricao": "Banho ultrassônico, ajuste digital, com painel de controle. Volume: até 3 L. Temperatura: até 100 °C. Frequência: até 80 kHz. Temporização: com temporizador até 12 h. Componentes: com sistema de segurança. Adicional: modo pulso, degaseificação.",
+    "codigo": "437547",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 2
+  },
+  {
+    "nome": "Forno Mufla",
+    "descricao": "Forno mufla. Temperatura máxima: 1.200 °C. Largura: 200 mm, altura: 200 mm, profundidade: 300 mm. Volume: 12 L. Aplicação: tratamento térmico.",
+    "codigo": "218246",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 2
+  },
+  {
+    "nome": "Desumidificador",
+    "descricao": "Desumidificador. Voltagem: 110/220 V. Capacidade: ambiente com 500 m³. Potência do compressor: 780 W. Temperatura de utilização: acima de 16 °C. Características adicionais: condensação de 6 a 8 litros de água/24h, circulação de 500m³/h.",
+    "codigo": "301010",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 2
+  }
+]
