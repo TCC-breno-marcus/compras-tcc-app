@@ -14,10 +14,11 @@ namespace Services.Interfaces
             int pageSize
         );
 
-        Task<byte[]> GetAllItensPorDepartamentoCsvAsync(
+        Task<byte[]> ExportarItensPorDepartamentoAsync(
+            string itemsType,
+            string formatoArquivo,
             string? searchTerm,
             string? categoriaNome,
-            string? itemsType,
             string? departamento
         );
     }

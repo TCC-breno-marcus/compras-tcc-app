@@ -2,10 +2,8 @@
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
 import InputText from 'primevue/inputtext'
-import { Button, ButtonGroup, Tag, FloatLabel, Select, useToast } from 'primevue'
+import { Button, ButtonGroup, FloatLabel, Select, useToast, SplitButton } from 'primevue'
 import { computed, nextTick, onMounted, reactive, ref } from 'vue'
-import Column from 'primevue/column'
-import DataTable from 'primevue/datatable'
 import { watch } from 'vue'
 import type { ItemDepartmentResponse, ItemsDepartmentFilters } from '@/features/reports/types'
 import { useRoute } from 'vue-router'
@@ -13,10 +11,6 @@ import router from '@/router'
 import { mapQueryToFilters } from '@/features/reports/utils/queryHelper'
 import { useReportStore } from '@/features/reports/stores/reportStore'
 import { storeToRefs } from 'pinia'
-import { useAuthStore } from '@/features/autentication/stores/authStore'
-import { formatDate } from '@/utils/dateUtils'
-import { formatCurrency } from '@/utils/currency'
-import { formatQuantity } from '@/utils/number'
 import CustomPopOverItem from './CustomPopOverItem.vue'
 import { Popover } from 'primevue'
 import { useCategoriaStore } from '@/features/catalogo/stores/categoriaStore'
@@ -25,21 +19,16 @@ import ItemPerDepartmentCard from './ItemPerDepartmentCard.vue'
 import { reportService } from '@/features/reports/services/reportService'
 import { useUnitOrganizationalStore } from '@/features/unitOrganizational/stores/unitOrganizationalStore'
 
-// TODO: esse componente é um backup pra o caso de decidir usar tabela pra visualizar esses dados ao invés de cards
-
-const expandedRows = ref([])
 const reportLoading = ref(false)
 const route = useRoute()
 const reportStore = useReportStore()
 const { itemsDepartment, isLoading, totalCount, pageNumber, pageSize, totalPages } =
   storeToRefs(reportStore)
-const authStore = useAuthStore()
 const unitOrganizationalStore = useUnitOrganizationalStore()
 const { departments } = storeToRefs(unitOrganizationalStore)
 const op = ref()
 const selectedItemDetails = ref<ItemDepartmentResponse | null>(null)
 const categoriaStore = useCategoriaStore()
-const { categorias } = storeToRefs(categoriaStore)
 const toast = useToast()
 const reportType = ref<'geral' | 'patrimonial'>('geral')
 
@@ -111,29 +100,48 @@ const showPopOverItem = (event: MouseEvent, item: ItemDepartmentResponse) => {
   })
 }
 
-const handleExportCsv = async () => {
+const exportOptions = ref([
+  {
+    label: 'Excel (.xlsx)',
+    icon: 'pi pi-file-excel',
+    command: () => {
+      exportReport('excel')
+    },
+  },
+  {
+    label: 'CSV (.csv)',
+    icon: 'pi pi-file',
+    command: () => {
+      exportReport('csv')
+    },
+  },
+])
+
+const exportReport = async (fileFormat: 'csv' | 'excel' = 'excel') => {
   try {
     reportLoading.value = true
 
-    const csvBlob = await reportService.getCsvItemsPerDepartment(reportType.value)
-
-    const url = window.URL.createObjectURL(csvBlob)
+    const blob = await reportService.exportItemsPerDepartment(reportType.value, fileFormat)
+    const url = window.URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
-    link.download = `relatorio_itens_por_departamento_${reportType.value}.csv`
+
+    const extension = fileFormat === 'excel' ? 'xlsx' : 'csv'
+    link.download = `relatorio_itens_por_departamento_${reportType.value}.${extension}`
 
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
     window.URL.revokeObjectURL(url)
+
     toast.add({
       severity: 'success',
       summary: 'Sucesso',
-      detail: 'Relatório exportado com sucesso.',
+      detail: `Relatório ${fileFormat.toUpperCase()} exportado com sucesso.`,
       life: 3000,
     })
   } catch (error) {
-    console.error('Erro ao exportar CSV:', error)
+    console.error(`Erro ao exportar ${fileFormat.toUpperCase()}:`, error)
     toast.add({
       severity: 'error',
       summary: 'Erro',
@@ -256,7 +264,7 @@ onMounted(() => {
           icon="pi pi-download"
           size="small"
           text
-          :onClick="handleExportCsv"
+          :onClick="exportCsv"
           :loading="reportLoading"
         />
       </div> -->
@@ -283,13 +291,13 @@ onMounted(() => {
           />
         </ButtonGroup>
       </div>
-      <Button
-        type="button"
+      <SplitButton
         label="Exportar"
-        icon="pi pi-download"
+        icon="pi pi-file-excel"
         size="small"
-        text
-        :onClick="handleExportCsv"
+        :model="exportOptions"
+        @click="exportReport('excel')"
+        outlined
         :loading="reportLoading"
       />
     </div>

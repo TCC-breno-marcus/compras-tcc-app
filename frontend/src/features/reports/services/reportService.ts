@@ -6,7 +6,10 @@ interface IReportService {
   getItemsPerDepartment(
     filters?: ItemsDepartmentFilters,
   ): Promise<PaginatedResponse<ItemDepartmentResponse>>
-  getCsvItemsPerDepartment(reportType: 'geral' | 'patrimonial'): Promise<Blob>
+  exportItemsPerDepartment(
+    itemsType: 'geral' | 'patrimonial',
+    fileFormat: 'csv' | 'excel',
+  ): Promise<Blob>
 }
 
 export const reportService: IReportService = {
@@ -40,26 +43,25 @@ export const reportService: IReportService = {
   },
 
   /**
-   * Gerar um relatório com todos os itens patrimoniais solicitados agrupados por departamento na API e retornar um CSV.
-   * @param reportType O tipo de relatório (geral ou patrimonial)
-   * @returns Um Blob contendo o arquivo CSV.
+   * Gerar um relatório com todos os itens solicitados agrupados por departamento na API.
+   * @param itemsType O tipo de relatório (geral ou patrimonial)
+   * @param fileFormat O formato do arquivo ('csv' ou 'excel')
+   * @returns Um Blob contendo o arquivo no fileFormat especificado.
    */
-  async getCsvItemsPerDepartment(reportType) {
+  async exportItemsPerDepartment(itemsType, fileFormat = 'excel') {
     try {
       const response = await apiClient.get<Blob>(
-        `/relatorio/itens-departamento/${reportType}/csv`,
+        `/relatorio/itens-departamento/${itemsType}/exportar`,
         {
+          params: { formatoArquivo: fileFormat },
           responseType: 'blob',
         },
       )
       return response.data
     } catch (error) {
-      console.error(
-        `Erro ao gerar relatório de itens patrimoniais solicitados e agrupados por departamento:`,
-        error,
-      )
+      console.error(`Erro ao gerar relatório de itens (${fileFormat.toUpperCase()}):`, error)
       throw new Error(
-        'Não foi possível gerar relatório de itens patrimoniais solicitados e agrupados por departamento.',
+        `Não foi possível gerar relatório de itens no formato ${fileFormat.toUpperCase()}.`,
       )
     }
   },
