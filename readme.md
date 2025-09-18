@@ -1,45 +1,38 @@
-# 📦 Projeto Compras TCC
+# 📦 Sistema de Gestão de Aquisições de Materiais (SIGAM)
 
-Este projeto utiliza `docker-compose` para orquestrar os serviços de **Backend**, **Banco de Dados** e **Frontend**.
+![Badge .NET](https://img.shields.io/badge/.NET-8-512BD4?logo=dotnet)
+![Badge Vue.js](https://img.shields.io/badge/Vue.js-3-4FC08D?logo=vue.js)
+![Badge PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql)
+![Badge Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker)
 
----
+## 📝 Sobre o Projeto
 
-## 🚀 Comandos Úteis
+Este projeto é um sistema web full-stack desenvolvido como Trabalho de Conclusão de Curso (TCC), projetado para otimizar o processo de **levantamento de demandas** para o Plano de Contratações Anual (PCA) em instituições de ensino, em especificamente o Centro de Ciências Exatas e Tecnologia (CCET) da Universidade Federal de Sergipe. A aplicação substitui o fluxo manual baseado em planilhas por uma plataforma centralizada, visando maior eficiência, integridade dos dados e transparência.
 
-| Comando | Descrição |
-|---------|------------|
-| `docker-compose up` | Levanta todos os serviços em primeiro plano |
-| `docker-compose up -d` | Levanta todos os serviços em background |
-| `docker-compose stop` | Para os containers |
-| `docker-compose down` | Para e remove os containers |
-| `docker-compose up <nome_do_serviço>` | Levanta apenas um serviço e seus dependentes |
-| `docker-compose build` | Reconstrói todas as imagens |
-| `docker-compose build <nome_do_serviço>` | Reconstrói apenas a imagem do serviço especificado |
-| `docker-compose up --build` | Sobe todos os serviços reconstruindo as imagens |
+O sistema possui diferentes perfis de usuário (Solicitante, Gestor, Admin), um catálogo de itens categorizado e fluxos para criação, edição e visualização de solicitações e relatórios.
 
----
+## ✨ Tecnologias Utilizadas
 
-## ⚙️ Backend
+-   **Backend:** API RESTful com .NET 8, ASP.NET Core, Entity Framework Core
+-   **Frontend:** Single Page Application (SPA) com Vue.js 3 (Composition API), Pinia e PrimeVue
+-   **Banco de Dados:** PostgreSQL
+-   **Autenticação:** JWT (JSON Web Tokens) com RBAC (Role-Based Access Control)
+-   **Containerização:** Docker e Docker Compose
 
-### Acompanhar logs do backend em tempo real
-```bash
-docker compose logs -f backend-service
-```
+## 🚀 Começo Rápido
 
-### 🗂️ **Quando alterar uma entidade**
+1.  **Pré-requisitos:** Docker e Docker Compose instalados.
+2.  **Configuração:** Crie um arquivo `.env` na raiz do projeto (use o `.env.example` como base).
+3.  **Execute:**
+    ```bash
+    docker-compose up -d --build
+    ```
+-   **Frontend:** `http://localhost:5173`
+-   **Backend (Swagger):** `http://localhost:5000/swagger`
 
-1️⃣ Crie uma nova migration (**Container precisa estar parado ou down**):
-```bash
-docker-compose run --rm --entrypoint sh backend-service
-export PATH=$PATH:/root/.dotnet/tools
-dotnet tool restore
-dotnet ef migrations add NomeDaMigration
-```
+## 📚 Documentação
 
-2️⃣ Rodar as migrations (**Container precisa estar parado ou down**):
-```bash
-docker-compose run --rm --entrypoint sh backend-service
-export PATH=$PATH:/root/.dotnet/tools
-dotnet tool restore
-dotnet ef database update
-```
+Para guias detalhados sobre configuração, execução e gerenciamento do banco de dados, consulte nossa documentação:
+
+-   **[📄 01 - Setup e Execução do Projeto](./docs/01-SETUP.md)**
+-   **[🗃️ 02 - Gerenciamento do Banco de Dados](./docs/02-DATABASE.md)**
