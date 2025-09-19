@@ -8,7 +8,8 @@ namespace Services.Interfaces
             string? searchTerm,
             string? categoriaNome,
             string? itemsType,
-            string? departamento,
+            string? siglaDepartamento,
+            bool? somenteSolicitacoesAtivas,
             string? sortOrder,
             int pageNumber,
             int pageSize
@@ -19,7 +20,8 @@ namespace Services.Interfaces
             string formatoArquivo,
             string? searchTerm,
             string? categoriaNome,
-            string? departamento
+            string? siglaDepartamento,
+            bool? somenteSolicitacoesAtivas
         );
     }
 }

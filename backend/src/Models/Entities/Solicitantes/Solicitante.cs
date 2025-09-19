@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using ComprasTccApp.Backend.Enums;
 using ComprasTccApp.Models.Entities.Departamentos;
 using ComprasTccApp.Models.Entities.Servidores;
 using ComprasTccApp.Models.Entities.Solicitacoes;

@@ -2,6 +2,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using ClosedXML.Excel;
+using ComprasTccApp.Backend.Domain;
 using ComprasTccApp.Models.Entities.Itens;
 using CsvHelper;
 using Database;
@@ -33,6 +34,7 @@ namespace Services
             string? categoriaNome,
             string? itemsType,
             string? siglaDepartamento,
+            bool? somenteSolicitacoesAtivas,
             string? sortOrder,
             int pageNumber,
             int pageSize
@@ -43,6 +45,7 @@ namespace Services
                 categoriaNome,
                 itemsType,
                 siglaDepartamento,
+                somenteSolicitacoesAtivas,
                 sortOrder
             );
 
@@ -62,6 +65,7 @@ namespace Services
             string? categoriaNome = null,
             string? itemsType = null,
             string? siglaDepartamento = null,
+            bool? somenteSolicitacoesAtivas = false,
             string? sortOrder = null
         )
         {
@@ -70,6 +74,7 @@ namespace Services
                 categoriaNome,
                 itemsType,
                 siglaDepartamento,
+                somenteSolicitacoesAtivas,
                 sortOrder
             );
 
@@ -81,10 +86,17 @@ namespace Services
             string? categoriaNome,
             string? itemsType,
             string? siglaDepartamento,
+            bool? somenteSolicitacoesAtivas,
             string? sortOrder
         )
         {
-            var query = BuildBaseQuery(searchTerm, categoriaNome, itemsType, siglaDepartamento);
+            var query = BuildBaseQuery(
+                searchTerm,
+                categoriaNome,
+                itemsType,
+                siglaDepartamento,
+                somenteSolicitacoesAtivas
+            );
 
             var todosOsItensSolicitados = await query
                 .Include(si => si.Item)
@@ -106,7 +118,8 @@ namespace Services
             string? searchTerm,
             string? categoriaNome,
             string? itemsType,
-            string? siglaDepartamento
+            string? siglaDepartamento,
+            bool? somenteSolicitacoesAtivas
         )
         {
             var query = _context.SolicitacaoItens.AsNoTracking();
@@ -151,6 +164,17 @@ namespace Services
                     s.Solicitacao.Solicitante.Departamento.Sigla.ToUpper()
                     == siglaDepartamento.ToUpper()
                 );
+            }
+
+            if (somenteSolicitacoesAtivas.HasValue && somenteSolicitacoesAtivas.Value)
+            {
+                var statusAtivos = new[]
+                {
+                    StatusConsts.Pendente,
+                    StatusConsts.AguardandoAjustes,
+                    StatusConsts.Aprovada,
+                };
+                query = query.Where(s => statusAtivos.Contains(s.Solicitacao.StatusId));
             }
 
             return query;
@@ -223,14 +247,16 @@ namespace Services
             string formatoArquivo,
             string? searchTerm = null,
             string? categoriaNome = null,
-            string? siglaDepartamento = null
+            string? siglaDepartamento = null,
+            bool? somenteSolicitacoesAtivas = false
         )
         {
             var itens = await GetAllItensPorDepartamentoAsync(
                 searchTerm,
                 categoriaNome,
                 itemsType,
-                siglaDepartamento
+                siglaDepartamento,
+                somenteSolicitacoesAtivas
             );
 
             if (formatoArquivo.Equals("csv", StringComparison.OrdinalIgnoreCase))

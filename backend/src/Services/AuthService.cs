@@ -1,6 +1,4 @@
 using System.Security.Claims;
-using ComprasTccApp.Backend.Enums;
-using ComprasTccApp.Backend.Extensions;
 using ComprasTccApp.Models.Entities.Gestores;
 using ComprasTccApp.Models.Entities.Pessoas;
 using ComprasTccApp.Models.Entities.Servidores;

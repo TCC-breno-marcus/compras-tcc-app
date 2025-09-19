@@ -1,5 +1,3 @@
-using ComprasTccApp.Backend.Enums;
-using ComprasTccApp.Models.Entities.Solicitacoes;
 using Models.Dtos;
 
 public interface ISolicitacaoService
@@ -24,6 +22,7 @@ public interface ISolicitacaoService
         DateTime? dataInicial,
         DateTime? dataFinal,
         string? externalId,
+        List<int>? statusIds,
         string? sortOrder,
         int pageNumber,
         int pageSize
@@ -37,8 +36,22 @@ public interface ISolicitacaoService
         DateTime? dataInicial,
         DateTime? dataFinal,
         string? externalId,
+        List<int>? statusIds,
         string? sortOrder,
         int pageNumber,
         int pageSize
+    );
+
+    Task<SolicitacaoResultDto?> AtualizarStatusSolicitacaoAsync(
+        long id,
+        long pessoaId,
+        UpdateStatusSolicitacaoDto dto
+    );
+
+    Task<SolicitacaoResultDto?> CancelarSolicitacaoAsync(
+        long id,
+        long pessoaId,
+        bool isAdmin,
+        CancelarSolicitacaoDto dto
     );
 }

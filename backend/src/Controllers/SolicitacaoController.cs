@@ -123,6 +123,7 @@ public class SolicitacaoController : ControllerBase
         [FromQuery] DateTime? dataInicial,
         [FromQuery] DateTime? dataFinal,
         [FromQuery] string? externalId,
+        [FromQuery] List<int>? statusIds = null,
         [FromQuery] string? sortOrder = "desc",
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 10
@@ -137,6 +138,7 @@ public class SolicitacaoController : ControllerBase
             dataInicial,
             dataFinal,
             externalId,
+            statusIds,
             sortOrder,
             pageNumber,
             pageSize
@@ -155,6 +157,7 @@ public class SolicitacaoController : ControllerBase
         [FromQuery] DateTime? dataInicial,
         [FromQuery] DateTime? dataFinal,
         [FromQuery] string? externalId,
+        [FromQuery] List<int>? statusIds = null,
         [FromQuery] string? sortOrder = "desc",
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 10
@@ -168,11 +171,83 @@ public class SolicitacaoController : ControllerBase
             dataInicial,
             dataFinal,
             externalId,
+            statusIds,
             sortOrder,
             pageNumber,
             pageSize
         );
 
         return Ok(resultadoPaginado);
+    }
+
+    [HttpPatch("{id}/cancelar")]
+    [Authorize(Roles = "Solicitante,Admin")]
+    [ProducesResponseType(typeof(SolicitacaoResultDto), 200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(404)]
+    [ProducesResponseType(500)]
+    public async Task<IActionResult> CancelarSolicitacao(
+        long id,
+        [FromBody] CancelarSolicitacaoDto dto
+    )
+    {
+        try
+        {
+            var pessoaId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var isAdmin = User.IsInRole("Admin");
+            var resultado = await _solicitacaoService.CancelarSolicitacaoAsync(
+                id,
+                pessoaId,
+                isAdmin,
+                dto
+            );
+            if (resultado == null)
+            {
+                return NotFound(new { message = "Solicitação não encontrada." });
+            }
+            return Ok(resultado);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = $"Ocorreu um erro interno: {ex.Message}" });
+        }
+    }
+
+    [HttpPatch("{id}/status")]
+    [Authorize(Roles = "Gestor,Admin")]
+    [ProducesResponseType(typeof(SolicitacaoResultDto), 200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(404)]
+    public async Task<IActionResult> MudarStatus(long id, [FromBody] UpdateStatusSolicitacaoDto dto)
+    {
+        try
+        {
+            var pessoaId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+            var resultado = await _solicitacaoService.AtualizarStatusSolicitacaoAsync(
+                id,
+                pessoaId,
+                dto
+            );
+
+            if (resultado == null)
+            {
+                return NotFound(new { message = "Solicitação não encontrada." });
+            }
+
+            return Ok(resultado);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = $"Ocorreu um erro interno: {ex.Message}" });
+        }
     }
 }

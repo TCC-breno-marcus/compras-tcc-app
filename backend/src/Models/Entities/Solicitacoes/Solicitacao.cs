@@ -1,8 +1,9 @@
 using System.ComponentModel.DataAnnotations;
-using ComprasTccApp.Backend.Models.Entities.Items;
 using ComprasTccApp.Models.Entities.Gestores;
+using ComprasTccApp.Models.Entities.Historicos;
 using ComprasTccApp.Models.Entities.Itens;
 using ComprasTccApp.Models.Entities.Solicitantes;
+using ComprasTccApp.Models.Entities.Status;
 
 namespace ComprasTccApp.Models.Entities.Solicitacoes
 {
@@ -22,6 +23,11 @@ namespace ComprasTccApp.Models.Entities.Solicitacoes
         [Required]
         public DateTime DataCriacao { get; set; }
 
-        public List<SolicitacaoItem> ItemSolicitacao { get; set; } = new();
+        public int StatusId { get; set; }
+        public StatusSolicitacao Status { get; set; } = null!;
+
+        public List<HistoricoSolicitacao> Historico { get; set; } = [];
+
+        public List<SolicitacaoItem> ItemSolicitacao { get; set; } = [];
     }
 }

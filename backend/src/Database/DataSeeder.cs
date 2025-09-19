@@ -1,6 +1,3 @@
-using ComprasTccApp.Backend.Enums;
-using ComprasTccApp.Backend.Extensions;
-using ComprasTccApp.Models.Entities.Categorias;
 using ComprasTccApp.Models.Entities.Centros;
 using ComprasTccApp.Models.Entities.Departamentos;
 using ComprasTccApp.Models.Entities.Gestores;
