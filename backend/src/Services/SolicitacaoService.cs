@@ -1,4 +1,6 @@
 using ComprasTccApp.Backend.Domain;
+using ComprasTccApp.Backend.Enums;
+using ComprasTccApp.Backend.Helpers;
 using ComprasTccApp.Models.Entities.Historicos;
 using ComprasTccApp.Models.Entities.Itens;
 using ComprasTccApp.Models.Entities.Solicitacoes;
@@ -89,6 +91,18 @@ public class SolicitacaoService : ISolicitacaoService
             await _context.SaveChangesAsync();
 
             novaSolicitacao.ExternalId = GenerateExternalId(novaSolicitacao);
+
+            var historico = new HistoricoSolicitacao
+            {
+                SolicitacaoId = novaSolicitacao.Id,
+                DataOcorrencia = DateTime.UtcNow,
+                PessoaId = pessoaId,
+                Acao = AcaoHistoricoEnum.Criacao,
+                Detalhes = "Solicitação criada.",
+                Observacoes = "",
+            };
+
+            await _context.HistoricoSolicitacoes.AddAsync(historico);
 
             await _context.SaveChangesAsync();
 
@@ -216,6 +230,15 @@ public class SolicitacaoService : ISolicitacaoService
 
             novaSolicitacao.ExternalId = GenerateExternalId(novaSolicitacao);
 
+            var historico = new HistoricoSolicitacao
+            {
+                SolicitacaoId = novaSolicitacao.Id,
+                DataOcorrencia = DateTime.UtcNow,
+                PessoaId = pessoaId,
+                Acao = AcaoHistoricoEnum.Criacao,
+                Detalhes = "Solicitação criada.",
+            };
+
             await _context.SaveChangesAsync();
 
             await transaction.CommitAsync();
@@ -299,6 +322,7 @@ public class SolicitacaoService : ISolicitacaoService
 
             var solicitacaoDoBanco = await _context
                 .Solicitacoes.Include(s => s.ItemSolicitacao)
+                .ThenInclude(si => si.Item)
                 .FirstOrDefaultAsync(s => s.Id == id);
 
             if (solicitacaoDoBanco == null)
@@ -329,6 +353,35 @@ public class SolicitacaoService : ISolicitacaoService
                         "Você não tem permissão para editar esta solicitação."
                     );
                 }
+            }
+
+            var detalhesDaEdicao = new List<string>();
+            var itensAntigosParaAuditoria = solicitacaoDoBanco.ItemSolicitacao.ToList();
+            var todosOsItemIds = itensAntigosParaAuditoria
+                .Select(i => i.ItemId)
+                .Union(dto.Itens.Select(i => i.ItemId))
+                .Distinct()
+                .ToList();
+            var catalogoItens = await _context
+                .Items.AsNoTracking()
+                .Where(i => todosOsItemIds.Contains(i.Id))
+                .ToDictionaryAsync(i => i.Id);
+            var detalhesItens = AuditHelper.CompareSolicitacaoItens(
+                itensAntigosParaAuditoria,
+                dto.Itens,
+                catalogoItens
+            );
+            detalhesDaEdicao.AddRange(detalhesItens);
+
+            if (
+                solicitacaoDoBanco is SolicitacaoGeral sg
+                && sg.JustificativaGeral != dto.JustificativaGeral
+                && dto.JustificativaGeral != null
+            )
+            {
+                detalhesDaEdicao.Add(
+                    $"Justificativa geral foi alterada de '{sg.JustificativaGeral ?? "vazio"}' para '{dto.JustificativaGeral}'."
+                );
             }
 
             if (
@@ -385,6 +438,20 @@ public class SolicitacaoService : ISolicitacaoService
                         }
                     );
                 }
+            }
+
+            if (detalhesDaEdicao.Any())
+            {
+                var historico = new HistoricoSolicitacao
+                {
+                    SolicitacaoId = solicitacaoDoBanco.Id,
+                    DataOcorrencia = DateTime.UtcNow,
+                    PessoaId = pessoaId,
+                    Acao = AcaoHistoricoEnum.Edicao,
+                    Detalhes = string.Join(" | ", detalhesDaEdicao),
+                    Observacoes = null,
+                };
+                await _context.HistoricoSolicitacoes.AddAsync(historico);
             }
 
             await _context.SaveChangesAsync();
@@ -814,16 +881,15 @@ public class SolicitacaoService : ISolicitacaoService
                 throw new InvalidOperationException("A solicitação já se encontra CANCELADA.");
             }
 
-            var statusAnteriorId = solicitacao.StatusId;
             solicitacao.StatusId = StatusConsts.Cancelada;
 
             var historico = new HistoricoSolicitacao
             {
                 SolicitacaoId = solicitacao.Id,
                 DataOcorrencia = DateTime.UtcNow,
-                StatusAnteriorId = statusAnteriorId,
-                StatusNovoId = StatusConsts.Cancelada,
                 PessoaId = pessoaId,
+                Acao = AcaoHistoricoEnum.Cancelamento,
+                Detalhes = "Solicitação cancelada.",
                 Observacoes = dto.Observacoes,
             };
 
@@ -877,13 +943,17 @@ public class SolicitacaoService : ISolicitacaoService
 
             solicitacao.StatusId = dto.NovoStatusId;
 
+            var novoStatusNome = (
+                await _context.StatusSolicitacoes.FindAsync(dto.NovoStatusId)
+            )?.Nome;
+
             var historico = new HistoricoSolicitacao
             {
                 SolicitacaoId = solicitacao.Id,
                 DataOcorrencia = DateTime.UtcNow,
-                StatusAnteriorId = statusAnteriorId,
-                StatusNovoId = dto.NovoStatusId,
                 PessoaId = pessoaId,
+                Detalhes =
+                    $"O status da solicitação foi alterado de {statusAnteriorNome} para {novoStatusNome}",
                 Observacoes =
                     (dto.NovoStatusId == StatusConsts.AguardandoAjustes) ? dto.Observacoes : null,
             };

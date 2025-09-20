@@ -34,6 +34,7 @@ public class AppDbContext : DbContext
     public DbSet<Centro> Centros { get; set; }
     public DbSet<Departamento> Departamentos { get; set; }
     public DbSet<HistoricoSolicitacao> HistoricoSolicitacoes { get; set; }
+    public DbSet<HistoricoItem> HistoricoItens { get; set; }
     public DbSet<StatusSolicitacao> StatusSolicitacoes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -216,16 +217,25 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<HistoricoSolicitacao>(entity =>
         {
             entity
-                .HasOne(h => h.StatusAnterior)
+                .HasOne(h => h.Pessoa)
                 .WithMany()
-                .HasForeignKey(h => h.StatusAnteriorId)
+                .HasForeignKey(h => h.PessoaId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity
-                .HasOne(h => h.StatusNovo)
+                .HasOne(h => h.Solicitacao)
+                .WithMany(s => s.Historico)
+                .HasForeignKey(h => h.SolicitacaoId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<HistoricoItem>(entity =>
+        {
+            entity
+                .HasOne(h => h.Item)
                 .WithMany()
-                .HasForeignKey(h => h.StatusNovoId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .HasForeignKey(h => h.ItemId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             entity
                 .HasOne(h => h.Pessoa)
@@ -233,5 +243,7 @@ public class AppDbContext : DbContext
                 .HasForeignKey(h => h.PessoaId)
                 .OnDelete(DeleteBehavior.Restrict);
         });
+
+        modelBuilder.Entity<HistoricoBase>().Property(h => h.Acao).HasConversion<string>();
     }
 }
