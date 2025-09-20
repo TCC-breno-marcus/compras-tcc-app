@@ -250,4 +250,20 @@ public class SolicitacaoController : ControllerBase
             return StatusCode(500, new { message = $"Ocorreu um erro interno: {ex.Message}" });
         }
     }
+
+    [HttpGet("{id}/historico")]
+    [ProducesResponseType(typeof(List<HistoricoSolicitacaoDto>), 200)]
+    [ProducesResponseType(404)]
+    [Authorize(Roles = "Admin,Gestor,Solicitante")]
+    public async Task<IActionResult> GetHistorico(long id)
+    {
+        var resultado = await _solicitacaoService.GetHistoricoAsync(id, User);
+
+        if (resultado == null)
+        {
+            return NotFound(new { message = "Solicitação não encontrada ou acesso negado." });
+        }
+
+        return Ok(resultado);
+    }
 }

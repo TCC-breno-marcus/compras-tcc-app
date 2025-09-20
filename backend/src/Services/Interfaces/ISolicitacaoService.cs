@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Models.Dtos;
 
 public interface ISolicitacaoService
@@ -54,4 +55,6 @@ public interface ISolicitacaoService
         bool isAdmin,
         CancelarSolicitacaoDto dto
     );
+
+    Task<List<HistoricoSolicitacaoDto>?> GetHistoricoAsync(long solicitacaoId, ClaimsPrincipal user);
 }

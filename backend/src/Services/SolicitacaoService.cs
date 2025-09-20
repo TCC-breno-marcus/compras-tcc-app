@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using ComprasTccApp.Backend.Domain;
 using ComprasTccApp.Backend.Enums;
 using ComprasTccApp.Backend.Helpers;
@@ -977,5 +978,51 @@ public class SolicitacaoService : ISolicitacaoService
             await transaction.RollbackAsync();
             throw;
         }
+    }
+
+    public async Task<List<HistoricoSolicitacaoDto>?> GetHistoricoAsync(
+        long solicitacaoId,
+        ClaimsPrincipal user
+    )
+    {
+        var pessoaId = long.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        bool isSolicitante = user.IsInRole("Solicitante");
+
+        var solicitacao = await _context
+            .Solicitacoes.AsNoTracking()
+            .Include(s => s.Solicitante)
+            .ThenInclude(sol => sol.Servidor)
+            .ThenInclude(serv => serv.Pessoa)
+            .FirstOrDefaultAsync(s => s.Id == solicitacaoId);
+
+        if (solicitacao == null)
+        {
+            _logger.LogWarning("Solicitação com ID: {Id} não encontrada.", solicitacaoId);
+            return null;
+        }
+
+        if (isSolicitante && solicitacao.Solicitante.Servidor.Pessoa.Id != pessoaId)
+        {
+            _logger.LogWarning("Tentativa de acesso não autorizada.");
+            return null;
+        }
+
+        var historico = await _context
+            .HistoricoSolicitacoes.AsNoTracking()
+            .Where(h => h.SolicitacaoId == solicitacaoId)
+            .Include(h => h.Pessoa)
+            .OrderByDescending(h => h.DataOcorrencia)
+            .Select(h => new HistoricoSolicitacaoDto
+            {
+                Id = h.Id,
+                DataOcorrencia = h.DataOcorrencia,
+                Acao = h.Acao.ToString(),
+                Detalhes = h.Detalhes,
+                Observacoes = h.Observacoes,
+                NomePessoa = h.Pessoa.Nome,
+            })
+            .ToListAsync();
+
+        return historico;
     }
 }
