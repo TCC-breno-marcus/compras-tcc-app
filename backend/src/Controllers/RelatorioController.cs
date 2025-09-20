@@ -30,6 +30,7 @@ namespace Controllers
             [FromQuery] string? categoriaNome,
             [FromQuery] string? itemsType,
             [FromQuery] string? siglaDepartamento,
+            [FromQuery] bool? somenteSolicitacoesAtivas,
             [FromQuery] string? sortOrder = "asc",
             [FromQuery] int pageNumber = 1,
             [FromQuery] int pageSize = 50
@@ -45,6 +46,7 @@ namespace Controllers
                     categoriaNome,
                     itemsType,
                     siglaDepartamento,
+                    somenteSolicitacoesAtivas,
                     sortOrder,
                     pageNumber,
                     pageSize
@@ -73,7 +75,8 @@ namespace Controllers
             [FromQuery] string formatoArquivo,
             [FromQuery] string? searchTerm,
             [FromQuery] string? categoriaNome,
-            [FromQuery] string? siglaDepartamento
+            [FromQuery] string? siglaDepartamento,
+            [FromQuery] bool? somenteSolicitacoesAtivas
         )
         {
             try
@@ -99,7 +102,8 @@ namespace Controllers
                         formatoArquivo,
                         searchTerm,
                         categoriaNome,
-                        siglaDepartamento
+                        siglaDepartamento,
+                        somenteSolicitacoesAtivas
                     );
                     return File(
                         csvBytes,
@@ -114,7 +118,8 @@ namespace Controllers
                         formatoArquivo,
                         searchTerm,
                         categoriaNome,
-                        siglaDepartamento
+                        siglaDepartamento,
+                        somenteSolicitacoesAtivas
                     );
                     return File(
                         excelBytes,

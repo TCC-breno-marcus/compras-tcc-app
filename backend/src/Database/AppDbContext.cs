@@ -4,11 +4,13 @@ using ComprasTccApp.Models.Entities.Centros;
 using ComprasTccApp.Models.Entities.Configuracoes;
 using ComprasTccApp.Models.Entities.Departamentos;
 using ComprasTccApp.Models.Entities.Gestores;
+using ComprasTccApp.Models.Entities.Historicos;
 using ComprasTccApp.Models.Entities.Itens;
 using ComprasTccApp.Models.Entities.Pessoas;
 using ComprasTccApp.Models.Entities.Servidores;
 using ComprasTccApp.Models.Entities.Solicitacoes;
 using ComprasTccApp.Models.Entities.Solicitantes;
+using ComprasTccApp.Models.Entities.Status;
 using Microsoft.EntityFrameworkCore;
 
 namespace Database;
@@ -31,6 +33,8 @@ public class AppDbContext : DbContext
     public DbSet<Configuracao> Configuracoes { get; set; }
     public DbSet<Centro> Centros { get; set; }
     public DbSet<Departamento> Departamentos { get; set; }
+    public DbSet<HistoricoSolicitacao> HistoricoSolicitacoes { get; set; }
+    public DbSet<StatusSolicitacao> StatusSolicitacoes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -164,6 +168,70 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Departamento>(entity =>
         {
             entity.HasIndex(d => d.Sigla).IsUnique();
+        });
+
+        modelBuilder.Entity<StatusSolicitacao>(entity =>
+        {
+            entity.HasData(
+                new StatusSolicitacao
+                {
+                    Id = 1,
+                    Nome = "Pendente",
+                    Descricao = "Solicitação recém-criada, aguardando a análise do gestor.",
+                },
+                new StatusSolicitacao
+                {
+                    Id = 2,
+                    Nome = "Aguardando Ajustes",
+                    Descricao = "Devolvida ao solicitante para correção ou mais informações.",
+                },
+                new StatusSolicitacao
+                {
+                    Id = 3,
+                    Nome = "Aprovada",
+                    Descricao =
+                        "A solicitação foi aceita pelo gestor e seguirá para o próximo fluxo.",
+                },
+                new StatusSolicitacao
+                {
+                    Id = 4,
+                    Nome = "Rejeitada",
+                    Descricao = "O pedido foi permanentemente negado pelo gestor.",
+                },
+                new StatusSolicitacao
+                {
+                    Id = 5,
+                    Nome = "Cancelada",
+                    Descricao = "Encerrada antecipadamente pelo solicitante ou gestor.",
+                },
+                new StatusSolicitacao
+                {
+                    Id = 6,
+                    Nome = "Encerrada",
+                    Descricao = "Estado de arquivamento para solicitações de ciclos anteriores.",
+                }
+            );
+        });
+
+        modelBuilder.Entity<HistoricoSolicitacao>(entity =>
+        {
+            entity
+                .HasOne(h => h.StatusAnterior)
+                .WithMany()
+                .HasForeignKey(h => h.StatusAnteriorId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity
+                .HasOne(h => h.StatusNovo)
+                .WithMany()
+                .HasForeignKey(h => h.StatusNovoId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity
+                .HasOne(h => h.Pessoa)
+                .WithMany()
+                .HasForeignKey(h => h.PessoaId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
     }
 }
