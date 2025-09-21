@@ -69,6 +69,11 @@ builder.Services.AddScoped<ICentroService, CentroService>();
 
 //builder.Services.AddScoped<IEmailService, EmailService>();
 
+// --- CONFIGURAÇÃO DE CULTURA PADRÃO ---
+var cultureInfo = new System.Globalization.CultureInfo("pt-BR");
+System.Globalization.CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+
 var app = builder.Build();
 
 app.UseCors(MyAllowSpecificOrigins);

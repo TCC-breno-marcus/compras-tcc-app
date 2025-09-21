@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Globalization;
 using System.Reflection;
 using ComprasTccApp.Backend.Models.Entities.Items;
 using ComprasTccApp.Models.Entities.Itens;
@@ -28,7 +29,7 @@ namespace ComprasTccApp.Backend.Helpers
                 if (!string.Equals(oldValue, newValue))
                 {
                     changes.Add(
-                        $"{prop.Name} alterado de '{oldValue ?? "vazio"}' para '{newValue ?? "vazio"}'."
+                        $"{prop.Name} alterado de |{oldValue ?? "vazio"}| para |{newValue ?? "vazio"}|."
                     );
                 }
             }
@@ -49,7 +50,7 @@ namespace ComprasTccApp.Backend.Helpers
             foreach (var itemId in dicionarioAntigos.Keys.Except(dicionarioNovos.Keys))
             {
                 changes.Add(
-                    $"Item '{dicionarioAntigos[itemId].Item.Nome}' (CATMAT: {dicionarioAntigos[itemId].Item.CatMat}) removido."
+                    $"Item '{dicionarioAntigos[itemId].Item.Nome}' (CATMAT '{dicionarioAntigos[itemId].Item.CatMat}') removido."
                 );
             }
 
@@ -64,7 +65,7 @@ namespace ComprasTccApp.Backend.Helpers
                     ? itemInfo.CatMat
                     : "N/A";
                 changes.Add(
-                    $"Item '{nomeItem}' (CATMAT: {catmatItem}) adicionado com quantidade {itemNovo.Quantidade}."
+                    $"Item '{nomeItem}' (CATMAT '{catmatItem}') adicionado com quantidade '{itemNovo.Quantidade}'."
                 );
             }
 
@@ -79,24 +80,29 @@ namespace ComprasTccApp.Backend.Helpers
                 if (itemAntigo.Quantidade != itemNovo.Quantidade)
                 {
                     changes.Add(
-                        $"Quantidade do item '{nomeItem}' (CATMAT: {catmatItem}) alterada de {itemAntigo.Quantidade} para {itemNovo.Quantidade}."
+                        $"Quantidade do item '{nomeItem}' (CATMAT '{catmatItem}') alterada de '{itemAntigo.Quantidade}' para '{itemNovo.Quantidade}'."
                     );
                 }
                 if (itemAntigo.ValorUnitario != itemNovo.ValorUnitario)
                 {
                     changes.Add(
-                        $"Preço unitário do item '{nomeItem}' (CATMAT: {catmatItem}) alterado de {itemAntigo.ValorUnitario:C} para {itemNovo.ValorUnitario:C}."
+                        $"Preço unitário do item '{nomeItem}' (CATMAT '{catmatItem}') alterado de '{FormatarMoeda(itemAntigo.ValorUnitario)}' para '{FormatarMoeda(itemNovo.ValorUnitario)}'."
                     );
                 }
                 if (itemAntigo.Justificativa != itemNovo.Justificativa)
                 {
                     changes.Add(
-                        $"Justificativa do item '{nomeItem}' (CATMAT: {catmatItem}) alterada de '{itemAntigo.Justificativa}' para '{itemNovo.Justificativa}'."
+                        $"Justificativa do item '{nomeItem}' (CATMAT '{catmatItem}') alterada de '{itemAntigo.Justificativa}' para '{itemNovo.Justificativa}'."
                     );
                 }
             }
 
             return changes;
+        }
+
+        public static string FormatarMoeda(decimal valor)
+        {
+            return valor.ToString("C", new CultureInfo("pt-BR"));
         }
     }
 }

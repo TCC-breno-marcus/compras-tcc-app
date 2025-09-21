@@ -61,6 +61,15 @@ export interface ItemSolicitationResponse {
 }
 
 /**
+ * Representa um objeto de status da solicitação
+ */
+export interface SolicitationStatus {
+  id: number
+  nome: string
+  descricao: string
+}
+
+/**
  * Representa uma solicitação no front.
  */
 export interface Solicitation {
@@ -68,6 +77,7 @@ export interface Solicitation {
   dataCriacao: string
   justificativaGeral: string
   externalId: string
+  status: SolicitationStatus
   solicitante: Solicitante
   itens: SolicitationItem[]
 }
@@ -108,4 +118,16 @@ export interface SolicitationFilters {
   pageNumber: string
   pessoaId: string
   siglaDepartamento: string
+}
+
+/**
+ * Representa um objeto da lista de históricos de uma solicitação
+ */
+export interface SolicitationHistoryEvent {
+  id: string
+  dataOcorrencia: string
+  acao: string
+  detalhes: string | null
+  observacoes: string | null
+  nomePessoa: string
 }
