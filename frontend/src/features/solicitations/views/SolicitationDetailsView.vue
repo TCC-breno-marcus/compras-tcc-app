@@ -24,6 +24,8 @@ import { SAVE_CONFIRMATION } from '@/utils/confirmationFactoryUtils'
 import type { Solicitation } from '../types'
 import Textarea from 'primevue/textarea'
 import { toTitleCase } from '@/utils/stringUtils'
+import SolicitationHistory from '../components/SolicitationHistory.vue'
+import { useHistoryStore } from '../stores/historyStore'
 
 const solicitationContext = reactive<SolicitationContext>({
   dialogMode: 'selection',
@@ -42,6 +44,9 @@ const { user } = storeToRefs(authStore)
 const solicitationStore = useSolicitationStore()
 const { currentSolicitation, isLoading, error, currentSolicitationBackup } =
   storeToRefs(solicitationStore)
+const historyStore = useHistoryStore()
+
+const activeTab = ref('0')
 
 const loggedUserCreatedIt = computed(() => {
   return currentSolicitation.value?.solicitante.unidade.sigla === user.value?.unidade?.sigla
@@ -62,6 +67,9 @@ const acceptSaveChanges = async () => {
   const success = await solicitationStore.update(currentSolicitation.value)
   if (success) {
     isEditing.value = false
+    historyStore.clearHistory()
+    historyStore.fetchSolicitationHistory(currentSolicitation.value.id)
+    activeTab.value = '0'
   }
 }
 
@@ -147,11 +155,17 @@ const isSolicitationValid = (solicitation: Solicitation | null): boolean => {
   return isValid
 }
 
+const handleEdit = () => {
+  isEditing.value = true
+  activeTab.value = '0'
+}
+
 watch(
   () => route.params.id,
   (newId) => {
     if (newId && typeof newId === 'string') {
       solicitationStore.fetchById(parseInt(newId, 10))
+      historyStore.clearHistory()
     }
   },
   {
@@ -205,12 +219,13 @@ onMounted(() => {
               : `Prazo para ajustes: ${deadline ? formatDate(deadline, 'short') : 'Não definido'}`
           }}
         </Message>
+        <!-- TODO: só devo poder editar se o status da solicitacao nao for cancelada, rejeitada ou encerrada -->
         <Button
           v-if="!isEditing && !deadlineHasExpired && loggedUserCreatedIt"
           icon="pi pi-pencil"
           label="Editar"
           size="small"
-          @click="isEditing = true"
+          @click="handleEdit"
         />
         <Button
           v-if="isEditing"
@@ -242,18 +257,18 @@ onMounted(() => {
                 <div>
                   <span class="text-sm text-color-secondary">Requisitante</span>
                   <p class="font-bold m-0">
-                    {{ currentSolicitation.solicitante.nome }}
+                    {{ currentSolicitation.solicitante.nome }} ({{
+                      currentSolicitation.solicitante.unidade.sigla
+                    }})
                   </p>
                 </div>
               </li>
               <li class="flex align-items-center">
-                <i class="pi pi-envelope text-primary text-xl mr-3"></i>
+                <i class="pi pi-calendar text-primary text-xl mr-3"></i>
                 <div>
-                  <span class="text-sm text-color-secondary">Departamento</span>
+                  <span class="text-sm text-color-secondary">Data da Criação</span>
                   <p class="font-bold m-0">
-                    {{ toTitleCase(currentSolicitation.solicitante.unidade.nome) }} ({{
-                      currentSolicitation.solicitante.unidade.sigla
-                    }})
+                    {{ formatDate(currentSolicitation.dataCriacao, 'long') }}
                   </p>
                 </div>
               </li>
@@ -267,20 +282,20 @@ onMounted(() => {
           <template #content>
             <ul class="list-none p-0 m-0">
               <li class="flex align-items-center mb-4">
-                <i class="pi pi-calendar text-primary text-xl mr-3"></i>
-                <div>
-                  <span class="text-sm text-color-secondary">Data da Solicitação</span>
-                  <p class="font-bold m-0">
-                    {{ formatDate(currentSolicitation.dataCriacao, 'long') }}
-                  </p>
-                </div>
-              </li>
-              <li class="flex align-items-center">
                 <i class="pi pi-envelope text-primary text-xl mr-3"></i>
                 <div>
                   <span class="text-sm text-color-secondary">Tipo da Solicitação</span>
                   <p class="font-bold m-0">
                     {{ solicitationContext.isGeneral ? 'Geral' : 'Patrimonial' }}
+                  </p>
+                </div>
+              </li>
+              <li class="flex align-items-center">
+                <i class="pi pi-clock text-primary text-xl mr-3"></i>
+                <div>
+                  <span class="text-sm text-color-secondary">Status</span>
+                  <p class="font-bold m-0">
+                    {{ toTitleCase(currentSolicitation.status.nome) }}
                   </p>
                 </div>
               </li>
@@ -317,10 +332,11 @@ onMounted(() => {
       </div>
     </div>
 
-    <Tabs value="0" class="mt-3">
+    <Tabs v-model:value="activeTab" class="mt-3">
       <TabList>
         <Tab value="0">Itens Solicitados</Tab>
-        <Tab value="1">Análise da Solicitação</Tab>
+        <Tab value="1">Insights</Tab>
+        <Tab value="2">Histórico</Tab>
       </TabList>
       <TabPanels>
         <TabPanel value="0">
@@ -328,6 +344,9 @@ onMounted(() => {
         </TabPanel>
         <TabPanel value="1">
           <SolicitationAnalysis />
+        </TabPanel>
+        <TabPanel value="2">
+          <SolicitationHistory :solicitation-id="currentSolicitation.id" />
         </TabPanel>
       </TabPanels>
     </Tabs>

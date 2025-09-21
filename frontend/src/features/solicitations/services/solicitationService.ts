@@ -4,6 +4,7 @@ import type {
   MySolicitationFilters,
   Solicitation,
   SolicitationFilters,
+  SolicitationHistoryEvent,
 } from '../types'
 import type { PaginatedResponse } from '@/types'
 
@@ -13,6 +14,7 @@ interface ISolicitationService {
   getById(id: number): Promise<Solicitation>
   getMySolicitations(filters?: MySolicitationFilters): Promise<PaginatedResponse<Solicitation>>
   getAllSolicitations(filters?: SolicitationFilters): Promise<PaginatedResponse<Solicitation>>
+  getSolicitationHistory(solicitationId: number): Promise<SolicitationHistoryEvent[]>
 }
 
 export const solicitationService: ISolicitationService = {
@@ -134,6 +136,23 @@ export const solicitationService: ISolicitationService = {
     } catch (error) {
       console.error(`Erro ao buscar solicitações:`, error)
       throw new Error('Não foi possível buscar solicitações.')
+    }
+  },
+
+  /**
+   * Busca o histórico da solicitação.
+   * @param solicitationId O ID da solicitação.
+   * @returns Um array de histórico.
+   */
+  async getSolicitationHistory(solicitationId) {
+    try {
+      const response = await apiClient.get<SolicitationHistoryEvent[]>(
+        `/solicitacao/${solicitationId}/historico`,
+      )
+      return response.data
+    } catch (error) {
+      console.error(`Erro ao buscar histórico da solicitação:`, error)
+      throw new Error('Não foi possível buscar histórico da solicitação.')
     }
   },
 }
