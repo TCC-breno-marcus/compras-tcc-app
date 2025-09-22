@@ -233,7 +233,7 @@ public class AppDbContext : DbContext
         {
             entity
                 .HasOne(h => h.Item)
-                .WithMany()
+                .WithMany(s => s.Historico)
                 .HasForeignKey(h => h.ItemId)
                 .OnDelete(DeleteBehavior.Cascade);
 

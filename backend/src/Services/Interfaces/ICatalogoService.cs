@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Models.Dtos;
 
 namespace Services.Interfaces
@@ -22,17 +23,19 @@ namespace Services.Interfaces
 
         Task<string> PopularImagensAsync(string caminhoDasImagens);
 
-        Task<ItemDto?> EditarItemAsync(int id, ItemUpdateDto updateDto);
+        Task<ItemDto?> EditarItemAsync(int id, ItemUpdateDto updateDto, ClaimsPrincipal user);
         Task<ItemDto?> GetItemByIdAsync(long id);
 
-        Task<ItemDto> CriarItemAsync(CreateItemDto dto);
+        Task<ItemDto> CriarItemAsync(CreateItemDto dto, ClaimsPrincipal user);
 
         Task<bool> DeleteItemAsync(long id);
 
         Task<IEnumerable<ItemDto>?> GetItensSemelhantesAsync(long id);
 
-        Task<ItemDto?> AtualizarImagemAsync(long id, IFormFile imagem);
+        Task<ItemDto?> AtualizarImagemAsync(long id, IFormFile imagem, ClaimsPrincipal user);
 
-        Task<bool> RemoverImagemAsync(long id);
+        Task<bool> RemoverImagemAsync(long id, ClaimsPrincipal user);
+
+        Task<List<HistoricoItemDto>?> GetHistoricoItemAsync(long itemId);
     }
 }

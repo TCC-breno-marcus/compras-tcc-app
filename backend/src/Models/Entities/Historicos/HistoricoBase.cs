@@ -13,7 +13,7 @@ namespace ComprasTccApp.Models.Entities.Historicos
         [Required]
         public AcaoHistoricoEnum Acao { get; set; }
 
-        [StringLength(500)]
+        [StringLength(2000)]
         public string? Detalhes { get; set; }
 
         [StringLength(500)]

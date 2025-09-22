@@ -1,4 +1,8 @@
+using System.Security.Claims;
+using ComprasTccApp.Backend.Enums;
+using ComprasTccApp.Backend.Helpers;
 using ComprasTccApp.Backend.Models.Entities.Items;
+using ComprasTccApp.Models.Entities.Historicos;
 using Database;
 using Microsoft.EntityFrameworkCore;
 using Models.Dtos;
@@ -157,7 +161,11 @@ namespace Services
             }
         }
 
-        public async Task<ItemDto?> EditarItemAsync(int id, ItemUpdateDto updateDto)
+        public async Task<ItemDto?> EditarItemAsync(
+            int id,
+            ItemUpdateDto updateDto,
+            ClaimsPrincipal user
+        )
         {
             var itemDoBanco = await _context.Items.FirstOrDefaultAsync(i => i.Id == id);
 
@@ -166,6 +174,13 @@ namespace Services
                 _logger.LogWarning("Tentativa de editar item com ID {Id} não encontrado.", id);
                 return null;
             }
+
+            var catalogoCategorias = _context
+                .Categorias.Where(c =>
+                    c.Id == itemDoBanco.CategoriaId || c.Id == updateDto.CategoriaId
+                )
+                .ToDictionary(c => c.Id);
+            var alteracoes = AuditHelper.CompareItem(itemDoBanco, updateDto, catalogoCategorias);
 
             if (!string.IsNullOrEmpty(updateDto.Nome))
                 itemDoBanco.Nome = updateDto.Nome;
@@ -189,6 +204,22 @@ namespace Services
 
             if (updateDto.IsActive.HasValue)
                 itemDoBanco.IsActive = updateDto.IsActive.Value;
+
+            if (alteracoes.Any())
+            {
+                var pessoaId = long.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+                var historico = new HistoricoItem
+                {
+                    ItemId = itemDoBanco.Id,
+                    DataOcorrencia = DateTime.UtcNow,
+                    PessoaId = pessoaId,
+                    Acao = AcaoHistoricoEnum.Edicao,
+                    Detalhes = string.Join(" | ", alteracoes),
+                    Observacoes = null,
+                };
+                await _context.HistoricoItens.AddAsync(historico);
+            }
 
             await _context.SaveChangesAsync();
 
@@ -393,7 +424,7 @@ namespace Services
             }
         }
 
-        public async Task<ItemDto> CriarItemAsync(CreateItemDto dto)
+        public async Task<ItemDto> CriarItemAsync(CreateItemDto dto, ClaimsPrincipal user)
         {
             var itemExistente = await _context.Items.AnyAsync(item => item.CatMat == dto.CatMat);
 
@@ -429,6 +460,19 @@ namespace Services
                     "A categoria associada ao item não foi encontrada após a criação."
                 );
             }
+
+            var pessoaId = long.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var historico = new HistoricoItem
+            {
+                ItemId = novoItem.Id,
+                DataOcorrencia = DateTime.UtcNow,
+                PessoaId = pessoaId,
+                Acao = AcaoHistoricoEnum.Criacao,
+                Detalhes = "Item criado.",
+                Observacoes = null,
+            };
+            await _context.HistoricoItens.AddAsync(historico);
+            await _context.SaveChangesAsync();
 
             return new ItemDto
             {
@@ -536,7 +580,11 @@ namespace Services
             }
         }
 
-        public async Task<ItemDto?> AtualizarImagemAsync(long id, IFormFile imagem)
+        public async Task<ItemDto?> AtualizarImagemAsync(
+            long id,
+            IFormFile imagem,
+            ClaimsPrincipal user
+        )
         {
             var item = await _context
                 .Items.Include(item => item.Categoria)
@@ -565,6 +613,19 @@ namespace Services
             }
 
             item.LinkImagem = novoNomeArquivo;
+
+            var pessoaId = long.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var historico = new HistoricoItem
+            {
+                ItemId = item.Id,
+                DataOcorrencia = DateTime.UtcNow,
+                PessoaId = pessoaId,
+                Acao = AcaoHistoricoEnum.Edicao,
+                Detalhes = "Imagem do item alterada.",
+                Observacoes = null,
+            };
+            await _context.HistoricoItens.AddAsync(historico);
+
             await _context.SaveChangesAsync();
 
             return new ItemDto
@@ -589,7 +650,7 @@ namespace Services
             };
         }
 
-        public async Task<bool> RemoverImagemAsync(long id)
+        public async Task<bool> RemoverImagemAsync(long id, ClaimsPrincipal user)
         {
             var item = await _context.Items.FindAsync(id);
             if (item == null)
@@ -611,10 +672,55 @@ namespace Services
             }
 
             item.LinkImagem = "";
+
+            var pessoaId = long.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var historico = new HistoricoItem
+            {
+                ItemId = item.Id,
+                DataOcorrencia = DateTime.UtcNow,
+                PessoaId = pessoaId,
+                Acao = AcaoHistoricoEnum.Edicao,
+                Detalhes = "Imagem do item removida.",
+                Observacoes = null,
+            };
+            await _context.HistoricoItens.AddAsync(historico);
+
             await _context.SaveChangesAsync();
 
             _logger.LogInformation("Link da imagem para o item ID {Id} removido do banco.", id);
             return true;
+        }
+
+        public async Task<List<HistoricoItemDto>?> GetHistoricoItemAsync(long itemId)
+        {
+            var item = await _context
+                .Items.Include(item => item.Categoria)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(i => i.Id == itemId);
+
+            if (item == null)
+            {
+                _logger.LogWarning("Item com ID: {Id} não encontrado.", itemId);
+                return null;
+            }
+
+            var historico = await _context
+                .HistoricoItens.AsNoTracking()
+                .Where(h => h.ItemId == itemId)
+                .Include(h => h.Pessoa)
+                .OrderByDescending(h => h.DataOcorrencia)
+                .Select(h => new HistoricoItemDto
+                {
+                    Id = h.Id,
+                    DataOcorrencia = h.DataOcorrencia,
+                    Acao = h.Acao.ToString(),
+                    Detalhes = h.Detalhes,
+                    Observacoes = h.Observacoes,
+                    NomePessoa = h.Pessoa.Nome,
+                })
+                .ToListAsync();
+
+            return historico;
         }
     }
 }
