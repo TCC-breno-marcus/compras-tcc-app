@@ -79,3 +79,15 @@ export interface ItemFormData {
   precoSugerido: number
   isActive: boolean
 }
+
+/**
+ * Representa um objeto da lista de históricos de um item
+ */
+export interface ItemHistoryEvent {
+  id: string
+  dataOcorrencia: string
+  acao: string
+  detalhes: string | null
+  observacoes: string | null
+  nomePessoa: string
+}

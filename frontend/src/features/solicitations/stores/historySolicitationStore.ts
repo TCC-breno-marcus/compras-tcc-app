@@ -7,7 +7,7 @@ import type { SolicitationHistoryEvent } from '../types'
 /**
  * Store para gerenciar estado de histórico de uma solicitação
  */
-export const useHistoryStore = defineStore('history', () => {
+export const useSolicitationHistoryStore = defineStore('historySolicitation', () => {
   const solicitationHistory = ref<SolicitationHistoryEvent[]>([])
   const isLoading = ref(false)
   const error = ref<string | null>(null)

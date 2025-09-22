@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
-import { Divider } from 'primevue'
+import { Divider, Tab, TabList, TabPanel, TabPanels, Tabs } from 'primevue'
 import { ref, watch, computed, inject } from 'vue'
 import { catalogoService } from '../services/catalogoService'
 import type { Item } from '../types'
@@ -32,6 +32,8 @@ import { useCategoriaStore } from '../stores/categoriaStore'
 import { storeToRefs } from 'pinia'
 import Select from 'primevue/select'
 import { SolicitationContextKey } from '@/features/solicitations/keys'
+import ItemHistory from './ItemHistory.vue'
+import { useItemHistoryStore } from '../stores/historyItemStore'
 
 const props = defineProps<{
   visible: boolean
@@ -58,6 +60,9 @@ const {
   loading: categoriasLoading,
   error: categoriasError,
 } = storeToRefs(categoriaStore)
+const historyStore = useItemHistoryStore()
+const { itemHistory, isLoading: historyLoading } = storeToRefs(historyStore)
+const activeTab = ref('0')
 
 const emit = defineEmits(['update:visible', 'update-dialog'])
 
@@ -102,6 +107,8 @@ watch(
         ])
         detailedItem.value = responseDados
         itensSemelhantes.value = responseSemelhantes
+        historyStore.clearHistory()
+        historyStore.fetchItemHistory(detailedItem.value.id)
       } catch (err) {
         console.error('Erro ao buscar detalhes ou pré-carregar imagem:', err)
         error.value = 'Não foi possível carregar os detalhes do item.'
@@ -171,6 +178,7 @@ const enterEditMode = () => {
     originalFormData.value = { ...initialFormState }
   }
   isEditing.value = true
+  activeTab.value = '0'
 }
 
 const cancelEdit = () => {
@@ -213,7 +221,11 @@ const acceptSaveChanges = async () => {
       life: 3000,
     })
 
+    historyStore.clearHistory()
+    historyStore.fetchItemHistory(detailedItem.value.id)
+
     isEditing.value = false
+    activeTab.value = '0'
     emit('update-dialog', { item: updatedItem, action: 'updateItems' })
   } catch (err) {
     console.error('Erro ao salvar as alterações:', err)
@@ -356,209 +368,225 @@ const fileUploadPT = ref({
     :header="`Detalhes do Material ${detailedItem?.catMat || ''}`"
     :style="{ width: '90vw', maxWidth: '800px' }"
   >
-    <div v-if="isLoading" class="dialog-content flex">
-      <ItemDetailsDialogSkeleton />
-    </div>
-
-    <div v-else-if="error" class="flex flex-column align-items-center p-5">
-      <i class="pi pi-exclamation-triangle text-3xl text-red-500"></i>
-      <p class="mt-2">{{ error }}</p>
-    </div>
-
-    <div v-else-if="detailedItem" class="dialog-content flex flex-column md:flex-row">
-      <div
-        class="w-10rem flex-shrink-0 align-self-center md:align-self-start mb-4 md:mb-0 mr-0 md:mr-4"
-      >
-        <img
-          v-if="previewUrl"
-          :src="previewUrl"
-          :alt="detailedItem.nome"
-          class="dialog-image mb-2"
-        />
-        <div v-else class="image-placeholder mb-3">
-          <span class="material-symbols-outlined placeholder-icon"> hide_image </span>
-        </div>
-        <div class="flex align-items-center justify-content-center gap-1 text-xs w-full">
-          <i class="pi pi pi-info-circle text-xs cursor-pointer"></i>
-          <small>Imagem meramente ilustrativa</small>
-        </div>
-        <div v-if="isEditing" class="field flex flex-column align-items-center">
-          <Button
-            v-if="formData.linkImagem"
-            label="Remover"
-            icon="pi pi-trash"
-            severity="danger"
-            text
-            size="small"
-            @click="removerImagem"
-            class="my-2"
-          />
-          <FileUpload
-            name="imagem"
-            @select="onFileSelect"
-            @remove="onFileRemove"
-            :showUploadButton="false"
-            :showCancelButton="false"
-            accept="image/*"
-            chooseLabel="Selecionar"
-            chooseIcon="pi pi-plus"
-            :maxFileSize="10000000"
-            invalidFileSizeMessage="O tamanho do arquivo não pode exceder 10 MB."
-            :previewWidth="85"
-            class="upload-button text-sm"
-            :pt="fileUploadPT"
-          >
-            <template #empty>
-              <small class="text-color-secondary text-center"
-                >Arraste e solte uma imagem aqui ou clique para selecionar.</small
-              >
-            </template>
-          </FileUpload>
-        </div>
-      </div>
-
-      <div class="flex-grow-1 md:pr-4 text-justify mt-2 mb-2 md:mb-0">
-        <div v-if="!isEditing">
-          <p><strong>Nome:</strong> {{ detailedItem.nome }}</p>
-          <p><strong>CATMAT:</strong> {{ detailedItem.catMat }}</p>
-          <p><strong>Descrição:</strong> {{ detailedItem.descricao }}</p>
-          <p>
-            <strong>Especificação: </strong>
-            <span :class="{ 'texto-padrao': !detailedItem.especificacao }">
-              {{ detailedItem.especificacao || 'Não informada.' }}
-            </span>
-          </p>
-          <p><strong>Categoria:</strong> {{ detailedItem.categoria.nome }}</p>
-          <p v-if="detailedItem.precoSugerido != null">
-            <strong>Preço Sugerido:</strong>
-            {{
-              detailedItem.precoSugerido.toLocaleString('pt-BR', {
-                style: 'currency',
-                currency: 'BRL',
-              })
-            }}
-          </p>
-          <p v-if="!solicitationContext">
-            <strong>Status:</strong>
-            <Tag
-              :severity="item?.isActive ? 'success' : 'danger'"
-              :value="item?.isActive ? 'Ativo' : 'Inativo'"
-              class="ml-2"
-            ></Tag>
-          </p>
-        </div>
-
-        <div v-else class="flex flex-column gap-3">
-          <div class="flex flex-column sm:flex-row w-full gap-3 sm:gap-2">
-            <FloatLabel variant="on" class="w-full sm:w-9">
-              <InputText
-                id="nome"
-                v-model="formData.nome"
-                :invalid="!formData.nome"
-                size="small"
-                class="w-full"
-                :maxlength="100"
-              />
-              <label for="nome">Nome</label>
-            </FloatLabel>
-            <FloatLabel variant="on" class="w-full sm:w-3">
-              <InputText
-                id="catMat"
-                v-model="formData.catMat"
-                :invalid="!formData.catMat"
-                size="small"
-                class="w-full"
-                :maxlength="6"
-              />
-              <label for="catMat">Catmat</label>
-            </FloatLabel>
+    <Tabs v-model:value="activeTab" class="mt-3">
+      <TabList>
+        <Tab value="0">Dados</Tab>
+        <Tab value="1">Histórico</Tab>
+      </TabList>
+      <TabPanels>
+        <TabPanel value="0">
+          <div v-if="isLoading" class="dialog-content flex">
+            <ItemDetailsDialogSkeleton />
           </div>
-          <FloatLabel variant="on">
-            <Textarea
-              id="descricao"
-              v-model="formData.descricao"
-              :invalid="!formData.descricao"
-              autoResize
-              class="w-full pb-4"
-              size="small"
-              :maxlength="500"
-            />
-            <label for="descricao">Descrição</label>
-            <small class="char-counter">
-              {{ formData.descricao?.length || 0 }}/500 caracteres
-            </small>
-          </FloatLabel>
-          <FloatLabel variant="on">
-            <InputText
-              id="especificacao"
-              v-model="formData.especificacao"
-              size="small"
-              class="w-full"
-              :maxlength="500"
-            />
-            <label for="especificacao">Especificação</label>
-          </FloatLabel>
-          <div class="flex flex-column sm:flex-row w-full gap-3 sm:gap-2">
-            <FloatLabel class="w-full sm:w-6 mt-1 sm:mt-0" variant="on">
-              <Select
-                v-model="formData.categoriaId"
-                :options="categorias"
-                optionLabel="nome"
-                optionValue="id"
-                inputId="categoria-filter"
-                size="small"
-                class="w-full"
-              />
-              <label for="categoria-filter">Categoria</label>
-            </FloatLabel>
-            <FloatLabel variant="on" class="price-input w-full sm:w-3">
-              <InputNumber
-                v-model="formData.precoSugerido"
-                inputId="precoSugerido"
-                mode="currency"
-                currency="BRL"
-                locale="pt-BR"
-                :min="0"
-                size="small"
-                class="w-full"
-                inputClass="w-full"
-              />
-              <label for="precoSugerido">Preço Sugerido</label>
-            </FloatLabel>
 
-            <div class="status-container border-1 border-round-xl w-full sm:w-3">
-              <div class="flex justify-content-between align-items-center">
-                <label for="isActive">Status</label>
-                <ToggleSwitch v-model="formData.isActive" id="isActive" />
+          <div v-else-if="error" class="flex flex-column align-items-center p-5">
+            <i class="pi pi-exclamation-triangle text-3xl text-red-500"></i>
+            <p class="mt-2">{{ error }}</p>
+          </div>
+
+          <div v-else-if="detailedItem" class="dialog-content flex flex-column md:flex-row">
+            <div
+              class="w-10rem flex-shrink-0 align-self-center md:align-self-start mb-4 md:mb-0 mr-0 md:mr-4"
+            >
+              <img
+                v-if="previewUrl"
+                :src="previewUrl"
+                :alt="detailedItem.nome"
+                class="dialog-image mb-2"
+              />
+              <div v-else class="image-placeholder mb-3">
+                <span class="material-symbols-outlined placeholder-icon"> hide_image </span>
+              </div>
+              <div class="flex align-items-center justify-content-center gap-1 text-xs w-full">
+                <i class="pi pi pi-info-circle text-xs cursor-pointer"></i>
+                <small>Imagem meramente ilustrativa</small>
+              </div>
+              <div v-if="isEditing" class="field flex flex-column align-items-center">
+                <Button
+                  v-if="formData.linkImagem"
+                  label="Remover"
+                  icon="pi pi-trash"
+                  severity="danger"
+                  text
+                  size="small"
+                  @click="removerImagem"
+                  class="my-2"
+                />
+                <FileUpload
+                  name="imagem"
+                  @select="onFileSelect"
+                  @remove="onFileRemove"
+                  :showUploadButton="false"
+                  :showCancelButton="false"
+                  accept="image/*"
+                  chooseLabel="Selecionar"
+                  chooseIcon="pi pi-plus"
+                  :maxFileSize="10000000"
+                  invalidFileSizeMessage="O tamanho do arquivo não pode exceder 10 MB."
+                  :previewWidth="85"
+                  class="upload-button text-sm"
+                  :pt="fileUploadPT"
+                >
+                  <template #empty>
+                    <small class="text-color-secondary text-center"
+                      >Arraste e solte uma imagem aqui ou clique para selecionar.</small
+                    >
+                  </template>
+                </FileUpload>
+              </div>
+            </div>
+
+            <div class="flex-grow-1 md:pr-4 text-justify mt-2 mb-2 md:mb-0">
+              <div v-if="!isEditing">
+                <p><strong>Nome:</strong> {{ detailedItem.nome }}</p>
+                <p><strong>CATMAT:</strong> {{ detailedItem.catMat }}</p>
+                <p><strong>Descrição:</strong> {{ detailedItem.descricao }}</p>
+                <p>
+                  <strong>Especificação: </strong>
+                  <span :class="{ 'texto-padrao': !detailedItem.especificacao }">
+                    {{ detailedItem.especificacao || 'Não informada.' }}
+                  </span>
+                </p>
+                <p><strong>Categoria:</strong> {{ detailedItem.categoria.nome }}</p>
+                <p v-if="detailedItem.precoSugerido != null">
+                  <strong>Preço Sugerido:</strong>
+                  {{
+                    detailedItem.precoSugerido.toLocaleString('pt-BR', {
+                      style: 'currency',
+                      currency: 'BRL',
+                    })
+                  }}
+                </p>
+                <p v-if="!solicitationContext">
+                  <strong>Status:</strong>
+                  <Tag
+                    :severity="item?.isActive ? 'success' : 'danger'"
+                    :value="item?.isActive ? 'Ativo' : 'Inativo'"
+                    class="ml-2"
+                  ></Tag>
+                </p>
+              </div>
+
+              <div v-else class="flex flex-column gap-3">
+                <div class="flex flex-column sm:flex-row w-full gap-3 sm:gap-2">
+                  <FloatLabel variant="on" class="w-full sm:w-9">
+                    <InputText
+                      id="nome"
+                      v-model="formData.nome"
+                      :invalid="!formData.nome"
+                      size="small"
+                      class="w-full"
+                      :maxlength="100"
+                    />
+                    <label for="nome">Nome</label>
+                  </FloatLabel>
+                  <FloatLabel variant="on" class="w-full sm:w-3">
+                    <InputText
+                      id="catMat"
+                      v-model="formData.catMat"
+                      :invalid="!formData.catMat"
+                      size="small"
+                      class="w-full"
+                      :maxlength="6"
+                    />
+                    <label for="catMat">Catmat</label>
+                  </FloatLabel>
+                </div>
+                <FloatLabel variant="on">
+                  <Textarea
+                    id="descricao"
+                    v-model="formData.descricao"
+                    :invalid="!formData.descricao"
+                    autoResize
+                    class="w-full pb-4"
+                    size="small"
+                    :maxlength="500"
+                  />
+                  <label for="descricao">Descrição</label>
+                  <small class="char-counter">
+                    {{ formData.descricao?.length || 0 }}/500 caracteres
+                  </small>
+                </FloatLabel>
+                <FloatLabel variant="on">
+                  <InputText
+                    id="especificacao"
+                    v-model="formData.especificacao"
+                    size="small"
+                    class="w-full"
+                    :maxlength="500"
+                  />
+                  <label for="especificacao">Especificação</label>
+                </FloatLabel>
+                <div class="flex flex-column sm:flex-row w-full gap-3 sm:gap-2">
+                  <FloatLabel class="w-full sm:w-6 mt-1 sm:mt-0" variant="on">
+                    <Select
+                      v-model="formData.categoriaId"
+                      :options="categorias"
+                      optionLabel="nome"
+                      optionValue="id"
+                      inputId="categoria-filter"
+                      size="small"
+                      class="w-full"
+                    />
+                    <label for="categoria-filter">Categoria</label>
+                  </FloatLabel>
+                  <FloatLabel variant="on" class="price-input w-full sm:w-3">
+                    <InputNumber
+                      v-model="formData.precoSugerido"
+                      inputId="precoSugerido"
+                      mode="currency"
+                      currency="BRL"
+                      locale="pt-BR"
+                      :min="0"
+                      size="small"
+                      class="w-full"
+                      inputClass="w-full"
+                    />
+                    <label for="precoSugerido">Preço Sugerido</label>
+                  </FloatLabel>
+
+                  <div class="status-container border-1 border-round-xl w-full sm:w-3">
+                    <div class="flex justify-content-between align-items-center">
+                      <label for="isActive">Status</label>
+                      <ToggleSwitch v-model="formData.isActive" id="isActive" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <Divider align="left" type="solid" class="mt-4">
+                <b>Materiais Semelhantes</b>
+              </Divider>
+              <p
+                v-if="itensSemelhantes.length === 0"
+                class="text-sm text-color-secondary font-italic"
+              >
+                Nenhum material semelhante encontrado.
+              </p>
+              <div v-else class="semelhantes-list flex flex-column max-h-16rem overflow-auto">
+                <a
+                  v-for="item in itensSemelhantes"
+                  :key="item.id"
+                  @click="accessOtherItem(item)"
+                  class="semelhante-item flex flex-column p-2"
+                  v-tooltip.bottom="'Acessar Item'"
+                >
+                  <span class="nome">
+                    {{ item.nome }}
+                    <span v-if="item.especificacao"> - {{ item.especificacao }}</span>
+                  </span>
+
+                  <span class="catmat text-xs">CATMAT: {{ item.catMat }}</span>
+                </a>
               </div>
             </div>
           </div>
-        </div>
-
-        <Divider align="left" type="solid" class="mt-4">
-          <b>Materiais Semelhantes</b>
-        </Divider>
-        <p v-if="itensSemelhantes.length === 0" class="text-sm text-color-secondary font-italic">
-          Nenhum material semelhante encontrado.
-        </p>
-        <div v-else class="semelhantes-list flex flex-column max-h-16rem overflow-auto">
-          <a
-            v-for="item in itensSemelhantes"
-            :key="item.id"
-            @click="accessOtherItem(item)"
-            class="semelhante-item flex flex-column p-2"
-            v-tooltip.bottom="'Acessar Item'"
-          >
-            <span class="nome">
-              {{ item.nome }}
-              <span v-if="item.especificacao"> - {{ item.especificacao }}</span>
-            </span>
-
-            <span class="catmat text-xs">CATMAT: {{ item.catMat }}</span>
-          </a>
-        </div>
-      </div>
-    </div>
+        </TabPanel>
+        <TabPanel value="1">
+          <ItemHistory :item-id="detailedItem?.id" />
+        </TabPanel>
+      </TabPanels>
+    </Tabs>
 
     <template #footer>
       <div class="flex justify-content-between w-full">

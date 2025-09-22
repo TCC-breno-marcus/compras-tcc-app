@@ -1,5 +1,5 @@
 import { apiClient } from '@/services/apiClient'
-import type { Item, ItemParams } from '@/features/catalogo/types'
+import type { Item, ItemHistoryEvent, ItemParams } from '@/features/catalogo/types'
 import imageCompression from 'browser-image-compression'
 import { transformItem } from '../utils/itemTransformer'
 import type { CatalogoFilters } from '../types'
@@ -14,6 +14,7 @@ interface ICatalogoService {
   removerImagemItem(id: number): Promise<void>
   criarItem(params: ItemParams): Promise<Item>
   deletarItem(id: number): Promise<void>
+  getItemHistory(itemId: number): Promise<ItemHistoryEvent[]>
 }
 
 /**
@@ -148,5 +149,20 @@ export const catalogoService: ICatalogoService = {
    */
   async removerImagemItem(id) {
     await apiClient.delete(`/catalogo/${id}/imagem`)
+  },
+
+  /**
+   * Busca o histórico do item.
+   * @param itemId O ID do item.
+   * @returns Um array de histórico.
+   */
+  async getItemHistory(itemId) {
+    try {
+      const response = await apiClient.get<ItemHistoryEvent[]>(`/catalogo/${itemId}/historico`)
+      return response.data
+    } catch (error) {
+      console.error(`Erro ao buscar histórico do item:`, error)
+      throw new Error('Não foi possível buscar histórico do item.')
+    }
   },
 }
