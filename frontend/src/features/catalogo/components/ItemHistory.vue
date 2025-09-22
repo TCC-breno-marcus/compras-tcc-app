@@ -147,7 +147,7 @@ const formatDetailText = (text: string) => {
 <style scoped>
 .history-container {
   width: 100%;
-  height: 520px;
+  max-height: 600px;
   overflow-y: auto;
 }
 

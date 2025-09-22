@@ -366,11 +366,14 @@ const fileUploadPT = ref({
     @update:visible="closeModal"
     modal
     :header="`Detalhes do Material ${detailedItem?.catMat || ''}`"
-    :style="{ width: '90vw', maxWidth: '800px' }"
+    :pt="{
+      header: { style: 'padding-bottom: 0' },
+    }"
+    :style="{ width: '90vw', maxWidth: '800px'}"
   >
-    <Tabs v-model:value="activeTab" class="mt-3">
+    <Tabs v-model:value="activeTab">
       <TabList>
-        <Tab value="0">Dados</Tab>
+        <Tab value="0">Detalhes</Tab>
         <Tab value="1">Histórico</Tab>
       </TabList>
       <TabPanels>
@@ -384,7 +387,7 @@ const fileUploadPT = ref({
             <p class="mt-2">{{ error }}</p>
           </div>
 
-          <div v-else-if="detailedItem" class="dialog-content flex flex-column md:flex-row">
+          <div v-else-if="detailedItem" class="dialog-content flex flex-column md:flex-row mt-2">
             <div
               class="w-10rem flex-shrink-0 align-self-center md:align-self-start mb-4 md:mb-0 mr-0 md:mr-4"
             >
