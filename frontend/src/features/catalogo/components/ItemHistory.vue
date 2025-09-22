@@ -5,17 +5,19 @@ import Tag from 'primevue/tag'
 import { computed, onMounted } from 'vue'
 import { formatDate } from '@/utils/dateUtils'
 import { storeToRefs } from 'pinia'
-import { useSolicitationHistoryStore } from '../stores/historySolicitationStore'
+import { useItemHistoryStore } from '../stores/historyItemStore'
 
 const props = defineProps<{
-  solicitationId: number
+  itemId?: number
 }>()
 
-const historyStore = useSolicitationHistoryStore()
-const { solicitationHistory, isLoading } = storeToRefs(historyStore)
+const historyStore = useItemHistoryStore()
+const { itemHistory, isLoading } = storeToRefs(historyStore)
 
 onMounted(() => {
-  historyStore.fetchSolicitationHistory(props.solicitationId)
+  if (props.itemId) {
+    historyStore.fetchItemHistory(props.itemId)
+  }
 })
 
 const mapAcaoToDisplay: { [key: string]: string } = {
@@ -30,7 +32,7 @@ const mapAcaoToDisplay: { [key: string]: string } = {
 }
 
 const processedHistory = computed(() => {
-  return solicitationHistory.value.map((event) => {
+  return itemHistory.value.map((event) => {
     const detailsList = event.detalhes
       ? event.detalhes
           .split('|')
@@ -136,7 +138,7 @@ const formatDetailText = (text: string) => {
         <p>Carregando histórico...</p>
       </div>
       <p v-else class="text-color-secondary">
-        Nenhum histórico de alterações encontrado para esta solicitação.
+        Nenhum histórico de alterações encontrado para este item.
       </p>
     </div>
   </div>
@@ -145,7 +147,7 @@ const formatDetailText = (text: string) => {
 <style scoped>
 .history-container {
   width: 100%;
-  height: 520px;
+  max-height: 600px;
   overflow-y: auto;
 }
 

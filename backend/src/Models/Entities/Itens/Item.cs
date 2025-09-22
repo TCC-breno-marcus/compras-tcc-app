@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using ComprasTccApp.Models.Entities.Categorias;
+using ComprasTccApp.Models.Entities.Historicos;
 using ComprasTccApp.Models.Entities.Itens;
 using ComprasTccApp.Models.Entities.Solicitacoes;
 
@@ -37,5 +38,7 @@ namespace ComprasTccApp.Backend.Models.Entities.Items
         public Categoria Categoria { get; set; } = null!;
 
         public List<SolicitacaoItem> SolicitacoesItem { get; set; } = new List<SolicitacaoItem>();
+
+        public List<HistoricoItem> Historico { get; set; } = [];
     }
 }

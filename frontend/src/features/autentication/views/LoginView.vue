@@ -124,14 +124,7 @@ const handleLogin = async () => {
             class="w-full mt-2"
           />
           <p class="text-center text-color-secondary">
-            Ainda não possui acesso? Solicite junto à gestão do seu centro pelo e-mail
-            <!-- TODO: deve ser o email setado na entidade CENTRO -->
-            <a
-              href="mailto:gestao@exemplo.br"
-              class="hover:underline text-primary-500"
-              aria-label="Enviar email para gestao@exemplo.br"
-              >centro@academico.ufs.br</a
-            >.
+            Ainda não possui acesso? Solicite junto à gestão do seu centro ou departamento.
           </p>
         </form>
       </div>

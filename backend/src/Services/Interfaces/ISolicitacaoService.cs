@@ -56,5 +56,8 @@ public interface ISolicitacaoService
         CancelarSolicitacaoDto dto
     );
 
-    Task<List<HistoricoSolicitacaoDto>?> GetHistoricoAsync(long solicitacaoId, ClaimsPrincipal user);
+    Task<List<HistoricoSolicitacaoDto>?> GetHistoricoAsync(
+        long solicitacaoId,
+        ClaimsPrincipal user
+    );
 }

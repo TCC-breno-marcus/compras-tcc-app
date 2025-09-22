@@ -25,7 +25,7 @@ import type { Solicitation } from '../types'
 import Textarea from 'primevue/textarea'
 import { toTitleCase } from '@/utils/stringUtils'
 import SolicitationHistory from '../components/SolicitationHistory.vue'
-import { useHistoryStore } from '../stores/historyStore'
+import { useSolicitationHistoryStore } from '../stores/historySolicitationStore'
 
 const solicitationContext = reactive<SolicitationContext>({
   dialogMode: 'selection',
@@ -44,7 +44,7 @@ const { user } = storeToRefs(authStore)
 const solicitationStore = useSolicitationStore()
 const { currentSolicitation, isLoading, error, currentSolicitationBackup } =
   storeToRefs(solicitationStore)
-const historyStore = useHistoryStore()
+const historyStore = useSolicitationHistoryStore()
 
 const activeTab = ref('0')
 

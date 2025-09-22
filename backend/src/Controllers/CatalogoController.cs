@@ -154,7 +154,7 @@ namespace Controllers
             if (updateDto == null)
                 return BadRequest("Corpo da requisição vazio.");
 
-            var itemAtualizado = await _catalogoService.EditarItemAsync(id, updateDto);
+            var itemAtualizado = await _catalogoService.EditarItemAsync(id, updateDto, User);
 
             if (itemAtualizado == null)
                 return NotFound(new { message = $"Item com ID {id} não encontrado." });
@@ -252,7 +252,7 @@ namespace Controllers
             {
                 _logger.LogInformation("Recebida requisição para criar um item.");
 
-                var itemCriadoDto = await _catalogoService.CriarItemAsync(newItemDto);
+                var itemCriadoDto = await _catalogoService.CriarItemAsync(newItemDto, User);
 
                 return CreatedAtAction(
                     "GetItemPorId",
@@ -312,7 +312,7 @@ namespace Controllers
 
             try
             {
-                var itemAtualizado = await _catalogoService.AtualizarImagemAsync(id, imagem);
+                var itemAtualizado = await _catalogoService.AtualizarImagemAsync(id, imagem, User);
                 if (itemAtualizado == null)
                 {
                     return NotFound(new { message = $"Item com ID {id} não encontrado." });
@@ -334,7 +334,7 @@ namespace Controllers
         {
             try
             {
-                var sucesso = await _catalogoService.RemoverImagemAsync(id);
+                var sucesso = await _catalogoService.RemoverImagemAsync(id, User);
                 if (!sucesso)
                 {
                     return NotFound(new { message = $"Item com ID {id} não encontrado." });
@@ -345,6 +345,38 @@ namespace Controllers
             {
                 _logger.LogError(ex, "Ocorreu um erro ao remover a imagem do item {Id}.", id);
                 return StatusCode(500, new { message = "Ocorreu um erro interno no servidor." });
+            }
+        }
+
+        [HttpGet("{id}/historico")]
+        [ProducesResponseType(typeof(List<HistoricoItemDto>), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        [Authorize(Roles = "Admin,Gestor")]
+        public async Task<IActionResult> GetHistoricoItem([FromRoute] long id)
+        {
+            try
+            {
+                _logger.LogInformation("Recebida requisição para buscar histórico de um item.");
+
+                var historico = await _catalogoService.GetHistoricoItemAsync(id);
+
+                if (historico == null)
+                    return NotFound(new { message = $"Item com ID {id} não encontrado." });
+
+                return Ok(historico);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ocorreu um erro não tratado no endpoint GetHistoricoItem.");
+                return StatusCode(
+                    500,
+                    new
+                    {
+                        message = "Ocorreu um erro interno no servidor. Por favor, tente novamente mais tarde.",
+                    }
+                );
             }
         }
     }

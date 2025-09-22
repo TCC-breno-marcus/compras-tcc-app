@@ -2,6 +2,7 @@ using System.Collections;
 using System.Globalization;
 using System.Reflection;
 using ComprasTccApp.Backend.Models.Entities.Items;
+using ComprasTccApp.Models.Entities.Categorias;
 using ComprasTccApp.Models.Entities.Itens;
 using Models.Dtos;
 
@@ -103,6 +104,91 @@ namespace ComprasTccApp.Backend.Helpers
         public static string FormatarMoeda(decimal valor)
         {
             return valor.ToString("C", new CultureInfo("pt-BR"));
+        }
+
+        public static List<string> CompareItem(
+            Item itemAntigo,
+            ItemUpdateDto itemNovo,
+            Dictionary<long, Categoria>? catalogoCategorias = null
+        )
+        {
+            var changes = new List<string>();
+
+            // Comparar Nome
+            if (!string.IsNullOrEmpty(itemNovo.Nome) && itemAntigo.Nome != itemNovo.Nome)
+            {
+                changes.Add($"Nome alterado de '{itemAntigo.Nome}' para '{itemNovo.Nome}'.");
+            }
+
+            // Comparar CatMat
+            if (!string.IsNullOrEmpty(itemNovo.CatMat) && itemAntigo.CatMat != itemNovo.CatMat)
+            {
+                changes.Add($"CATMAT alterado de '{itemAntigo.CatMat}' para '{itemNovo.CatMat}'.");
+            }
+
+            // Comparar Descrição
+            if (
+                !string.IsNullOrEmpty(itemNovo.Descricao)
+                && itemAntigo.Descricao != itemNovo.Descricao
+            )
+            {
+                changes.Add(
+                    $"Descrição alterada de '{itemAntigo.Descricao}' para '{itemNovo.Descricao}'."
+                );
+            }
+
+            // Comparar Especificação
+            if (
+                !string.IsNullOrEmpty(itemNovo.Especificacao)
+                && itemAntigo.Especificacao != itemNovo.Especificacao
+            )
+            {
+                changes.Add(
+                    $"Especificação alterada de '{itemAntigo.Especificacao}' para '{itemNovo.Especificacao}'."
+                );
+            }
+
+            // Comparar Preço Sugerido
+            if (
+                itemNovo.PrecoSugerido.HasValue
+                && itemAntigo.PrecoSugerido != itemNovo.PrecoSugerido.Value
+            )
+            {
+                changes.Add(
+                    $"Preço sugerido alterado de '{FormatarMoeda(itemAntigo.PrecoSugerido)}' para '{FormatarMoeda(itemNovo.PrecoSugerido.Value)}'."
+                );
+            }
+
+            // Comparar Categoria
+            if (
+                itemNovo.CategoriaId.HasValue
+                && itemAntigo.CategoriaId != itemNovo.CategoriaId.Value
+            )
+            {
+                var nomeAntigo =
+                    catalogoCategorias?.TryGetValue(itemAntigo.CategoriaId, out var catAntiga)
+                    == true
+                        ? catAntiga.Nome
+                        : $"ID {itemAntigo.CategoriaId}";
+
+                var nomeNovo =
+                    catalogoCategorias?.TryGetValue(itemNovo.CategoriaId.Value, out var catNova)
+                    == true
+                        ? catNova.Nome
+                        : $"ID {itemNovo.CategoriaId.Value}";
+
+                changes.Add($"Categoria alterada de '{nomeAntigo}' para '{nomeNovo}'.");
+            }
+
+            // Comparar Status Ativo
+            if (itemNovo.IsActive.HasValue && itemAntigo.IsActive != itemNovo.IsActive.Value)
+            {
+                var statusAntigo = itemAntigo.IsActive ? "Ativo" : "Inativo";
+                var statusNovo = itemNovo.IsActive.Value ? "Ativo" : "Inativo";
+                changes.Add($"Status alterado de '{statusAntigo}' para '{statusNovo}'.");
+            }
+
+            return changes;
         }
     }
 }
