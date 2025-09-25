@@ -28,7 +28,7 @@ namespace Services.Interfaces
 
         Task<ItemDto> CriarItemAsync(CreateItemDto dto, ClaimsPrincipal user);
 
-        Task<bool> DeleteItemAsync(long id);
+        Task<(bool sucesso, string mensagem)> DeleteItemAsync(long id, ClaimsPrincipal user);
 
         Task<IEnumerable<ItemDto>?> GetItensSemelhantesAsync(long id);
 

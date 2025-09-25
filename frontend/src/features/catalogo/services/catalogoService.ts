@@ -1,5 +1,5 @@
 import { apiClient } from '@/services/apiClient'
-import type { Item, ItemHistoryEvent, ItemParams } from '@/features/catalogo/types'
+import type { DeleteItemResponse, Item, ItemHistoryEvent, ItemParams } from '@/features/catalogo/types'
 import imageCompression from 'browser-image-compression'
 import { transformItem } from '../utils/itemTransformer'
 import type { CatalogoFilters } from '../types'
@@ -13,7 +13,7 @@ interface ICatalogoService {
   atualizarImagemItem(id: number, arquivo: File): Promise<Item>
   removerImagemItem(id: number): Promise<void>
   criarItem(params: ItemParams): Promise<Item>
-  deletarItem(id: number): Promise<void>
+  deletarItem(id: number): Promise<DeleteItemResponse>
   getItemHistory(itemId: number): Promise<ItemHistoryEvent[]>
 }
 
@@ -120,7 +120,8 @@ export const catalogoService: ICatalogoService = {
    * @param id ID do item.
    */
   async deletarItem(id) {
-    await apiClient.delete(`/catalogo/${id}`)
+    const response = await apiClient.delete<DeleteItemResponse>(`/catalogo/${id}`)
+    return response.data
   },
 
   /**
