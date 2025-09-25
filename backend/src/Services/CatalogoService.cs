@@ -494,10 +494,11 @@ namespace Services
             };
         }
 
-        public async Task<bool> DeleteItemAsync(long id)
+        public async Task<(bool sucesso, string mensagem)> DeleteItemAsync(
+            long id,
+            ClaimsPrincipal user
+        )
         {
-            // TODO: deve validar se o item não está presente em uma solicitação, só poderá remover se não estiver contido
-            // em nenhuma solicitação ativa
             var item = await _context.Items.FindAsync(id);
 
             if (item == null)
@@ -506,15 +507,45 @@ namespace Services
                     "Tentativa de deletar item com ID {Id}, mas não foi encontrado.",
                     id
                 );
-                return false;
+                return (false, "Item não encontrado.");
             }
 
-            _context.Items.Remove(item);
+            var jaFoiSolicitado = await _context.SolicitacaoItens.AnyAsync(si => si.ItemId == id);
 
-            await _context.SaveChangesAsync();
+            if (jaFoiSolicitado)
+            {
+                // Soft delete - item já tem histórico
+                item.IsActive = false;
 
-            _logger.LogInformation("Item com ID {Id} foi deletado com sucesso.", id);
-            return true;
+                var pessoaId = long.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
+                var historico = new HistoricoItem
+                {
+                    ItemId = item.Id,
+                    DataOcorrencia = DateTime.UtcNow,
+                    PessoaId = pessoaId,
+                    Acao = AcaoHistoricoEnum.Remocao,
+                    Detalhes = "Item desativado pois já foi utilizado em solicitações.",
+                    Observacoes = null,
+                };
+                await _context.HistoricoItens.AddAsync(historico);
+
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation(
+                    "Item com ID {Id} foi desativado (soft delete) pois já foi utilizado em solicitações.",
+                    id
+                );
+                return (true, "Item foi desativado pois já foi utilizado em solicitações.");
+            }
+            else
+            {
+                // Hard delete - item nunca foi usado
+                _context.Items.Remove(item);
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Item com ID {Id} foi deletado permanentemente.", id);
+                return (true, "Item foi removido permanentemente.");
+            }
         }
 
         public async Task<IEnumerable<ItemDto>?> GetItensSemelhantesAsync(long id)

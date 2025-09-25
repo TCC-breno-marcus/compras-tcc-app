@@ -283,14 +283,14 @@ namespace Controllers
             {
                 _logger.LogInformation("Recebida requisição para deletar o item com ID: {Id}", id);
 
-                var sucesso = await _catalogoService.DeleteItemAsync(id);
+                var (sucesso, mensagem) = await _catalogoService.DeleteItemAsync(id, User);
 
                 if (!sucesso)
                 {
-                    return NotFound(new { message = $"Item com ID {id} não encontrado." });
+                    return NotFound(new { message = mensagem });
                 }
 
-                return NoContent();
+                return Ok(new { message = mensagem });
             }
             catch (Exception ex)
             {

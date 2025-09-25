@@ -313,13 +313,12 @@ const acceptDeleteItem = async () => {
 
   isLoading.value = true
   try {
-    await catalogoService.deletarItem(detailedItem.value.id)
-
+    const response = await catalogoService.deletarItem(detailedItem.value.id)
     toast.add({
       severity: 'success',
       summary: 'Sucesso',
-      detail: 'O item foi excluído com sucesso.',
-      life: 3000,
+      detail: response.message,
+      life: 5000,
     })
 
     isEditing.value = false

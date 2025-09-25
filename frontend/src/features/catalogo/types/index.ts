@@ -91,3 +91,7 @@ export interface ItemHistoryEvent {
   observacoes: string | null
   nomePessoa: string
 }
+
+export interface DeleteItemResponse {
+  message: string
+}
