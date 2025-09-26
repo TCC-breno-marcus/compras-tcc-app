@@ -11,7 +11,7 @@ import { formatDate } from '@/utils/dateUtils'
 import { formatCurrency } from '@/utils/currency'
 import CustomPaginator from '@/components/ui/CustomPaginator.vue'
 import router from '@/router'
-import { Tag } from 'primevue'
+import { MultiSelect, Tag } from 'primevue'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
 import InputText from 'primevue/inputtext'
@@ -21,6 +21,8 @@ import type { MySolicitationFilters } from '../types'
 import DatePicker from 'primevue/datepicker'
 import MySolicitationsSkeleton from '../components/MySolicitationsSkeleton.vue'
 import { mapQueryToFilters } from '../utils/queryHelper'
+import { getSolicitationStatusOptions } from '../utils'
+import { SOLICITATION_STATUS } from '../constants'
 
 const route = useRoute()
 const mySolicitationListStore = useMySolicitationListStore()
@@ -34,6 +36,7 @@ const filter = reactive<MySolicitationFilters>({
   sortOrder: null,
   pageNumber: '1',
   pageSize: '10',
+  statusIds: [],
 })
 
 const typeOptions = ref(['Geral', 'Patrimonial'])
@@ -60,6 +63,10 @@ const applyFilters = () => {
 
   if (filter.sortOrder) query.sortOrder = filter.sortOrder
 
+  if (filter.statusIds && filter.statusIds.length > 0) {
+    query.statusIds = filter.statusIds
+  }
+
   // Reseta para a primeira página
   query.pageNumber = '1'
 
@@ -74,9 +81,11 @@ const columns = [
   { field: 'externalId', header: 'Código' },
   { field: 'dataCriacao', header: 'Data de Criação' },
   { field: 'typeDisplay', header: 'Tipo' },
-  { field: 'itemsCount', header: 'Itens Únicos' },
-  { field: 'totalItemsQuantity', header: 'Total de Itens' },
-  { field: 'totalEstimatedPrice', header: 'Preço Total Estimado' },
+  { field: 'status', header: 'Status' },
+
+  // { field: 'itemsCount', header: 'Itens Únicos' },
+  // { field: 'totalItemsQuantity', header: 'Total de Itens' },
+  // { field: 'totalEstimatedPrice', header: 'Preço Total Estimado' },
 ]
 
 const toggleSortDirection = () => {
@@ -106,6 +115,15 @@ const verDetalhes = (id: number) => {
 
 const goToCreatePage = (type: 'geral' | 'patrimonial') => {
   router.push(`/solicitacoes/criar/${type}`)
+}
+
+const getTagProps = (statusId: number) => {
+  const statusData = getSolicitationStatusOptions(statusId)
+  return {
+    value: statusData?.nome,
+    severity: statusData?.severity,
+    icon: statusData?.icon,
+  }
 }
 
 watch(
@@ -146,17 +164,6 @@ watch(
           <label for="id-search">Código</label>
         </FloatLabel>
 
-        <FloatLabel class="w-full sm:w-10rem mt-1 sm:mt-0" variant="on">
-          <Select
-            v-model="filter.tipo"
-            :options="typeOptions"
-            inputId="tipo-filter"
-            size="small"
-            class="w-full sm:w-10rem"
-            :showClear="true"
-          />
-          <label for="tipo-filter">Tipo</label>
-        </FloatLabel>
         <FloatLabel variant="on" class="w-full sm:w-14rem">
           <DatePicker
             v-model="filter.dateRange"
@@ -169,6 +176,33 @@ watch(
             size="small"
           />
           <label for="date-filter">Data de Criação</label>
+        </FloatLabel>
+
+        <FloatLabel class="w-full sm:w-10rem mt-1 sm:mt-0" variant="on">
+          <Select
+            v-model="filter.tipo"
+            :options="typeOptions"
+            inputId="tipo-filter"
+            size="small"
+            class="w-full sm:w-10rem"
+            :showClear="true"
+          />
+          <label for="tipo-filter">Tipo</label>
+        </FloatLabel>
+
+        <FloatLabel class="w-full sm:w-14rem mt-1 sm:mt-0" variant="on">
+          <MultiSelect
+            id="status"
+            v-model="filter.statusIds"
+            :options="SOLICITATION_STATUS"
+            optionLabel="nome"
+            option-value="id"
+            filter
+            class="w-full"
+            size="small"
+            display="chip"
+          />
+          <label for="status">Status</label>
         </FloatLabel>
 
         <Button
@@ -220,7 +254,11 @@ watch(
             {{ formatDate(slotProps.data.dataCriacao, 'short') }}
           </span>
 
-          <span v-else-if="col.field === 'itemsCount'">
+          <span v-else-if="col.field === 'status'">
+            <Tag v-bind="getTagProps(slotProps.data.status.id)" />
+          </span>
+
+          <!-- <span v-else-if="col.field === 'itemsCount'">
             <Tag :value="slotProps.data.itemsCount" severity="secondary" />
           </span>
 
@@ -230,7 +268,7 @@ watch(
 
           <span v-else-if="col.field === 'totalEstimatedPrice'">
             <Tag severity="success" :value="formatCurrency(slotProps.data.totalEstimatedPrice)" />
-          </span>
+          </span> -->
 
           <span v-else>
             {{ slotProps.data[col.field] }}

@@ -26,6 +26,7 @@ import Textarea from 'primevue/textarea'
 import { toTitleCase } from '@/utils/stringUtils'
 import SolicitationHistory from '../components/SolicitationHistory.vue'
 import { useSolicitationHistoryStore } from '../stores/historySolicitationStore'
+import SelectStatus from '../components/SelectStatus.vue'
 
 const solicitationContext = reactive<SolicitationContext>({
   dialogMode: 'selection',
@@ -40,7 +41,7 @@ const toast = useToast()
 const confirm = useConfirm()
 const settingStore = useSettingStore()
 const { deadline, deadlineHasExpired } = storeToRefs(settingStore)
-const { user } = storeToRefs(authStore)
+const { user, isGestor } = storeToRefs(authStore)
 const solicitationStore = useSolicitationStore()
 const { currentSolicitation, isLoading, error, currentSolicitationBackup } =
   storeToRefs(solicitationStore)
@@ -53,6 +54,8 @@ const loggedUserCreatedIt = computed(() => {
 })
 
 const isEditing = ref<boolean>(false)
+
+const isEditingStatus = ref<boolean>(false)
 
 const handleCancel = () => {
   const id = currentSolicitation.value?.id
@@ -160,6 +163,26 @@ const handleEdit = () => {
   activeTab.value = '0'
 }
 
+const handleStatusChange = async (newStatusId: number) => {
+  if (!currentSolicitation.value) return
+  await solicitationStore.updateStatus(newStatusId)
+  historyStore.clearHistory()
+  historyStore.fetchSolicitationHistory(currentSolicitation.value.id)
+}
+
+const canEditSolicitation = computed(() => {
+  if (!user.value || !currentSolicitation.value) {
+    return false
+  }
+
+  const editableStatus = ['Pendente', 'Aguardando Ajustes']
+  const isStatusEditable = editableStatus.includes(currentSolicitation.value.status.nome)
+
+  return (
+    !isEditing.value && loggedUserCreatedIt.value && isStatusEditable && !deadlineHasExpired.value
+  )
+})
+
 watch(
   () => route.params.id,
   (newId) => {
@@ -221,7 +244,7 @@ onMounted(() => {
         </Message>
         <!-- TODO: só devo poder editar se o status da solicitacao nao for cancelada, rejeitada ou encerrada -->
         <Button
-          v-if="!isEditing && !deadlineHasExpired && loggedUserCreatedIt"
+          v-if="canEditSolicitation"
           icon="pi pi-pencil"
           label="Editar"
           size="small"
@@ -252,7 +275,7 @@ onMounted(() => {
         <Card class="h-full">
           <template #content>
             <ul class="list-none p-0 m-0">
-              <li class="flex align-items-center mb-4">
+              <li class="flex align-items-start mb-4">
                 <i class="pi pi-user text-primary text-xl mr-3"></i>
                 <div>
                   <span class="text-sm text-color-secondary">Requisitante</span>
@@ -263,7 +286,7 @@ onMounted(() => {
                   </p>
                 </div>
               </li>
-              <li class="flex align-items-center">
+              <li class="flex align-items-start">
                 <i class="pi pi-calendar text-primary text-xl mr-3"></i>
                 <div>
                   <span class="text-sm text-color-secondary">Data da Criação</span>
@@ -290,14 +313,21 @@ onMounted(() => {
                   </p>
                 </div>
               </li>
-              <li class="flex align-items-center">
+              <li class="flex align-items-start">
                 <i class="pi pi-clock text-primary text-xl mr-3"></i>
-                <div>
+                <div class="flex-1">
                   <span class="text-sm text-color-secondary">Status</span>
-                  <p class="font-bold m-0">
-                    {{ toTitleCase(currentSolicitation.status.nome) }}
-                  </p>
+                  <div class="flex flex-wrap align-items-center gap-2">
+                    <p v-if="!isEditingStatus" class="font-bold m-0">
+                      {{ toTitleCase(currentSolicitation.status.nome) }}
+                    </p>
+                  </div>
                 </div>
+                <SelectStatus
+                  v-if="isGestor"
+                  :current-status-id="currentSolicitation.status.id"
+                  @status-change="handleStatusChange"
+                />
               </li>
             </ul>
           </template>

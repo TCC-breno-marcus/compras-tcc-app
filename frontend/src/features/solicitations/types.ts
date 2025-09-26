@@ -70,6 +70,14 @@ export interface SolicitationStatus {
 }
 
 /**
+ * Representa o body da requisição de atualizar status de uma solicitação
+ */
+export interface SolicitationStatusPayload {
+  novoStatusId: number
+  observacoes: string
+}
+
+/**
  * Representa uma solicitação no front.
  */
 export interface Solicitation {
@@ -104,6 +112,7 @@ export interface MySolicitationFilters {
   sortOrder: string | null
   pageSize: string
   pageNumber: string
+  statusIds: number[]
 }
 
 /**
@@ -116,6 +125,7 @@ export interface SolicitationFilters {
   sortOrder: string | null
   pageSize: string
   pageNumber: string
+  statusIds: number[]
   pessoaId: string
   siglaDepartamento: string
 }

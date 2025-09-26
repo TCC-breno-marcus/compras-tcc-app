@@ -7,6 +7,6 @@ namespace ComprasTccApp.Backend.Domain
         public const int Aprovada = 3;
         public const int Rejeitada = 4;
         public const int Cancelada = 5;
-        public const int Encerrada = 5;
+        public const int Encerrada = 6;
     }
 }

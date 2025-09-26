@@ -1,3 +1,4 @@
+import { SOLICITATION_STATUS } from '../constants'
 import type { Solicitation, SolicitationListItem } from '../types'
 
 /**
@@ -33,4 +34,8 @@ export const transformSolicitation = (
       department: solicitation.solicitante.unidade.sigla,
     }),
   }
+}
+
+export const getSolicitationStatusOptions = (statusId: number) => {
+  return SOLICITATION_STATUS.find((status) => status.id === statusId) || null
 }
