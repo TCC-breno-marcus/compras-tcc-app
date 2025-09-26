@@ -19,13 +19,14 @@ import { formatDate } from '@/utils/dateUtils'
 import SolicitationDetailsSkeleton from '../components/SolicitationDetailsSkeleton.vue'
 import { useSolicitationStore } from '../stores/solicitationStore'
 import CustomBreadcrumb from '@/components/ui/CustomBreadcrumb.vue'
-import { Select, useConfirm, useToast } from 'primevue'
+import { useConfirm, useToast } from 'primevue'
 import { SAVE_CONFIRMATION } from '@/utils/confirmationFactoryUtils'
 import type { Solicitation } from '../types'
 import Textarea from 'primevue/textarea'
 import { toTitleCase } from '@/utils/stringUtils'
 import SolicitationHistory from '../components/SolicitationHistory.vue'
 import { useSolicitationHistoryStore } from '../stores/historySolicitationStore'
+import SelectStatus from '../components/SelectStatus.vue'
 
 const solicitationContext = reactive<SolicitationContext>({
   dialogMode: 'selection',
@@ -55,15 +56,6 @@ const loggedUserCreatedIt = computed(() => {
 const isEditing = ref<boolean>(false)
 
 const isEditingStatus = ref<boolean>(false)
-const selectedStatus = ref<number | undefined>(currentSolicitation.value?.status.id)
-const statusOptions = [
-  { id: 1, nome: 'Pendente' },
-  { id: 2, nome: 'Aguardando Ajustes' },
-  { id: 3, nome: 'Aprovada' },
-  { id: 4, nome: 'Rejeitada' },
-  { id: 5, nome: 'Cancelada' },
-  { id: 6, nome: 'Encerrada' },
-]
 
 const handleCancel = () => {
   const id = currentSolicitation.value?.id
@@ -171,13 +163,11 @@ const handleEdit = () => {
   activeTab.value = '0'
 }
 
-const cancelChangeStatus = () => {
-  selectedStatus.value = currentSolicitation.value?.status.id
-  isEditingStatus.value = false
-}
-
-const handleStatusChange = () => {
-  console.log('')
+const handleStatusChange = async (newStatusId: number) => {
+  if (!currentSolicitation.value) return
+  await solicitationStore.updateStatus(newStatusId)
+  historyStore.clearHistory()
+  historyStore.fetchSolicitationHistory(currentSolicitation.value.id)
 }
 
 watch(
@@ -318,46 +308,12 @@ onMounted(() => {
                     <p v-if="!isEditingStatus" class="font-bold m-0">
                       {{ toTitleCase(currentSolicitation.status.nome) }}
                     </p>
-                    <Select
-                      v-else
-                      v-model="selectedStatus"
-                      :options="statusOptions"
-                      option-label="nome"
-                      option-value="id"
-                      class="w-full sm:w-13rem mt-1"
-                      size="small"
-                    />
-
-                    <div v-if="isGestor" class="flex gap-2">
-                      <Button
-                        v-if="isEditingStatus"
-                        icon="pi pi-times"
-                        severity="danger"
-                        text
-                        @click="cancelChangeStatus"
-                        v-tooltip.top="'Cancelar'"
-                        size="small"
-                      />
-                      <Button
-                        v-if="isEditingStatus"
-                        icon="pi pi-check"
-                        severity="success"
-                        text
-                        @click="handleStatusChange"
-                        v-tooltip.top="'Salvar'"
-                        size="small"
-                      />
-                    </div>
                   </div>
                 </div>
-                <Button
-                  v-if="isGestor && !isEditingStatus"
-                  icon="pi pi-pencil"
-                  text
-                  size="small"
-                  severity="secondary"
-                  @click="isEditingStatus = true"
-                  v-tooltip="'Mudar Status'"
+                <SelectStatus
+                  v-if="isGestor"
+                  :current-status-id="currentSolicitation.status.id"
+                  @status-change="handleStatusChange"
                 />
               </li>
             </ul>

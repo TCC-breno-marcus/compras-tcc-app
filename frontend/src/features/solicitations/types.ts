@@ -70,6 +70,14 @@ export interface SolicitationStatus {
 }
 
 /**
+ * Representa o body da requisição de atualizar status de uma solicitação
+ */
+export interface SolicitationStatusPayload {
+  novoStatusId: number
+  observacoes: string
+}
+
+/**
  * Representa uma solicitação no front.
  */
 export interface Solicitation {

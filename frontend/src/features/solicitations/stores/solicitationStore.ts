@@ -145,6 +145,43 @@ export const useSolicitationStore = defineStore('solicitation', () => {
     error.value = null
   }
 
+  /**
+   * Altera o status da solicitação.
+   * @param newStatusId O ID do novo status.
+   */
+  const updateStatus = async (newStatusId: number) => {
+    if (!currentSolicitation.value) {
+      return
+    }
+
+    const body = {
+      novoStatusId: newStatusId,
+      observacoes: '',
+    }
+
+    try {
+      const response = await solicitationService.updateStatus(currentSolicitation.value?.id, body)
+      currentSolicitation.value = response
+      currentSolicitationBackup.value = JSON.parse(JSON.stringify(response))
+      toast.add({
+        severity: 'success',
+        summary: 'Sucesso',
+        detail: 'O status foi salvo com sucesso.',
+        life: 3000,
+      })
+      return true
+    } catch (err: any) {
+      error.value = err.message || 'Falha ao atualizar o status.'
+      toast.add({
+        severity: 'error',
+        summary: 'Erro',
+        detail: err.message || 'Não foi possível salvar as alterações.',
+        life: 3000,
+      })
+      return false
+    }
+  }
+
   return {
     currentSolicitation,
     currentSolicitationBackup,
@@ -157,5 +194,6 @@ export const useSolicitationStore = defineStore('solicitation', () => {
     updateItemQuantity,
     isDirty,
     $reset,
+    updateStatus,
   }
 })

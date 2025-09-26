@@ -5,8 +5,10 @@ import type {
   Solicitation,
   SolicitationFilters,
   SolicitationHistoryEvent,
+  SolicitationStatusPayload,
 } from '../types'
 import type { PaginatedResponse } from '@/types'
+import axios from 'axios'
 
 interface ISolicitationService {
   create(payload: CreateSolicitationPayload): Promise<Solicitation>
@@ -15,6 +17,7 @@ interface ISolicitationService {
   getMySolicitations(filters?: MySolicitationFilters): Promise<PaginatedResponse<Solicitation>>
   getAllSolicitations(filters?: SolicitationFilters): Promise<PaginatedResponse<Solicitation>>
   getSolicitationHistory(solicitationId: number): Promise<SolicitationHistoryEvent[]>
+  updateStatus(solicitationId: number, payload: SolicitationStatusPayload): Promise<Solicitation>
 }
 
 export const solicitationService: ISolicitationService = {
@@ -153,6 +156,28 @@ export const solicitationService: ISolicitationService = {
     } catch (error) {
       console.error(`Erro ao buscar histórico da solicitação:`, error)
       throw new Error('Não foi possível buscar histórico da solicitação.')
+    }
+  },
+
+  /**
+   * Atualiza o status de uma solicitação no backend.
+   * @param solicitationId ID do novo status.
+   * @param body O ID do status e a observação/justificativa.
+   * @returns A solicitação atualizada.
+   */
+  async updateStatus(solicitationId, payload) {
+    try {
+      const response = await apiClient.patch<Solicitation>(
+        `/solicitacao/${solicitationId}/status`,
+        payload,
+      )
+      return response.data
+    } catch (error) {
+      console.error(`Erro ao atualizar status da solicitação:`, error)
+      if (axios.isAxiosError(error) && error.response) {
+        throw new Error(error.response.data.message || 'Não foi possível atualizar o status.')
+      }
+      throw new Error('Ocorreu um erro de comunicação ao tentar atualizar o status.')
     }
   },
 }
