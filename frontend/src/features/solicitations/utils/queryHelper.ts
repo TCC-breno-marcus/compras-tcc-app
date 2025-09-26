@@ -31,11 +31,11 @@ export const mapQueryToFilters = (
     sortOrder: getSortOrderFromQuery(query.sortOrder),
     pageSize: getFirstQueryValue(query.pageSize),
     pageNumber: getFirstQueryValue(query.pageNumber),
+    statusIds,
     ...(filterParamsType === 'SolicitationFilters' && {
       pessoaId,
       siglaDepartamento: getFirstQueryValue(query.siglaDepartamento),
     }),
-    ...(query.statusIds && { statusIds }),
   }
 }
 

@@ -75,7 +75,7 @@ export const solicitationService: ISolicitationService = {
    */
   async getMySolicitations(filters?) {
     const params = new URLSearchParams()
-
+    console.log({filters})
     if (filters) {
       Object.entries(filters).forEach(([key, value]) => {
         if (key === 'dateRange' && Array.isArray(value) && value.length > 0) {
@@ -86,8 +86,10 @@ export const solicitationService: ISolicitationService = {
           if (value[1]) {
             params.append('dataFinal', value[1].toISOString().split('T')[0])
           }
+        } else if (key === 'statusIds' && Array.isArray(value) && value.length > 0) {
+          value.forEach((id) => params.append('statusIds', String(id)))
         } else {
-          if (value != null && value !== '') {
+          if (value != null && value !== '' && value.length !== 0) {
             params.set(key, String(value))
           }
         }

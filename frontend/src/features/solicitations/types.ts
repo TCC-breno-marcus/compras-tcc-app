@@ -112,6 +112,7 @@ export interface MySolicitationFilters {
   sortOrder: string | null
   pageSize: string
   pageNumber: string
+  statusIds: number[]
 }
 
 /**
@@ -124,9 +125,9 @@ export interface SolicitationFilters {
   sortOrder: string | null
   pageSize: string
   pageNumber: string
+  statusIds: number[]
   pessoaId: string
   siglaDepartamento: string
-  statusIds: number[]
 }
 
 /**

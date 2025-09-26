@@ -170,6 +170,19 @@ const handleStatusChange = async (newStatusId: number) => {
   historyStore.fetchSolicitationHistory(currentSolicitation.value.id)
 }
 
+const canEditSolicitation = computed(() => {
+  if (!user.value || !currentSolicitation.value) {
+    return false
+  }
+
+  const editableStatus = ['Pendente', 'Aguardando Ajustes']
+  const isStatusEditable = editableStatus.includes(currentSolicitation.value.status.nome)
+
+  return (
+    !isEditing.value && loggedUserCreatedIt.value && isStatusEditable && !deadlineHasExpired.value
+  )
+})
+
 watch(
   () => route.params.id,
   (newId) => {
@@ -231,7 +244,7 @@ onMounted(() => {
         </Message>
         <!-- TODO: só devo poder editar se o status da solicitacao nao for cancelada, rejeitada ou encerrada -->
         <Button
-          v-if="!isEditing && !deadlineHasExpired && loggedUserCreatedIt"
+          v-if="canEditSolicitation"
           icon="pi pi-pencil"
           label="Editar"
           size="small"
