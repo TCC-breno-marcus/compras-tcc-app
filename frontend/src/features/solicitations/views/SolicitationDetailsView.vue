@@ -19,7 +19,7 @@ import { formatDate } from '@/utils/dateUtils'
 import SolicitationDetailsSkeleton from '../components/SolicitationDetailsSkeleton.vue'
 import { useSolicitationStore } from '../stores/solicitationStore'
 import CustomBreadcrumb from '@/components/ui/CustomBreadcrumb.vue'
-import { useConfirm, useToast } from 'primevue'
+import { Select, useConfirm, useToast } from 'primevue'
 import { SAVE_CONFIRMATION } from '@/utils/confirmationFactoryUtils'
 import type { Solicitation } from '../types'
 import Textarea from 'primevue/textarea'
@@ -40,7 +40,7 @@ const toast = useToast()
 const confirm = useConfirm()
 const settingStore = useSettingStore()
 const { deadline, deadlineHasExpired } = storeToRefs(settingStore)
-const { user } = storeToRefs(authStore)
+const { user, isGestor } = storeToRefs(authStore)
 const solicitationStore = useSolicitationStore()
 const { currentSolicitation, isLoading, error, currentSolicitationBackup } =
   storeToRefs(solicitationStore)
@@ -53,6 +53,17 @@ const loggedUserCreatedIt = computed(() => {
 })
 
 const isEditing = ref<boolean>(false)
+
+const isEditingStatus = ref<boolean>(false)
+const selectedStatus = ref<number | undefined>(currentSolicitation.value?.status.id)
+const statusOptions = [
+  { id: 1, nome: 'Pendente' },
+  { id: 2, nome: 'Aguardando Ajustes' },
+  { id: 3, nome: 'Aprovada' },
+  { id: 4, nome: 'Rejeitada' },
+  { id: 5, nome: 'Cancelada' },
+  { id: 6, nome: 'Encerrada' },
+]
 
 const handleCancel = () => {
   const id = currentSolicitation.value?.id
@@ -160,6 +171,15 @@ const handleEdit = () => {
   activeTab.value = '0'
 }
 
+const cancelChangeStatus = () => {
+  selectedStatus.value = currentSolicitation.value?.status.id
+  isEditingStatus.value = false
+}
+
+const handleStatusChange = () => {
+  console.log('')
+}
+
 watch(
   () => route.params.id,
   (newId) => {
@@ -252,7 +272,7 @@ onMounted(() => {
         <Card class="h-full">
           <template #content>
             <ul class="list-none p-0 m-0">
-              <li class="flex align-items-center mb-4">
+              <li class="flex align-items-start mb-4">
                 <i class="pi pi-user text-primary text-xl mr-3"></i>
                 <div>
                   <span class="text-sm text-color-secondary">Requisitante</span>
@@ -263,7 +283,7 @@ onMounted(() => {
                   </p>
                 </div>
               </li>
-              <li class="flex align-items-center">
+              <li class="flex align-items-start">
                 <i class="pi pi-calendar text-primary text-xl mr-3"></i>
                 <div>
                   <span class="text-sm text-color-secondary">Data da Criação</span>
@@ -290,14 +310,55 @@ onMounted(() => {
                   </p>
                 </div>
               </li>
-              <li class="flex align-items-center">
+              <li class="flex align-items-start">
                 <i class="pi pi-clock text-primary text-xl mr-3"></i>
-                <div>
+                <div class="flex-1">
                   <span class="text-sm text-color-secondary">Status</span>
-                  <p class="font-bold m-0">
-                    {{ toTitleCase(currentSolicitation.status.nome) }}
-                  </p>
+                  <div class="flex flex-wrap align-items-center gap-2">
+                    <p v-if="!isEditingStatus" class="font-bold m-0">
+                      {{ toTitleCase(currentSolicitation.status.nome) }}
+                    </p>
+                    <Select
+                      v-else
+                      v-model="selectedStatus"
+                      :options="statusOptions"
+                      option-label="nome"
+                      option-value="id"
+                      class="w-full sm:w-13rem mt-1"
+                      size="small"
+                    />
+
+                    <div v-if="isGestor" class="flex gap-2">
+                      <Button
+                        v-if="isEditingStatus"
+                        icon="pi pi-times"
+                        severity="danger"
+                        text
+                        @click="cancelChangeStatus"
+                        v-tooltip.top="'Cancelar'"
+                        size="small"
+                      />
+                      <Button
+                        v-if="isEditingStatus"
+                        icon="pi pi-check"
+                        severity="success"
+                        text
+                        @click="handleStatusChange"
+                        v-tooltip.top="'Salvar'"
+                        size="small"
+                      />
+                    </div>
+                  </div>
                 </div>
+                <Button
+                  v-if="isGestor && !isEditingStatus"
+                  icon="pi pi-pencil"
+                  text
+                  size="small"
+                  severity="secondary"
+                  @click="isEditingStatus = true"
+                  v-tooltip="'Mudar Status'"
+                />
               </li>
             </ul>
           </template>
