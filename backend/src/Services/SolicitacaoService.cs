@@ -938,7 +938,7 @@ public class SolicitacaoService : ISolicitacaoService
             )
             {
                 throw new InvalidOperationException(
-                    $"Não é possível alterar o status de uma solicitação que já foi '{statusAnteriorNome}'."
+                    $"Não é possível alterar o status de uma solicitação que já foi {statusAnteriorNome}."
                 );
             }
 
@@ -953,10 +953,10 @@ public class SolicitacaoService : ISolicitacaoService
                 SolicitacaoId = solicitacao.Id,
                 DataOcorrencia = DateTime.UtcNow,
                 PessoaId = pessoaId,
+                Acao = AcaoHistoricoEnum.MudancaDeStatus,
                 Detalhes =
-                    $"O status da solicitação foi alterado de {statusAnteriorNome} para {novoStatusNome}",
-                Observacoes =
-                    (dto.NovoStatusId == StatusConsts.AguardandoAjustes) ? dto.Observacoes : null,
+                    $"O status da solicitação foi alterado de '{statusAnteriorNome}' para '{novoStatusNome}'",
+                Observacoes = string.IsNullOrWhiteSpace(dto.Observacoes) ? null : dto.Observacoes,
             };
 
             await _context.HistoricoSolicitacoes.AddAsync(historico);
