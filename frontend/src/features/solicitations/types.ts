@@ -126,6 +126,7 @@ export interface SolicitationFilters {
   pageNumber: string
   pessoaId: string
   siglaDepartamento: string
+  statusIds: number[]
 }
 
 /**

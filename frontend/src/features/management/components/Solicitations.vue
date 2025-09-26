@@ -9,7 +9,7 @@ import { formatDate } from '@/utils/dateUtils'
 import { formatCurrency } from '@/utils/currency'
 import CustomPaginator from '@/components/ui/CustomPaginator.vue'
 import router from '@/router'
-import { Tag } from 'primevue'
+import { Badge, MultiSelect, Tag } from 'primevue'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
 import InputText from 'primevue/inputtext'
@@ -23,6 +23,8 @@ import { useAuthStore } from '@/features/autentication/stores/authStore'
 import AllSolicitationsSkeleton from '@/features/solicitations/components/AllSolicitationsSkeleton.vue'
 import { useUserStore } from '@/features/users/stores/userStore'
 import { useUnitOrganizationalStore } from '@/features/unitOrganizational/stores/unitOrganizationalStore'
+import { SOLICITATION_STATUS } from '@/features/solicitations/constants'
+import { getSolicitationStatusOptions } from '@/features/solicitations/utils'
 
 const route = useRoute()
 const authStore = useAuthStore()
@@ -43,6 +45,7 @@ const filter = reactive<SolicitationFilters>({
   pageSize: '10',
   pessoaId: '',
   siglaDepartamento: '',
+  statusIds: [],
 })
 
 const typeOptions = ref(['Geral', 'Patrimonial'])
@@ -70,7 +73,11 @@ const applyFilters = () => {
   if (filter.sortOrder) query.sortOrder = filter.sortOrder
   if (filter.pessoaId) query.pessoaId = filter.pessoaId
   if (filter.siglaDepartamento) query.siglaDepartamento = filter.siglaDepartamento
-  
+
+  if (filter.statusIds && filter.statusIds.length > 0) {
+    query.statusIds = filter.statusIds
+  }
+
   // Reseta para a primeira página
   query.pageNumber = '1'
 
@@ -87,9 +94,11 @@ const columns = [
   { field: 'requester', header: 'Solicitante' },
   { field: 'department', header: 'Departamento' },
   { field: 'typeDisplay', header: 'Tipo' },
-  { field: 'itemsCount', header: 'Itens Únicos' },
-  { field: 'totalItemsQuantity', header: 'Total de Itens' },
-  { field: 'totalEstimatedPrice', header: 'Preço Total Estimado' },
+  { field: 'status', header: 'Status' },
+  // TODO: Removidas colunas abaixo por ora. Validar se devem ser mostradas mesmo.
+  // { field: 'itemsCount', header: 'Itens Únicos' },
+  // { field: 'totalItemsQuantity', header: 'Total de Itens' },
+  // { field: 'totalEstimatedPrice', header: 'Preço Total Estimado' },
 ]
 
 const toggleSortDirection = () => {
@@ -119,6 +128,15 @@ const verDetalhes = (id: number) => {
 
 const goToCreatePage = (type: 'geral' | 'patrimonial') => {
   router.push(`/solicitacoes/criar/${type}`)
+}
+
+const getTagProps = (statusId: number) => {
+  const statusData = getSolicitationStatusOptions(statusId)
+  return {
+    value: statusData?.nome,
+    severity: statusData?.severity,
+    icon: statusData?.icon,
+  }
 }
 
 watch(
@@ -219,6 +237,21 @@ onMounted(() => {
           <label for="tipo-filter">Tipo</label>
         </FloatLabel>
 
+        <FloatLabel class="w-full sm:w-14rem mt-1 sm:mt-0" variant="on">
+          <MultiSelect
+            id="status"
+            v-model="filter.statusIds"
+            :options="SOLICITATION_STATUS"
+            optionLabel="nome"
+            option-value="id"
+            filter
+            class="w-full"
+            size="small"
+            display="chip"
+          />
+          <label for="status">Status</label>
+        </FloatLabel>
+
         <Button
           :icon="computedSort.icon"
           @click="toggleSortDirection"
@@ -268,7 +301,11 @@ onMounted(() => {
             {{ formatDate(slotProps.data.dataCriacao, 'short') }}
           </span>
 
-          <span v-else-if="col.field === 'itemsCount'">
+          <span v-else-if="col.field === 'status'">
+            <Tag v-bind="getTagProps(slotProps.data.status.id)" />
+          </span>
+
+          <!-- <span v-else-if="col.field === 'itemsCount'">
             <Tag :value="slotProps.data.itemsCount" severity="secondary" />
           </span>
 
@@ -278,7 +315,7 @@ onMounted(() => {
 
           <span v-else-if="col.field === 'totalEstimatedPrice'">
             <Tag severity="success" :value="formatCurrency(slotProps.data.totalEstimatedPrice)" />
-          </span>
+          </span> -->
 
           <span v-else>
             {{ slotProps.data[col.field] }}

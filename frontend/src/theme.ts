@@ -117,6 +117,12 @@ const MyPreset = definePreset(Aura, {
         borderRadius: '10px',
       },
     },
+    multiselect: {
+      root: {
+        paddingY: '4px',
+        borderRadius: '10px',
+      },
+    },
     toolbar: {
       root: {
         padding: '6px',
@@ -131,9 +137,9 @@ const MyPreset = definePreset(Aura, {
     breadcrumb: {
       root: {
         padding: '8px',
-        background: 'transparent'
-      }
-    }
+        background: 'transparent',
+      },
+    },
   },
 })
 
