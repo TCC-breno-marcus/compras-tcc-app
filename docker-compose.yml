@@ -47,6 +47,9 @@ services:
     depends_on:
       postgres-db:
         condition: service_healthy
+        
+    env_file:
+      - ./.env
 
   # Serviço do Frontend Vue.js (sem alterações de segredos)
   frontend-service:
