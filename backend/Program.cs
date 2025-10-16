@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Services;
 using Services.Interfaces;
+using Resend;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -15,6 +16,20 @@ var config = builder.Configuration;
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+//Resend email service setup
+var resendApiKey = builder.Configuration["RESEND_API_KEY"];
+
+if (string.IsNullOrWhiteSpace(resendApiKey))
+    throw new InvalidOperationException("A chave da API do Resend (RESEND_API_KEY) não foi configurada.");
+
+builder.Services.AddOptions();
+builder.Services.AddHttpClient<ResendClient>();
+builder.Services.Configure<ResendClientOptions>(o =>
+{
+    o.ApiToken = resendApiKey;
+});
+builder.Services.AddTransient<IResend, ResendClient>();
 
 // Authentication setup
 builder
