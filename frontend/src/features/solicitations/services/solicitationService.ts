@@ -128,7 +128,7 @@ export const solicitationService: ISolicitationService = {
         } else if (key === 'statusIds' && Array.isArray(value) && value.length > 0) {
           value.forEach((id) => params.append('statusIds', String(id)))
         } else {
-          if (value != null && value !== '') {
+          if (value != null && value !== '' && value.length !== 0) {
             params.set(key, String(value))
           }
         }
