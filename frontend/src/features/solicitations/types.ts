@@ -119,15 +119,15 @@ export interface MySolicitationFilters {
  * Filtro de parâmetros do Get Solicitations
  */
 export interface SolicitationFilters {
-  externalId: string
-  tipo: 'Geral' | 'Patrimonial' | ''
-  dateRange: (Date | null)[] | Date | null
-  sortOrder: string | null
-  pageSize: string
-  pageNumber: string
-  statusIds: number[]
-  pessoaId: string
-  siglaDepartamento: string
+  externalId?: string
+  tipo?: 'Geral' | 'Patrimonial' | ''
+  dateRange?: (Date | null)[] | Date | null
+  sortOrder?: string | null
+  pageSize?: string
+  pageNumber?: string
+  statusIds?: number[]
+  pessoaId?: string
+  siglaDepartamento?: string
 }
 
 /**

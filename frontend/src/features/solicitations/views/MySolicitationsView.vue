@@ -131,7 +131,7 @@ watch(
   async (newQuery) => {
     const cleanFilters = mapQueryToFilters(newQuery, 'MySolicitationFilters')
     Object.assign(filter, cleanFilters)
-    mySolicitationListStore.fetchAll(cleanFilters)
+    mySolicitationListStore.fetchAll(cleanFilters as MySolicitationFilters)
   },
   { immediate: true },
 )
