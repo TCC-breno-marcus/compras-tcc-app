@@ -5,9 +5,9 @@ using Database;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Resend;
 using Services;
 using Services.Interfaces;
-using Resend;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -21,7 +21,9 @@ builder.Services.AddSwaggerGen();
 var resendApiKey = builder.Configuration["RESEND_API_KEY"];
 
 if (string.IsNullOrWhiteSpace(resendApiKey))
-    throw new InvalidOperationException("A chave da API do Resend (RESEND_API_KEY) não foi configurada.");
+    throw new InvalidOperationException(
+        "A chave da API do Resend (RESEND_API_KEY) não foi configurada."
+    );
 
 builder.Services.AddOptions();
 builder.Services.AddHttpClient<ResendClient>();
@@ -82,7 +84,7 @@ builder.Services.AddScoped<IRelatorioService, RelatorioService>();
 builder.Services.AddScoped<IDepartamentoService, DepartamentoService>();
 builder.Services.AddScoped<ICentroService, CentroService>();
 builder.Services.AddScoped<IEmailService, ResendEmailService>();
-
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 
 // --- CONFIGURAÇÃO DE CULTURA PADRÃO ---
 var cultureInfo = new System.Globalization.CultureInfo("pt-BR");
