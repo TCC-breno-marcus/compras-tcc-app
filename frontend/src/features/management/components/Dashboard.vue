@@ -1,133 +1,183 @@
 <script setup lang="ts">
-import Card from 'primevue/card';
-import { ref, onMounted } from "vue";
-import Chart from 'primevue/chart';
+import Card from 'primevue/card'
+import { onMounted, computed } from 'vue'
+import Chart from 'primevue/chart'
+import { useDashboardStore } from '@/features/dashboards/stores/dashStore'
+import { storeToRefs } from 'pinia'
+import { formatQuantity } from '@/utils/number'
+import { formatCurrency } from '@/utils/currency'
+import type { CardKPI, TopItemData } from '@/features/dashboards/types'
+import { ProgressSpinner } from 'primevue'
 
-onMounted(() => {
-  chartData.value = setChartData();
-  chartOptions.value = setChartOptions();
-});
+const dashStore = useDashboardStore()
+const {
+  isLoading,
+  kpis,
+  valorPorDepartamento,
+  valorPorCategoria,
+  visaoGeralStatus,
+  topItensPorQuantidade,
+  topItensPorValorTotal,
+} = storeToRefs(dashStore)
 
-const chartData = ref();
-const chartOptions = ref();
+const kpiCards = computed<CardKPI[]>(() => {
+  if (!kpis.value)
+    return Array.from({ length: 4 }, () => ({
+      title: '',
+      value: '',
+      icon: '',
+      color: '',
+    }))
+  return [
+    {
+      title: 'Total de Solicitações',
+      value: formatQuantity(kpis.value.totalSolicitacoes),
+      icon: 'pi pi-file-edit',
+      color: 'text-blue-500',
+    },
+    {
+      title: 'Departamentos Solicitantes',
+      value: formatQuantity(kpis.value.totalDepartamentosSolicitantes),
+      icon: 'pi pi-building',
+      color: 'text-indigo-500',
+    },
+    {
+      title: 'Total de Itens Únicos',
+      value: formatQuantity(kpis.value.totalItensUnicos),
+      icon: 'pi pi-box',
+      color: 'text-purple-500',
+    },
+    {
+      title: 'Total de Unidades Solicitadas',
+      value: formatQuantity(kpis.value.totalUnidadesSolicitadas),
+      icon: 'pi pi-shopping-cart',
+      color: 'text-cyan-500',
+    },
+    {
+      title: 'Valor Total Estimado',
+      value: formatCurrency(kpis.value.valorTotalEstimado),
+      icon: 'pi pi-dollar',
+      color: 'text-green-500',
+    },
+    {
+      title: 'Custo Médio por Solicitação',
+      value: formatCurrency(kpis.value.custoMedioSolicitacao),
+      icon: 'pi pi-chart-line',
+      color: 'text-orange-500',
+    },
+  ]
+})
 
-const setChartData = () => {
-  // 1. Simule seus dados brutos em um formato mais fácil de manipular
-  const topItemsData = [
-    { name: 'Gaze Estéril', quantity: 984 },
-    { name: 'Seringa Descartável 5ml', quantity: 872 },
-    { name: 'Luva Cirúrgica (Par)', quantity: 753 },
-    { name: 'Álcool Etílico 70% 1L', quantity: 621 },
-    { name: 'Máscara N95', quantity: 559 },
-    { name: 'Termômetro Digital', quantity: 488 },
-    { name: 'Fio de Sutura 3-0', quantity: 345 },
-    { name: 'Cateter Intravenoso 22G', quantity: 210 },
-    { name: 'Atadura de Crepom', quantity: 156 },
-    { name: 'Bolsa de Colostomia', quantity: 97 }
-  ];
+const statusChartData = computed(() => {
+  return setChartData(visaoGeralStatus.value)
+})
 
-  // 2. Ordene os dados (embora já estejam, é uma boa prática garantir)
-  topItemsData.sort((a, b) => b.quantity - a.quantity);
+const deptoChartData = computed(() => {
+  return setChartData(valorPorDepartamento.value)
+})
 
-  // 3. Mapeie os dados para o formato que o Chart.js espera
-  const labels = topItemsData.map(item => item.name);
-  const data = topItemsData.map(item => item.quantity);
+const topItemsQtyData = computed(() => {
+  return setBarChartData(topItensPorQuantidade.value, 'Quantidade')
+})
 
-  const documentStyle = getComputedStyle(document.body);
+const topItemsValorData = computed(() => {
+  return setBarChartData(topItensPorValorTotal.value, 'Valor (R$)')
+})
 
+const setChartData = (data: { labels: string[]; data: number[] } | undefined) => {
+  if (!data) return undefined
+  const documentStyle = getComputedStyle(document.body)
   return {
-    labels: labels,
+    labels: data.labels,
     datasets: [
       {
-        label: 'Quantidade Solicitada',
-        data: data,
-        // Usar uma única cor destaca que é um ranking (comparação de valores)
-        backgroundColor: documentStyle.getPropertyValue('--p-primary-200'),
-        borderColor: documentStyle.getPropertyValue('--p-primary-500'),
-        borderWidth: 1
-      }
-    ]
-  };
-};
+        data: data.data,
+        backgroundColor: [
+          documentStyle.getPropertyValue('--p-primary-400'),
+          documentStyle.getPropertyValue('--p-orange-400'),
+          documentStyle.getPropertyValue('--p-cyan-400'),
+          documentStyle.getPropertyValue('--p-green-400'),
+          documentStyle.getPropertyValue('--p-purple-400'),
+        ],
+      },
+    ],
+  }
+}
 
-const setChartOptions = () => {
-  const documentStyle = getComputedStyle(document.documentElement);
-  const textColor = documentStyle.getPropertyValue('--p-text-color');
-  const textColorSecondary = documentStyle.getPropertyValue('--p-text-muted-color');
-  const surfaceBorder = documentStyle.getPropertyValue('--p-content-border-color');
+const setBarChartData = (data: TopItemData[] | undefined, label: string) => {
+  if (!data) return undefined
+  const documentStyle = getComputedStyle(document.body)
 
   return {
-    // 1. Adiciona a opção para tornar o gráfico horizontal
-    indexAxis: 'y',
+    labels: data.map((item) => `${item.nome} (${item.catMat})`),
+    datasets: [
+      {
+        label: label,
+        data: data.map((item) => item.valor),
+        backgroundColor: documentStyle.getPropertyValue('--p-primary-200'),
+        borderColor: documentStyle.getPropertyValue('--p-primary-500'),
+        borderWidth: 1,
+      },
+    ],
+  }
+}
+
+const setChartOptions = (title: string, type: string) => {
+  const documentStyle = getComputedStyle(document.documentElement)
+  const textColor = documentStyle.getPropertyValue('--p-text-color')
+  const textColorSecondary = documentStyle.getPropertyValue('--p-text-muted-color')
+  const surfaceBorder = documentStyle.getPropertyValue('--p-content-border-color')
+
+  const baseOptions = {
     maintainAspectRatio: false,
     aspectRatio: 1.5,
     plugins: {
-      // 2. Adiciona um título claro ao gráfico
       title: {
         display: true,
-        text: 'Top 10 Itens Mais Solicitados',
+        text: title,
         font: {
           size: 16,
-          weight: 'bold'
+          weight: 'bold',
         },
-        color: textColor
+        color: textColor,
       },
-      // 3. Remove a legenda, pois com uma só barra ela é redundante
-      legend: {
-        display: false
-      }
     },
+  }
+
+  if (type !== 'bar') {
+    return baseOptions
+  }
+
+  return {
+    ...baseOptions,
+    indexAxis: 'y',
     scales: {
       x: {
         ticks: {
           color: textColorSecondary,
           font: {
-            weight: 500
-          }
+            weight: 500,
+          },
         },
         grid: {
-          color: surfaceBorder
-        }
+          color: surfaceBorder,
+        },
       },
       y: {
         ticks: {
-          color: textColorSecondary
+          color: textColorSecondary,
         },
         grid: {
-          color: surfaceBorder
-        }
-      }
-    }
-  };
-};
-
-const kpiCards = ref([
-  {
-    title: 'Total de Itens Únicos',
-    value: '342',
-    icon: 'pi pi-box',
-    color: 'text-primary'
-  },
-  {
-    title: 'Total de Unidades',
-    value: '15.890',
-    icon: 'pi pi-server',
-    color: 'text-cyan-500'
-  },
-  {
-    title: 'Valor Total Estimado',
-    value: 'R$ 2.450.123,50',
-    icon: 'pi pi-dollar',
-    color: 'text-green-500'
-  },
-  {
-    title: 'Departamentos Solicitantes',
-    value: '28 / 32',
-    icon: 'pi pi-building',
-    color: 'text-orange-500'
+          color: surfaceBorder,
+        },
+      },
+    },
   }
-]);
+}
 
+onMounted(() => {
+  dashStore.fetchGestorDashboard()
+})
 </script>
 
 <template>
@@ -149,11 +199,19 @@ const kpiCards = ref([
     </div>
 
     <div class="graph-container m-2 gap-4">
-
       <div class="card w-full lg:w-8 xl:w-4">
         <Card class="h-full">
           <template #content>
-            <Chart type="bar" :data="chartData" :options="chartOptions" class="graph" />
+            <div v-if="isLoading" class="flex">
+              <ProgressSpinner style="width: 50px; height: 50px" strokeWidth="4" />
+            </div>
+            <Chart
+              v-else
+              type="bar"
+              :data="topItemsValorData"
+              :options="setChartOptions('Itens De Maior Valor', 'bar')"
+              class="graph"
+            />
           </template>
         </Card>
       </div>
@@ -161,29 +219,50 @@ const kpiCards = ref([
       <div class="card w-full lg:w-8 xl:w-4">
         <Card class="h-full">
           <template #content>
-            <Chart type="bar" :data="chartData" :options="chartOptions" class="graph" />
+            <div v-if="isLoading" class="flex">
+              <ProgressSpinner style="width: 50px; height: 50px" strokeWidth="4" />
+            </div>
+            <Chart
+              v-else
+              type="bar"
+              :data="topItemsQtyData"
+              :options="setChartOptions('Itens Mais Solicitados', 'bar')"
+              class="graph"
+            />
           </template>
         </Card>
       </div>
 
       <div class="card w-full lg:w-8 xl:w-4">
-        <Card class="h-full">
+        <Card class="flex justify-content-center align-items-center w-full h-full">
           <template #content>
-            <Chart type="bar" :data="chartData" :options="chartOptions" class="graph" />
+            <ProgressSpinner v-if="isLoading" style="width: 50px; height: 50px" strokeWidth="4" />
+            <Chart
+              v-else
+              type="doughnut"
+              :data="deptoChartData"
+              :options="setChartOptions('Valor por Departamento (R$)', 'doughnut')"
+              class="graph"
+            />
           </template>
         </Card>
       </div>
 
       <div class="card w-full lg:w-8 xl:w-4">
-        <Card class="h-full">
+        <Card class="flex justify-content-center align-items-center w-full h-full">
           <template #content>
-            <Chart type="bar" :data="chartData" :options="chartOptions" class="graph" />
+            <ProgressSpinner v-if="isLoading" style="width: 50px; height: 50px" strokeWidth="4" />
+            <Chart
+              v-else
+              type="pie"
+              :data="statusChartData"
+              :options="setChartOptions('Status das Solicitações', 'pie')"
+              class="graph"
+            />
           </template>
         </Card>
       </div>
-
     </div>
-
   </div>
 </template>
 
@@ -224,6 +303,5 @@ const kpiCards = ref([
 
 .card {
   min-width: 400px;
-
 }
 </style>

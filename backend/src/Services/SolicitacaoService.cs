@@ -481,6 +481,7 @@ public class SolicitacaoService : ISolicitacaoService
             .ThenInclude(sol => sol.Departamento)
             .Include(s => s.ItemSolicitacao)
             .ThenInclude(si => si.Item)
+            .ThenInclude(i => i.Categoria)
             .Include(s => s.Status)
             .FirstOrDefaultAsync(s => s.Id == id);
 
@@ -489,6 +490,39 @@ public class SolicitacaoService : ISolicitacaoService
             _logger.LogWarning("Solicitação com ID: {Id} não encontrada.", id);
             return null;
         }
+
+        var itens = solicitacao.ItemSolicitacao;
+
+        var kpis = new SolicitacaoKpiDto
+        {
+            ValorTotalEstimado = itens.Sum(i => i.Quantidade * i.ValorUnitario),
+            TotalItensUnicos = itens.Select(i => i.ItemId).Distinct().Count(),
+            TotalUnidades = itens.Sum(i => i.Quantidade),
+        };
+
+        var valorPorCategoria = itens
+            .GroupBy(i => i.Item.Categoria.Nome)
+            .Select(g => new { Label = g.Key, Valor = g.Sum(i => i.Quantidade * i.ValorUnitario) })
+            .ToList();
+
+        var topItens = itens
+            .Select(i => new
+            {
+                i.ItemId,
+                i.Item.Nome,
+                i.Item.CatMat,
+                ValorTotal = i.Quantidade * i.ValorUnitario,
+            })
+            .OrderByDescending(x => x.ValorTotal)
+            .Take(5) // Top 5 itens mais caros da solicitação
+            .Select(x => new DashTopItemDto
+            {
+                ItemId = x.ItemId,
+                Nome = x.Nome,
+                CatMat = x.CatMat,
+                Valor = x.ValorTotal,
+            })
+            .ToList();
 
         var respostaDto = new SolicitacaoResultDto
         {
@@ -537,6 +571,13 @@ public class SolicitacaoService : ISolicitacaoService
                     Justificativa = item.Justificativa,
                 })
                 .ToList(),
+            Kpis = kpis,
+            ValorPorCategoria = new ChartDataDto
+            {
+                Labels = valorPorCategoria.Select(x => x.Label).ToList(),
+                Data = valorPorCategoria.Select(x => x.Valor).ToList(),
+            },
+            TopItensPorValor = topItens,
         };
 
         return respostaDto;

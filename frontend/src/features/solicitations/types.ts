@@ -1,5 +1,6 @@
 import type { Item } from '@/features/catalogo/types'
 import type { UnitOrganizational } from '../unitOrganizational/types'
+import type { ChartData, TopItemData } from '../dashboards/types'
 
 export type SolicitationItem = Partial<Item> & {
   quantidade: number
@@ -77,6 +78,12 @@ export interface SolicitationStatusPayload {
   observacoes: string
 }
 
+export interface SolicitationKpi {
+  valorTotalEstimado: number
+  totalItensUnicos: number
+  totalUnidades: number
+}
+
 /**
  * Representa uma solicitação no front.
  */
@@ -88,15 +95,15 @@ export interface Solicitation {
   status: SolicitationStatus
   solicitante: Solicitante
   itens: SolicitationItem[]
+  kpis: SolicitationKpi
+  valorPorCategoria: ChartData
+  topItensPorValor: TopItemData[]
 }
 
 /**
  * Representa uma solicitação exibida na tabela de listar solicitações
  */
 export interface SolicitationListItem extends Solicitation {
-  itemsCount: number
-  totalItemsQuantity: number
-  totalEstimatedPrice: number
   typeDisplay: 'Geral' | 'Patrimonial'
   requester?: string
   department?: string
