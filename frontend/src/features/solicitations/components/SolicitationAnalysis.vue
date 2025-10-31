@@ -1,51 +1,129 @@
 <script setup lang="ts">
 import Card from 'primevue/card'
-import { ref, onMounted } from 'vue'
+import { computed } from 'vue'
 import Chart from 'primevue/chart'
+import { useSolicitationStore } from '../stores/solicitationStore'
+import { storeToRefs } from 'pinia'
+import type { CardKPI, TopItemData } from '@/features/dashboards/types'
+import { formatQuantity } from '@/utils/number'
+import { formatCurrency } from '@/utils/currency'
 
-const topItemsByQuantityData = ref()
-const topItemsByQuantityOptions = ref()
+const solicitationStore = useSolicitationStore()
+const { currentSolicitation } = storeToRefs(solicitationStore)
 
-const topItemsByPriceData = ref()
-const topItemsByPriceOptions = ref()
-
-onMounted(() => {
-  topItemsByQuantityData.value = setTopItemsData('quantity')
-  topItemsByQuantityOptions.value = setChartOptions('Top 5 Itens por Quantidade', 'y')
-
-  topItemsByPriceData.value = setTopItemsData('price')
-  topItemsByPriceOptions.value = setChartOptions('Top 5 Itens por Custo (Valor Total)', 'x')
+const kpiCards = computed<CardKPI[]>(() => {
+  if (!currentSolicitation.value?.kpis)
+    return Array.from({ length: 3 }, () => ({
+      title: '',
+      value: '',
+      icon: '',
+      color: '',
+    }))
+  return [
+    {
+      title: 'Total de Itens Únicos',
+      value: formatQuantity(currentSolicitation.value.kpis.totalItensUnicos),
+      icon: 'pi pi-box',
+      color: 'text-purple-500',
+    },
+    {
+      title: 'Total de Unidades Solicitadas',
+      value: formatQuantity(currentSolicitation.value.kpis.totalUnidades),
+      icon: 'pi pi-shopping-cart',
+      color: 'text-cyan-500',
+    },
+    {
+      title: 'Valor Total Estimado',
+      value: formatCurrency(currentSolicitation.value.kpis.valorTotalEstimado),
+      icon: 'pi pi-dollar',
+      color: 'text-green-500',
+    },
+  ]
 })
 
-const setTopItemsData = (dataType: 'quantity' | 'price') => {
-  const labelsData = {
-    quantity: [
-      'Gaze Estéril',
-      'Seringa Descartável 5ml',
-      'Luva Cirúrgica (Par)',
-      'Álcool Etílico 70% 1L',
-      'Máscara N95',
-    ],
-    price: [
-      'Termômetro Digital',
-      'Fio de Sutura 3-0',
-      'Cateter Intravenoso 22G',
-      'Atadura de Crepom',
-      'Bolsa de Colostomia',
+const setChartData = (data: { labels: string[]; data: number[] } | undefined) => {
+  if (!data) return undefined
+  const documentStyle = getComputedStyle(document.body)
+  return {
+    labels: data.labels,
+    datasets: [
+      {
+        data: data.data,
+        backgroundColor: [
+          documentStyle.getPropertyValue('--p-primary-400'),
+          documentStyle.getPropertyValue('--p-orange-400'),
+          documentStyle.getPropertyValue('--p-cyan-400'),
+          documentStyle.getPropertyValue('--p-green-400'),
+          documentStyle.getPropertyValue('--p-purple-400'),
+        ],
+      },
     ],
   }
-  const valuesData = {
-    quantity: [984, 872, 753, 621, 559],
-    price: [4888.78, 2341.05, 947.9, 545.51, 121.55],
+}
+
+const setChartOptions = (title: string, type: string) => {
+  const documentStyle = getComputedStyle(document.documentElement)
+  const textColor = documentStyle.getPropertyValue('--p-text-color')
+  const textColorSecondary = documentStyle.getPropertyValue('--p-text-muted-color')
+  const surfaceBorder = documentStyle.getPropertyValue('--p-content-border-color')
+
+  const baseOptions = {
+    maintainAspectRatio: false,
+    aspectRatio: 1.5,
+    plugins: {
+      title: {
+        display: true,
+        text: title,
+        font: {
+          size: 16,
+          weight: 'bold',
+        },
+        color: textColor,
+      },
+    },
   }
+
+  if (type !== 'bar') {
+    return baseOptions
+  }
+
+  return {
+    ...baseOptions,
+    indexAxis: 'y',
+    scales: {
+      x: {
+        ticks: {
+          color: textColorSecondary,
+          font: {
+            weight: 500,
+          },
+        },
+        grid: {
+          color: surfaceBorder,
+        },
+      },
+      y: {
+        ticks: {
+          color: textColorSecondary,
+        },
+        grid: {
+          color: surfaceBorder,
+        },
+      },
+    },
+  }
+}
+
+const setBarChartData = (data: TopItemData[] | undefined, label: string) => {
+  if (!data) return undefined
   const documentStyle = getComputedStyle(document.body)
 
   return {
-    labels: labelsData[dataType],
+    labels: data.map((item) => `${item.nome} (${item.catMat})`),
     datasets: [
       {
-        label: dataType === 'quantity' ? 'Quantidade Solicitada' : 'Valor Total (R$)',
-        data: valuesData[dataType],
+        label: label,
+        data: data.map((item) => item.valor),
         backgroundColor: documentStyle.getPropertyValue('--p-primary-200'),
         borderColor: documentStyle.getPropertyValue('--p-primary-500'),
         borderWidth: 1,
@@ -54,54 +132,13 @@ const setTopItemsData = (dataType: 'quantity' | 'price') => {
   }
 }
 
-const setChartOptions = (titleText: string, axis: 'x' | 'y') => {
-  const documentStyle = getComputedStyle(document.documentElement)
-  const textColor = documentStyle.getPropertyValue('--p-text-color')
-  const textColorSecondary = documentStyle.getPropertyValue('--p-text-muted-color')
-  const surfaceBorder = documentStyle.getPropertyValue('--p-content-border-color')
+const categoryChartData = computed(() => {
+  return setChartData(currentSolicitation.value?.valorPorCategoria)
+})
 
-  return {
-    indexAxis: axis, // 'y' para horizontal, 'x' para vertical
-    maintainAspectRatio: false,
-    aspectRatio: 1.5,
-    plugins: {
-      title: {
-        display: true,
-        text: titleText,
-        font: { size: 16, weight: 'bold' },
-        color: textColor,
-      },
-      legend: {
-        display: false,
-      },
-    },
-    scales: {
-      x: { ticks: { color: textColorSecondary }, grid: { color: surfaceBorder } },
-      y: { ticks: { color: textColorSecondary }, grid: { color: surfaceBorder } },
-    },
-  }
-}
-
-const kpiCards = ref([
-  {
-    title: 'Total de Itens Únicos',
-    value: '342',
-    icon: 'pi pi-box',
-    color: 'text-primary',
-  },
-  {
-    title: 'Total de Unidades',
-    value: '15.890',
-    icon: 'pi pi-server',
-    color: 'text-cyan-500',
-  },
-  {
-    title: 'Valor Total Estimado',
-    value: 'R$ 2.450.123,50',
-    icon: 'pi pi-dollar',
-    color: 'text-green-500',
-  },
-])
+const topItensPorValorData = computed(() => {
+  return setBarChartData(currentSolicitation.value?.topItensPorValor, 'Valor (R$)')
+})
 </script>
 
 <template>
@@ -131,10 +168,11 @@ const kpiCards = ref([
         <Card class="h-full">
           <template #content>
             <Chart
-              type="bar"
-              :data="topItemsByQuantityData"
-              :options="topItemsByQuantityOptions"
+              type="doughnut"
+              :data="categoryChartData"
+              :options="setChartOptions('Valor por Departamento (R$)', 'doughnut')"
               style="height: 300px"
+              class="graph"
             />
           </template>
         </Card>
@@ -145,14 +183,14 @@ const kpiCards = ref([
           <template #content>
             <Chart
               type="bar"
-              :data="topItemsByPriceData"
-              :options="topItemsByPriceOptions"
+              :data="topItensPorValorData"
+              :options="setChartOptions('Itens de Maior Custo Total', 'bar')"
               style="height: 300px"
+              class="graph"
             />
           </template>
         </Card>
       </div>
-
     </div>
   </div>
 </template>

@@ -9,5 +9,9 @@ namespace Models.Dtos
         public string? JustificativaGeral { get; set; }
         public required SolicitanteDto Solicitante { get; set; }
         public List<ItemSolicitacaoResultDto> Itens { get; set; } = new();
+
+        public SolicitacaoKpiDto? Kpis { get; set; }
+        public ChartDataDto? ValorPorCategoria { get; set; }
+        public List<DashTopItemDto>? TopItensPorValor { get; set; }
     }
 }

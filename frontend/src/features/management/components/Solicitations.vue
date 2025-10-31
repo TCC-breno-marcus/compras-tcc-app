@@ -95,10 +95,6 @@ const columns = [
   { field: 'department', header: 'Departamento' },
   { field: 'typeDisplay', header: 'Tipo' },
   { field: 'status', header: 'Status' },
-  // TODO: Removidas colunas abaixo por ora. Validar se devem ser mostradas mesmo.
-  // { field: 'itemsCount', header: 'Itens Únicos' },
-  // { field: 'totalItemsQuantity', header: 'Total de Itens' },
-  // { field: 'totalEstimatedPrice', header: 'Preço Total Estimado' },
 ]
 
 const toggleSortDirection = () => {
@@ -304,18 +300,6 @@ onMounted(() => {
           <span v-else-if="col.field === 'status'">
             <Tag v-bind="getTagProps(slotProps.data.status.id)" />
           </span>
-
-          <!-- <span v-else-if="col.field === 'itemsCount'">
-            <Tag :value="slotProps.data.itemsCount" severity="secondary" />
-          </span>
-
-          <span v-else-if="col.field === 'totalItemsQuantity'">
-            <Tag :value="slotProps.data.totalItemsQuantity" />
-          </span>
-
-          <span v-else-if="col.field === 'totalEstimatedPrice'">
-            <Tag severity="success" :value="formatCurrency(slotProps.data.totalEstimatedPrice)" />
-          </span> -->
 
           <span v-else>
             {{ slotProps.data[col.field] }}
