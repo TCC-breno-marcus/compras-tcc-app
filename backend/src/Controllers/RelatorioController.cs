@@ -150,10 +150,28 @@ namespace Controllers
             }
         }
 
-        [HttpGet("itens-usuario")]
-        public async Task<IActionResult> GetItensPorDepartamento()
+        [HttpGet("relatorios/itens-por-departamento")]
+        [ProducesResponseType(typeof(List<RelatorioItemSaidaDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetRelatorioItensPorDepartamento([FromQuery] RelatorioItensFiltroDto filtro)
         {
+            if (string.IsNullOrEmpty(filtro.SiglaDepartamento))
+                return BadRequest("A sigla do departamento é obrigatória para este relatório.");
             
+
+            if (filtro.DataInicio > filtro.DataFim)
+                return BadRequest("A data de início não pode ser maior que a data fim.");
+          
+
+            try
+            {
+                var resultado = await _relatorioService.GetRelatorioItensPorDepartamentoAsync(filtro);
+
+                Response.Headers.Append("X-Total-Registros", resultado.Count.ToString());
+
+                return Ok(resultado);
+            }
+            catch (Exception) { return StatusCode(500, "Ocorreu um erro ao gerar o relatório.");}
         }
     }
 }

@@ -23,5 +23,7 @@ namespace Services.Interfaces
             string? siglaDepartamento,
             bool? somenteSolicitacoesAtivas
         );
+
+        Task<List<RelatorioItemSaidaDto>> GetRelatorioItensPorDepartamentoAsync(RelatorioItensFiltroDto filtro);
     }
 }
