@@ -149,5 +149,11 @@ namespace Controllers
                 );
             }
         }
+
+        [HttpGet("itens-usuario")]
+        public async Task<IActionResult> GetItensPorDepartamento()
+        {
+            
+        }
     }
 }
