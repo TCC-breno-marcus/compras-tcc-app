@@ -14,7 +14,7 @@ namespace Services
     {
         private readonly AppDbContext _context;
         private readonly ILogger<CatalogoService> _logger;
-        private readonly string _imageBaseUrl;
+        private readonly string _IMAGE_BASE_URL;
 
         public CatalogoService(
             AppDbContext context,
@@ -24,7 +24,7 @@ namespace Services
         {
             _context = context;
             _logger = logger;
-            _imageBaseUrl = configuration["ImageBaseUrl"] ?? "";
+            _IMAGE_BASE_URL = configuration["IMAGE_BASE_URL"] ?? "";
         }
 
         public async Task<PaginatedResultDto<ItemDto>> GetAllItensAsync(
@@ -136,7 +136,7 @@ namespace Services
                         },
                         LinkImagem = string.IsNullOrWhiteSpace(item.LinkImagem)
                             ? item.LinkImagem
-                            : $"{_imageBaseUrl}{item.LinkImagem}",
+                            : $"{_IMAGE_BASE_URL}{item.LinkImagem}",
                         PrecoSugerido = item.PrecoSugerido,
                         Especificacao = item.Especificacao,
                         IsActive = item.IsActive,
@@ -411,7 +411,7 @@ namespace Services
                     },
                     LinkImagem = string.IsNullOrWhiteSpace(item.LinkImagem)
                         ? item.LinkImagem
-                        : $"{_imageBaseUrl}{item.LinkImagem}",
+                        : $"{_IMAGE_BASE_URL}{item.LinkImagem}",
                     PrecoSugerido = item.PrecoSugerido,
                     Especificacao = item.Especificacao,
                     IsActive = item.IsActive,
@@ -595,7 +595,7 @@ namespace Services
                         },
                         LinkImagem = string.IsNullOrWhiteSpace(item.LinkImagem)
                             ? item.LinkImagem
-                            : $"{_imageBaseUrl}{item.LinkImagem}",
+                            : $"{_IMAGE_BASE_URL}{item.LinkImagem}",
                         PrecoSugerido = item.PrecoSugerido,
                         Especificacao = item.Especificacao,
                         IsActive = item.IsActive,
@@ -674,7 +674,7 @@ namespace Services
                 },
                 LinkImagem = string.IsNullOrWhiteSpace(item.LinkImagem)
                     ? item.LinkImagem
-                    : $"{_imageBaseUrl}{item.LinkImagem}",
+                    : $"{_IMAGE_BASE_URL}{item.LinkImagem}",
                 PrecoSugerido = item.PrecoSugerido,
                 Especificacao = item.Especificacao,
                 IsActive = item.IsActive,

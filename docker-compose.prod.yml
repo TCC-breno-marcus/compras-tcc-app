@@ -35,6 +35,9 @@ services:
       - Jwt__Key=${JWT_KEY}
       - Jwt__Issuer=${JWT_ISSUER}
       - Jwt__Audience=${JWT_AUDIENCE}
+      - SERVER_HOST=${SERVER_HOST}
+      - IMAGE_BASE_URL=http://${SERVER_HOST}:8088/images/
+      - FRONTEND_BASE_URL=http://${SERVER_HOST}:5173
     depends_on:
       postgres-db:
         condition: service_healthy
