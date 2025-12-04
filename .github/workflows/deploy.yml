@@ -51,11 +51,13 @@ jobs:
           host: ${{ secrets.VM_HOST }}
           username: ubuntu
           key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
+          script_stop: true
           script: |
             # Navega até a pasta
-            cd ~/compras-tcc-app$
+            cd ~/compras-tcc-app
             
             # Atualiza o arquivo docker-compose.prod.yml
+            git checkout main
             git pull origin main
             
             # Faz login no registro de imagens (usando token pessoal na VM)
