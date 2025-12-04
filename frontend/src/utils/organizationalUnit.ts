@@ -1,8 +1,8 @@
-import type { UnitOrganizational } from '@/features/users/types'
+import type { UnitOrganizational } from '@/features/unitOrganizational/types'
 import { toTitleCase } from './stringUtils'
 
 export const unitOrganizationalFormatString = (
-  unit: UnitOrganizational | null | undefined,
+  unit: UnitOrganizational| null | undefined,
   mode: 'name' | 'acronym' | 'full' = 'full',
 ) => {
   if (!unit) {
