@@ -1,0 +1,71 @@
+name: Deploy TCC - Produção
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Login no GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Build do Backend
+      - name: Build e Push Backend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile.prod
+          push: true
+          tags: ghcr.io/${{ github.repository }}/backend:latest
+
+      # Build do Frontend
+      - name: Build e Push Frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile.prod
+          push: true
+          tags: ghcr.io/${{ github.repository }}/frontend:latest
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy via SSH na VM Oracle
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ubuntu
+          key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
+          script: |
+            # Navega até a pasta (certifique-se de ter criado ela antes)
+            cd ~/tcc-app
+            
+            # Atualiza o arquivo docker-compose.prod.yml
+            git pull origin main
+            
+            # Faz login no registro de imagens (usando token pessoal na VM)
+            echo "${{ secrets.VM_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            
+            # Baixa as novas imagens
+            docker compose -f docker-compose.prod.yml pull
+            
+            # Reinicia os serviços (recriando apenas os que mudaram)
+            docker compose -f docker-compose.prod.yml up -d --remove-orphans
+            
+            # Limpeza de imagens antigas para economizar espaço
+            docker image prune -f
