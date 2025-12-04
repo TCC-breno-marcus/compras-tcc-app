@@ -96,36 +96,30 @@ var app = builder.Build();
 
 app.UseCors(MyAllowSpecificOrigins);
 
-if (app.Environment.IsDevelopment())
+app.UseSwagger();
+app.UseSwaggerUI();
+using var scope = app.Services.CreateScope();
+var services = scope.ServiceProvider;
+try
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-    using var scope = app.Services.CreateScope();
-    var services = scope.ServiceProvider;
-    try
-    {
-        var context = services.GetRequiredService<AppDbContext>();
-        var logger = services.GetRequiredService<ILogger<Program>>();
+    var context = services.GetRequiredService<AppDbContext>();
+    var logger = services.GetRequiredService<ILogger<Program>>();
 
-        logger.LogInformation(
-            "Iniciando o seeding do banco de dados na inicialização (ambiente de desenvolvimento)..."
-        );
+    logger.LogInformation(
+        "Iniciando o seeding do banco de dados na inicialização (ambiente de desenvolvimento)..."
+    );
 
-        await context.Database.MigrateAsync();
-        await DataSeeder.SeedCentrosAsync(context);
-        await DataSeeder.SeedDepartamentosAsync(context);
-        await DataSeeder.SeedUsersAsync(context);
+    await context.Database.MigrateAsync();
+    await DataSeeder.SeedCentrosAsync(context);
+    await DataSeeder.SeedDepartamentosAsync(context);
+    await DataSeeder.SeedUsersAsync(context);
 
-        logger.LogInformation("Seeding concluído com sucesso.");
-    }
-    catch (Exception ex)
-    {
-        var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(
-            ex,
-            "Ocorreu um erro durante o seeding do banco de dados na inicialização."
-        );
-    }
+    logger.LogInformation("Seeding concluído com sucesso.");
+}
+catch (Exception ex)
+{
+    var logger = services.GetRequiredService<ILogger<Program>>();
+    logger.LogError(ex, "Ocorreu um erro durante o seeding do banco de dados na inicialização.");
 }
 
 app.UseAuthentication();
