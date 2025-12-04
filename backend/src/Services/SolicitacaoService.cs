@@ -17,7 +17,7 @@ public class SolicitacaoService : ISolicitacaoService
     private readonly ILogger<SolicitacaoService> _logger;
     private readonly IConfiguracaoService _configuracaoService;
     private readonly IUsuarioService _usuarioService;
-    private readonly string _imageBaseUrl;
+    private readonly string _IMAGE_BASE_URL;
 
     public SolicitacaoService(
         AppDbContext context,
@@ -31,7 +31,7 @@ public class SolicitacaoService : ISolicitacaoService
         _logger = logger;
         _configuracaoService = configuracaoService;
         _usuarioService = usuarioService;
-        _imageBaseUrl = configuration["ImageBaseUrl"] ?? "";
+        _IMAGE_BASE_URL = configuration["IMAGE_BASE_URL"] ?? "";
     }
 
     public async Task<SolicitacaoResultDto> CreateGeralAsync(
@@ -156,7 +156,7 @@ public class SolicitacaoService : ISolicitacaoService
                         Quantidade = item.Quantidade,
                         LinkImagem = string.IsNullOrWhiteSpace(item.Item.LinkImagem)
                             ? item.Item.LinkImagem
-                            : $"{_imageBaseUrl}{item.Item.LinkImagem}",
+                            : $"{_IMAGE_BASE_URL}{item.Item.LinkImagem}",
                         PrecoSugerido = item.ValorUnitario,
                         Justificativa = item.Justificativa,
                     })
@@ -291,7 +291,7 @@ public class SolicitacaoService : ISolicitacaoService
                         Quantidade = item.Quantidade,
                         LinkImagem = string.IsNullOrWhiteSpace(item.Item.LinkImagem)
                             ? item.Item.LinkImagem
-                            : $"{_imageBaseUrl}{item.Item.LinkImagem}",
+                            : $"{_IMAGE_BASE_URL}{item.Item.LinkImagem}",
                         PrecoSugerido = item.ValorUnitario,
                         Justificativa = item.Justificativa,
                     })
@@ -566,7 +566,7 @@ public class SolicitacaoService : ISolicitacaoService
                     Quantidade = item.Quantidade,
                     LinkImagem = string.IsNullOrWhiteSpace(item.Item.LinkImagem)
                         ? item.Item.LinkImagem
-                        : $"{_imageBaseUrl}{item.Item.LinkImagem}",
+                        : $"{_IMAGE_BASE_URL}{item.Item.LinkImagem}",
                     PrecoSugerido = item.ValorUnitario,
                     Justificativa = item.Justificativa,
                 })
@@ -703,7 +703,7 @@ public class SolicitacaoService : ISolicitacaoService
                         Quantidade = item.Quantidade,
                         LinkImagem = string.IsNullOrWhiteSpace(item.Item.LinkImagem)
                             ? item.Item.LinkImagem
-                            : $"{_imageBaseUrl}{item.Item.LinkImagem}",
+                            : $"{_IMAGE_BASE_URL}{item.Item.LinkImagem}",
                         PrecoSugerido = item.ValorUnitario,
                         Justificativa = item.Justificativa,
                     })
@@ -864,7 +864,7 @@ public class SolicitacaoService : ISolicitacaoService
                         Quantidade = item.Quantidade,
                         LinkImagem = string.IsNullOrWhiteSpace(item.Item.LinkImagem)
                             ? item.Item.LinkImagem
-                            : $"{_imageBaseUrl}{item.Item.LinkImagem}",
+                            : $"{_IMAGE_BASE_URL}{item.Item.LinkImagem}",
                         PrecoSugerido = item.ValorUnitario,
                         Justificativa = item.Justificativa,
                     })

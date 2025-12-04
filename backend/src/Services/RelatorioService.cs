@@ -16,7 +16,7 @@ namespace Services
     {
         private readonly AppDbContext _context;
         private readonly ILogger<RelatorioService> _logger;
-        private readonly string _imageBaseUrl;
+        private readonly string _IMAGE_BASE_URL;
 
         public RelatorioService(
             AppDbContext context,
@@ -26,7 +26,7 @@ namespace Services
         {
             _context = context;
             _logger = logger;
-            _imageBaseUrl = configuration["ImageBaseUrl"] ?? "";
+            _IMAGE_BASE_URL = configuration["IMAGE_BASE_URL"] ?? "";
         }
 
         public async Task<PaginatedResultDto<ItemPorDepartamentoDto>> GetItensPorDepartamentoAsync(
@@ -194,7 +194,7 @@ namespace Services
                 CategoriaNome = itemExemplo.Categoria.Nome,
                 LinkImagem = string.IsNullOrWhiteSpace(itemExemplo.LinkImagem)
                     ? itemExemplo.LinkImagem
-                    : $"{_imageBaseUrl}{itemExemplo.LinkImagem}",
+                    : $"{_IMAGE_BASE_URL}{itemExemplo.LinkImagem}",
                 PrecoSugerido = itemExemplo.PrecoSugerido,
                 QuantidadeTotalSolicitada = group.Sum(si => si.Quantidade),
                 DemandaPorDepartamento = group

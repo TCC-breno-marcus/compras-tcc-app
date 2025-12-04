@@ -6,6 +6,11 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 
+# 1. Recebe o IP/Host do GitHub Actions
+ARG SERVER_HOST
+RUN echo "Construindo para o host: $SERVER_HOST"
+ENV VITE_API_URL=http://${SERVER_HOST}:5000
+
 # Copia código e gera o build de produção (pasta /dist)
 COPY . .
 RUN npm run build

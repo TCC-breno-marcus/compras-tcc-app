@@ -37,6 +37,8 @@ jobs:
         with:
           context: ./frontend
           file: ./frontend/Dockerfile.prod
+          build-args: |
+            SERVER_HOST=${{ secrets.VM_HOST }}
           push: true
           tags: ghcr.io/tcc-breno-marcus/compras-tcc-app/frontend:latest
 
@@ -55,6 +57,9 @@ jobs:
           script: |
             # Navega até a pasta
             cd ~/compras-tcc-app
+
+            # Cria ou atualiza o arquivo .env com o IP público da secret
+            echo "SERVER_HOST=${{ secrets.VM_HOST }}" > .env
             
             # Atualiza o arquivo docker-compose.prod.yml
             git checkout main

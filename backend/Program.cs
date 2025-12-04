@@ -56,13 +56,14 @@ builder
 
 // CORS
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+var serverHost = Environment.GetEnvironmentVariable("SERVER_HOST");
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(
         name: MyAllowSpecificOrigins,
         policy =>
         {
-            policy.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod();
+            policy.WithOrigins($"http://{serverHost}:5173").AllowAnyHeader().AllowAnyMethod();
         }
     );
 });
