@@ -1,0 +1,21 @@
+# --- Estágio 1: Build (Compilação) ---
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+# Copia o arquivo de projeto e restaura dependências
+COPY backend.csproj .
+RUN dotnet restore
+
+# Copia todo o código e faz o build de Release
+COPY . .
+RUN dotnet publish -c Release -o /app/publish /p:UseAppHost=false
+
+# --- Estágio 2: Runtime (Execução Leve) ---
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
+WORKDIR /app
+COPY --from=build /app/publish .
+
+# Define a porta de produção 
+EXPOSE 8080
+
+ENTRYPOINT ["dotnet", "backend.dll"]

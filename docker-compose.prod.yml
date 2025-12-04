@@ -1,0 +1,63 @@
+services:
+  postgres-db:
+    image: postgres:17
+    container_name: postgres-db-container
+    restart: always
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    env_file:
+      - ./.env
+
+  # Backend
+  backend-service:
+    image: ghcr.io/tcc-breno-marcus/compras-tcc-app/backend:latest
+    container_name: backend-service-container
+    restart: always
+    ports:
+      - "5000:8080"
+    volumes:
+      # Apenas uploads persistem, o código vem da imagem
+      - ./imagens_itens:/app/uploads
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Host=postgres-db;Port=5432;Database=${DB_NAME};Username=${DB_USER};Password=${DB_PASSWORD}
+      - Jwt__Key=${JWT_KEY}
+      - Jwt__Issuer=${JWT_ISSUER}
+      - Jwt__Audience=${JWT_AUDIENCE}
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+    env_file:
+      - ./.env
+
+  # Frontend (Servido pelo Nginx na porta 5173 externa)
+  frontend-service:
+    image: ghcr.io/tcc-breno-marcus/compras-tcc-app/frontend:latest
+    container_name: frontend-service-container
+    restart: always
+    ports:
+      - "5173:80"
+
+  # Nginx de Imagens
+  servidor-imagens:
+    image: nginx:alpine
+    container_name: servidor-imagens-container
+    restart: always
+    ports:
+      - "8088:80"
+    volumes:
+      - ./imagens_itens:/usr/share/nginx/html/images
+
+volumes:
+  postgres-data:
