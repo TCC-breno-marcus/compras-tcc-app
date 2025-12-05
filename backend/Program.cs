@@ -56,14 +56,17 @@ builder
 
 // CORS
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
-var serverHost = Environment.GetEnvironmentVariable("SERVER_HOST");
+var serverHost = Environment.GetEnvironmentVariable("SERVER_HOST") ?? "localhost";
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(
         name: MyAllowSpecificOrigins,
         policy =>
         {
-            policy.WithOrigins($"http://{serverHost}:5173").AllowAnyHeader().AllowAnyMethod();
+            policy
+                .WithOrigins($"http://{serverHost}:5173", "http://localhost:5173")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
         }
     );
 });
@@ -98,6 +101,7 @@ app.UseCors(MyAllowSpecificOrigins);
 
 app.UseSwagger();
 app.UseSwaggerUI();
+
 using var scope = app.Services.CreateScope();
 var services = scope.ServiceProvider;
 try
@@ -105,21 +109,19 @@ try
     var context = services.GetRequiredService<AppDbContext>();
     var logger = services.GetRequiredService<ILogger<Program>>();
 
-    logger.LogInformation(
-        "Iniciando o seeding do banco de dados na inicialização (ambiente de desenvolvimento)..."
-    );
+    logger.LogInformation("Verificando banco de dados e aplicando migrations pendentes...");
 
     await context.Database.MigrateAsync();
     await DataSeeder.SeedCentrosAsync(context);
     await DataSeeder.SeedDepartamentosAsync(context);
     await DataSeeder.SeedUsersAsync(context);
 
-    logger.LogInformation("Seeding concluído com sucesso.");
+    logger.LogInformation("Banco de dados atualizado e seeding concluído com sucesso.");
 }
 catch (Exception ex)
 {
     var logger = services.GetRequiredService<ILogger<Program>>();
-    logger.LogError(ex, "Ocorreu um erro durante o seeding do banco de dados na inicialização.");
+    logger.LogError(ex, "ERRO CRÍTICO: Falha ao migrar ou semear o banco de dados.");
 }
 
 app.UseAuthentication();
