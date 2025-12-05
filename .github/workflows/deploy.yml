@@ -57,11 +57,8 @@ jobs:
           script: |
             # Navega até a pasta
             cd ~/compras-tcc-app
-
-            # Cria ou atualiza o arquivo .env com o IP público da secret
-            echo "SERVER_HOST=${{ secrets.VM_HOST }}" > .env
             
-            # Atualiza o arquivo docker-compose.prod.yml
+            # Atualiza o código
             git checkout main
             git pull origin main
             
