@@ -83,6 +83,10 @@ namespace ComprasTccApp.Backend.Controllers
         }
 
         [HttpGet("relatorios/gastos-por-centro")]
+        [ProducesResponseType(typeof(IEnumerable<RelatorioGastosCentroSaidaDto>), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        [Authorize(Roles = "Admin,Gestor")]
         public async Task<IActionResult> GetRelatorioGastosPorCentro([FromQuery] RelatorioGastosCentroFiltroDto filtro)
         {
             if (filtro.DataInicio > filtro.DataFim)
