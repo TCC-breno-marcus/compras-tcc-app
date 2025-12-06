@@ -89,7 +89,7 @@ public class CentroService : ICentroService
 
         if (filtro.StatusId.HasValue)
             query = query.Where(si => si.Solicitacao.StatusId == filtro.StatusId.Value);
-        
+
 
         var dadosBrutos = await query
             .Select(si => new
@@ -123,6 +123,43 @@ public class CentroService : ICentroService
             })
             .OrderByDescending(r => r.ValorTotalGasto)
             .ToList();
+
+        return relatorio;
+    }
+
+    public async Task<List<RelatorioCategoriaSaidaDto>> GetRelatorioPorCategoriaAsync(RelatorioCategoriaFiltroDto filtro)
+    {
+        var dataFimAjustada = filtro.DataFim.Date.AddDays(1).AddTicks(-1);
+
+        var query = _context.SolicitacaoItens.AsNoTracking()
+            .Where(si =>
+                si.Solicitacao.DataCriacao >= filtro.DataInicio &&
+                si.Solicitacao.DataCriacao <= dataFimAjustada
+            );
+
+        var agrupado = await query
+            .GroupBy(si => si.Item.Categoria.Nome)
+            .Select(g => new
+            {
+                Categoria = g.Key,
+                Qtd = g.Sum(si => si.Quantidade),
+                Total = g.Sum(si => si.Quantidade * si.ValorUnitario)
+            })
+            .ToListAsync();
+
+        var valorTotalGeral = agrupado.Sum(x => x.Total);
+
+        if (valorTotalGeral == 0) valorTotalGeral = 1;
+
+        var relatorio = agrupado.Select(x => new RelatorioCategoriaSaidaDto
+        {
+            CategoriaNome = x.Categoria,
+            QuantidadeItensVendidos = (int)x.Qtd,
+            ValorTotal = x.Total,
+            PercentualDoTotal = Math.Round((x.Total / valorTotalGeral) * 100, 2)
+        })
+        .OrderByDescending(x => x.ValorTotal)
+        .ToList();
 
         return relatorio;
     }

@@ -8,5 +8,6 @@ namespace Services.Interfaces
 
         Task<CentroDto?> GetCentroByIdAsync(long id);
         Task<List<RelatorioGastosCentroSaidaDto>> GetRelatorioGastosPorCentroAsync(RelatorioGastosCentroFiltroDto filtro);
+        Task<List<RelatorioCategoriaSaidaDto>> GetRelatorioPorCategoriaAsync(RelatorioCategoriaFiltroDto filtro);
     }
 }

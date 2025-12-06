@@ -102,5 +102,23 @@ namespace ComprasTccApp.Backend.Controllers
                 return StatusCode(500, $"Erro ao gerar relatório de centros. Exceção: {ex.Message}");
             }
         }
+
+        [HttpGet("relatorios/consumo-por-categoria")]
+        [ProducesResponseType(typeof(IEnumerable<RelatorioCategoriaSaidaDto>), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        [Authorize(Roles = "Admin,Gestor")]
+        public async Task<IActionResult> GetRelatorioCategorias([FromQuery] RelatorioCategoriaFiltroDto filtro)
+        {
+            try
+            {
+                var resultado = await _centroService.GetRelatorioPorCategoriaAsync(filtro);
+                return Ok(resultado);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Erro ao gerar relatório de categorias. Exceção: {ex.Message}");
+            }
+        }
     }
 }
