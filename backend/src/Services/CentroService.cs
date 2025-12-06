@@ -75,4 +75,55 @@ public class CentroService : ICentroService
             throw;
         }
     }
+
+    private async Task<List<RelatorioGastosCentroSaidaDto>> GetRelatorioGastosPorCentroAsync(RelatorioGastosCentroFiltroDto filtro)
+    {
+        var dataFimAjustada = filtro.DataFim.Date.AddDays(1).AddTicks(-1);
+
+        var query = _context.SolicitacaoItens.AsNoTracking();
+
+        query = query.Where(si =>
+            si.Solicitacao.DataCriacao >= filtro.DataInicio &&
+            si.Solicitacao.DataCriacao <= dataFimAjustada
+        );
+
+        if (filtro.StatusId.HasValue)
+            query = query.Where(si => si.Solicitacao.StatusId == filtro.StatusId.Value);
+        
+
+        var dadosBrutos = await query
+            .Select(si => new
+            {
+                CentroId = si.Solicitacao.Solicitante.Departamento.Centro.Id,
+                CentroNome = si.Solicitacao.Solicitante.Departamento.Centro.Nome,
+                CentroSigla = si.Solicitacao.Solicitante.Departamento.Centro.Sigla,
+                DeptNome = si.Solicitacao.Solicitante.Departamento.Nome,
+                SolicitacaoId = si.SolicitacaoId,
+                TotalItem = si.Quantidade * si.ValorUnitario
+            })
+            .ToListAsync();
+
+        var relatorio = dadosBrutos
+            .GroupBy(x => new { x.CentroId, x.CentroNome, x.CentroSigla })
+            .Select(g => new RelatorioGastosCentroSaidaDto
+            {
+                CentroId = g.Key.CentroId,
+                CentroNome = g.Key.CentroNome,
+                CentroSigla = g.Key.CentroSigla,
+                QuantidadeSolicitacoes = g.Select(x => x.SolicitacaoId).Distinct().Count(),
+                ValorTotalGasto = g.Sum(x => x.TotalItem),
+                DepartamentoMaiorGasto = g.GroupBy(x => x.DeptNome)
+                                          .Select(deptGroup => new
+                                          {
+                                              Nome = deptGroup.Key,
+                                              Total = deptGroup.Sum(y => y.TotalItem)
+                                          })
+                                          .OrderByDescending(d => d.Total)
+                                          .First().Nome
+            })
+            .OrderByDescending(r => r.ValorTotalGasto)
+            .ToList();
+
+        return relatorio;
+    }
 }
