@@ -76,7 +76,7 @@ public class CentroService : ICentroService
         }
     }
 
-    private async Task<List<RelatorioGastosCentroSaidaDto>> GetRelatorioGastosPorCentroAsync(RelatorioGastosCentroFiltroDto filtro)
+    public async Task<List<RelatorioGastosCentroSaidaDto>> GetRelatorioGastosPorCentroAsync(RelatorioGastosCentroFiltroDto filtro)
     {
         var dataFimAjustada = filtro.DataFim.Date.AddDays(1).AddTicks(-1);
 

@@ -81,5 +81,22 @@ namespace ComprasTccApp.Backend.Controllers
                 );
             }
         }
+
+        [HttpGet("relatorios/gastos-por-centro")]
+        public async Task<IActionResult> GetRelatorioGastosPorCentro([FromQuery] RelatorioGastosCentroFiltroDto filtro)
+        {
+            if (filtro.DataInicio > filtro.DataFim)
+                return BadRequest("Data início deve ser menor que data fim.");
+
+            try
+            {
+                var resultado = await _centroService.GetRelatorioGastosPorCentroAsync(filtro);
+                return Ok(resultado);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Erro ao gerar relatório de centros. Exceção: {ex.Message}");
+            }
+        }
     }
 }
