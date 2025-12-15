@@ -7,5 +7,7 @@ namespace Services.Interfaces
         Task<IEnumerable<CentroDto>> GetAllCentrosAsync(string? nome, string? sigla);
 
         Task<CentroDto?> GetCentroByIdAsync(long id);
+        Task<List<RelatorioGastosCentroSaidaDto>> GetRelatorioGastosPorCentroAsync(RelatorioGastosCentroFiltroDto filtro);
+        Task<List<RelatorioCategoriaSaidaDto>> GetRelatorioPorCategoriaAsync(RelatorioCategoriaFiltroDto filtro);
     }
 }
