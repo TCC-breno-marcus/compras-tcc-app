@@ -5,7 +5,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0
 WORKDIR /app/backend
 
 # Instala dotnet-ef
-RUN dotnet tool install --global dotnet-ef
+RUN dotnet tool install --global dotnet-ef --version 8.0.11
 ENV PATH="$PATH:/root/.dotnet/tools"
 
 # Copia tudo
