@@ -1,6 +1,6 @@
 import { apiClient } from '@/services/apiClient'
 import type { PaginatedResponse } from '@/types'
-import type { ItemDepartmentResponse, ItemsDepartmentFilters } from '../types'
+import type { CategoryConsumptionResponse, CenterExpenseResponse, ItemDepartmentResponse, ItemsDepartmentFilters, ReportDateFilters } from '../types'
 
 interface IReportService {
   getItemsPerDepartment(
@@ -10,6 +10,8 @@ interface IReportService {
     itemsType: 'geral' | 'patrimonial',
     fileFormat: 'csv' | 'excel',
   ): Promise<Blob>
+  getCenterExpenses(filters: ReportDateFilters): Promise<CenterExpenseResponse[]>
+  getCategoryConsumption(filters: ReportDateFilters): Promise<CategoryConsumptionResponse[]>
 }
 
 export const reportService: IReportService = {
@@ -65,4 +67,44 @@ export const reportService: IReportService = {
       )
     }
   },
+
+  /**
+   * Busca relatório de gastos por centro.
+   */
+  async getCenterExpenses(filters) {
+    const params = new URLSearchParams()
+    params.append('DataInicio', filters.DataInicio)
+    params.append('DataFim', filters.DataFim)
+
+    try {
+      const response = await apiClient.get<CenterExpenseResponse[]>(
+        '/centro/relatorios/gastos-por-centro',
+        { params }
+      )
+      return response.data
+    } catch (error) {
+      console.error('Erro ao buscar gastos por centro:', error)
+      throw new Error('Não foi possível carregar os gastos por centro.')
+    }
+  },
+
+  /**
+   * Busca relatório de consumo por categoria.
+   */
+  async getCategoryConsumption(filters) {
+    const params = new URLSearchParams()
+    params.append('DataInicio', filters.DataInicio)
+    params.append('DataFim', filters.DataFim)
+
+    try {
+      const response = await apiClient.get<CategoryConsumptionResponse[]>(
+        '/centro/relatorios/consumo-por-categoria',
+        { params }
+      )
+      return response.data
+    } catch (error) {
+      console.error('Erro ao buscar consumo por categoria:', error)
+      throw new Error('Não foi possível carregar o consumo por categoria.')
+    }
+  }
 }

@@ -479,7 +479,9 @@ namespace Services
             }
         }
 
-        public async Task<List<RelatorioItemSaidaDto>> GetRelatorioItensPorDepartamentoAsync(RelatorioItensFiltroDto filtro)
+        public async Task<List<RelatorioItemSaidaDto>> GetRelatorioItensPorDepartamentoAsync(
+            RelatorioItensFiltroDto filtro
+        )
         {
             var query = BuildBaseQuery(
                 filtro.SearchTerm,
@@ -492,8 +494,8 @@ namespace Services
             var dataFimAjustada = filtro.DataFim.Date.AddDays(1).AddTicks(-1);
 
             query = query.Where(si =>
-                si.Solicitacao.DataCriacao >= filtro.DataInicio &&
-                si.Solicitacao.DataCriacao <= dataFimAjustada
+                si.Solicitacao.DataCriacao >= filtro.DataInicio
+                && si.Solicitacao.DataCriacao <= dataFimAjustada
             );
 
             var itensFiltrados = await query
@@ -503,7 +505,7 @@ namespace Services
                 {
                     si.Item,
                     si.Quantidade,
-                    si.ValorUnitario
+                    si.ValorUnitario,
                 })
                 .ToListAsync();
 
@@ -522,14 +524,15 @@ namespace Services
 
                         QuantidadeSolicitada = (int)g.Sum(x => x.Quantidade),
                         ValorMedioUnitario = g.Average(x => x.ValorUnitario),
-                        ValorTotalGasto = g.Sum(x => x.Quantidade * x.ValorUnitario)
+                        ValorTotalGasto = g.Sum(x => x.Quantidade * x.ValorUnitario),
                     };
                 })
                 .AsQueryable();
 
-            relatorio = filtro.SortOrder?.ToLower() == "desc"
-                ? relatorio.OrderByDescending(x => x.QuantidadeSolicitada)
-                : relatorio.OrderBy(x => x.Nome);
+            relatorio =
+                filtro.SortOrder?.ToLower() == "desc"
+                    ? relatorio.OrderByDescending(x => x.QuantidadeSolicitada)
+                    : relatorio.OrderBy(x => x.Nome);
 
             return relatorio.ToList();
         }
