@@ -149,14 +149,14 @@ export const useSolicitationStore = defineStore('solicitation', () => {
    * Altera o status da solicitação.
    * @param newStatusId O ID do novo status.
    */
-  const updateStatus = async (newStatusId: number) => {
+  const updateStatus = async (newStatusId: number, observation: string) => {
     if (!currentSolicitation.value) {
       return
     }
 
     const body = {
       novoStatusId: newStatusId,
-      observacoes: '',
+      observacoes: observation,
     }
 
     try {

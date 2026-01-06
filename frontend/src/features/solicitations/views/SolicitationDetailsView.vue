@@ -19,7 +19,7 @@ import { formatDate } from '@/utils/dateUtils'
 import SolicitationDetailsSkeleton from '../components/SolicitationDetailsSkeleton.vue'
 import { useSolicitationStore } from '../stores/solicitationStore'
 import CustomBreadcrumb from '@/components/ui/CustomBreadcrumb.vue'
-import { useConfirm, useToast } from 'primevue'
+import { Tag, useConfirm, useToast } from 'primevue'
 import { SAVE_CONFIRMATION } from '@/utils/confirmationFactoryUtils'
 import type { Solicitation } from '../types'
 import Textarea from 'primevue/textarea'
@@ -41,11 +41,12 @@ const toast = useToast()
 const confirm = useConfirm()
 const settingStore = useSettingStore()
 const { deadline, deadlineHasExpired } = storeToRefs(settingStore)
-const { user, isGestor } = storeToRefs(authStore)
+const { user, isGestor, isSolicitante } = storeToRefs(authStore)
 const solicitationStore = useSolicitationStore()
 const { currentSolicitation, isLoading, error, currentSolicitationBackup } =
   storeToRefs(solicitationStore)
 const historyStore = useSolicitationHistoryStore()
+const { solicitationHistory } = storeToRefs(historyStore)
 
 const activeTab = ref('0')
 
@@ -163,9 +164,9 @@ const handleEdit = () => {
   activeTab.value = '0'
 }
 
-const handleStatusChange = async (newStatusId: number) => {
+const handleStatusChange = async (newStatusId: number, observation: string) => {
   if (!currentSolicitation.value) return
-  await solicitationStore.updateStatus(newStatusId)
+  await solicitationStore.updateStatus(newStatusId, observation)
   historyStore.clearHistory()
   historyStore.fetchSolicitationHistory(currentSolicitation.value.id)
 }
@@ -183,12 +184,41 @@ const canEditSolicitation = computed(() => {
   )
 })
 
+const getStatusObservations = (): string => {
+  const history = solicitationHistory.value
+  const currentStatus = currentSolicitation.value?.status?.nome
+
+  if (!history || !history.length || !currentStatus) {
+    return ''
+  }
+
+  const targetPhrase = `para '${currentStatus}'`
+
+  // 1. Filtra itens que indicam mudança PARA o status atual
+  const matchingItems = history.filter(
+    (item) => item.detalhes && item.detalhes.includes(targetPhrase),
+  )
+
+  if (matchingItems.length === 0) {
+    return ''
+  }
+
+  // 2. Ordena pela data mais recente (Decrescente)
+  // Garante que pegamos a última vez que esse status foi definido
+  matchingItems.sort(
+    (a, b) => new Date(b.dataOcorrencia).getTime() - new Date(a.dataOcorrencia).getTime(),
+  )
+
+  return matchingItems[0].observacoes || ''
+}
+
 watch(
   () => route.params.id,
   (newId) => {
     if (newId && typeof newId === 'string') {
       solicitationStore.fetchById(parseInt(newId, 10))
       historyStore.clearHistory()
+      historyStore.fetchSolicitationHistory(parseInt(newId, 10))
     }
   },
   {
@@ -210,6 +240,18 @@ watch(
   },
 )
 
+const observationText = computed(() => getStatusObservations())
+
+watch(observationText, (newText) => {
+  if (newText && isSolicitante.value) {
+    toast.add({
+      severity: 'warn',
+      summary: 'Ação Necessária',
+      detail: 'O gestor solicitou ajustes. Verifique as observações para prosseguir.',
+      life: 6000,
+    })
+  }
+})
 onMounted(() => {
   settingStore.fetchSettings()
 })
@@ -318,8 +360,24 @@ onMounted(() => {
                 <div class="flex-1">
                   <span class="text-sm text-color-secondary">Status</span>
                   <div class="flex flex-wrap align-items-center gap-2">
-                    <p v-if="!isEditingStatus" class="font-bold m-0">
+                    <p v-if="!isEditingStatus" class="font-bold m-0 flex align-items-center gap-2">
                       {{ toTitleCase(currentSolicitation.status.nome) }}
+                      <Tag
+                        v-if="getStatusObservations()"
+                        v-tooltip.top="getStatusObservations()"
+                        severity="warn"
+                        rounded
+                      >
+                        <div class="flex align-items-center gap-2" style="max-width: 180px">
+                          <i class="pi pi-exclamation-triangle"></i>
+
+                          <span
+                            class="white-space-nowrap overflow-hidden text-overflow-ellipsis block"
+                          >
+                            Motivo: {{ getStatusObservations() }}
+                          </span>
+                        </div>
+                      </Tag>
                     </p>
                   </div>
                 </div>

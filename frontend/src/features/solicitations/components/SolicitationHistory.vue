@@ -113,10 +113,17 @@ const formatDetailText = (text: string) => {
                   <li
                     v-for="(detail, index) in slotProps.item.detailsList"
                     :key="index"
-                    class="flex text-sm mb-1"
+                    class="flex text-sm mb-1 align-items-end"
                   >
                     <i class="pi pi-chevron-right mr-2 mt-1 text-color-secondary text-xs"></i>
                     <p v-html="formatDetailText(detail)"></p>
+                    <span
+                      v-if="slotProps.item.observacoes"
+                      class="text-xs text-color-secondary ml-2 "
+                    >
+                      <i class="pi pi-info-circle text-color-secondary text-xs"></i>
+                      Observações: {{ slotProps.item.observacoes }}</span
+                    >
                   </li>
                 </ul>
               </div>

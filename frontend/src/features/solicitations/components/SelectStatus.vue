@@ -43,7 +43,7 @@ const selectStatus = (newStatus: Status) => {
     return
   }
 
-  emit('status-change', newStatus.id)
+  emit('status-change', newStatus.id, observation.value)
   op.value.hide()
 }
 
