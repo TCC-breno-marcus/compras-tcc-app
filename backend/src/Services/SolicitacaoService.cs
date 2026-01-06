@@ -1066,4 +1066,62 @@ public class SolicitacaoService : ISolicitacaoService
 
         return historico;
     }
+
+    public async Task<int> ArchiveOldSolicitationsAsync(int anoReferencia, long executorPessoaId)
+    {
+        await using var transaction = await _context.Database.BeginTransactionAsync();
+        try
+        {
+            var toArchive = await _context
+                .Solicitacoes.Where(s =>
+                    s.DataCriacao.Year < anoReferencia && s.StatusId != StatusConsts.Encerrada
+                )
+                .ToListAsync();
+
+            if (!toArchive.Any())
+            {
+                _logger.LogInformation(
+                    "Nenhuma solicitação encontrada para arquivamento referente ao ano {Ano}",
+                    anoReferencia
+                );
+                return 0;
+            }
+
+            foreach (var s in toArchive)
+            {
+                var statusAnterior = s.StatusId;
+                s.StatusId = StatusConsts.Encerrada;
+
+                var historico = new HistoricoSolicitacao
+                {
+                    SolicitacaoId = s.Id,
+                    DataOcorrencia = DateTime.UtcNow,
+                    PessoaId = executorPessoaId,
+                    Acao = AcaoHistoricoEnum.MudancaDeStatus,
+                    Detalhes =
+                        $"Rotina de arquivamento anual: status alterado de {statusAnterior} para {StatusConsts.Encerrada}",
+                    Observacoes = "Encerrada automaticamente por rotina anual",
+                };
+
+                await _context.HistoricoSolicitacoes.AddAsync(historico);
+            }
+
+            var changed = await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            _logger.LogInformation(
+                "Arquivadas {Count} solicitações anteriores a {Ano}",
+                toArchive.Count,
+                anoReferencia
+            );
+
+            return toArchive.Count;
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync();
+            _logger.LogError(ex, "Erro ao arquivar solicitações antigas");
+            throw;
+        }
+    }
 }

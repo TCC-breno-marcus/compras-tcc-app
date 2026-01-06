@@ -16,9 +16,9 @@ export const transformSolicitation = (
   return {
     ...solicitation,
     typeDisplay,
+    department: solicitation.solicitante?.unidade?.sigla,
     ...(solicitationListType === 'allSolicitations' && {
       requester: solicitation.solicitante.nome,
-      department: solicitation.solicitante.unidade.sigla,
     }),
   }
 }
