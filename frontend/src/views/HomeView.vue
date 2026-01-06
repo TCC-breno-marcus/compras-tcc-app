@@ -3,6 +3,7 @@ import { useAuthStore } from '@/features/autentication/stores/authStore'
 import { storeToRefs } from 'pinia'
 import HomeCard from '@/components/ui/HomeCard.vue'
 import PendingSolicitations from '@/features/solicitations/components/PendingSolicitations.vue'
+import AwaitingAdjustments from '@/features/solicitations/components/AwaitingAdjustments.vue'
 
 const authStore = useAuthStore()
 
@@ -109,8 +110,9 @@ const { user, isAdmin, isGestor, isSolicitante } = storeToRefs(authStore)
         </div>
       </div>
 
-      <div v-if="isAdmin || isGestor" class="w-12 lg:w-5">
-        <PendingSolicitations />
+      <div class="w-12 lg:w-5">
+        <PendingSolicitations v-if="isAdmin || isGestor" />
+        <AwaitingAdjustments v-else-if="isSolicitante" />
       </div>
     </div>
   </div>
