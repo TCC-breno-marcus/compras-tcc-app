@@ -170,7 +170,7 @@ const topItensPorValorData = computed(() => {
             <Chart
               type="doughnut"
               :data="categoryChartData"
-              :options="setChartOptions('Valor por Departamento (R$)', 'doughnut')"
+              :options="setChartOptions('Valor por Categoria (R$)', 'doughnut')"
               style="height: 300px"
               class="graph"
             />
