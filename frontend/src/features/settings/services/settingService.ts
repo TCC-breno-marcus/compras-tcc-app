@@ -4,6 +4,7 @@ import type { Setting } from '../types'
 interface ISettingService {
   getSettings(): Promise<Setting>
   updateSettings(settings: Partial<Setting>): Promise<Setting>
+  archiveOldSolicitations(): Promise<any>
 }
 
 export const settingService: ISettingService = {
@@ -27,12 +28,24 @@ export const settingService: ISettingService = {
    */
   async updateSettings(settings) {
     try {
-      
       const response = await apiClient.patch<Setting>('/configuracao', settings)
       return response.data
     } catch (error) {
       console.error(`Erro ao alterar as configurações:`, error)
       throw new Error('Não foi possível alterar as configurações.')
+    }
+  },
+
+  /**
+   * Aciona rotina no backend para encerrar solicitações de anos anteriores.
+   */
+  async archiveOldSolicitations() {
+    try {
+      const response = await apiClient.post('/solicitacao/manutencao/encerrar-anos-anteriores')
+      return response.data
+    } catch (error) {
+      console.error(`Erro ao executar rotina de arquivamento:`, error)
+      throw new Error('Não foi possível executar a rotina de arquivamento.')
     }
   },
 }
