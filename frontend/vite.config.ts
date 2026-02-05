@@ -21,10 +21,8 @@ export default defineConfig({
       usePolling: true,
     },
     hmr: {
-      protocol: 'ws',
-      host: 'localhost',
-      port: 5173,
+      clientPort: 5173
     },
-    allowedHosts: ['.ngrok-free.app'],
+    allowedHosts: ['.ngrok-free.app', 'frontend-service', 'localhost', '127.0.0.1'],
   },
 })

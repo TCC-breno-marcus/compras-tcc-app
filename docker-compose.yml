@@ -19,6 +19,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks: 
+      - app-network
 
   # Serviço do Backend .NET
   backend-service:
@@ -47,6 +49,8 @@ services:
     depends_on:
       postgres-db:
         condition: service_healthy
+    networks: 
+    - app-network
         
     env_file:
       - ./.env
@@ -65,6 +69,8 @@ services:
     volumes:
       - ./frontend:/app/frontend
       - /app/frontend/node_modules
+    networks: 
+      - app-network
 
   # Serviço Nginx para imagens (sem alterações de segredos)
   servidor-imagens:
@@ -80,6 +86,33 @@ services:
       - /var/cache/nginx
       - /var/run
       - /tmp
+    networks: 
+      - app-network
+
+  cypress:
+    # Imagem oficial que já vem com Node, Cypress, Chrome, Firefox e Xvfb configurados
+    image: cypress/included:13.6.6
+    container_name: cypress_runner
+    # Melhora a performance e evita crash do Chrome dentro do Docker
+    ipc: host 
+    # Mapeia a pasta frontend local para dentro do container de teste
+    volumes:
+      - ./frontend:/e2e
+      - cypress_cache:/root/.cache/Cypress
+    working_dir: /e2e
+    environment:
+      - CYPRESS_baseUrl=http://frontend-service:5173
+    depends_on:
+      - frontend-service
+    networks:
+      - app-network
+    # Mantém o container rodando para poder executar comandos repetidamente
+    entrypoint: ["tail", "-f", "/dev/null"]
 
 volumes:
   postgres-data:
+  cypress_cache:
+
+networks:
+  app-network:
+    driver: bridge
