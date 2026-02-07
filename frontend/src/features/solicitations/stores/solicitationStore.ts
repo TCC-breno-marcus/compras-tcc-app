@@ -111,6 +111,11 @@ export const useSolicitationStore = defineStore('solicitation', () => {
     }
   }
 
+  /**
+   * Remove um item da solicitação atual.
+   * @param itemId O ID do item a ser removido.
+   * @returns 'removed' se o item foi removido, 'not_found' se o item não foi encontrado.
+   */
   const removeItem = (itemId: number) => {
     if (currentSolicitation.value) {
       currentSolicitation.value.itens = currentSolicitation.value.itens.filter(
@@ -120,6 +125,12 @@ export const useSolicitationStore = defineStore('solicitation', () => {
     }
   }
 
+  /**
+   * Atualiza a quantidade de um item específico no carrinho.
+   * @param itemId O ID do item a ser atualizado.
+   * @param newQuantity A nova quantidade para o item.
+   * @returns 'updated' se a quantidade foi atualizada, 'not_found' se o item não foi encontrado.
+   */
   const updateItemQuantity = (itemId: number, newQuantity: number) => {
     const item = currentSolicitation.value?.itens.find((i) => i.id === itemId)
     if (item) {
@@ -127,6 +138,10 @@ export const useSolicitationStore = defineStore('solicitation', () => {
     }
   }
 
+  /**
+   * Verifica se o carrinho sofreu atualização ou não.
+   * @return true se o carrinho tiver sido modificado, false caso contrário.
+   */
   const isDirty = computed(() => {
     if (!currentSolicitation.value || !currentSolicitationBackup.value) {
       return false
@@ -138,6 +153,9 @@ export const useSolicitationStore = defineStore('solicitation', () => {
     return is
   })
 
+  /**
+   * Limpa o carrinho após um pedido ser finalizado ou quando o usuário deseja descartar as alterações feitas.
+   */
   const $reset = () => {
     currentSolicitation.value = null
     currentSolicitationBackup.value = null
@@ -148,6 +166,7 @@ export const useSolicitationStore = defineStore('solicitation', () => {
   /**
    * Altera o status da solicitação.
    * @param newStatusId O ID do novo status.
+   * @param observation Observação/Justificativa para a mudança de status.
    */
   const updateStatus = async (newStatusId: number, observation: string) => {
     if (!currentSolicitation.value) {
