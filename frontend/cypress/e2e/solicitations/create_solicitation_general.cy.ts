@@ -1,13 +1,4 @@
 describe('Criar solicitação geral', () => {
-  const fillNumericInput = (selector: string, index: number, value: number) => {
-    cy.get(selector)
-      .eq(index)
-      .should('be.visible')
-      .click()
-      .type('{selectall}{backspace}')
-      .type(`${value}`)
-      .blur()
-  }
 
   it('deve criar uma solicitação geral com 2 itens', () => {
     const quantidade1 = Cypress._.random(1, 3)
@@ -17,9 +8,6 @@ describe('Criar solicitação geral', () => {
     const justificativaGeral = `Justificativa geral e2e ${Date.now()}`
 
     cy.loginSession('solicitante')
-    cy.visit('/')
-    cy.url().should('eq', `${Cypress.config().baseUrl}/`)
-
     cy.visit('/solicitacoes/criar/geral')
 
     cy.url().should('include', '/solicitacoes/criar/geral')
@@ -35,10 +23,10 @@ describe('Criar solicitação geral', () => {
     cy.get('input#on_label_qtde').should('have.length.at.least', 2)
     cy.get('input#on_label_price').should('have.length.at.least', 2)
 
-    fillNumericInput('input#on_label_qtde', 0, quantidade1)
-    fillNumericInput('input#on_label_qtde', 1, quantidade2)
-    fillNumericInput('input#on_label_price', 0, preco1)
-    fillNumericInput('input#on_label_price', 1, preco2)
+    cy.fillNumericInput('input#on_label_qtde', 0, quantidade1)
+    cy.fillNumericInput('input#on_label_qtde', 1, quantidade2)
+    cy.fillNumericInput('input#on_label_price', 0, preco1)
+    cy.fillNumericInput('input#on_label_price', 1, preco2)
 
     cy.get('#textarea_label').should('be.visible').type(justificativaGeral)
 

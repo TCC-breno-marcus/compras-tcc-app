@@ -9,28 +9,51 @@ declare global {
 
 Cypress.Commands.add('loginSession', (perfil: 'solicitante' | 'gestor' | 'admin' = 'solicitante') => {
   const usuarios = {
-    solicitante: { email: 'solicitante@sistema.com', senha: '123456', nome: 'Solicitante Padrão' },
-    gestor: { email: 'gestor@sistema.com', senha: '123456', nome: 'Gestor Padrão' },
-    admin: { email: 'admin@sistema.com', senha: '123456', nome: 'Admin Padrão' }
+    solicitante: { email: 'solicitante@sistema.com', senha: '123456' },
+    gestor: { email: 'gestor@sistema.com', senha: '123456' },
+    admin: { email: 'admin@sistema.com', senha: '123456' },
   } as const
 
-  const { email, senha, nome } = usuarios[perfil]
+  const { email, senha } = usuarios[perfil]
 
   cy.session(
     [perfil],
     () => {
-    cy.visit('/login')
-    cy.get('input[type="email"]').type(email)
-    cy.get('input[type="password"]').type(senha)
-    cy.get('button[type="submit"]').click()
-      cy.url().should('eq', `${Cypress.config().baseUrl}/`)
-      cy.contains(`Olá, ${nome}`).should('be.visible')
+      cy.request({
+        method: 'POST',
+        url: '/api/auth/login',
+        body: { email, password: senha },
+      }).then(({ body }) => {
+        const token = body.token as string
+
+        cy.request({
+          method: 'GET',
+          url: '/api/auth/me',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }).then(({ body: user }) => {
+          cy.visit('/', {
+            onBeforeLoad(win) {
+              win.localStorage.clear()
+              win.localStorage.setItem(
+                'auth',
+                JSON.stringify({
+                  user,
+                  token,
+                }),
+              )
+            },
+          })
+        })
+      })
     },
     {
       validate() {
-        cy.visit('/')
-        cy.url().should('eq', `${Cypress.config().baseUrl}/`)
+        cy.visit('/solicitacoes/criar/geral')
+        cy.url().should('include', '/solicitacoes/criar/geral')
       },
+      cacheAcrossSpecs: true,
     },
   )
 })
@@ -46,4 +69,3 @@ Cypress.Commands.add('fillNumericInput', (selector, index, value) => {
 })
 
 export {}
-
