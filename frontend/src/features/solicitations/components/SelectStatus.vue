@@ -67,9 +67,9 @@ const observationIsInvalid = () => {
       text
       size="small"
       @click="toggle"
-      :disabled="currentStatusId === 5"
+      :disabled="currentStatusId === 5 || currentStatusId === 6"
       v-tooltip.left="
-        currentStatusId === 5 ? 'Solicitação cancelada (ação desativada)' : 'Alterar status'
+        currentStatusId === 5 || currentStatusId === 6 ? 'Solicitação em status irreversível (ação desativada)' : 'Alterar status'
       "
     />
 
