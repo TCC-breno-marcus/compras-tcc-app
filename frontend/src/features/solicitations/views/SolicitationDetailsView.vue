@@ -180,7 +180,11 @@ const canEditSolicitation = computed(() => {
   const isStatusEditable = editableStatus.includes(currentSolicitation.value.status.nome)
 
   return (
-    !isEditing.value && loggedUserCreatedIt.value && isStatusEditable && !deadlineHasExpired.value
+    isSolicitante.value &&
+    !isEditing.value &&
+    loggedUserCreatedIt.value &&
+    isStatusEditable &&
+    !deadlineHasExpired.value
   )
 })
 
