@@ -1,39 +1,37 @@
-/// <reference types="cypress" />
-// ***********************************************
-// This example commands.ts shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add('drag', { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add('dismiss', { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
-//
-// declare global {
-//   namespace Cypress {
-//     interface Chainable {
-//       login(email: string, password: string): Chainable<void>
-//       drag(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       dismiss(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       visit(originalFn: CommandOriginalFn, url: string, options: Partial<VisitOptions>): Chainable<Element>
-//     }
-//   }
-// }
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      loginSession(perfil?: 'solicitante' | 'gestor' | 'admin'): Chainable<void>
+    }
+  }
+}
+
+Cypress.Commands.add('loginSession', (perfil: 'solicitante' | 'gestor' | 'admin' = 'solicitante') => {
+  const usuarios = {
+    solicitante: { email: 'solicitante@sistema.com', senha: '123456', nome: 'Solicitante Padrão' },
+    gestor: { email: 'gestor@sistema.com', senha: '123456', nome: 'Gestor Padrão' },
+    admin: { email: 'admin@sistema.com', senha: '123456', nome: 'Admin Padrão' }
+  } as const
+
+  const { email, senha, nome } = usuarios[perfil]
+
+  cy.session(
+    [perfil],
+    () => {
+    cy.visit('/login')
+    cy.get('input[type="email"]').type(email)
+    cy.get('input[type="password"]').type(senha)
+    cy.get('button[type="submit"]').click()
+      cy.url().should('eq', `${Cypress.config().baseUrl}/`)
+      cy.contains(`Olá, ${nome}`).should('be.visible')
+    },
+    {
+      validate() {
+        cy.visit('/')
+        cy.url().should('eq', `${Cypress.config().baseUrl}/`)
+      },
+    },
+  )
+})
 
 export {}

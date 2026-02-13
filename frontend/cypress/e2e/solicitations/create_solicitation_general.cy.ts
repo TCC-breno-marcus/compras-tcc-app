@@ -1,38 +1,55 @@
-describe('Fluxo de Autenticação', () => {
-  beforeEach(() => {
-    cy.intercept('POST', '**/api/auth/login', (req) => {
-      req.continue((res) => {
-        // Se a requisição falhar ou retornar erro, você verá no log do terminal do Cypress
-        if (res.statusCode >= 400 || !res) {
-          console.log('❌ FALHA NO LOGIN:', {
-            url: req.url,
-            status: res?.statusCode,
-            body: res?.body,
-            error: res?.body || 'Resposta de erro sem mensagem detalhada', // Captura a mensagem de erro se disponível
-          })
-        }
-      })
-    }).as('loginAttempt')
-  })
+describe('Criar solicitação geral', () => {
+  const fillNumericInput = (selector: string, index: number, value: number) => {
+    cy.get(selector)
+      .eq(index)
+      .should('be.visible')
+      .click()
+      .type('{selectall}{backspace}')
+      .type(`${value}`)
+      .blur()
+  }
 
-  it('deve realizar login com sucesso e redirecionar para a home', () => {
-    // 1. Acessa a página de login
-    cy.visit('/login')
+  it('deve criar uma solicitação geral com 2 itens', () => {
+    const quantidade1 = Cypress._.random(1, 3)
+    const quantidade2 = Cypress._.random(1, 3)
+    const preco1 = Cypress._.random(10, 150)
+    const preco2 = Cypress._.random(10, 150)
+    const justificativaGeral = `Justificativa geral e2e ${Date.now()}`
 
-    // 2. Preenche as credenciais
-    // Ajuste os seletores 'input[type="email"]' ou 'input[type="password"]'
-    // se o seu componente PrimeVue usar IDs específicos
-    cy.get('input').first().type('solicitante@sistema.com') // Exemplo de e-mail
-    cy.get('input').last().type('123456') // Exemplo de senha
+    cy.loginSession('solicitante')
+    cy.visit('/')
+    cy.url().should('eq', `${Cypress.config().baseUrl}/`)
 
-    // 3. Clica no botão de entrar
-    cy.get('button[type="submit"]').click()
+    cy.visit('/solicitacoes/criar/geral')
 
-    // 4. Valida se a URL mudou para a home (opcional)
-    cy.url().should('include', '/')
+    cy.url().should('include', '/solicitacoes/criar/geral')
+    cy.contains('h3', 'Buscar Itens').should('be.visible')
 
-    // 5. Valida o texto de boas-vindas na página Home
-    // O comando 'contains' procura o texto exato dentro da página
-    cy.contains('Olá, Solicitante Padrão').should('be.visible')
+    cy.get('button[aria-label="Adicionar à Solicitação"]:visible')
+      .should('exist')
+      .first()
+      .click()
+
+    cy.get('button[aria-label="Adicionar à Solicitação"]:visible').eq(1).click()
+
+    cy.get('input#on_label_qtde').should('have.length.at.least', 2)
+    cy.get('input#on_label_price').should('have.length.at.least', 2)
+
+    fillNumericInput('input#on_label_qtde', 0, quantidade1)
+    fillNumericInput('input#on_label_qtde', 1, quantidade2)
+    fillNumericInput('input#on_label_price', 0, preco1)
+    fillNumericInput('input#on_label_price', 1, preco2)
+
+    cy.get('#textarea_label').should('be.visible').type(justificativaGeral)
+
+    cy.intercept('POST', '**/api/solicitacao/geral').as('createGeneralSolicitation')
+    cy.contains('button', 'Solicitar').should('be.enabled').click()
+
+    cy.wait('@createGeneralSolicitation').then(({ request, response }) => {
+      expect(response?.statusCode).to.be.oneOf([200, 201])
+    })
+
+    cy.contains('Sua solicitação foi enviada.').should('be.visible')
+    cy.contains('Não há itens na sua solicitação.').should('be.visible')
   })
 })
