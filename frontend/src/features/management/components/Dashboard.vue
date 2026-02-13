@@ -179,6 +179,21 @@ const topItemsValorData = computed(() => {
   )
 })
 
+const hasChartValues = (chart: { data: number[] } | undefined) => {
+  return !!chart && Array.isArray(chart.data) && chart.data.length > 0
+}
+
+const hasTopItemsValores = computed(() => {
+  return Array.isArray(topItensPorValorTotal.value) && topItensPorValorTotal.value.length > 0
+})
+
+const hasTopItemsQuantidade = computed(() => {
+  return Array.isArray(topItensPorQuantidade.value) && topItensPorQuantidade.value.length > 0
+})
+
+const hasDeptoData = computed(() => hasChartValues(valorPorDepartamento.value))
+const hasStatusData = computed(() => hasChartValues(visaoGeralStatus.value))
+
 const setChartOptions = (
   title: string,
   type: string,
@@ -303,7 +318,7 @@ onMounted(() => {
                 <ProgressSpinner style="width: 50px; height: 50px" strokeWidth="4" />
               </div>
               <Chart
-                v-else
+                v-else-if="topItemsValorData && hasTopItemsValores"
                 type="bar"
                 :data="topItemsValorData"
                 :options="
@@ -315,6 +330,7 @@ onMounted(() => {
                 "
                 class="graph"
               />
+              <div v-else class="empty-chart-message">Sem dados para exibir.</div>
             </div>
           </template>
         </Card>
@@ -343,7 +359,7 @@ onMounted(() => {
                 <ProgressSpinner style="width: 50px; height: 50px" strokeWidth="4" />
               </div>
               <Chart
-                v-else
+                v-else-if="topItemsQtyData && hasTopItemsQuantidade"
                 type="bar"
                 :data="topItemsQtyData"
                 :options="
@@ -355,6 +371,7 @@ onMounted(() => {
                 "
                 class="graph"
               />
+              <div v-else class="empty-chart-message">Sem dados para exibir.</div>
             </div>
           </template>
         </Card>
@@ -381,7 +398,7 @@ onMounted(() => {
 
               <ProgressSpinner v-if="isLoading" style="width: 50px; height: 50px" strokeWidth="4" />
               <Chart
-                v-else
+                v-else-if="deptoChartData && hasDeptoData"
                 type="doughnut"
                 :data="deptoChartData"
                 :options="
@@ -393,6 +410,7 @@ onMounted(() => {
                 "
                 class="graph"
               />
+              <div v-else class="empty-chart-message">Sem dados para exibir.</div>
             </div>
           </template>
         </Card>
@@ -419,7 +437,7 @@ onMounted(() => {
 
               <ProgressSpinner v-if="isLoading" style="width: 50px; height: 50px" strokeWidth="4" />
               <Chart
-                v-else
+                v-else-if="statusChartData && hasStatusData"
                 type="pie"
                 :data="statusChartData"
                 :options="
@@ -431,6 +449,7 @@ onMounted(() => {
                 "
                 class="graph"
               />
+              <div v-else class="empty-chart-message">Sem dados para exibir.</div>
             </div>
           </template>
         </Card>
@@ -506,6 +525,15 @@ onMounted(() => {
 }
 .chart-title {
   font-weight: 600;
+}
+
+.empty-chart-message {
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--p-text-muted-color);
+  font-size: 0.95rem;
 }
 .chart-overlay {
   position: absolute;
