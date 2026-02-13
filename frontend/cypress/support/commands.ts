@@ -2,6 +2,7 @@ declare global {
   namespace Cypress {
     interface Chainable {
       loginSession(perfil?: 'solicitante' | 'gestor' | 'admin'): Chainable<void>
+      fillNumericInput(selector: string, index: number, value: number): Chainable<void>
     }
   }
 }
@@ -34,4 +35,15 @@ Cypress.Commands.add('loginSession', (perfil: 'solicitante' | 'gestor' | 'admin'
   )
 })
 
+Cypress.Commands.add('fillNumericInput', (selector, index, value) => {
+  cy.get(selector)
+    .eq(index)
+    .should('be.visible')
+    .click()
+    .type('{selectall}{backspace}')
+    .type(`${value}`)
+    .blur()
+})
+
 export {}
+
