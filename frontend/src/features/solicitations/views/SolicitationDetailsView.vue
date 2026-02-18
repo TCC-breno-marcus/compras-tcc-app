@@ -27,6 +27,7 @@ import { toTitleCase } from '@/utils/stringUtils'
 import SolicitationHistory from '../components/SolicitationHistory.vue'
 import { useSolicitationHistoryStore } from '../stores/historySolicitationStore'
 import SelectStatus from '../components/SelectStatus.vue'
+import { getSolicitationStatusOptions } from '../utils'
 
 const solicitationContext = reactive<SolicitationContext>({
   dialogMode: 'selection',
@@ -247,11 +248,23 @@ watch(
 const observationText = computed(() => getStatusObservations())
 
 watch(observationText, (newText) => {
-  if (newText && isSolicitante.value) {
+  if (newText && isSolicitante.value && currentSolicitation.value) {
+    const currentStatus = currentSolicitation.value.status
+    const statusConfig = getSolicitationStatusOptions(currentStatus.id)
+    const statusName = toTitleCase(currentStatus.nome)
+    const toastSeverity =
+      statusConfig?.severity === 'danger'
+        ? 'error'
+        : statusConfig?.severity === 'success'
+          ? 'success'
+          : statusConfig?.severity === 'info'
+            ? 'info'
+            : 'warn'
+
     toast.add({
-      severity: 'warn',
-      summary: 'Ação Necessária',
-      detail: 'O gestor solicitou ajustes. Verifique as observações para prosseguir.',
+      severity: toastSeverity,
+      summary: `Status: ${statusName}`,
+      detail: `A solicitação está com status "${statusName}". Verifique as observações para mais detalhes.`,
       life: 6000,
     })
   }
