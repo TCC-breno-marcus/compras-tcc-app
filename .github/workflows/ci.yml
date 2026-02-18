@@ -198,17 +198,6 @@ jobs:
       - name: Rodar testes E2E (Cypress)
         run: docker compose exec -T cypress npx cypress run --e2e
 
-      - name: Publicar artefatos do Cypress
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: cypress-artifacts
-          path: |
-            frontend/cypress/screenshots
-            frontend/cypress/videos
-          if-no-files-found: warn
-          retention-days: 14
-
       - name: Logs dos serviços em caso de falha
         if: failure()
         run: |
