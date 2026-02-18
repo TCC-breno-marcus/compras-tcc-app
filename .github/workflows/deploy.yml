@@ -33,9 +33,13 @@ jobs:
         working-directory: frontend
         run: npm ci
 
-      - name: Testes unitários do frontend (Vitest)
+      - name: Instalar provider de coverage do Vitest (CI)
         working-directory: frontend
-        run: npm run test:unit -- --run
+        run: npm i -D @vitest/coverage-v8 --no-save
+
+      - name: Testes unitários do frontend com coverage (Vitest)
+        working-directory: frontend
+        run: npm run test:unit:coverage
 
       - name: Criar .env para stack de E2E no CI
         run: |
