@@ -267,6 +267,30 @@ const irreversibleStatusTooltip = computed(() => {
   return ''
 })
 
+const adjustedAndResubmittedEvent = computed(() => {
+  if (!currentSolicitation.value || currentSolicitation.value.status.id !== 1) return null
+
+  const history = solicitationHistory.value ?? []
+  const latestStatusChange = history.find((event) => {
+    const action = event.acao?.toLowerCase() ?? ''
+    return action === 'mudancadestatus' || action === 'mudança de status'
+  })
+
+  if (!latestStatusChange) return null
+
+  const details = (latestStatusChange.detalhes ?? '').toLowerCase()
+  const observation = (latestStatusChange.observacoes ?? '').toLowerCase()
+  const cameFromAdjustments =
+    (details.includes('aguardando ajustes') && details.includes('pendente')) ||
+    observation.includes('ajustes enviados pelo solicitante')
+
+  return cameFromAdjustments ? latestStatusChange : null
+})
+
+const showAdjustedAndResubmittedWarning = computed(() => {
+  return isGestor.value && !!adjustedAndResubmittedEvent.value
+})
+
 watch(observationText, (newText) => {
   if (newText && isSolicitante.value && currentSolicitation.value) {
     const currentStatus = currentSolicitation.value.status
@@ -348,6 +372,16 @@ onMounted(() => {
         />
       </div>
     </div>
+    <Message
+      v-if="showAdjustedAndResubmittedWarning"
+      icon="pi pi-refresh"
+      severity="info"
+      :closable="true"
+      class="mb-2"
+    >
+      Solicitação ajustada pelo solicitante e reenviada para análise em
+      {{ formatDate(adjustedAndResubmittedEvent!.dataOcorrencia, 'long') }}.
+    </Message>
 
     <div class="grid">
       <div class="col-12 lg:col-4">
