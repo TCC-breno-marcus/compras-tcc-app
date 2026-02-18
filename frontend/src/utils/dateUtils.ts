@@ -48,7 +48,10 @@ export function parseDateString(dateString: string | null): Date | null {
     }
 
     if (dateString.includes('-')) {
-      return new Date(`${dateString}T00:00:00`)
+      const date = new Date(`${dateString}T00:00:00`)
+      if (!isNaN(date.getTime())) {
+        return date
+      }
     }
 
     if (dateString.includes(' de ')) {

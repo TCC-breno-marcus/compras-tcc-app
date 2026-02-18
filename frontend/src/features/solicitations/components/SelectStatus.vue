@@ -28,6 +28,15 @@ const status = ref([
 ])
 
 const availableStatus = computed(() => status.value.filter((s) => s.id !== props.currentStatusId))
+const irreversibleStatusTooltip = computed(() => {
+  if (props.currentStatusId === 6) {
+    return 'Encerrada automaticamente pelo sistema por ser de anos anteriores. Status irreversível.'
+  }
+  if (props.currentStatusId === 5) {
+    return 'Cancelada pelo gestor. Status irreversível.'
+  }
+  return 'Alterar status'
+})
 
 const toggle = (event: Event) => {
   op.value.toggle(event)
@@ -67,10 +76,8 @@ const observationIsInvalid = () => {
       text
       size="small"
       @click="toggle"
-      :disabled="currentStatusId === 5"
-      v-tooltip.left="
-        currentStatusId === 5 ? 'Solicitação cancelada (ação desativada)' : 'Alterar status'
-      "
+      :disabled="currentStatusId === 5 || currentStatusId === 6"
+      v-tooltip.left="irreversibleStatusTooltip"
     />
 
     <Popover ref="op" class="w-64">

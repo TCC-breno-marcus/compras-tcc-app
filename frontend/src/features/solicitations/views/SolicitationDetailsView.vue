@@ -27,6 +27,7 @@ import { toTitleCase } from '@/utils/stringUtils'
 import SolicitationHistory from '../components/SolicitationHistory.vue'
 import { useSolicitationHistoryStore } from '../stores/historySolicitationStore'
 import SelectStatus from '../components/SelectStatus.vue'
+import { getSolicitationStatusOptions } from '../utils'
 
 const solicitationContext = reactive<SolicitationContext>({
   dialogMode: 'selection',
@@ -180,7 +181,11 @@ const canEditSolicitation = computed(() => {
   const isStatusEditable = editableStatus.includes(currentSolicitation.value.status.nome)
 
   return (
-    !isEditing.value && loggedUserCreatedIt.value && isStatusEditable && !deadlineHasExpired.value
+    isSolicitante.value &&
+    !isEditing.value &&
+    loggedUserCreatedIt.value &&
+    isStatusEditable &&
+    !deadlineHasExpired.value
   )
 })
 
@@ -241,13 +246,71 @@ watch(
 )
 
 const observationText = computed(() => getStatusObservations())
+const currentStatusOption = computed(() => {
+  if (!currentSolicitation.value) return null
+  return getSolicitationStatusOptions(currentSolicitation.value.status.id)
+})
+
+const isIrreversibleStatus = computed(() => {
+  if (!currentSolicitation.value) return false
+  return [5, 6].includes(currentSolicitation.value.status.id)
+})
+
+const irreversibleStatusTooltip = computed(() => {
+  if (!currentSolicitation.value) return ''
+  if (currentSolicitation.value.status.id === 6) {
+    return 'Solicitação encerrada automaticamente pelo sistema por ser de anos anteriores. Este status é irreversível.'
+  }
+  if (currentSolicitation.value.status.id === 5) {
+    return 'Solicitação cancelada pelo gestor. Este status é irreversível.'
+  }
+  return ''
+})
+
+const adjustedAndResubmittedEvent = computed(() => {
+  if (!currentSolicitation.value || currentSolicitation.value.status.id !== 1) return null
+
+  const history = solicitationHistory.value ?? []
+  const latestStatusChange = history.find((event) => {
+    const action = event.acao?.toLowerCase() ?? ''
+    return action === 'mudancadestatus' || action === 'mudança de status'
+  })
+
+  if (!latestStatusChange) return null
+
+  const details = (latestStatusChange.detalhes ?? '').toLowerCase()
+  const observation = (latestStatusChange.observacoes ?? '').toLowerCase()
+  const cameFromAdjustments =
+    (details.includes('aguardando ajustes') && details.includes('pendente')) ||
+    observation.includes('ajustes enviados pelo solicitante')
+
+  return cameFromAdjustments ? latestStatusChange : null
+})
+
+const showAdjustedAndResubmittedWarning = computed(() => {
+  return isGestor.value && !!adjustedAndResubmittedEvent.value
+})
 
 watch(observationText, (newText) => {
-  if (newText && isSolicitante.value) {
+  if (newText && isSolicitante.value && currentSolicitation.value) {
+    const currentStatus = currentSolicitation.value.status
+    if (currentStatus.id === 1) return
+
+    const statusConfig = getSolicitationStatusOptions(currentStatus.id)
+    const statusName = toTitleCase(currentStatus.nome)
+    const toastSeverity =
+      statusConfig?.severity === 'danger'
+        ? 'error'
+        : statusConfig?.severity === 'success'
+          ? 'success'
+          : statusConfig?.severity === 'info'
+            ? 'info'
+            : 'warn'
+
     toast.add({
-      severity: 'warn',
-      summary: 'Ação Necessária',
-      detail: 'O gestor solicitou ajustes. Verifique as observações para prosseguir.',
+      severity: toastSeverity,
+      summary: `Status: ${statusName}`,
+      detail: `A solicitação está com status "${statusName}". Verifique as observações para mais detalhes.`,
       life: 6000,
     })
   }
@@ -311,6 +374,16 @@ onMounted(() => {
         />
       </div>
     </div>
+    <Message
+      v-if="showAdjustedAndResubmittedWarning"
+      icon="pi pi-refresh"
+      severity="info"
+      :closable="true"
+      class="mb-2"
+    >
+      Solicitação ajustada pelo solicitante e reenviada para análise em
+      {{ formatDate(adjustedAndResubmittedEvent!.dataOcorrencia, 'long') }}.
+    </Message>
 
     <div class="grid">
       <div class="col-12 lg:col-4">
@@ -359,10 +432,15 @@ onMounted(() => {
                 <i class="pi pi-clock text-primary text-xl mr-3"></i>
                 <div class="flex-1">
                   <span class="text-sm text-color-secondary">Status</span>
-                  <div class="flex flex-wrap align-items-center gap-2">
+                  <div class="flex flex-wrap align-items-center gap-2 mb-2">
                     <p v-if="!isEditingStatus" class="font-bold m-0 flex align-items-center gap-2">
                       {{ toTitleCase(currentSolicitation.status.nome) }}
-                      <Tag
+                      <!-- <i
+                        v-if="isIrreversibleStatus"
+                        class="pi pi-info-circle text-color-secondary"
+                        v-tooltip.top="irreversibleStatusTooltip"
+                      ></i> -->
+                      <!-- <Tag
                         v-if="getStatusObservations()"
                         v-tooltip.top="getStatusObservations()"
                         severity="warn"
@@ -377,9 +455,18 @@ onMounted(() => {
                             Motivo: {{ getStatusObservations() }}
                           </span>
                         </div>
-                      </Tag>
+                      </Tag> -->
                     </p>
                   </div>
+                  <small v-if="currentStatusOption?.descricao" class="text-color-secondary block line-height-3">
+                    {{ currentStatusOption.descricao }}
+                  </small>
+                  <small
+                    v-if="getStatusObservations()"
+                    class="text-color-secondary block line-height-3 mt-1"
+                  >
+                    <strong>Motivo informado:</strong> {{ getStatusObservations() }}
+                  </small>
                 </div>
                 <SelectStatus
                   v-if="isGestor"

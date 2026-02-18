@@ -58,7 +58,7 @@ export const applyPreFilters = (
     } else {
       const propCategoriesSet = new Set(propCategoriesIds)
       const intersection = urlCategoriesIds.filter((id) => propCategoriesSet.has(id))
-      finalFilters.categoriaId = intersection
+      finalFilters.categoriaId = [...new Set(intersection)]
     }
   }
 
