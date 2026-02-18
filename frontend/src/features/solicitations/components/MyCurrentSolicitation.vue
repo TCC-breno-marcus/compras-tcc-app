@@ -17,6 +17,11 @@ const toast = useToast()
 const settingStore = useSettingStore()
 const { deadline, deadlineHasExpired } = storeToRefs(settingStore)
 
+/**
+ * Valida regras de submissão antes do envio:
+ * item obrigatório, justificativa por tipo e campos mínimos por item.
+ * @returns `true` quando a solicitação está apta para envio.
+ */
 const isSolicitationValid = (): boolean => {
   if (!solicitationItems.value || solicitationItems.value.length === 0) {
     toast.add({
@@ -81,6 +86,9 @@ const isSolicitationValid = (): boolean => {
   return isValid
 }
 
+/**
+ * Executa envio da solicitação usando o tipo atual do contexto de tela.
+ */
 const createSolicitation = async () => {
   if (!isSolicitationValid()) return
 
@@ -103,6 +111,9 @@ const createSolicitation = async () => {
   }
 }
 
+/**
+ * Controla desabilitação do botão de envio para evitar submissão inválida.
+ */
 const disabledSendSolicitation = computed(() => {
   if (solicitationItems.value.length === 0) {
     return true
@@ -119,6 +130,10 @@ const disabledSendSolicitation = computed(() => {
   }
 })
 
+/**
+ * Remove item da solicitação atual e notifica usuário.
+ * @param itemId ID do item removido.
+ */
 const handleItemRemove = (itemId: number) => {
   if (!solicitationItems.value || solicitationItems.value.length === 0) return
   solicitationCartStore.removeItem(itemId)

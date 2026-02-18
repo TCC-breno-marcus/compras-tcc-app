@@ -20,6 +20,10 @@ export const useAuthStore = defineStore(
     const isGestor = computed(() => user.value?.role === 'Gestor')
     const isSolicitante = computed(() => user.value?.role === 'Solicitante')
 
+    /**
+     * Executa login e hidrata configurações globais necessárias após autenticação.
+     * @param credentials Credenciais do usuário.
+     */
     const login = async (credentials: UserCredentials) => {
       try {
         const response = await authService.login(credentials)
@@ -34,6 +38,9 @@ export const useAuthStore = defineStore(
       }
     }
 
+    /**
+     * Carrega dados do usuário autenticado com base no token atual.
+     */
     const fetchDataUser = async () => {
       try {
         const myData = await authService.getMyData()
@@ -43,6 +50,10 @@ export const useAuthStore = defineStore(
       }
     }
 
+    /**
+     * Registra novo usuário no backend.
+     * @param userData Dados de cadastro.
+     */
     const register = async (userData: UserRegistration) => {
       try {
         await authService.register(userData)
@@ -53,6 +64,9 @@ export const useAuthStore = defineStore(
       }
     }
 
+    /**
+     * Limpa credenciais e reseta stores dependentes da sessão atual.
+     */
     const logout = () => {
       useMySolicitationListStore().$reset()
       useSolicitationStore().$reset()

@@ -41,6 +41,9 @@ export const useLeaveConfirmation = () => {
   })
 
   // Lida com F5, fechar aba
+  /**
+   * Intercepta saída da página fora do Vue Router quando há alterações pendentes.
+   */
   const handleBeforeUnload = (event: BeforeUnloadEvent) => {
     if (hasUnsavedChanges.value) {
       event.preventDefault()

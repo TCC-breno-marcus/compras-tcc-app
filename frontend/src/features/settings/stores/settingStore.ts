@@ -35,6 +35,7 @@ export const useSettingStore = defineStore('setting', () => {
 
   /**
    * Atualiza as configurações.
+   * Envia apenas propriedades alteradas e ajusta prazo para fim do dia quando necessário.
    */
   const updateSettings = async (data: Partial<Setting>) => {
     isLoading.value = true
