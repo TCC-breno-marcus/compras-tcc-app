@@ -294,6 +294,8 @@ const showAdjustedAndResubmittedWarning = computed(() => {
 watch(observationText, (newText) => {
   if (newText && isSolicitante.value && currentSolicitation.value) {
     const currentStatus = currentSolicitation.value.status
+    if (currentStatus.id === 1) return
+
     const statusConfig = getSolicitationStatusOptions(currentStatus.id)
     const statusName = toTitleCase(currentStatus.nome)
     const toastSeverity =
