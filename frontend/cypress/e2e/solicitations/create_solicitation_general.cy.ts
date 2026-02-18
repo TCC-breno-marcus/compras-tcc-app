@@ -8,7 +8,9 @@ describe('Criar solicitação geral', () => {
     const justificativaGeral = `Justificativa geral e2e ${Date.now()}`
 
     cy.loginSession('solicitante')
+    cy.mockCatalogSeedData()
     cy.visit('/solicitacoes/criar/geral')
+    cy.wait('@getCatalog')
 
     cy.url().should('include', '/solicitacoes/criar/geral')
     cy.contains('h3', 'Buscar Itens').should('be.visible')

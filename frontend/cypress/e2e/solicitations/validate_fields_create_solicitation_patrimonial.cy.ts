@@ -1,7 +1,9 @@
 describe('Validações de criação de solicitação patrimonial', () => {
   beforeEach(() => {
     cy.loginSession('solicitante')
+    cy.mockCatalogSeedData()
     cy.visit('/solicitacoes/criar/patrimonial')
+    cy.wait('@getCatalog')
   })
 
   it('deve manter o botão "Solicitar" desativado quando a lista de itens estiver vazia', () => {

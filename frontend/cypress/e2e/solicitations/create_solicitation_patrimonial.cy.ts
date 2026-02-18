@@ -8,7 +8,9 @@ describe('Criar solicitação patrimonial', () => {
     const justificativaItem2 = `Justificativa item 2 e2e ${Date.now()}`
 
     cy.loginSession('solicitante')
+    cy.mockCatalogSeedData()
     cy.visit('/solicitacoes/criar/patrimonial')
+    cy.wait('@getCatalog')
 
     cy.url().should('include', '/solicitacoes/criar/patrimonial')
     cy.contains('h3', 'Buscar Itens').should('be.visible')

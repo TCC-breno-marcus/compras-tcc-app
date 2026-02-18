@@ -245,28 +245,26 @@ describe('Gestor - Gerenciar Catálogo (regras críticas)', () => {
     const newCatMat = '123456'
 
     cy.contains('button', 'Criar').click()
-    cy.contains('.p-dialog:visible .p-dialog-header', 'Criar Novo Item')
-      .should('be.visible')
-      .closest('.p-dialog')
-      .as('createDialog')
-    cy.get('@createDialog').contains('.p-dialog-footer button', 'Criar').should('be.disabled')
+    cy.contains('.p-dialog:visible .p-dialog-header', 'Criar Novo Item').should('be.visible')
+    cy.contains('.p-dialog:visible .p-dialog-footer button', 'Criar').should('be.disabled')
 
-    cy.get('@createDialog').find('input#nome, input[inputid="nome"]').first().type(newName)
-    cy.get('@createDialog')
-      .find('input#catMat, input[inputid="catMat"], input[maxlength="6"]')
-      .first()
-      .type(newCatMat)
-    cy.get('@createDialog')
-      .find('textarea#descricao, textarea[inputid="descricao"]')
-      .first()
-      .type('Descrição do item criado via e2e.')
+    cy.contains('.p-dialog:visible .p-dialog-header', 'Criar Novo Item')
+      .closest('.p-dialog')
+      .within(() => {
+        cy.get('input#nome', { timeout: 8000 }).should('be.visible').type(newName)
+        cy.get('input#catMat', { timeout: 8000 }).should('be.visible').type(newCatMat)
+        cy.get('textarea#descricao, textarea[inputid="descricao"]')
+          .first()
+          .type('Descrição do item criado via e2e.')
+      })
+
     selectCategory('Diversos')
     cy.fillNumericInput(
       '.p-dialog:visible input#precoSugerido, .p-dialog:visible input[inputid="precoSugerido"]',
       0,
       200,
     )
-    cy.get('@createDialog').contains('.p-dialog-footer button', 'Criar').click()
+    cy.contains('.p-dialog:visible .p-dialog-footer button', 'Criar').click()
     cy.wait('@createItem').then(({ request, response }) => {
       expect(response?.statusCode).to.eq(200)
       expect(request.body.nome).to.eq(newName)
