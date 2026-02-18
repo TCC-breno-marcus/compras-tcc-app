@@ -453,6 +453,25 @@ public class SolicitacaoService : ISolicitacaoService
                     Observacoes = null,
                 };
                 await _context.HistoricoSolicitacoes.AddAsync(historico);
+
+                // Quando o solicitante envia ajustes, a solicitação volta para a fila do gestor.
+                if (!isAdmin && solicitacaoDoBanco.StatusId == StatusConsts.AguardandoAjustes)
+                {
+                    solicitacaoDoBanco.StatusId = StatusConsts.Pendente;
+
+                    var historicoStatus = new HistoricoSolicitacao
+                    {
+                        SolicitacaoId = solicitacaoDoBanco.Id,
+                        DataOcorrencia = DateTime.UtcNow,
+                        PessoaId = pessoaId,
+                        Acao = AcaoHistoricoEnum.MudancaDeStatus,
+                        Detalhes =
+                            "Status alterado automaticamente de 'Aguardando Ajustes' para 'Pendente' após edição do solicitante.",
+                        Observacoes =
+                            "Ajustes enviados pelo solicitante para nova análise do gestor.",
+                    };
+                    await _context.HistoricoSolicitacoes.AddAsync(historicoStatus);
+                }
             }
 
             await _context.SaveChangesAsync();

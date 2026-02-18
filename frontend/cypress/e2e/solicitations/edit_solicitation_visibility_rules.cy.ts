@@ -19,7 +19,7 @@ type MockSolicitationOptions = {
 }
 
 const statusDescriptionByName: Record<string, string> = {
-  Pendente: 'Solicitação recém-criada, aguardando a análise do gestor.',
+  Pendente: 'Solicitação aguardando análise do gestor.',
   'Aguardando Ajustes': 'Devolvida ao solicitante para correção ou mais informações.',
   Aprovada: 'A solicitação foi aceita pelo gestor e seguirá para o próximo fluxo.',
   Rejeitada: 'O pedido foi permanentemente negado pelo gestor.',

@@ -6,7 +6,7 @@ type MockSolicitationOptions = {
 }
 
 const statusDescriptionByName: Record<string, string> = {
-  Pendente: 'Solicitação recém-criada, aguardando a análise do gestor.',
+  Pendente: 'Solicitação aguardando análise do gestor.',
   'Aguardando Ajustes': 'Devolvida ao solicitante para correção ou mais informações.',
   Aprovada: 'A solicitação foi aceita pelo gestor e seguirá para o próximo fluxo.',
   Rejeitada: 'O pedido foi permanentemente negado pelo gestor.',
@@ -113,12 +113,7 @@ const openDetails = (solicitationId: number) => {
 }
 
 const getStatusPencilButton = () =>
-  cy
-    .contains('span', 'Status')
-    .parents('li')
-    .find('button')
-    .filter(':has(.pi-pencil)')
-    .first()
+  cy.contains('span', 'Status').parents('li').find('button').filter(':has(.pi-pencil)').first()
 
 describe('Gestor - ações críticas na tela de solicitação', () => {
   beforeEach(() => {

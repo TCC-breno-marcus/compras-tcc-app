@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250922192152_AjusteRelacaoHistoricoItem")]
-    partial class AjusteRelacaoHistoricoItem
+    [Migration("20260218153446_AjustaDescricaoStatusPendente")]
+    partial class AjustaDescricaoStatusPendente
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -286,8 +286,8 @@ namespace backend.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Detalhes")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
 
                     b.Property<string>("Discriminator")
                         .IsRequired()
