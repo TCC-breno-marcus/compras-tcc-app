@@ -97,13 +97,14 @@ describe('Gestor - Itens por departamento (regras críticas)', () => {
     cy.contains('p', 'Distribuição por Departamento')
       .parent()
       .within(() => {
-        cy.get('li .text-color-secondary').then(($spans) => {
-          const lines = [...$spans]
+        // Considera apenas a linha do departamento (ignora justificativa e labels de outras seções)
+        cy.get('li > div > span.text-color-secondary:visible').then(($spans) => {
+          const departmentLines = [...$spans]
             .map((el) => el.textContent?.trim() || '')
             .filter((text) => text.length > 0)
-          const uniqueLines = new Set(lines)
+          const uniqueDepartmentLines = new Set(departmentLines)
 
-          expect(uniqueLines.size).to.eq(lines.length)
+          expect(uniqueDepartmentLines.size).to.eq(departmentLines.length)
         })
       })
   })
