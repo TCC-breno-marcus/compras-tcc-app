@@ -94,6 +94,28 @@ jobs:
       - name: Subir stack para E2E
         run: docker compose up -d --build postgres-db backend-service frontend-service cypress
 
+      - name: Diagnóstico inicial dos containers
+        run: |
+          echo "=== docker compose ps ==="
+          docker compose ps
+          echo
+          echo "=== docker ps ==="
+          docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+
+      - name: Aguardar Postgres saudável
+        run: |
+          for i in {1..60}; do
+            status=$(docker inspect -f '{{.State.Health.Status}}' postgres-db-container 2>/dev/null || echo "starting")
+            echo "postgres health: $status"
+            if [ "$status" = "healthy" ]; then
+              exit 0
+            fi
+            sleep 3
+          done
+          echo "Postgres não ficou healthy a tempo"
+          docker compose logs postgres-db --tail=300 || true
+          exit 1
+
       - name: Aguardar frontend no ar
         run: |
           for i in {1..60}; do
@@ -111,11 +133,28 @@ jobs:
             if curl -sSf http://localhost:5000/swagger/index.html > /dev/null; then
               exit 0
             fi
+            docker compose ps backend-service || true
             sleep 5
           done
           echo "Backend não ficou disponível a tempo"
           docker compose logs backend-service --tail=200 || true
+          docker inspect backend-service-container || true
           exit 1
+
+      - name: Validar endpoint de login do backend
+        run: |
+          code=$(curl -s -o /tmp/login_response.json -w "%{http_code}" \
+            -H "Content-Type: application/json" \
+            -d '{"email":"solicitante@sistema.com","password":"123456"}' \
+            http://localhost:5000/api/auth/login)
+          echo "Login status code: $code"
+          cat /tmp/login_response.json || true
+          if [ "$code" != "200" ]; then
+            echo "Endpoint de login falhou"
+            docker compose logs backend-service --tail=300 || true
+            docker inspect backend-service-container || true
+            exit 1
+          fi
 
       - name: Instalar dependências no container Cypress
         run: docker compose exec -T cypress npm ci
@@ -123,12 +162,27 @@ jobs:
       - name: Rodar testes E2E (Cypress)
         run: docker compose exec -T cypress npx cypress run --e2e
 
+      - name: Publicar artefatos do Cypress
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-artifacts
+          path: |
+            frontend/cypress/screenshots
+            frontend/cypress/videos
+          if-no-files-found: warn
+          retention-days: 14
+
       - name: Logs dos serviços em caso de falha
         if: failure()
         run: |
+          docker compose ps || true
           docker compose logs backend-service --tail=300 || true
           docker compose logs frontend-service --tail=300 || true
           docker compose logs postgres-db --tail=300 || true
+          docker inspect backend-service-container || true
+          docker inspect frontend-service-container || true
+          docker inspect postgres-db-container || true
 
       - name: Encerrar stack de E2E
         if: always()
