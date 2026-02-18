@@ -38,12 +38,20 @@ const irreversibleStatusTooltip = computed(() => {
   return 'Alterar status'
 })
 
+/**
+ * Abre/fecha popover de seleção e reseta estado temporário do formulário.
+ * @param event Evento de clique do botão de edição.
+ */
 const toggle = (event: Event) => {
   op.value.toggle(event)
   showMessageError.value = false
   observation.value = ''
 }
 
+/**
+ * Seleciona novo status e valida justificativa obrigatória para transições críticas.
+ * @param newStatus Status alvo selecionado pelo gestor.
+ */
 const selectStatus = (newStatus: Status) => {
   selectedStatusId.value = newStatus.id
 
@@ -56,6 +64,11 @@ const selectStatus = (newStatus: Status) => {
   op.value.hide()
 }
 
+/**
+ * Regra de validação de justificativa:
+ * obrigatória para todos os status, exceto quando muda para "Aprovada" (id 3).
+ * @returns `true` quando a justificativa atual é inválida.
+ */
 const observationIsInvalid = () => {
   if (observation.value.trim() !== '') {
     return false

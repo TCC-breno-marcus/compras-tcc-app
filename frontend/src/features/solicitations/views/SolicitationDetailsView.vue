@@ -59,6 +59,9 @@ const isEditing = ref<boolean>(false)
 
 const isEditingStatus = ref<boolean>(false)
 
+/**
+ * Cancela edição e restaura dados da solicitação a partir do backup quando necessário.
+ */
 const handleCancel = () => {
   const id = currentSolicitation.value?.id
   if (id && solicitationStore.isDirty) {
@@ -67,6 +70,9 @@ const handleCancel = () => {
   isEditing.value = false
 }
 
+/**
+ * Persiste alterações da solicitação e recarrega histórico após sucesso.
+ */
 const acceptSaveChanges = async () => {
   if (!currentSolicitation.value) return
   const success = await solicitationStore.update(currentSolicitation.value)
@@ -78,6 +84,9 @@ const acceptSaveChanges = async () => {
   }
 }
 
+/**
+ * Valida regras de negócio e abre confirmação antes de salvar alterações.
+ */
 const saveChanges = () => {
   if (!isSolicitationValid(currentSolicitation?.value)) return
   confirm.require({
@@ -86,6 +95,11 @@ const saveChanges = () => {
   })
 }
 
+/**
+ * Aplica validações de negócio para edição de solicitação.
+ * @param solicitation Solicitação em edição.
+ * @returns `true` quando todos os campos obrigatórios estão válidos.
+ */
 const isSolicitationValid = (solicitation: Solicitation | null): boolean => {
   if (!solicitation) {
     toast.add({
@@ -160,11 +174,19 @@ const isSolicitationValid = (solicitation: Solicitation | null): boolean => {
   return isValid
 }
 
+/**
+ * Ativa modo de edição da solicitação na aba principal.
+ */
 const handleEdit = () => {
   isEditing.value = true
   activeTab.value = '0'
 }
 
+/**
+ * Executa transição de status e atualiza histórico apresentado em tela.
+ * @param newStatusId Novo status selecionado.
+ * @param observation Justificativa informada para a transição.
+ */
 const handleStatusChange = async (newStatusId: number, observation: string) => {
   if (!currentSolicitation.value) return
   await solicitationStore.updateStatus(newStatusId, observation)
@@ -172,6 +194,9 @@ const handleStatusChange = async (newStatusId: number, observation: string) => {
   historyStore.fetchSolicitationHistory(currentSolicitation.value.id)
 }
 
+/**
+ * Define se solicitação pode ser editada considerando papel do usuário, status e prazo global.
+ */
 const canEditSolicitation = computed(() => {
   if (!user.value || !currentSolicitation.value) {
     return false
@@ -189,6 +214,9 @@ const canEditSolicitation = computed(() => {
   )
 })
 
+/**
+ * Retorna a observação mais recente da última transição para o status atual.
+ */
 const getStatusObservations = (): string => {
   const history = solicitationHistory.value
   const currentStatus = currentSolicitation.value?.status?.nome
