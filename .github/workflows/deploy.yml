@@ -41,6 +41,41 @@ jobs:
         working-directory: frontend
         run: npm run test:unit:coverage
 
+      - name: Gerar resumo de coverage no job
+        if: always()
+        working-directory: frontend
+        run: |
+          if [ -f coverage/coverage-summary.json ]; then
+            node -e "
+            const fs=require('fs');
+            const s=JSON.parse(fs.readFileSync('coverage/coverage-summary.json','utf8')).total;
+            const out = [
+              '## Cobertura de Testes Unitários (Vitest)',
+              '',
+              '| Métrica | Percentual |',
+              '|---|---:|',
+              '| Linhas | '+s.lines.pct+'% |',
+              '| Funções | '+s.functions.pct+'% |',
+              '| Statements | '+s.statements.pct+'% |',
+              '| Branches | '+s.branches.pct+'% |',
+              '',
+            ].join('\n');
+            fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, out);
+            "
+          else
+            echo "Resumo de coverage não encontrado." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Publicar artefato de coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage-report
+          path: |
+            frontend/coverage
+          if-no-files-found: warn
+          retention-days: 14
+
       - name: Criar .env para stack de E2E no CI
         run: |
           cat > .env << 'EOF'
