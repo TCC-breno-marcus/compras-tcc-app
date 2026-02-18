@@ -18,6 +18,9 @@ namespace Services
         private readonly ILogger<RelatorioService> _logger;
         private readonly string _IMAGE_BASE_URL;
 
+        private static string NormalizeDepartmentSigla(string? sigla) =>
+            (sigla ?? string.Empty).Trim().ToUpperInvariant();
+
         public RelatorioService(
             AppDbContext context,
             ILogger<RelatorioService> logger,
@@ -198,16 +201,21 @@ namespace Services
                 PrecoSugerido = itemExemplo.PrecoSugerido,
                 QuantidadeTotalSolicitada = group.Sum(si => si.Quantidade),
                 DemandaPorDepartamento = group
-                    .GroupBy(si => si.Solicitacao.Solicitante.Departamento)
+                    // Agrupa por chave estável para evitar duplicação com AsNoTracking.
+                    .GroupBy(si => si.Solicitacao.Solicitante.Departamento.Id)
                     .Select(deptGroup => new DemandaPorDepartamentoDto
                     {
                         Unidade = new UnidadeOrganizacionalDto
                         {
-                            Id = deptGroup.Key.Id,
-                            Nome = deptGroup.Key.Nome,
-                            Sigla = deptGroup.Key.Sigla,
-                            Email = deptGroup.Key.Email,
-                            Telefone = deptGroup.Key.Telefone,
+                            Id = deptGroup.Key,
+                            Nome = deptGroup.First().Solicitacao.Solicitante.Departamento.Nome,
+                            Sigla = NormalizeDepartmentSigla(
+                                deptGroup.First().Solicitacao.Solicitante.Departamento.Sigla
+                            ),
+                            Email = deptGroup.First().Solicitacao.Solicitante.Departamento.Email,
+                            Telefone = deptGroup
+                                .First()
+                                .Solicitacao.Solicitante.Departamento.Telefone,
                             Tipo = "Departamento",
                         },
                         QuantidadeTotal = deptGroup.Sum(si => si.Quantidade),
@@ -280,7 +288,12 @@ namespace Services
                     {
                         // --- PASSO 1: DESCOBRIR TODAS AS COLUNAS DE DEPARTAMENTO ---
                         var todosOsDepartamentos = itens
-                            .SelectMany(i => i.DemandaPorDepartamento.Select(d => d.Unidade.Sigla))
+                            .SelectMany(i =>
+                                i.DemandaPorDepartamento.Select(d =>
+                                    NormalizeDepartmentSigla(d.Unidade.Sigla)
+                                )
+                            )
+                            .Where(sigla => !string.IsNullOrWhiteSpace(sigla))
                             .Distinct()
                             .OrderBy(sigla => sigla)
                             .ToList();
@@ -333,10 +346,11 @@ namespace Services
                             csv.WriteField(item.QuantidadeTotalSolicitada);
 
                             // Cria um dicionário para busca rápida da quantidade por departamento
-                            var demandaDict = item.DemandaPorDepartamento.ToDictionary(
-                                d => d.Unidade.Sigla,
-                                d => d.QuantidadeTotal
-                            );
+                            var demandaDict = item
+                                .DemandaPorDepartamento.GroupBy(d =>
+                                    NormalizeDepartmentSigla(d.Unidade.Sigla)
+                                )
+                                .ToDictionary(g => g.Key, g => g.Sum(d => d.QuantidadeTotal));
 
                             // Escreve os dados nas colunas dinâmicas
                             foreach (var siglaDepto in todosOsDepartamentos)
@@ -359,7 +373,9 @@ namespace Services
                                     item.DemandaPorDepartamento.Where(d =>
                                             !string.IsNullOrWhiteSpace(d.Justificativa)
                                         )
-                                        .Select(d => $"{d.Unidade.Sigla}: {d.Justificativa}") // Adiciona a sigla para contexto
+                                        .Select(d =>
+                                            $"{NormalizeDepartmentSigla(d.Unidade.Sigla)}: {d.Justificativa}"
+                                        ) // Adiciona a sigla para contexto
                                         .Distinct()
                                 );
 
@@ -409,12 +425,33 @@ namespace Services
                 foreach (var item in insights)
                 {
                     int primeiraLinhaDoItem = linhaAtual;
-                    int totalDeptosParaItem = item.DemandaPorDepartamento.Count;
+                    var demandasOrdenadas = item
+                        .DemandaPorDepartamento.GroupBy(d =>
+                            NormalizeDepartmentSigla(d.Unidade.Sigla)
+                        )
+                        .Select(g => new DemandaPorDepartamentoDto
+                        {
+                            Unidade = new UnidadeOrganizacionalDto
+                            {
+                                Id = g.First().Unidade.Id,
+                                Nome = g.First().Unidade.Nome,
+                                Sigla = g.Key,
+                                Email = g.First().Unidade.Email,
+                                Telefone = g.First().Unidade.Telefone,
+                                Tipo = g.First().Unidade.Tipo,
+                            },
+                            QuantidadeTotal = g.Sum(x => x.QuantidadeTotal),
+                            Justificativa = string.Join(
+                                "; ",
+                                g.Select(x => x.Justificativa)
+                                    .Where(j => !string.IsNullOrWhiteSpace(j))
+                                    .Distinct()
+                            ),
+                        })
+                        .OrderBy(d => d.Unidade.Nome)
+                        .ToList();
 
-                    // Ordena os departamentos para uma exibição consistente
-                    var demandasOrdenadas = item.DemandaPorDepartamento.OrderBy(d =>
-                        d.Unidade.Nome
-                    );
+                    int totalDeptosParaItem = demandasOrdenadas.Count;
 
                     bool primeiraIteracao = true;
                     foreach (var depto in demandasOrdenadas)
