@@ -1,7 +1,11 @@
 import { toTitleCase } from '@/utils/stringUtils'
 import type { Categoria } from '../types'
 
-// Esta função recebe uma categoria da API e a retorna no formato padronizado
+/**
+ * Normaliza campos textuais de categoria para padrão de exibição da aplicação.
+ * @param categoryFromApi Categoria bruta retornada pelo backend.
+ * @returns Categoria transformada para consumo na UI.
+ */
 export const transformCategory = (categoryFromApi: Categoria): Categoria => {
   return {
     ...categoryFromApi,

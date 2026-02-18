@@ -35,6 +35,10 @@ const catalogoBrowserRef = ref()
 const settingStore = useSettingStore()
 const { deadline, deadlineHasExpired } = storeToRefs(settingStore)
 
+/**
+ * Adiciona item ao carrinho aplicando regras de limite e gera feedback contextual.
+ * @param item Item selecionado no catálogo.
+ */
 const addItemSolicitation = (item: Item) => {
   const actionReturn = solicitationCartStore.addItem(
     item,
@@ -79,6 +83,9 @@ const addItemSolicitation = (item: Item) => {
   }
 }
 
+/**
+ * Solicita confirmação antes de descartar a solicitação em andamento.
+ */
 const resetSolicitation = () => {
   confirm.require({
     ...DISCARD_SOLICITATION_CONFIRMATION,
@@ -88,6 +95,9 @@ const resetSolicitation = () => {
   })
 }
 
+/**
+ * Indica se há mudanças locais não enviadas na solicitação atual.
+ */
 const hasUnsavedChanges = computed(() => {
   return solicitationItems.value.length > 0 || justification.value.trim() !== ''
 })

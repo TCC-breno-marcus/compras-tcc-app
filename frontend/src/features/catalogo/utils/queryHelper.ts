@@ -7,6 +7,11 @@ import {
   getSortOrderFromQuery,
 } from '@/utils/queryHelper'
 
+/**
+ * Converte query string de catálogo em objeto de filtros tipado.
+ * @param query Query atual da rota.
+ * @returns Filtros normalizados para consulta do catálogo.
+ */
 export const mapQueryToFilters = (query: LocationQuery): CatalogoFilters => {
   return {
     searchTerm: getFirstQueryValue(query.searchTerm),
@@ -22,6 +27,11 @@ export const mapQueryToFilters = (query: LocationQuery): CatalogoFilters => {
   }
 }
 
+/**
+ * Traduz filtro booleano da URL para o estado textual usado na interface.
+ * @param value Valor do parâmetro `isActive`.
+ * @returns Estado textual (`ativo`, `inativo` ou vazio).
+ */
 export const getStatusFromQuery = (value: LocationQueryValue | LocationQueryValue[]): string => {
   if (value === 'true') {
     return 'ativo'

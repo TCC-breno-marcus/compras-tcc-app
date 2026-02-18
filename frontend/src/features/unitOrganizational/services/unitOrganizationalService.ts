@@ -8,6 +8,10 @@ interface IUnitOrganizationalService {
 }
 
 export const unitOrganizationalService: IUnitOrganizationalService = {
+  /**
+   * Busca lista de centros disponíveis para seleção.
+   * @returns Centros organizacionais.
+   */
   async getCenters() {
     try {
       const response = await apiClient.get('/centro')
@@ -20,6 +24,10 @@ export const unitOrganizationalService: IUnitOrganizationalService = {
     }
   },
 
+  /**
+   * Busca lista de departamentos disponíveis para seleção.
+   * @returns Departamentos organizacionais.
+   */
   async getDepartments() {
     try {
       const response = await apiClient.get('/departamento')

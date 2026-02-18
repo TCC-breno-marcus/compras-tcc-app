@@ -34,6 +34,12 @@ export const formatDate = (
   })
 }
 
+/**
+ * Faz o parse de datas vindas da API/UI em formatos aceitos pela aplicação.
+ * Suporta ISO completo, ISO curto (`yyyy-mm-dd`), data longa em pt-BR e `dd/mm/yyyy`.
+ * @param dateString String de data recebida de inputs/query/API.
+ * @returns Instância de Date válida ou `null` quando o formato não é reconhecido.
+ */
 export function parseDateString(dateString: string | null): Date | null {
   if (!dateString || dateString.trim() === '') {
     return null

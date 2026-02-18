@@ -2,6 +2,12 @@ import type { LocationQuery } from 'vue-router'
 import type { MySolicitationFilters, SolicitationFilters } from '../types'
 import { getFirstQueryValue, getSortOrderFromQuery } from '@/utils/queryHelper'
 
+/**
+ * Converte query da URL para filtros de listagem de solicitações.
+ * @param query Query atual da rota.
+ * @param filterParamsType Define se inclui filtros exclusivos de visão gerencial.
+ * @returns Objeto de filtros pronto para o serviço de solicitações.
+ */
 export const mapQueryToFilters = (
   query: LocationQuery,
   filterParamsType: 'MySolicitationFilters' | 'SolicitationFilters',
@@ -39,6 +45,11 @@ export const mapQueryToFilters = (
   }
 }
 
+/**
+ * Normaliza valores de query para lista numérica.
+ * @param value Valor único ou array da query string.
+ * @returns Array de números válidos.
+ */
 const getQueryAsArrayOfNumbers = (value: unknown): number[] => {
   if (!value) return []
   const arr = Array.isArray(value) ? value : [value]

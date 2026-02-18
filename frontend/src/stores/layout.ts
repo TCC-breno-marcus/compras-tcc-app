@@ -1,11 +1,17 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { defineStore } from 'pinia'
 
+/**
+ * Store global para estado de layout responsivo e colapso da sidebar.
+ */
 export const useLayoutStore = defineStore(
   'layout',
   () => {
     const isSidebarCollapsed = ref(false)
 
+    /**
+     * Alterna visibilidade da barra lateral.
+     */
     const toggleSidebar = () => {
       isSidebarCollapsed.value = !isSidebarCollapsed.value
     }
@@ -21,6 +27,9 @@ export const useLayoutStore = defineStore(
       return 'xl'
     })
 
+    /**
+     * Atualiza breakpoint corrente com base na largura da janela.
+     */
     const handleResize = () => {
       screenWidth.value = window.innerWidth
     }
