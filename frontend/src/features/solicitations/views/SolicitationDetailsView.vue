@@ -246,6 +246,26 @@ watch(
 )
 
 const observationText = computed(() => getStatusObservations())
+const currentStatusOption = computed(() => {
+  if (!currentSolicitation.value) return null
+  return getSolicitationStatusOptions(currentSolicitation.value.status.id)
+})
+
+const isIrreversibleStatus = computed(() => {
+  if (!currentSolicitation.value) return false
+  return [5, 6].includes(currentSolicitation.value.status.id)
+})
+
+const irreversibleStatusTooltip = computed(() => {
+  if (!currentSolicitation.value) return ''
+  if (currentSolicitation.value.status.id === 6) {
+    return 'Solicitação encerrada automaticamente pelo sistema por ser de anos anteriores. Este status é irreversível.'
+  }
+  if (currentSolicitation.value.status.id === 5) {
+    return 'Solicitação cancelada pelo gestor. Este status é irreversível.'
+  }
+  return ''
+})
 
 watch(observationText, (newText) => {
   if (newText && isSolicitante.value && currentSolicitation.value) {
@@ -376,10 +396,15 @@ onMounted(() => {
                 <i class="pi pi-clock text-primary text-xl mr-3"></i>
                 <div class="flex-1">
                   <span class="text-sm text-color-secondary">Status</span>
-                  <div class="flex flex-wrap align-items-center gap-2">
+                  <div class="flex flex-wrap align-items-center gap-2 mb-2">
                     <p v-if="!isEditingStatus" class="font-bold m-0 flex align-items-center gap-2">
                       {{ toTitleCase(currentSolicitation.status.nome) }}
-                      <Tag
+                      <!-- <i
+                        v-if="isIrreversibleStatus"
+                        class="pi pi-info-circle text-color-secondary"
+                        v-tooltip.top="irreversibleStatusTooltip"
+                      ></i> -->
+                      <!-- <Tag
                         v-if="getStatusObservations()"
                         v-tooltip.top="getStatusObservations()"
                         severity="warn"
@@ -394,9 +419,18 @@ onMounted(() => {
                             Motivo: {{ getStatusObservations() }}
                           </span>
                         </div>
-                      </Tag>
+                      </Tag> -->
                     </p>
                   </div>
+                  <small v-if="currentStatusOption?.descricao" class="text-color-secondary block line-height-3">
+                    {{ currentStatusOption.descricao }}
+                  </small>
+                  <small
+                    v-if="getStatusObservations()"
+                    class="text-color-secondary block line-height-3 mt-1"
+                  >
+                    <strong>Motivo informado:</strong> {{ getStatusObservations() }}
+                  </small>
                 </div>
                 <SelectStatus
                   v-if="isGestor"
