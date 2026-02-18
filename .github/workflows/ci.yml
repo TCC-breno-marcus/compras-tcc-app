@@ -88,6 +88,7 @@ jobs:
           JWT_KEY=chave-super-secreta-para-ci-com-32-bytes
           JWT_ISSUER=compras-tcc-ci
           JWT_AUDIENCE=compras-tcc-ci
+          RESEND_API_KEY=ci-fake-resend-key
           EOF
 
       - name: Subir stack para E2E
@@ -104,15 +105,16 @@ jobs:
           echo "Frontend não ficou disponível a tempo"
           exit 1
 
-      - name: Aguardar backend no ar
+      - name: Aguardar backend no ar (HTTP)
         run: |
           for i in {1..60}; do
-            if (echo > /dev/tcp/127.0.0.1/5000) >/dev/null 2>&1; then
+            if curl -sSf http://localhost:5000/swagger/index.html > /dev/null; then
               exit 0
             fi
             sleep 5
           done
           echo "Backend não ficou disponível a tempo"
+          docker compose logs backend-service --tail=200 || true
           exit 1
 
       - name: Instalar dependências no container Cypress
@@ -121,7 +123,13 @@ jobs:
       - name: Rodar testes E2E (Cypress)
         run: docker compose exec -T cypress npx cypress run --e2e
 
+      - name: Logs dos serviços em caso de falha
+        if: failure()
+        run: |
+          docker compose logs backend-service --tail=300 || true
+          docker compose logs frontend-service --tail=300 || true
+          docker compose logs postgres-db --tail=300 || true
+
       - name: Encerrar stack de E2E
         if: always()
         run: docker compose down -v
-
