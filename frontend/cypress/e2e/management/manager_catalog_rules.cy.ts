@@ -254,13 +254,17 @@ describe('Gestor - Gerenciar Catálogo (regras críticas)', () => {
     cy.contains('[role="dialog"] .p-dialog-footer button', 'Criar').should('be.disabled')
 
     cy.get('[role="dialog"] input#nome', { timeout: 10000 }).should('be.visible').type(newName)
-    cy.get(
-      '[role="dialog"] input#catMat:visible, [role="dialog"] input[inputid="catMat"]:visible, [role="dialog"] input[maxlength="6"]:visible, .p-dialog:visible input#catMat:visible, .p-dialog:visible input[inputid="catMat"]:visible, .p-dialog:visible input[maxlength="6"]:visible',
-      { timeout: 10000 },
-    )
-      .first()
-      .should('be.visible')
-      .type(newCatMat, { force: true })
+    cy.contains('[role="dialog"] label', 'Catmat', { timeout: 10000 })
+      .should('exist')
+      .invoke('attr', 'for')
+      .then((inputId) => {
+        expect(inputId, 'id do input Catmat').to.be.a('string').and.not.empty
+        cy.get(`[role="dialog"] input#${inputId}`, { timeout: 10000 })
+          .first()
+          .should('exist')
+          .click({ force: true })
+          .type(newCatMat, { force: true })
+      })
     cy.get('[role="dialog"] textarea#descricao, [role="dialog"] textarea[inputid="descricao"]')
       .first()
       .type('Descrição do item criado via e2e.')
