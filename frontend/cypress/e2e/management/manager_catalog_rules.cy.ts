@@ -246,10 +246,8 @@ describe('Gestor - Gerenciar Catálogo (regras críticas)', () => {
     const newCatMat = '123456'
 
     cy.contains('button', 'Criar').click()
-    cy.contains('.p-dialog:visible .p-dialog-header', 'Criar Novo Item').should('be.visible')
-    cy.contains('.p-dialog:visible .p-dialog-header', 'Criar Novo Item').then(($header) => {
-      cy.wrap($header).parents('.p-dialog').first().as('createDialog')
-    })
+    cy.get('.p-dialog:visible').as('createDialog')
+    cy.get('@createDialog').contains('.p-dialog-header', 'Criar Novo Item').should('be.visible')
 
     cy.get('@createDialog').contains('.p-dialog-footer button', 'Criar').should('be.disabled')
 
