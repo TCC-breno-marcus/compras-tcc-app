@@ -26,8 +26,23 @@ declare global {
        * cy.fillNumericInput('input#quantidade', 0, 10)
        */
       fillNumericInput(selector: string, index: number, value: number): Chainable<void>
+
+      /**
+       * Mocka categorias e catálogo com um seed fixo para testes E2E.
+       * Útil para ambientes sem base de itens populada.
+       */
+      mockCatalogSeedData(): Chainable<void>
     }
   }
+}
+
+type CatalogImportSeed = {
+  nome: string
+  descricao: string
+  codigo: string
+  especificacao: string
+  link_imagem: string
+  categoria_id: number
 }
 
 /**
@@ -103,6 +118,99 @@ Cypress.Commands.add('fillNumericInput', (selector, index, value) => {
     .type('{selectall}{backspace}')
     .type(`${value}`)
     .blur()
+})
+
+Cypress.Commands.add('mockCatalogSeedData', () => {
+  const categories = [
+    { id: 1, nome: 'Componentes Eletrônicos', descricao: 'Componentes Eletrônicos', isActive: true },
+    { id: 2, nome: 'Eletrodomésticos', descricao: 'Eletrodomésticos', isActive: true },
+    { id: 3, nome: 'Ferramentas', descricao: 'Ferramentas', isActive: true },
+    { id: 4, nome: 'Diversos', descricao: 'Diversos', isActive: true },
+    { id: 5, nome: 'Materiais de Laboratório', descricao: 'Materiais de Laboratório', isActive: true },
+    { id: 6, nome: 'Mobiliário', descricao: 'Mobiliário', isActive: true },
+    { id: 7, nome: 'Reagentes Químicos', descricao: 'Reagentes Químicos', isActive: true },
+  ]
+
+  cy.fixture<CatalogImportSeed[]>('catalog_import_seed.json').then((seed) => {
+    const items = seed.map((entry, index) => {
+      const category = categories.find((item) => item.id === entry.categoria_id) || categories[0]
+      return {
+        id: index + 1,
+        nome: entry.nome,
+        catMat: entry.codigo,
+        descricao: entry.descricao,
+        especificacao: entry.especificacao || '',
+        categoria: category,
+        linkImagem: entry.link_imagem || '',
+        precoSugerido: 100,
+        isActive: true,
+      }
+    })
+
+    cy.intercept('GET', '**/api/categoria*', (req) => {
+      const url = new URL(req.url)
+      const nameFilters = url.searchParams.getAll('nome').map((item) => item.toLowerCase())
+      const filteredCategories =
+        nameFilters.length === 0
+          ? categories
+          : categories.filter((category) => nameFilters.includes(category.nome.toLowerCase()))
+
+      req.reply({
+        statusCode: 200,
+        body: filteredCategories,
+      })
+    }).as('getCategories')
+
+    cy.intercept('GET', /\/api\/catalogo(\?.*)?$/, (req) => {
+      const url = new URL(req.url)
+      const categoryIds = url.searchParams
+        .getAll('categoriaId')
+        .map((item) => Number(item))
+        .filter((item) => Number.isFinite(item))
+
+      const searchTerm = (url.searchParams.get('searchTerm') || '').toLowerCase()
+      const isActiveFilter = url.searchParams.get('isActive')
+      const pageNumber = Number(url.searchParams.get('pageNumber') || 1)
+      const pageSize = Number(url.searchParams.get('pageSize') || 50)
+
+      let filteredItems = [...items]
+
+      if (categoryIds.length > 0) {
+        filteredItems = filteredItems.filter((item) => categoryIds.includes(item.categoria.id))
+      }
+
+      if (searchTerm) {
+        filteredItems = filteredItems.filter(
+          (item) =>
+            item.nome.toLowerCase().includes(searchTerm) ||
+            item.catMat.toLowerCase().includes(searchTerm) ||
+            item.descricao.toLowerCase().includes(searchTerm),
+        )
+      }
+
+      if (isActiveFilter === 'true') {
+        filteredItems = filteredItems.filter((item) => item.isActive)
+      } else if (isActiveFilter === 'false') {
+        filteredItems = filteredItems.filter((item) => !item.isActive)
+      }
+
+      const start = (pageNumber - 1) * pageSize
+      const paginated = filteredItems.slice(start, start + pageSize)
+      const totalCount = filteredItems.length
+      const totalPages = Math.ceil(totalCount / pageSize) || 1
+
+      req.reply({
+        statusCode: 200,
+        body: {
+          pageNumber,
+          pageSize,
+          totalCount,
+          totalPages,
+          data: paginated,
+        },
+      })
+    }).as('getCatalog')
+  })
 })
 
 export {}

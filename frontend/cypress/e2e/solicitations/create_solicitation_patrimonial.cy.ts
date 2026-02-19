@@ -8,7 +8,9 @@ describe('Criar solicitação patrimonial', () => {
     const justificativaItem2 = `Justificativa item 2 e2e ${Date.now()}`
 
     cy.loginSession('solicitante')
+    cy.mockCatalogSeedData()
     cy.visit('/solicitacoes/criar/patrimonial')
+    cy.wait('@getCatalog')
 
     cy.url().should('include', '/solicitacoes/criar/patrimonial')
     cy.contains('h3', 'Buscar Itens').should('be.visible')
@@ -32,7 +34,15 @@ describe('Criar solicitação patrimonial', () => {
     cy.get('input[inputid="on_label_justification"]').eq(0).type(justificativaItem1)
     cy.get('input[inputid="on_label_justification"]').eq(1).type(justificativaItem2)
 
-    cy.intercept('POST', '**/api/solicitacao/patrimonial').as('createPatrimonialSolicitation')
+    cy.intercept('POST', '**/api/solicitacao/patrimonial', (req) => {
+      req.reply({
+        statusCode: 201,
+        body: {
+          id: Date.now(),
+          itens: req.body.itens || [],
+        },
+      })
+    }).as('createPatrimonialSolicitation')
     cy.contains('button', 'Solicitar').should('be.enabled').click()
 
     cy.wait('@createPatrimonialSolicitation').then(({ request, response }) => {

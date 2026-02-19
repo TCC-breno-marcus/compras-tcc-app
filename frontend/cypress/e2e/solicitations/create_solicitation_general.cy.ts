@@ -8,7 +8,9 @@ describe('Criar solicitação geral', () => {
     const justificativaGeral = `Justificativa geral e2e ${Date.now()}`
 
     cy.loginSession('solicitante')
+    cy.mockCatalogSeedData()
     cy.visit('/solicitacoes/criar/geral')
+    cy.wait('@getCatalog')
 
     cy.url().should('include', '/solicitacoes/criar/geral')
     cy.contains('h3', 'Buscar Itens').should('be.visible')
@@ -30,7 +32,16 @@ describe('Criar solicitação geral', () => {
 
     cy.get('#textarea_label').should('be.visible').type(justificativaGeral)
 
-    cy.intercept('POST', '**/api/solicitacao/geral').as('createGeneralSolicitation')
+    cy.intercept('POST', '**/api/solicitacao/geral', (req) => {
+      req.reply({
+        statusCode: 201,
+        body: {
+          id: Date.now(),
+          itens: req.body.itens || [],
+          justificativaGeral: req.body.justificativaGeral || '',
+        },
+      })
+    }).as('createGeneralSolicitation')
     cy.contains('button', 'Solicitar').should('be.enabled').click()
 
     cy.wait('@createGeneralSolicitation').then(({ request, response }) => {

@@ -1,0 +1,74 @@
+[
+  {
+    "nome": "AGULHA BACTERIOLÓGICA",
+    "descricao": "Agulha bacteriológica em platina, sem cabo.",
+    "codigo": "408828",
+    "especificacao": "5 cm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "ALÇA DE DRIGALSKI",
+    "descricao": "Alça de Drigalski em vidro, usada para espalhar microorganismos na placa de petri.",
+    "codigo": "420447",
+    "especificacao": "30 X 180 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "ALÇA DE DRIGALSKI",
+    "descricao": "Alça de Drigalski em plástico, usada para espalhar microorganismos na placa de petri. Autoclavável.",
+    "codigo": "420705",
+    "especificacao": "30 X 200 mm",
+    "link_imagem": "",
+    "categoria_id": 5
+  },
+  {
+    "nome": "Armário de Aço",
+    "descricao": "Armário de aço confeccionado em chapa de aço, contendo: duas laterais em chapa de aço com, no mínimo, 0,60 mm; um fundo e duas bandejas (superior e inferior). A porta da esquerda deverá conter um reforço com, no mínimo, 0,90 mm e dois trincos (superior e inferior). A porta da direita deverá conter um reforço com, no mínimo, 0,90 mm e uma fechadura. Dimensões: 190 cm (altura) x 90 cm (largura) x 40 cm (profundidade).",
+    "codigo": "468665",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 6
+  },
+  {
+    "nome": "Armário Alto",
+    "descricao": "Armário de madeira com duas portas. Medidas aproximadas: 800 mm (largura) x 490 mm (profundidade) x 200 mm (altura), com variação máxima de 5%. Tampo em madeira MDP de 25 mm de espessura com raio mínimo de 2,5 mm em todo seu perímetro. Fundo de madeira MDP de 18 mm de espessura, revestida em laminado melamínico.",
+    "codigo": "393010",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 6
+  },
+  {
+    "nome": "Arquivo de Aço",
+    "descricao": "Arquivo de aço com 4 gavetas. Características: 2 aparadores por gaveta, 2 porta-etiquetas em cada gaveta, puxadores estampados e cromados, fechadura cilíndrica tipo Yale com travamento simultâneo. Sistema de deslizamento por carrinho telescópico com 8 rolamentos. Tratamento anticorrosivo à base de fosfato de zinco e pintura eletrostática a pó. Medidas aproximadas: 1.335 mm (altura) x 470 mm (largura) x 710 mm (profundidade). Cor: cinza.",
+    "codigo": "350105",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 6
+  },
+  {
+    "nome": "Frigobar",
+    "descricao": "Características mínimas: Volume do compartimento refrigerado com capacidade mínima de 120 litros. Cor branca. Tensão 110 V / 60 Hz. Refrigeração com compressor para gás R134a. Porta reversível e aproveitável. Prateleiras removíveis. Gaveta de legumes com tampa aproveitável. Selo INMETRO / PROCEL classe \"A\".",
+    "codigo": "222841",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 2
+  },
+  {
+    "nome": "Refrigerador",
+    "descricao": "Refrigerador doméstico (geladeira), cor branca, com capacidade mínima de 239 L, de uma porta, consumo de energia (A) de 110 V, garantia mínima de um ano.",
+    "codigo": "425202",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 2
+  },
+  {
+    "nome": "Refrigerador",
+    "descricao": "Refrigerador frost free de 1 porta. Características mínimas: Capacidade 300 L. Tensão 110 V. Cor branca. Compressor hermético. Completo com grades e prateleiras. Classificação energética “A”. Garantia mínima de um ano.",
+    "codigo": "409972",
+    "especificacao": "",
+    "link_imagem": "",
+    "categoria_id": 2
+  }
+]

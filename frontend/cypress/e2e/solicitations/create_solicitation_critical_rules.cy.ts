@@ -21,9 +21,11 @@ describe('Regras críticas da criação de solicitação', () => {
 
   it('deve manter o botão "Solicitar" desativado com prazo encerrado', () => {
     cy.loginSession('solicitante')
+    cy.mockCatalogSeedData()
     mockSettings({ prazoSubmissao: pastDate })
     cy.visit('/solicitacoes/criar/geral')
     cy.wait('@getSettings')
+    cy.wait('@getCatalog')
 
     cy.get('button[aria-label="Adicionar à Solicitação"]:visible').first().click()
     cy.fillNumericInput('input#on_label_price', 0, 50)
@@ -35,9 +37,11 @@ describe('Regras críticas da criação de solicitação', () => {
 
   it('deve respeitar os limites de configuração (itens diferentes e quantidade por item)', () => {
     cy.loginSession('solicitante')
+    cy.mockCatalogSeedData()
     mockSettings({ maxItensDiferentesPorSolicitacao: 1, maxQuantidadePorItem: 1 })
     cy.visit('/solicitacoes/criar/geral')
     cy.wait('@getSettings')
+    cy.wait('@getCatalog')
 
     cy.get('button[aria-label="Adicionar à Solicitação"]:visible').first().click()
     cy.get('button[aria-label="Adicionar à Solicitação"]:visible').eq(1).click()
@@ -52,6 +56,7 @@ describe('Regras críticas da criação de solicitação', () => {
 
   it('deve exibir confirmação ao trocar o tipo de solicitação com carrinho em andamento (cancelar mantém carrinho)', () => {
     cy.loginSession('solicitante')
+    cy.mockCatalogSeedData()
     mockSettings()
     cy.intercept('GET', '**/api/solicitacao/minhas-solicitacoes*', {
       statusCode: 200,
@@ -66,6 +71,7 @@ describe('Regras críticas da criação de solicitação', () => {
 
     cy.visit('/solicitacoes/criar/geral')
     cy.wait('@getSettings')
+    cy.wait('@getCatalog')
     cy.get('button[aria-label="Adicionar à Solicitação"]:visible').first().click()
 
     cy.get('.p-breadcrumb').contains('a', 'Solicitações').click()
@@ -84,6 +90,7 @@ describe('Regras críticas da criação de solicitação', () => {
 
   it('deve descartar o carrinho e navegar ao aceitar troca de tipo', () => {
     cy.loginSession('solicitante')
+    cy.mockCatalogSeedData()
     mockSettings()
     cy.intercept('GET', '**/api/solicitacao/minhas-solicitacoes*', {
       statusCode: 200,
@@ -98,6 +105,7 @@ describe('Regras críticas da criação de solicitação', () => {
 
     cy.visit('/solicitacoes/criar/geral')
     cy.wait('@getSettings')
+    cy.wait('@getCatalog')
     cy.get('button[aria-label="Adicionar à Solicitação"]:visible').first().click()
 
     cy.get('.p-breadcrumb').contains('a', 'Solicitações').click()
