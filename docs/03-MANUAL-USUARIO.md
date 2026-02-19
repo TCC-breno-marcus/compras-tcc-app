@@ -16,8 +16,8 @@ Este manual descreve o uso do sistema pelo ponto de vista dos perfis `Solicitant
 2. Preencha os campos `Email` e `Senha`.
 3. Clique em `Entrar`.
 4. Em caso de campos vazios, o sistema exibe mensagens como:
-- `O email é obrigatório.`
-- `A senha é obrigatória.`
+ - `O email é obrigatório.`
+ - `A senha é obrigatória.`
 
 #### **Credenciais de Primeiro Acesso (Padrão)**
 O sistema possui usuários pré-cadastrados no banco de dados para a configuração inicial. **Atenção:** Estas contas são de uso técnico e não devem ser utilizadas para as operações rotineiras após a implantação.
@@ -77,76 +77,81 @@ Observações:
 4. Use `Limpar` para resetar o formulário.
 
 Validações:
-- Nome obrigatório.
-- E-mail obrigatório e válido.
-- Assunto obrigatório.
-- Mensagem obrigatória com mínimo de 10 caracteres.
+ - Nome obrigatório.
+ - E-mail obrigatório e válido.
+ - Assunto obrigatório.
+ - Mensagem obrigatória com mínimo de 10 caracteres.
 
 ## 3. Manual do Solicitante
 
 ## 3.1 Criar solicitação
 
 Existem dois tipos:
-- `Geral` (`/solicitacoes/criar/geral`)
-- `Patrimonial` (`/solicitacoes/criar/patrimonial`)
+ - `Geral` (`/solicitacoes/criar/geral`)
+ - `Patrimonial` (`/solicitacoes/criar/patrimonial`)
 
 ### Passo a passo
-1. Acesse `Solicitações` > `Geral` ou `Bens Patrimoniais`.
-2. Na área `Buscar Itens`, localize itens no catálogo:
-- Campo `Pesquisar item`
-- Filtro `Categoria`
-- Botões `Ordem`, `Filtros Avançados`, `Buscar`, `Limpar`
-3. Clique em `Adicionar à Solicitação` (ícone `+` ou botão no diálogo do item).
-4. Na área `Sua Solicitação`, preencha os dados dos itens:
-- `Qtde.`
-- `Preço Unitário`
-- `Justificativa` (obrigatória para patrimonial por item)
-5. Para solicitação `Geral`, preencha `Justificativa Geral`.
-6. Clique em `Solicitar`.
+1. Na tela Inicial, no cartão `Nova Solicitação`, escolha entre `Geral` ou `Patrimonial`. <img width="483" height="204" alt="image" src="https://github.com/user-attachments/assets/c852379d-3215-4ea8-942a-4683a32c46c4" />
+2. Na área `Buscar Itens`, à esquerda da tela, localize itens no catálogo: <img width="1906" height="900" alt="image" src="https://github.com/user-attachments/assets/222b57b5-c446-41b5-a581-308a48b5ae95" />
+ - Campo `Pesquisar item`
+ - Filtro `Categoria`
+ - Botões `Ordem`, `Filtros Avançados`, `Buscar`, `Limpar`
+3. Clique no centro de um item se quiser ver mais detalhes do mesmo.
+4. Clique em `Adicionar à Solicitação` (ou no ícone `+`).
+5. Na área `Sua Solicitação`, à direita da tela, preencha os dados dos itens:
+ - `Qtde.`
+ - `Preço Unitário`
+ - `Justificativa` (obrigatória por item para patrimonial)
+6. Para solicitação `Geral`, preencha apenas `Justificativa Geral`.
+7. Clique em `Solicitar`.
 
 ### Botões e ações importantes
-- `Limpar Solicitação`: remove todos os itens da solicitação em andamento.
-- Ícone de lixeira no item: remove item individual.
+ - `Limpar Solicitação`: remove todos os itens da solicitação em andamento.
+ - Ícone de lixeira no item: remove item individual.
 
 ### Regras de validação
-- Deve haver ao menos 1 item.
-- Quantidade e preço devem ser maiores que zero.
-- Em `Geral`: `Justificativa Geral` é obrigatória.
-- Em `Patrimonial`: a justificativa é obrigatória item por item (cada item precisa da sua própria justificativa).
-- Respeita limites configuráveis:
-- `Quantidade máxima por item` (definida em Configurações pelo gestor).
-- `Itens diferentes por solicitação` (limite total de itens diferentes por solicitação, definido em Configurações pelo gestor).
-- Respeita prazo de submissão: após vencimento, envio e edição ficam bloqueados.
+ - Deve haver ao menos 1 item.
+ - Quantidade e preço devem ser maiores que zero.
+ - Em Solicitação `Geral`: `Justificativa Geral` é obrigatória.
+ - Em Solicitação `Patrimonial`: a justificativa é obrigatória item por item (cada item precisa da sua própria justificativa).
+ - Respeita limites configuráveis:
+   - `Quantidade máxima por item` (definida em Configurações pelo gestor).
+   - `Itens diferentes por solicitação` (limite total de itens diferentes por solicitação, definido em Configurações pelo gestor).
+  - Respeita prazo de submissão: após vencimento, envio e edição ficam bloqueados (configuráveis também pelo gestor).
 
 ### Regras de negócio adicionais (criação)
-- O sistema permite apenas 1 solicitação em andamento por vez no carrinho de criação.
-- Se o usuário iniciar uma solicitação de um tipo (`Geral`) e tentar abrir a criação do outro tipo (`Patrimonial`), o sistema solicita confirmação para descartar a solicitação em andamento.
-- Ao sair da tela com solicitação em andamento, o sistema alerta sobre descarte de alterações não salvas.
+ - O sistema permite apenas 1 solicitação em andamento por vez no carrinho de criação.
+ - Se o usuário iniciar uma solicitação de um tipo (`Geral`) e tentar abrir a criação do outro tipo (`Patrimonial`), o sistema solicita confirmação para descartar a solicitação em andamento.
+ - Ao sair da tela com solicitação em andamento, o sistema alerta sobre descarte de alterações não salvas.
 
 ## 3.2 Minhas Solicitações (`/solicitacoes`)
+<img width="518" height="205" alt="image" src="https://github.com/user-attachments/assets/7f92e85f-cb14-4292-8fe9-4ee0e7d7f4ee" />
+
+<img width="1913" height="906" alt="image" src="https://github.com/user-attachments/assets/8345cfe8-e3f3-4164-a226-9a2b4a785ef1" />
 
 ### Filtros e pesquisa
-- `Código`
-- `Data de Criação` (intervalo)
-- `Tipo`
-- `Status`
-- Ordenação com botão (`Ordenar por Data`, `Mais Recentes`, `Mais Antigos`)
-- Botões: `Buscar` e `Limpar`
+ - `Código`
+ - `Data de Criação` (intervalo)
+ - `Tipo`
+ - `Status`
+ - Ordenação com botão (`Ordenar por Data`, `Mais Recentes`, `Mais Antigos`)
+ - Botões: `Buscar` e `Limpar`
 
 ### Visualização
 1. Na coluna `Ações`, clique em `Ver Detalhes` (ícone olho).
 2. Navegue pelas abas:
-- `Itens Solicitados`
-- `Insights`
-- `Histórico`
+ - `Itens Solicitados`
+ - `Insights`
+ - `Histórico`
 
 ## 3.3 Detalhes da Solicitação (`/solicitacoes/:id`)
+<img width="1913" height="898" alt="image" src="https://github.com/user-attachments/assets/016e079f-85a5-4c7b-9971-274c91bc3b2b" />
 
 ### Edição pelo solicitante
 O botão `Editar` aparece quando:
-- a solicitação pertence à mesma unidade/departamento do solicitante logado,
-- o status permite edição (`Pendente` ou `Aguardando Ajustes`),
-- o prazo para ajustes não expirou.
+ - a solicitação pertence à mesma unidade/departamento do solicitante logado,
+ - o status permite edição (`Pendente` ou `Aguardando Ajustes`),
+ - o prazo para ajustes não expirou.
 
 ### Passos de ajuste
 1. Clique em `Editar`.
@@ -155,8 +160,8 @@ O botão `Editar` aparece quando:
 4. Use `Cancelar` para descartar mudanças.
 
 ### Status e motivos
-- A tela mostra o status atual e, quando existir, `Motivo informado`.
-- O histórico exibe alterações com data, usuário e observações.
+ - A tela mostra o status atual e, quando existir, `Motivo informado`.
+ - A aba "Histórico" exibe alterações com data, usuário e observações.
 
 ## 4. Manual do Gestor
 
