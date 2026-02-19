@@ -1,10 +1,15 @@
 # 🗃️ 02 - Gerenciamento do Banco de Dados
 
-Este guia cobre as operações de banco de dados usando o Entity Framework Core.
+Este guia cobre operações de banco de dados com Entity Framework Core.
 
-**Importante:** Sempre pare o contêiner do back-end antes de rodar comandos `dotnet ef` para evitar erros de arquivos bloqueados.
+Para implantação e operação de ambiente, consulte `docs/06-IMPLANTACAO-DEVOPS.md`.
+
+## Observação Importante
+
+Sempre pare o container do backend antes de rodar comandos `dotnet ef`:
+
 ```bash
-docker-compose stop backend-service
+docker compose stop backend-service
 ```
 
 ## Migrations (Entity Framework)
@@ -14,7 +19,7 @@ As migrations são usadas para manter o schema do banco de dados sincronizado co
 #### Criando uma Nova Migration
 Use este comando quando for alterar uma entidade (adicionar uma propriedade, criar uma nova tabela, etc.).
 ```bash
-docker-compose run --rm --entrypoint sh backend-service
+docker compose run --rm --entrypoint sh backend-service
 export PATH=$PATH:/root/.dotnet/tools
 dotnet tool restore
 dotnet ef migrations add NomeDaMigration
@@ -23,25 +28,30 @@ dotnet ef migrations add NomeDaMigration
 #### Aplicando as Migrations
 Use este comando para aplicar todas as migrations pendentes ao banco de dados.
 ```bash
-docker-compose run --rm --entrypoint sh backend-service
+docker compose run --rm --entrypoint sh backend-service
 export PATH=$PATH:/root/.dotnet/tools
 dotnet tool restore
 dotnet ef database update
 ```
 
 ## Seeders (Dados Iniciais)
-O projeto está configurado para popular o banco de dados com dados essenciais (Centros, Departamentos, Usuários Padrão) automaticamente na primeira vez que a aplicação sobe em ambiente de desenvolvimento.
+O projeto possui seed inicial automático na subida do backend:
 
--   A configuração de `HasData` no `AppDbContext` popula as **Categorias**.
--   A classe `DataSeeder.cs` popula **Centros, Departamentos e Usuários Padrão**.
--   Esta lógica só é executada se a tabela correspondente estiver vazia.
+- `HasData` no `AppDbContext` popula **Categorias**.
+- `DataSeeder.cs` popula **Centros, Departamentos e usuários padrão**.
+- A lógica só executa quando as tabelas estão vazias.
+
+Usuários padrão criados no seed:
+- `admin@sistema.com`
+- `solicitante@sistema.com`
+- `gestor@sistema.com`
 
 ## Resetando o Banco de Dados (⚠️ Destrutivo)
 Para apagar completamente o banco de dados e começar do zero, siga estes passos:
 
 1.  **Pare e remova todos os contêineres:**
     ```bash
-    docker-compose down
+    docker compose down
     ```
 
 2.  **Apague o volume do banco de dados:**
@@ -58,7 +68,7 @@ Para apagar completamente o banco de dados e começar do zero, siga estes passos
 
 4.  **Crie a nova migration `InitialCreate` (se você apagou a pasta):**
     ```bash
-    docker-compose run --rm --entrypoint sh backend-service
+    docker compose run --rm --entrypoint sh backend-service
     export PATH=$PATH:/root/.dotnet/tools
     dotnet tool restore
     dotnet ef migrations add InitialCreate
@@ -67,10 +77,10 @@ Para apagar completamente o banco de dados e começar do zero, siga estes passos
 5.  **Suba o ambiente e aplique a migration:**
     ```bash
     # Sobe os containers (recriando o volume do banco vazio)
-    docker-compose up -d --build
+    docker compose up -d --build
     
     # Aplica a migration ao banco limpo
-    docker-compose run --rm --entrypoint sh backend-service
+    docker compose run --rm --entrypoint sh backend-service
     export PATH=$PATH:/root/.dotnet/tools
     dotnet tool restore
     dotnet ef database update

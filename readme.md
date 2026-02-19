@@ -36,3 +36,4 @@ Para guias detalhados sobre configuração, execução e gerenciamento do banco 
 
 -   **[📄 01 - Setup e Execução do Projeto](./docs/01-SETUP.md)**
 -   **[🗃️ 02 - Gerenciamento do Banco de Dados](./docs/02-DATABASE.md)**
+-   **[🛠️ 06 - Documentação de Implantação (DevOps)](./docs/06-IMPLANTACAO-DEVOPS.md)**
