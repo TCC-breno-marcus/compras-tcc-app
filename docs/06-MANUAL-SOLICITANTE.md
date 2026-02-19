@@ -168,13 +168,17 @@ Passos:
 1. Preencha `Nome`, `E-mail`, `Assunto` e `Mensagem`.
 2. (Opcional) preencha `Telefone`.
 3. Clique em `Enviar Mensagem`.
-4. Use `Limpar` para reiniciar o formulário.
+4. O sistema abre seu aplicativo de e-mail para concluir o envio.
+5. Use `Limpar` para reiniciar o formulário.
 
 Validações:
 - Nome obrigatório.
 - E-mail obrigatório e válido.
 - Assunto obrigatório.
 - Mensagem obrigatória com mínimo de 10 caracteres.
+
+Observação:
+- O envio é feito no cliente de e-mail do usuário (fluxo frontend), sem protocolo interno de atendimento no sistema.
 
 ## 9. Boas práticas
 

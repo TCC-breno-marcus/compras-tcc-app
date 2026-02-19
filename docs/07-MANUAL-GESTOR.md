@@ -261,7 +261,23 @@ Regras de negócio:
 - Solicitações já criadas não são alteradas retroativamente.
 - Encerramento de anos anteriores gera status `Encerrada` (irreversível).
 
-## 12. Status de solicitação (referência)
+## 12. Fale Conosco
+
+Rota: `/fale-conosco`
+
+Uso no contexto de gestão:
+- Canal para dúvidas operacionais sobre solicitações, status, catálogo e acesso.
+- Pode ser usado para registrar contexto de problemas antes de acionar suporte técnico institucional.
+
+Fluxo:
+1. Preencha `Nome`, `E-mail`, `Assunto` e `Mensagem`.
+2. Clique em `Enviar Mensagem`.
+3. O sistema abre o cliente de e-mail para concluir o envio.
+
+Observação:
+- O envio é realizado via cliente de e-mail (frontend), sem abertura automática de chamado no backend.
+
+## 13. Status de solicitação (referência)
 
 - `Pendente`: aguardando análise do gestor.
 - `Aguardando Ajustes`: devolvida ao solicitante para correção.
@@ -270,7 +286,7 @@ Regras de negócio:
 - `Cancelada`: encerrada antecipadamente.
 - `Encerrada`: arquivada automaticamente por ciclo anterior.
 
-## 13. Boas práticas do gestor
+## 14. Boas práticas do gestor
 
 - Registrar justificativas claras nas mudanças de status.
 - Validar histórico antes de decisões de aprovação/rejeição.

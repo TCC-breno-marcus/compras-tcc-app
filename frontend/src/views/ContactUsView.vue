@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { useToast } from 'primevue/usetoast'
 import InputText from 'primevue/inputtext'
 import Textarea from 'primevue/textarea'
 import Dropdown from 'primevue/dropdown'
 import Button from 'primevue/button'
-import Toast from 'primevue/toast'
 import Accordion from 'primevue/accordion'
 import AccordionTab from 'primevue/accordiontab'
+import { useSettingStore } from '@/features/settings/stores/settingStore'
+import { storeToRefs } from 'pinia'
 
 type FormData = {
   nome: string
@@ -18,7 +19,8 @@ type FormData = {
 }
 
 const toast = useToast()
-const loading = ref(false)
+const settingsStore = useSettingStore()
+const { settings } = storeToRefs(settingsStore)
 
 const form = reactive<FormData>({
   nome: '',
@@ -29,15 +31,29 @@ const form = reactive<FormData>({
 })
 
 const assuntos = ref([
-  { label: 'Dúvidas sobre produtos', value: 'produtos' },
-  { label: 'Suporte técnico', value: 'suporte' },
-  { label: 'Vendas e orçamentos', value: 'vendas' },
-  { label: 'Parcerias', value: 'parcerias' },
-  { label: 'Reclamações', value: 'reclamacoes' },
+  { label: 'Dúvida sobre criação de solicitação', value: 'criacao_solicitacao' },
+  { label: 'Dúvida sobre status e ajustes', value: 'status_ajustes' },
+  { label: 'Problema no catálogo de itens', value: 'catalogo_itens' },
+  { label: 'Acesso ao sistema', value: 'acesso_sistema' },
+  { label: 'Sugestão de melhoria', value: 'sugestao' },
   { label: 'Outros', value: 'outros' },
 ])
 
 const errors = ref<Partial<FormData>>({})
+const fallbackContactEmail = 'contato.compras@instituicao.br'
+
+const contactEmail = computed(() => {
+  return settings.value?.emailContatoPrincipal || fallbackContactEmail
+})
+
+const notificationEmail = computed(() => {
+  return settings.value?.emailParaNotificacoes || contactEmail.value
+})
+
+const selectedSubjectLabel = computed(() => {
+  const selected = assuntos.value.find((item) => item.value === form.assunto)
+  return selected?.label || 'Contato via sistema de solicitações'
+})
 
 const validateForm = () => {
   errors.value = {}
@@ -65,7 +81,7 @@ const validateForm = () => {
   return Object.keys(errors.value).length === 0
 }
 
-const submitForm = async () => {
+const submitForm = () => {
   if (!validateForm()) {
     toast.add({
       severity: 'error',
@@ -76,29 +92,29 @@ const submitForm = async () => {
     return
   }
 
-  loading.value = true
+  const body = [
+    `Nome: ${form.nome}`,
+    `Email: ${form.email}`,
+    `Telefone: ${form.telefone || 'Não informado'}`,
+    '',
+    'Mensagem:',
+    form.mensagem,
+  ].join('\n')
 
-  try {
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+  const mailToUrl = `mailto:${contactEmail.value}?subject=${encodeURIComponent(
+    `[Sistema de Compras] ${selectedSubjectLabel.value}`,
+  )}&body=${encodeURIComponent(body)}`
 
-    toast.add({
-      severity: 'success',
-      summary: 'Sucesso!',
-      detail: 'Sua mensagem foi enviada com sucesso. Retornaremos em breve!',
-      life: 5000,
-    })
+  window.location.href = mailToUrl
 
-    clearForm()
-  } catch (error) {
-    toast.add({
-      severity: 'error',
-      summary: 'Erro',
-      detail: 'Erro ao enviar mensagem. Tente novamente mais tarde.',
-      life: 5000,
-    })
-  } finally {
-    loading.value = false
-  }
+  toast.add({
+    severity: 'success',
+    summary: 'Pronto',
+    detail: 'Seu aplicativo de email foi aberto para concluir o envio da mensagem.',
+    life: 5000,
+  })
+
+  clearForm()
 }
 
 const clearForm = () => {
@@ -109,6 +125,12 @@ const clearForm = () => {
   form.mensagem = ''
   errors.value = {}
 }
+
+onMounted(() => {
+  if (!settings.value) {
+    settingsStore.fetchSettings()
+  }
+})
 </script>
 
 <!-- TODO: ajeitar essa pagina -->
@@ -119,8 +141,8 @@ const clearForm = () => {
       <div class="mb-4">
         <h2 class="text-xl mb-2">Fale Conosco</h2>
         <p class="max-w-2xl mx-auto">
-          Estamos aqui para ajudar! Entre em contato conosco através do formulário abaixo ou use uma
-          de nossas outras formas de contato.
+          Utilize este canal para tirar dúvidas sobre solicitações, catálogo, status e acesso ao
+          sistema.
         </p>
       </div>
 
@@ -226,10 +248,13 @@ const clearForm = () => {
                   type="submit"
                   label="Enviar Mensagem"
                   icon="pi pi-send"
-                  :loading="loading"
                   size="small"
                 />
               </div>
+              <small class="text-color-secondary mt-2 block">
+                Ao clicar em <strong>Enviar Mensagem</strong>, seu aplicativo de email será aberto
+                para concluir o envio.
+              </small>
             </form>
           </div>
         </div>
@@ -244,17 +269,16 @@ const clearForm = () => {
                 <i class="pi pi-phone text-primary mt-1"></i>
                 <div>
                   <span class="font-semibold">Telefone</span>
-                  <p>(79) 3333-4444</p>
-                  <p>(79) 99999-8888</p>
+                  <p>Consulte o setor responsável da sua unidade.</p>
                 </div>
               </div>
 
               <div class="flex items-start gap-2">
                 <i class="pi pi-envelope text-primary mt-1"></i>
                 <div>
-                  <span class="font-semibold">E-mail</span>
-                  <p>contato@empresa.com.br</p>
-                  <p>suporte@empresa.com.br</p>
+                  <span class="font-semibold">E-mail de contato</span>
+                  <p>{{ contactEmail }}</p>
+                  <p class="text-sm text-color-secondary">Notificações: {{ notificationEmail }}</p>
                 </div>
               </div>
             </div>
@@ -268,34 +292,33 @@ const clearForm = () => {
           <h3 class="font-semibold mb-4">Perguntas Frequentes</h3>
 
           <Accordion :activeIndex="0">
-            <AccordionTab header="Como posso acompanhar o status do meu pedido?">
+            <AccordionTab header="Como acompanho o status das minhas solicitações?">
               <p>
-                Você pode acompanhar seu pedido através da área do cliente em nosso site, utilizando
-                o número do pedido que foi enviado por e-mail após a confirmação da compra.
+                Acesse <strong>Solicitações &gt; Minhas Solicitações</strong>, use os filtros e
+                clique em <strong>Ver Detalhes</strong> para visualizar status, histórico e
+                observações.
               </p>
             </AccordionTab>
 
-            <AccordionTab header="Qual o prazo de entrega?">
+            <AccordionTab header="Por que não consigo enviar ou editar minha solicitação?">
               <p>
-                O prazo de entrega varia de acordo com sua localização. Para Aracaju e região
-                metropolitana, o prazo é de 1 a 2 dias úteis. Para outras localidades, consulte
-                nossa política de entregas.
+                O sistema aplica o prazo final de submissão e ajustes definido pela gestão. Após o
+                vencimento, envio e edição ficam bloqueados.
               </p>
             </AccordionTab>
 
-            <AccordionTab header="Como posso trocar ou devolver um produto?">
+            <AccordionTab header="Quais são as regras de justificativa da solicitação?">
               <p>
-                Você tem até 30 dias para trocar ou devolver um produto. Entre em contato conosco
-                através do formulário acima ou pelos nossos canais de atendimento para iniciar o
-                processo.
+                Em solicitação <strong>Geral</strong>, a <strong>Justificativa Geral</strong> é
+                obrigatória. Em solicitação <strong>Patrimonial</strong>, cada item deve ter sua
+                própria justificativa.
               </p>
             </AccordionTab>
 
-            <AccordionTab header="Vocês atendem em todo o Brasil?">
+            <AccordionTab header="Existe limite de itens por solicitação?">
               <p>
-                Sim, atendemos em todo território nacional. Os prazos e custos de entrega podem
-                variar de acordo com a localização. Consulte as condições durante o processo de
-                compra.
+                Sim. O gestor configura limites como quantidade máxima por item e quantidade máxima
+                de itens diferentes por solicitação.
               </p>
             </AccordionTab>
           </Accordion>
