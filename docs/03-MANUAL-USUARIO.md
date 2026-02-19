@@ -42,6 +42,8 @@ O sistema possui usuários pré-cadastrados no banco de dados para a configuraç
 - `Configurações` (Gestor/Admin)
 
 ### 1.4 Menu do usuário (avatar no cabeçalho)
+<img width="1913" height="899" alt="image" src="https://github.com/user-attachments/assets/07d12912-d147-449c-8e33-425cdcef3acf" />
+
 - `Meu Perfil`
 - `Alternar Tema`
 - `Sair`
@@ -49,12 +51,16 @@ O sistema possui usuários pré-cadastrados no banco de dados para a configuraç
 ## 2. Funcionalidades comuns (todos os perfis)
 
 ### 2.1 Página inicial
-- Exibe cartões com atalhos conforme o perfil.
-- Exibe componentes de atenção:
+<img width="1907" height="903" alt="image" src="https://github.com/user-attachments/assets/c5ed7f1d-a8d6-4ea8-b425-a9b334b8293a" />
+
+- Exibe cartões (em vermelho na imagem) com atalhos conforme o perfil.
+- Exibe componentes de atenção (em amarelo na imagem):
 - Gestor/Admin: `Solicitações Pendentes`
 - Solicitante: `Solicitações Aguardando Ajustes`
 
 ### 2.2 Meu Perfil (`/perfil`)
+<img width="1911" height="901" alt="image" src="https://github.com/user-attachments/assets/e56d5b3e-71eb-4cb5-ab45-d0f74161d223" />
+
 1. Acesse pelo avatar > `Meu Perfil`.
 2. Clique em `Editar Perfil`.
 3. Edite `Telefone` e `CPF`.
