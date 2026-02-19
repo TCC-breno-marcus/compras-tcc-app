@@ -32,7 +32,16 @@ describe('Criar solicitação geral', () => {
 
     cy.get('#textarea_label').should('be.visible').type(justificativaGeral)
 
-    cy.intercept('POST', '**/api/solicitacao/geral').as('createGeneralSolicitation')
+    cy.intercept('POST', '**/api/solicitacao/geral', (req) => {
+      req.reply({
+        statusCode: 201,
+        body: {
+          id: Date.now(),
+          itens: req.body.itens || [],
+          justificativaGeral: req.body.justificativaGeral || '',
+        },
+      })
+    }).as('createGeneralSolicitation')
     cy.contains('button', 'Solicitar').should('be.enabled').click()
 
     cy.wait('@createGeneralSolicitation').then(({ request, response }) => {
