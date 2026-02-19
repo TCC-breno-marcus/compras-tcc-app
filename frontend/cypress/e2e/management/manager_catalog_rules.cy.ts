@@ -212,8 +212,9 @@ const visitCatalog = () => {
   cy.wait('@getCatalog')
 }
 
-const selectCategory = (name: string) => {
-  cy.get('.p-dialog:visible #categoria-filter, .p-dialog:visible [inputid="categoria-filter"]')
+const selectCategory = (name: string, dialogAlias = '@createDialog') => {
+  cy.get(dialogAlias)
+    .find('#categoria-filter, [inputid="categoria-filter"]')
     .first()
     .scrollIntoView()
     .click({ force: true })
@@ -246,25 +247,28 @@ describe('Gestor - Gerenciar Catálogo (regras críticas)', () => {
 
     cy.contains('button', 'Criar').click()
     cy.contains('.p-dialog:visible .p-dialog-header', 'Criar Novo Item').should('be.visible')
-    cy.contains('.p-dialog:visible .p-dialog-footer button', 'Criar').should('be.disabled')
+    cy.contains('.p-dialog:visible .p-dialog-header', 'Criar Novo Item').then(($header) => {
+      cy.wrap($header).parents('.p-dialog').first().as('createDialog')
+    })
 
-    cy.contains('.p-dialog:visible .p-dialog-header', 'Criar Novo Item')
-      .closest('.p-dialog')
-      .within(() => {
-        cy.get('input#nome', { timeout: 8000 }).should('be.visible').type(newName)
-        cy.get('input#catMat', { timeout: 8000 }).should('be.visible').type(newCatMat)
-        cy.get('textarea#descricao, textarea[inputid="descricao"]')
-          .first()
-          .type('Descrição do item criado via e2e.')
-      })
+    cy.get('@createDialog').contains('.p-dialog-footer button', 'Criar').should('be.disabled')
 
-    selectCategory('Diversos')
-    cy.fillNumericInput(
-      '.p-dialog:visible input#precoSugerido, .p-dialog:visible input[inputid="precoSugerido"]',
-      0,
-      200,
-    )
-    cy.contains('.p-dialog:visible .p-dialog-footer button', 'Criar').click()
+    cy.get('@createDialog').find('input#nome', { timeout: 8000 }).should('be.visible').type(newName)
+    cy.get('@createDialog').find('input#catMat', { timeout: 8000 }).should('be.visible').type(newCatMat)
+    cy.get('@createDialog')
+      .find('textarea#descricao, textarea[inputid="descricao"]')
+      .first()
+      .type('Descrição do item criado via e2e.')
+
+    selectCategory('Diversos', '@createDialog')
+    cy.get('@createDialog').find('input#precoSugerido, input[inputid="precoSugerido"]').first().click()
+    cy.get('@createDialog')
+      .find('input#precoSugerido, input[inputid="precoSugerido"]')
+      .first()
+      .type('{selectall}{backspace}200')
+      .blur()
+
+    cy.get('@createDialog').contains('.p-dialog-footer button', 'Criar').click()
     cy.wait('@createItem').then(({ request, response }) => {
       expect(response?.statusCode).to.eq(200)
       expect(request.body.nome).to.eq(newName)
