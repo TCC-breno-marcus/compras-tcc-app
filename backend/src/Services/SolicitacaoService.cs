@@ -19,6 +19,14 @@ public class SolicitacaoService : ISolicitacaoService
     private readonly IUsuarioService _usuarioService;
     private readonly string _IMAGE_BASE_URL;
 
+    /// <summary>
+    /// Inicializa o serviço responsável pelo ciclo de vida das solicitações de compras.
+    /// </summary>
+    /// <param name="context">Contexto de dados para consulta e persistência das solicitações.</param>
+    /// <param name="logger">Logger para auditoria e rastreio de falhas do serviço.</param>
+    /// <param name="configuracaoService">Serviço de configurações usado para validar regras de prazo.</param>
+    /// <param name="usuarioService">Serviço de usuários usado para resolver o solicitante autenticado.</param>
+    /// <param name="configuration">Configuração da aplicação para obtenção da URL base de imagens.</param>
     public SolicitacaoService(
         AppDbContext context,
         ILogger<SolicitacaoService> logger,
@@ -34,6 +42,14 @@ public class SolicitacaoService : ISolicitacaoService
         _IMAGE_BASE_URL = configuration["IMAGE_BASE_URL"] ?? "";
     }
 
+    /// <summary>
+    /// Cria uma solicitação do tipo geral para o solicitante informado, validando prazo de submissão e integridade dos itens.
+    /// </summary>
+    /// <param name="dto">Dados da solicitação geral, incluindo justificativa e itens solicitados.</param>
+    /// <param name="pessoaId">Identificador da pessoa que está criando a solicitação.</param>
+    /// <returns>DTO com os dados completos da solicitação criada.</returns>
+    /// <exception cref="InvalidOperationException">Lançada quando o prazo de submissão já encerrou ou quando o status pendente não é encontrado.</exception>
+    /// <exception cref="Exception">Lançada quando algum item informado não existe ou está inativo.</exception>
     public async Task<SolicitacaoResultDto> CreateGeralAsync(
         CreateSolicitacaoGeralDto dto,
         long pessoaId
@@ -173,6 +189,14 @@ public class SolicitacaoService : ISolicitacaoService
         }
     }
 
+    /// <summary>
+    /// Cria uma solicitação do tipo patrimonial para o solicitante informado, validando prazo de submissão e itens ativos.
+    /// </summary>
+    /// <param name="dto">Dados da solicitação patrimonial com os itens e justificativas por item.</param>
+    /// <param name="pessoaId">Identificador da pessoa que está criando a solicitação.</param>
+    /// <returns>DTO com os dados completos da solicitação criada.</returns>
+    /// <exception cref="InvalidOperationException">Lançada quando o prazo de submissão já encerrou ou quando o status pendente não é encontrado.</exception>
+    /// <exception cref="Exception">Lançada quando algum item informado não existe ou está inativo.</exception>
     public async Task<SolicitacaoResultDto> CreatePatrimonialAsync(
         CreateSolicitacaoPatrimonialDto dto,
         long pessoaId
@@ -308,6 +332,17 @@ public class SolicitacaoService : ISolicitacaoService
         }
     }
 
+    /// <summary>
+    /// Edita uma solicitação existente aplicando validações de prazo, autorização e consistência dos itens.
+    /// </summary>
+    /// <param name="id">Identificador da solicitação a ser editada.</param>
+    /// <param name="pessoaId">Identificador da pessoa que está executando a edição.</param>
+    /// <param name="isAdmin">Indica se o usuário possui perfil administrativo e pode editar qualquer solicitação.</param>
+    /// <param name="dto">Dados atualizados da solicitação e da lista de itens.</param>
+    /// <returns>DTO atualizado da solicitação editada, ou <c>null</c> quando a solicitação não é encontrada.</returns>
+    /// <exception cref="InvalidOperationException">Lançada quando o prazo de submissão está encerrado para o status atual da solicitação.</exception>
+    /// <exception cref="UnauthorizedAccessException">Lançada quando um usuário sem perfil administrativo tenta editar solicitação de outro solicitante.</exception>
+    /// <exception cref="Exception">Lançada quando algum item incluído não existe ou está inativo.</exception>
     public async Task<SolicitacaoResultDto?> EditarSolicitacaoAsync(
         long id,
         long pessoaId,
@@ -468,6 +503,11 @@ public class SolicitacaoService : ISolicitacaoService
         }
     }
 
+    /// <summary>
+    /// Obtém uma solicitação pelo identificador e projeta os dados completos, incluindo itens e indicadores agregados.
+    /// </summary>
+    /// <param name="id">Identificador da solicitação.</param>
+    /// <returns>DTO detalhado da solicitação, ou <c>null</c> quando não encontrada.</returns>
     public async Task<SolicitacaoResultDto?> GetByIdAsync(long id)
     {
         _logger.LogInformation("Buscando solicitação com ID: {Id}", id);
@@ -583,6 +623,20 @@ public class SolicitacaoService : ISolicitacaoService
         return respostaDto;
     }
 
+    /// <summary>
+    /// Lista solicitações do solicitante autenticado com filtros, ordenação e paginação.
+    /// </summary>
+    /// <param name="pessoaId">Identificador da pessoa para resolver o solicitante.</param>
+    /// <param name="gestorId">Filtro opcional pelo gestor responsável.</param>
+    /// <param name="tipo">Filtro opcional pelo tipo da solicitação (GERAL ou PATRIMONIAL).</param>
+    /// <param name="dataInicial">Data inicial opcional para o período de criação.</param>
+    /// <param name="dataFinal">Data final opcional para o período de criação.</param>
+    /// <param name="externalId">Filtro opcional pelo identificador externo da solicitação.</param>
+    /// <param name="statusIds">Filtro opcional por lista de status.</param>
+    /// <param name="sortOrder">Ordenação por data de criação: asc ou desc.</param>
+    /// <param name="pageNumber">Número da página para paginação.</param>
+    /// <param name="pageSize">Quantidade de itens por página.</param>
+    /// <returns>Resultado paginado contendo as solicitações que atendem aos filtros.</returns>
     public async Task<PaginatedResultDto<SolicitacaoResultDto>> GetAllBySolicitanteAsync(
         long pessoaId,
         long? gestorId,
@@ -733,6 +787,21 @@ public class SolicitacaoService : ISolicitacaoService
         return $"{prefixo}-{ano}-{idFormatado}";
     }
 
+    /// <summary>
+    /// Lista solicitações em visão administrativa com filtros, ordenação e paginação.
+    /// </summary>
+    /// <param name="pessoaId">Filtro opcional por pessoa, resolvendo o solicitante correspondente.</param>
+    /// <param name="gestorId">Filtro opcional por gestor responsável.</param>
+    /// <param name="tipo">Filtro opcional pelo tipo da solicitação (GERAL ou PATRIMONIAL).</param>
+    /// <param name="siglaDepartamento">Filtro opcional pela sigla do departamento do solicitante.</param>
+    /// <param name="dataInicial">Data inicial opcional para o período de criação.</param>
+    /// <param name="dataFinal">Data final opcional para o período de criação.</param>
+    /// <param name="externalId">Filtro opcional pelo identificador externo da solicitação.</param>
+    /// <param name="statusIds">Filtro opcional por lista de status.</param>
+    /// <param name="sortOrder">Ordenação por data de criação: asc ou desc.</param>
+    /// <param name="pageNumber">Número da página para paginação.</param>
+    /// <param name="pageSize">Quantidade de itens por página.</param>
+    /// <returns>Resultado paginado contendo as solicitações que atendem aos filtros administrativos.</returns>
     public async Task<PaginatedResultDto<SolicitacaoResultDto>> GetAllAsync(
         long? pessoaId,
         long? gestorId,
@@ -880,6 +949,16 @@ public class SolicitacaoService : ISolicitacaoService
         );
     }
 
+    /// <summary>
+    /// Cancela uma solicitação existente com validação de autorização e de status finalizado.
+    /// </summary>
+    /// <param name="id">Identificador da solicitação a ser cancelada.</param>
+    /// <param name="pessoaId">Identificador da pessoa que está solicitando o cancelamento.</param>
+    /// <param name="isAdmin">Indica se o usuário possui perfil administrativo e pode cancelar qualquer solicitação.</param>
+    /// <param name="dto">Dados complementares do cancelamento, incluindo observações.</param>
+    /// <returns>DTO da solicitação após cancelamento, ou <c>null</c> quando não encontrada.</returns>
+    /// <exception cref="UnauthorizedAccessException">Lançada quando um usuário sem perfil administrativo tenta cancelar solicitação de outro solicitante.</exception>
+    /// <exception cref="InvalidOperationException">Lançada quando a solicitação já está finalizada ou já foi cancelada.</exception>
     public async Task<SolicitacaoResultDto?> CancelarSolicitacaoAsync(
         long id,
         long pessoaId,
@@ -949,6 +1028,14 @@ public class SolicitacaoService : ISolicitacaoService
         }
     }
 
+    /// <summary>
+    /// Atualiza o status de uma solicitação, registrando histórico da transição.
+    /// </summary>
+    /// <param name="id">Identificador da solicitação.</param>
+    /// <param name="pessoaId">Identificador da pessoa responsável pela mudança de status.</param>
+    /// <param name="dto">Dados da alteração contendo o novo status e observações opcionais.</param>
+    /// <returns>DTO atualizado da solicitação, ou <c>null</c> quando a solicitação não é encontrada.</returns>
+    /// <exception cref="InvalidOperationException">Lançada quando a solicitação já está em status terminal (Cancelada ou Encerrada).</exception>
     public async Task<SolicitacaoResultDto?> AtualizarStatusSolicitacaoAsync(
         long id,
         long pessoaId,
@@ -1021,6 +1108,13 @@ public class SolicitacaoService : ISolicitacaoService
         }
     }
 
+    /// <summary>
+    /// Retorna o histórico de uma solicitação respeitando as regras de autorização do usuário autenticado.
+    /// </summary>
+    /// <param name="solicitacaoId">Identificador da solicitação para consulta do histórico.</param>
+    /// <param name="user">Usuário autenticado usado para validar permissões de acesso.</param>
+    /// <returns>Lista de eventos do histórico em ordem decrescente de ocorrência, ou <c>null</c> quando a solicitação não existe ou o acesso não é permitido.</returns>
+    /// <exception cref="FormatException">Lançada quando o identificador da pessoa no token não pode ser convertido para número.</exception>
     public async Task<List<HistoricoSolicitacaoDto>?> GetHistoricoAsync(
         long solicitacaoId,
         ClaimsPrincipal user
