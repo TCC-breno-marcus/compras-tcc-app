@@ -31,6 +31,8 @@ O sistema possui usuários pré-cadastrados no banco de dados para a configuraç
 
 
 ### 1.3 Navegação principal
+<img width="1911" height="908" alt="image" src="https://github.com/user-attachments/assets/9bb4d11e-87e1-4a32-8a2f-cc12dc477d43" />
+
 - Menu lateral (desktop) ou menu em gaveta (mobile).
 - Itens de menu por perfil:
 - `Início`
