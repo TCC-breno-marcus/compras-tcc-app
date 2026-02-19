@@ -21,7 +21,9 @@ namespace Services.Interfaces
             string? searchTerm,
             string? categoriaNome,
             string? siglaDepartamento,
-            bool? somenteSolicitacoesAtivas
+            bool? somenteSolicitacoesAtivas,
+            string? usuarioSolicitante = null,
+            DateTimeOffset? dataHoraSolicitacao = null
         );
     }
 }

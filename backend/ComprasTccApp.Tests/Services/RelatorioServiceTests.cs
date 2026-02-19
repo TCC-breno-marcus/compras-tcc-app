@@ -133,17 +133,17 @@ public class RelatorioServiceTests
     }
 
     [Fact]
-    public async Task ExportarItensPorDepartamentoAsync_DeveGerarExcel_QuandoFormatoNaoCsv()
+    public async Task ExportarItensPorDepartamentoAsync_DeveGerarExcel_QuandoFormatoExcel()
     {
         // Arrange
-        await using var context = CriarContexto(nameof(ExportarItensPorDepartamentoAsync_DeveGerarExcel_QuandoFormatoNaoCsv));
+        await using var context = CriarContexto(nameof(ExportarItensPorDepartamentoAsync_DeveGerarExcel_QuandoFormatoExcel));
         await SeedRelatorioAsync(context);
         var service = CriarServico(context);
 
         // Act
         var bytes = await service.ExportarItensPorDepartamentoAsync(
             itemsType: "patrimonial",
-            formatoArquivo: "xlsx",
+            formatoArquivo: "excel",
             searchTerm: null,
             categoriaNome: null,
             siglaDepartamento: null,
@@ -154,6 +154,34 @@ public class RelatorioServiceTests
         bytes.Should().NotBeEmpty();
         bytes[0].Should().Be((byte)'P');
         bytes[1].Should().Be((byte)'K');
+    }
+
+    [Fact]
+    public async Task ExportarItensPorDepartamentoAsync_DeveGerarPdf_QuandoFormatoPdf()
+    {
+        // Arrange
+        await using var context = CriarContexto(nameof(ExportarItensPorDepartamentoAsync_DeveGerarPdf_QuandoFormatoPdf));
+        await SeedRelatorioAsync(context);
+        var service = CriarServico(context);
+
+        // Act
+        var bytes = await service.ExportarItensPorDepartamentoAsync(
+            itemsType: "patrimonial",
+            formatoArquivo: "pdf",
+            searchTerm: null,
+            categoriaNome: null,
+            siglaDepartamento: null,
+            somenteSolicitacoesAtivas: true,
+            usuarioSolicitante: "Usuario Teste",
+            dataHoraSolicitacao: new DateTimeOffset(2026, 2, 19, 21, 0, 0, TimeSpan.Zero)
+        );
+
+        // Assert
+        bytes.Should().NotBeEmpty();
+        bytes[0].Should().Be((byte)'%');
+        bytes[1].Should().Be((byte)'P');
+        bytes[2].Should().Be((byte)'D');
+        bytes[3].Should().Be((byte)'F');
     }
 
     [Fact]

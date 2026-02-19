@@ -8,6 +8,8 @@ using CsvHelper;
 using Database;
 using Microsoft.EntityFrameworkCore;
 using Models.Dtos;
+using PdfSharpCore.Drawing;
+using PdfSharpCore.Pdf;
 using Services.Interfaces;
 
 namespace Services
@@ -267,7 +269,7 @@ namespace Services
         }
 
         /// <summary>
-        /// Exporta o relatório de itens por departamento em CSV ou Excel conforme o formato solicitado.
+        /// Exporta o relatório de itens por departamento em CSV, Excel ou PDF conforme o formato solicitado.
         /// </summary>
         /// <param name="itemsType">Tipo de item: patrimonial ou geral.</param>
         /// <param name="formatoArquivo">Formato de saída: csv ou xlsx.</param>
@@ -275,6 +277,8 @@ namespace Services
         /// <param name="categoriaNome">Filtro parcial por nome da categoria.</param>
         /// <param name="siglaDepartamento">Sigla exata do departamento solicitante.</param>
         /// <param name="somenteSolicitacoesAtivas">Indica se considera apenas solicitações em status ativos.</param>
+        /// <param name="usuarioSolicitante">Nome do usuário que solicitou a exportação.</param>
+        /// <param name="dataHoraSolicitacao">Data/hora da solicitação da exportação.</param>
         /// <returns>Conteúdo binário do arquivo exportado.</returns>
         /// <exception cref="Exception">Propaga falhas inesperadas durante geração do arquivo.</exception>
         public async Task<byte[]> ExportarItensPorDepartamentoAsync(
@@ -283,7 +287,9 @@ namespace Services
             string? searchTerm = null,
             string? categoriaNome = null,
             string? siglaDepartamento = null,
-            bool? somenteSolicitacoesAtivas = false
+            bool? somenteSolicitacoesAtivas = false,
+            string? usuarioSolicitante = null,
+            DateTimeOffset? dataHoraSolicitacao = null
         )
         {
             var itens = await GetAllItensPorDepartamentoAsync(
@@ -298,11 +304,13 @@ namespace Services
             {
                 return GerarCsv(itens, itemsType);
             }
-            else
+            else if (formatoArquivo.Equals("excel", StringComparison.OrdinalIgnoreCase))
             {
                 bool isPatrimonial = itemsType == "patrimonial";
                 return GerarExcel(itens, isPatrimonial);
             }
+
+            return GerarPdf(itens, itemsType, usuarioSolicitante, dataHoraSolicitacao);
         }
 
         private static byte[] GerarCsv(List<ItemPorDepartamentoDto> itens, string itemsType)
@@ -407,6 +415,255 @@ namespace Services
                 }
                 return memoryStream.ToArray();
             }
+        }
+
+        private static byte[] GerarPdf(
+            List<ItemPorDepartamentoDto> itens,
+            string itemsType,
+            string? usuarioSolicitante,
+            DateTimeOffset? dataHoraSolicitacao
+        )
+        {
+            var isPatrimonial = itemsType.Equals("patrimonial", StringComparison.OrdinalIgnoreCase);
+            var cultura = new CultureInfo("pt-BR");
+            var usuario = string.IsNullOrWhiteSpace(usuarioSolicitante)
+                ? "Usuario nao identificado"
+                : usuarioSolicitante;
+            var dataGeracao = dataHoraSolicitacao ?? DateTimeOffset.Now;
+            var todosOsDepartamentos = itens
+                .SelectMany(i => i.DemandaPorDepartamento.Select(d => d.Unidade.Sigla))
+                .Distinct()
+                .OrderBy(sigla => sigla)
+                .ToList();
+
+            using var stream = new MemoryStream();
+            using var document = new PdfDocument();
+
+            PdfPage page = document.AddPage();
+            page.Size = PdfSharpCore.PageSize.A4;
+            page.Orientation = PdfSharpCore.PageOrientation.Landscape;
+
+            XGraphics gfx = XGraphics.FromPdfPage(page);
+            var fonteTitulo = new XFont("Arial", 14, XFontStyle.Bold);
+            var fonteTexto = new XFont("Arial", 6.5, XFontStyle.Regular);
+            var fonteCabecalhoTabela = new XFont("Arial", 6.5, XFontStyle.Bold);
+
+            const double margemEsquerda = 30;
+            const double margemDireita = 30;
+            const double margemTopo = 25;
+            const double margemRodape = 25;
+            const double alturaCabecalhoTabela = 18;
+            const double alturaLinha = 16;
+            double larguraUtil = page.Width - margemEsquerda - margemDireita;
+            double y = margemTopo + 50;
+            int numeroPagina = 1;
+
+            var cabecalhos = new List<string>
+            {
+                "CATMAT",
+                "Nome",
+                "Descricao",
+                "Especificacao",
+                "Categoria",
+                "Preco Min.",
+                "Preco Max.",
+                "Preco Medio",
+                "Valor Total",
+                "Qtde. Total",
+            };
+            cabecalhos.AddRange(todosOsDepartamentos.Select(sigla => $"Qtde {sigla}"));
+            if (isPatrimonial)
+            {
+                cabecalhos.Add("Justificativa(s)");
+            }
+
+            var pesosColunas = new List<double> { 1.2, 1.9, 2.2, 2.2, 1.4, 1.2, 1.2, 1.2, 1.4, 0.9 };
+            pesosColunas.AddRange(todosOsDepartamentos.Select(_ => 0.8));
+            if (isPatrimonial)
+            {
+                pesosColunas.Add(2.0);
+            }
+
+            var somaPesos = pesosColunas.Sum();
+            var largurasColunas = pesosColunas.Select(p => larguraUtil * (p / somaPesos)).ToList();
+
+            string TruncarTexto(string? texto, double larguraColuna, XFont fonte)
+            {
+                if (string.IsNullOrWhiteSpace(texto))
+                {
+                    return string.Empty;
+                }
+
+                var valor = texto.Trim();
+                if (gfx.MeasureString(valor, fonte).Width <= larguraColuna - 4)
+                {
+                    return valor;
+                }
+
+                const string sufixo = "...";
+                while (
+                    valor.Length > 1
+                    && gfx.MeasureString(valor + sufixo, fonte).Width > larguraColuna - 4
+                )
+                {
+                    valor = valor[..^1];
+                }
+
+                return valor + sufixo;
+            }
+
+            void DesenharCabecalho(PdfPage paginaAtual, XGraphics graficoAtual)
+            {
+                graficoAtual.DrawString(
+                    "Relatorio de Itens por Departamento",
+                    fonteTitulo,
+                    XBrushes.Black,
+                    new XRect(margemEsquerda, margemTopo, larguraUtil, 18),
+                    XStringFormats.TopLeft
+                );
+                graficoAtual.DrawString(
+                    $"Tipo: {itemsType} | Usuario: {usuario} | Gerado em: {dataGeracao:dd/MM/yyyy HH:mm:ss}",
+                    fonteTexto,
+                    XBrushes.Black,
+                    new XRect(margemEsquerda, margemTopo + 20, larguraUtil, 16),
+                    XStringFormats.TopLeft
+                );
+                graficoAtual.DrawLine(
+                    XPens.Gray,
+                    margemEsquerda,
+                    margemTopo + 40,
+                    paginaAtual.Width - margemDireita,
+                    margemTopo + 40
+                );
+            }
+
+            void DesenharRodape(PdfPage paginaAtual, XGraphics graficoAtual, int pagina)
+            {
+                graficoAtual.DrawLine(
+                    XPens.LightGray,
+                    margemEsquerda,
+                    paginaAtual.Height - margemRodape - 8,
+                    paginaAtual.Width - margemDireita,
+                    paginaAtual.Height - margemRodape - 8
+                );
+                graficoAtual.DrawString(
+                    $"Pagina {pagina}",
+                    fonteTexto,
+                    XBrushes.Gray,
+                    new XRect(margemEsquerda, paginaAtual.Height - margemRodape, larguraUtil, 12),
+                    XStringFormats.TopRight
+                );
+            }
+
+            void DesenharCabecalhoTabela(PdfPage paginaAtual, XGraphics graficoAtual, double yCabecalho)
+            {
+                double x = margemEsquerda;
+                for (int i = 0; i < cabecalhos.Count; i++)
+                {
+                    var larguraColuna = largurasColunas[i];
+                    graficoAtual.DrawRectangle(
+                        XBrushes.LightGray,
+                        x,
+                        yCabecalho,
+                        larguraColuna,
+                        alturaCabecalhoTabela
+                    );
+                    graficoAtual.DrawRectangle(
+                        XPens.Gray,
+                        x,
+                        yCabecalho,
+                        larguraColuna,
+                        alturaCabecalhoTabela
+                    );
+                    graficoAtual.DrawString(
+                        TruncarTexto(cabecalhos[i], larguraColuna, fonteCabecalhoTabela),
+                        fonteCabecalhoTabela,
+                        XBrushes.Black,
+                        new XRect(x + 2, yCabecalho + 2, larguraColuna - 4, alturaCabecalhoTabela - 4),
+                        XStringFormats.TopLeft
+                    );
+                    x += larguraColuna;
+                }
+            }
+
+            DesenharCabecalho(page, gfx);
+            DesenharCabecalhoTabela(page, gfx, y);
+            y += alturaCabecalhoTabela;
+
+            foreach (var item in itens)
+            {
+                var justificativasTexto = string.Join(
+                    "; ",
+                    item.DemandaPorDepartamento.Where(d => !string.IsNullOrWhiteSpace(d.Justificativa))
+                        .Select(d => $"{d.Unidade.Sigla}: {d.Justificativa}")
+                        .Distinct()
+                );
+                var demandaDict = item.DemandaPorDepartamento.ToDictionary(
+                    d => d.Unidade.Sigla,
+                    d => d.QuantidadeTotal
+                );
+
+                var valoresLinha = new List<string>
+                {
+                    item.CatMat ?? string.Empty,
+                    item.Nome ?? string.Empty,
+                    item.Descricao ?? string.Empty,
+                    item.Especificacao ?? string.Empty,
+                    item.CategoriaNome ?? string.Empty,
+                    item.PrecoMinimo.ToString("C", cultura),
+                    item.PrecoMaximo.ToString("C", cultura),
+                    item.PrecoMedio.ToString("C", cultura),
+                    item.ValorTotalSolicitado.ToString("C", cultura),
+                    item.QuantidadeTotalSolicitada.ToString(cultura),
+                };
+                valoresLinha.AddRange(
+                    todosOsDepartamentos.Select(sigla =>
+                        demandaDict.TryGetValue(sigla, out var quantidade)
+                            ? quantidade.ToString(cultura)
+                            : "0"
+                    )
+                );
+
+                if (isPatrimonial)
+                {
+                    valoresLinha.Add(justificativasTexto);
+                }
+
+                if (y + alturaLinha > page.Height - margemRodape - 12)
+                {
+                    DesenharRodape(page, gfx, numeroPagina);
+                    page = document.AddPage();
+                    page.Size = PdfSharpCore.PageSize.A4;
+                    page.Orientation = PdfSharpCore.PageOrientation.Landscape;
+                    gfx = XGraphics.FromPdfPage(page);
+                    numeroPagina++;
+                    DesenharCabecalho(page, gfx);
+                    y = margemTopo + 50;
+                    DesenharCabecalhoTabela(page, gfx, y);
+                    y += alturaCabecalhoTabela;
+                }
+
+                double xLinha = margemEsquerda;
+                for (int i = 0; i < valoresLinha.Count; i++)
+                {
+                    var larguraColuna = largurasColunas[i];
+                    gfx.DrawRectangle(XPens.LightGray, xLinha, y, larguraColuna, alturaLinha);
+                    gfx.DrawString(
+                        TruncarTexto(valoresLinha[i], larguraColuna, fonteTexto),
+                        fonteTexto,
+                        XBrushes.Black,
+                        new XRect(xLinha + 2, y + 2, larguraColuna - 4, alturaLinha - 4),
+                        XStringFormats.TopLeft
+                    );
+                    xLinha += larguraColuna;
+                }
+
+                y += alturaLinha;
+            }
+
+            DesenharRodape(page, gfx, numeroPagina);
+            document.Save(stream, false);
+            return stream.ToArray();
         }
 
         /// <summary>
