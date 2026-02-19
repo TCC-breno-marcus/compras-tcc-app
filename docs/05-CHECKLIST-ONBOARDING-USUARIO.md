@@ -1,4 +1,4 @@
-# Checklist Operacional de Onboarding
+# 05 - Checklist Operacional de Onboarding
 
 Use este checklist para habilitar e validar o uso do sistema por perfil.
 
@@ -12,7 +12,7 @@ Use este checklist para habilitar e validar o uso do sistema por perfil.
 
 ## 2. Checklist do Solicitante
 
-## 2.1 Criar solicitação
+### 2.1 Criar solicitação
 - [ ] Acessou `Solicitações` > `Geral`.
 - [ ] Acessou `Solicitações` > `Bens Patrimoniais`.
 - [ ] Usou filtros de catálogo (`Pesquisar item`, `Categoria`, `Buscar`, `Limpar`).
@@ -23,7 +23,7 @@ Use este checklist para habilitar e validar o uso do sistema por perfil.
 - [ ] Enviou com `Solicitar`.
 - [ ] Validou regra de troca de tipo (`Geral` <-> `Patrimonial`) com confirmação de descarte da solicitação em andamento.
 
-## 2.2 Acompanhamento e ajustes
+### 2.2 Acompanhamento e ajustes
 - [ ] Acessou `Minhas Solicitações`.
 - [ ] Filtrou por `Código`, `Data de Criação`, `Tipo` e `Status`.
 - [ ] Abriu `Ver Detalhes`.
@@ -31,7 +31,7 @@ Use este checklist para habilitar e validar o uso do sistema por perfil.
 - [ ] Entrou em modo `Editar` quando permitido.
 - [ ] Salvou alterações com `Salvar`.
 
-## 2.3 Validações esperadas
+### 2.3 Validações esperadas
 - [ ] Sistema impede envio sem itens.
 - [ ] Sistema impede quantidade/preço zerados.
 - [ ] Sistema exige justificativas conforme tipo.
@@ -41,7 +41,7 @@ Use este checklist para habilitar e validar o uso do sistema por perfil.
 
 ## 3. Checklist do Gestor
 
-## 3.1 Solicitações
+### 3.1 Solicitações
 - [ ] Acessou `Painel do Gestor` > `Solicitações`.
 - [ ] Filtrou por `Solicitante`, `Departamento`, `Tipo` e `Status`.
 - [ ] Abriu solicitação com `Ver Detalhes`.
@@ -51,19 +51,19 @@ Use este checklist para habilitar e validar o uso do sistema por perfil.
 - [ ] Validou que `Aprovada` permite alteração sem justificativa obrigatória.
 - [ ] Validou que outros status exigem justificativa obrigatória.
 
-## 3.2 Dashboard e análise
+### 3.2 Dashboard e análise
 - [ ] Acessou `Dashboard`.
 - [ ] Validou cards de KPI.
 - [ ] Alternou gráficos entre absoluto e percentual.
 
-## 3.3 Itens por Departamento
+### 3.3 Itens por Departamento
 - [ ] Acessou `Itens por Departamento`.
 - [ ] Alternou `Itens Gerais` e `Itens Patrimoniais`.
 - [ ] Usou filtros e pesquisa.
 - [ ] Exportou relatório em `Excel (.xlsx)`.
 - [ ] Exportou relatório em `CSV (.csv)`.
 
-## 3.4 Catálogo
+### 3.4 Catálogo
 - [ ] Acessou `Catálogo`.
 - [ ] Criou item com `Criar`.
 - [ ] Editou item com `Editar` > `Salvar`.
@@ -71,21 +71,21 @@ Use este checklist para habilitar e validar o uso do sistema por perfil.
 - [ ] Excluiu item com `Excluir`.
 - [ ] Consultou aba `Histórico` do item.
 
-## 3.5 Relatórios
+### 3.5 Relatórios
 - [ ] Acessou `Relatórios`.
 - [ ] Selecionou `Período`.
 - [ ] Selecionou `Tipo de Relatório`.
 - [ ] Clicou em `Gerar Relatório`.
 - [ ] Validou gráfico e tabela de detalhamento.
 
-## 3.6 Usuários
+### 3.6 Usuários
 - [ ] Acessou `Usuários`.
 - [ ] Criou usuário via `Novo Usuário`.
 - [ ] Alterou perfil com ícone lápis.
 - [ ] Desativou/ativou usuário com ícone power.
 - [ ] Testou filtro `Ativos`/`Inativos`.
 
-## 3.7 Configurações
+### 3.7 Configurações
 - [ ] Acessou aba `Geral` e editou `Email de Contato Principal`.
 - [ ] Acessou aba `Notificações` e editou `Email de Notificações`.
 - [ ] Acessou aba `Solicitações` e atualizou:

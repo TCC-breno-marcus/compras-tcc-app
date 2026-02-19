@@ -1,15 +1,15 @@
-# Manual do Usuário
+# 03 - Manual do Usuário
 
 Este manual descreve o uso do sistema pelo ponto de vista dos perfis `Solicitante` e `Gestor`, com base nas telas e ações disponíveis no frontend.
 
 ## 1. Perfis e Acesso
 
-## 1.1 Perfis do sistema
+### 1.1 Perfis do sistema
 - `Solicitante`: cria solicitações, acompanha status e realiza ajustes quando necessário.
 - `Gestor`: analisa solicitações, altera status, gerencia catálogo, usuários, relatórios e configurações.
 - `Admin`: possui acesso equivalente (ou superior) ao gestor e também às funcionalidades do solicitante.
 
-## 1.2 Login
+### 1.2 Login
 1. Acesse a tela `Acesso ao Sistema`.
 2. Preencha os campos `Email` e `Senha`.
 3. Clique em `Entrar`.
@@ -17,7 +17,7 @@ Este manual descreve o uso do sistema pelo ponto de vista dos perfis `Solicitant
 - `O email é obrigatório.`
 - `A senha é obrigatória.`
 
-## 1.3 Navegação principal
+### 1.3 Navegação principal
 - Menu lateral (desktop) ou menu em gaveta (mobile).
 - Itens de menu por perfil:
 - `Início`
@@ -26,20 +26,20 @@ Este manual descreve o uso do sistema pelo ponto de vista dos perfis `Solicitant
 - `Fale Conosco`
 - `Configurações` (Gestor/Admin)
 
-## 1.4 Menu do usuário (avatar no cabeçalho)
+### 1.4 Menu do usuário (avatar no cabeçalho)
 - `Meu Perfil`
 - `Alternar Tema`
 - `Sair`
 
 ## 2. Funcionalidades comuns (todos os perfis)
 
-## 2.1 Página inicial
+### 2.1 Página inicial
 - Exibe cartões com atalhos conforme o perfil.
 - Exibe componentes de atenção:
 - Gestor/Admin: `Solicitações Pendentes`
 - Solicitante: `Solicitações Aguardando Ajustes`
 
-## 2.2 Meu Perfil (`/perfil`)
+### 2.2 Meu Perfil (`/perfil`)
 1. Acesse pelo avatar > `Meu Perfil`.
 2. Clique em `Editar Perfil`.
 3. Edite `Telefone` e `CPF`.
@@ -49,7 +49,7 @@ Observações:
 - `Nome` e `E-mail` não são editáveis diretamente pelo usuário.
 - O botão `Salvar Alterações` só habilita quando houver mudanças.
 
-## 2.3 Fale Conosco (`/fale-conosco`)
+### 2.3 Fale Conosco (`/fale-conosco`)
 1. Preencha `Nome`, `E-mail`, `Assunto` e `Mensagem`.
 2. Opcional: `Telefone`.
 3. Clique em `Enviar Mensagem`.

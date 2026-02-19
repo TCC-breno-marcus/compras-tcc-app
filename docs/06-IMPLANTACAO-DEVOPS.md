@@ -1,29 +1,29 @@
-# 06 - Documentacao de Implantacao (DevOps)
+# 06 - Documentação de Implantação (DevOps)
 
-Este guia descreve a implantacao tecnica do SIGAM com Docker, incluindo requisitos, variaveis de ambiente, banco de dados, operacao e escalabilidade.
+Este guia descreve a implantação técnica do SIGAM com Docker, incluindo requisitos, variáveis de ambiente, banco de dados, operação e escalabilidade.
 
-## 1. Status da Implantacao
+## 1. Status da Implantação
 
-- Data de referencia: 19/02/2026.
-- Status atual: implantado em ambiente de homologacao e em teste com usuarios.
-- Janela de usuarios prevista: 15 a 20 usuarios ativos.
-- Perfil de uso: endemico, com picos sazonais (ex.: periodo de consolidacao do PCA).
+- Data de referência: 19/02/2026.
+- Status atual: implantado em ambiente de homologação e em teste com usuários.
+- Janela prevista: 15 a 20 usuários ativos.
+- Perfil de uso: endêmico, com picos sazonais (por exemplo, no período de consolidação do PCA).
 
-## 2. Pre-requisitos
+## 2. Pré-requisitos
 
 - Docker Engine 24+.
 - Docker Compose v2 (`docker compose`).
-- Acesso de rede as portas:
-`5173` (frontend), `5000` (backend API), `5432` (PostgreSQL), `8088` (servidor de imagens).
+- Acesso de rede às portas:
+`5173` (frontend), `5000` (backend API), `5432` (PostgreSQL) e `8088` (servidor de imagens).
 
-Validacao rapida:
+Validação rápida:
 
 ```bash
 docker --version
 docker compose version
 ```
 
-## 3. Variaveis de Ambiente (.env)
+## 3. Variáveis de Ambiente (`.env`)
 
 1. Copie o modelo:
 
@@ -33,35 +33,35 @@ cp .env.example .env
 
 2. Edite o arquivo `.env` conforme o ambiente.
 
-### 3.1 Modelo `.env.example` com significado das chaves
+### 3.1 Chaves do `.env.example`
 
-| Chave | Obrigatoria | Descricao |
+| Chave | Obrigatória | Descrição |
 |---|---|---|
-| `DB_USER` | Sim | Usuario do PostgreSQL usado pela aplicacao. |
+| `DB_USER` | Sim | Usuário do PostgreSQL usado pela aplicação. |
 | `DB_PASSWORD` | Sim | Senha do PostgreSQL. |
-| `DB_NAME` | Sim | Nome do banco principal da aplicacao. |
-| `JWT_KEY` | Sim | Segredo usado para assinar tokens JWT (minimo 32 caracteres). |
-| `JWT_ISSUER` | Sim | Valor esperado como emissor do JWT no backend. |
-| `JWT_AUDIENCE` | Sim | Valor esperado como audiencia do JWT no backend. |
-| `ASPNETCORE_ENVIRONMENT` | Sim | Ambiente de execucao do backend (`Development`, `Staging`, `Production`). |
-| `SERVER_HOST` | Sim (producao) | Host/IP do servidor para CORS e URLs externas. Ex.: `10.0.0.10` ou dominio. |
-| `RESEND_API_KEY` | Sim | Token da API de email (Resend). Sem essa chave o backend nao inicializa. |
+| `DB_NAME` | Sim | Nome do banco principal da aplicação. |
+| `JWT_KEY` | Sim | Segredo para assinatura de JWT (mínimo de 32 caracteres). |
+| `JWT_ISSUER` | Sim | Emissor esperado do JWT no backend. |
+| `JWT_AUDIENCE` | Sim | Audiência esperada do JWT no backend. |
+| `ASPNETCORE_ENVIRONMENT` | Sim | Ambiente de execução (`Development`, `Staging`, `Production`). |
+| `SERVER_HOST` | Sim (produção) | Host/IP para CORS e URLs externas. Ex.: `10.0.0.10` ou domínio. |
+| `RESEND_API_KEY` | Sim | Token da API de e-mail (Resend). Sem essa chave o backend não inicializa. |
 
-Observacao:
-- No Compose atual, a conexao de banco e montada automaticamente com `DB_USER`, `DB_PASSWORD` e `DB_NAME` via `ConnectionStrings__DefaultConnection`.
-- Se sua politica DevOps exigir `DB_CONNECTION_STRING`, mantenha essa variavel em segredo no cofre de infraestrutura, mas o projeto versionado usa o padrao por chaves separadas.
+Observações:
+- No Compose atual, a conexão de banco é montada automaticamente via `ConnectionStrings__DefaultConnection`.
+- Se sua política DevOps exigir uma string única (`DB_CONNECTION_STRING`), mantenha esse segredo fora do repositório.
 
-## 4. Implantacao com Docker (Simples e Repetivel)
+## 4. Implantação com Docker
 
 ### 4.1 Ambiente de desenvolvimento/local
 
-Subir todos os servicos:
+Subir todos os serviços:
 
 ```bash
 docker compose up -d --build
 ```
 
-Verificar status:
+Verificar status e logs:
 
 ```bash
 docker compose ps
@@ -79,7 +79,7 @@ Endpoints esperados:
 - Backend (Swagger): `http://localhost:5000/swagger`
 - Imagens: `http://localhost:8088/images/`
 
-### 4.2 Ambiente de producao
+### 4.2 Ambiente de produção
 
 Este projeto possui `docker-compose.prod.yml` com imagens prontas:
 
@@ -87,64 +87,63 @@ Este projeto possui `docker-compose.prod.yml` com imagens prontas:
 docker compose -f docker-compose.prod.yml up -d
 ```
 
-Recomenda-se:
-- Definir `.env` com valores de producao antes do `up`.
-- Fixar versoes de imagem (tag semantica) quando sair de homologacao para producao estavel.
-- Colocar proxy reverso/TLS na frente dos servicos expostos.
+Recomendações:
+- Defina `.env` com valores de produção antes do `up`.
+- Fixe versões de imagem (tag semântica) quando sair de homologação para produção estável.
+- Coloque proxy reverso com TLS na frente dos serviços expostos.
 
 ## 5. Banco de Dados: Migrations e Seed
 
-### 5.1 Comportamento padrao da aplicacao
+### 5.1 Comportamento padrão da aplicação
 
 Ao iniciar, o backend executa:
-1. `Database.MigrateAsync()` (aplica migrations pendentes automaticamente).
-2. Seed inicial de Centro, Departamentos e usuarios padrao, se tabelas estiverem vazias.
 
-Ou seja, no fluxo normal **nao** e necessario rodar migracao manual.
+1. `Database.MigrateAsync()` para aplicar migrations pendentes.
+2. Seed inicial de centros, departamentos e usuários padrão, se as tabelas estiverem vazias.
 
-### 5.2 Quando rodar manualmente
+No fluxo normal, não é necessário rodar migrations manualmente.
 
-Use em troubleshooting ou pipelines controlados:
+### 5.2 Execução manual (troubleshooting/pipeline)
+
+Aplicar migrations:
 
 ```bash
-docker compose run --rm --entrypoint sh backend-service
-dotnet ef database update
+docker compose run --rm --entrypoint sh backend-service -lc "export PATH=$PATH:/root/.dotnet/tools && dotnet tool restore && dotnet ef database update"
 ```
 
 Criar nova migration:
 
 ```bash
-docker compose run --rm --entrypoint sh backend-service
-dotnet ef migrations add NomeDaMigration
+docker compose run --rm --entrypoint sh backend-service -lc "export PATH=$PATH:/root/.dotnet/tools && dotnet tool restore && dotnet ef migrations add NomeDaMigration"
 ```
 
-## 6. Escalabilidade e Operacao
+## 6. Escalabilidade e Operação
 
-### 6.1 Escala para 15-20 usuarios
+### 6.1 Escala para 15 a 20 usuários
 
-- O perfil atual (15-20 usuarios) e suportado por um unico host com Docker Compose.
-- O gargalo principal costuma ser I/O de banco durante picos sazonais de solicitacoes.
+- O perfil atual é suportado por um único host com Docker Compose.
+- O gargalo principal tende a ser I/O de banco durante picos sazonais de solicitações.
 
-### 6.2 Pico sazonal (uso endemico)
+### 6.2 Pico sazonal
 
-- Monitorar CPU/RAM de `backend-service` e `postgres-db`.
-- Monitorar latencia e taxa de erro nas rotas de solicitacao e relatorios.
-- Planejar janela de reforco de recursos nos periodos de maior demanda (ciclo PCA).
+- Monitore CPU e RAM de `backend-service` e `postgres-db`.
+- Monitore latência e taxa de erro nas rotas de solicitações e relatórios.
+- Planeje reforço de recursos nos períodos de maior demanda (ciclo PCA).
 
-### 6.3 Possibilidade de escalonamento automatico
+### 6.3 Escalonamento automático
 
-Docker Compose nao oferece auto scaling horizontal nativo por metrica.
+Docker Compose não oferece autoscaling horizontal nativo por métrica.
 
-Caminhos recomendados para auto scaling:
-- Migrar para Kubernetes (HPA por CPU/memoria e replicas do backend).
-- Usar ECS/Fargate com Auto Scaling, mantendo PostgreSQL gerenciado.
+Caminhos recomendados:
+- Migrar para Kubernetes (HPA por CPU/memória e réplicas do backend).
+- Usar ECS/Fargate com Auto Scaling e PostgreSQL gerenciado.
 - Adicionar cache e/ou fila para amortecer picos de escrita e leitura.
 
-## 7. Checklist rapido de implantacao
+## 7. Checklist Rápido de Implantação
 
 1. Preencher `.env` com segredos reais.
-2. Subir stack com `docker compose up -d --build` (ou arquivo de producao).
-3. Confirmar containers saudaveis com `docker compose ps`.
+2. Subir a stack com `docker compose up -d --build` (ou arquivo de produção).
+3. Confirmar containers saudáveis com `docker compose ps`.
 4. Validar Swagger (`/swagger`) e login no frontend.
 5. Confirmar migrations e seed nos logs do backend.
-6. Registrar data/status da rodada de implantacao para rastreabilidade.
+6. Registrar data e status da implantação para rastreabilidade.
