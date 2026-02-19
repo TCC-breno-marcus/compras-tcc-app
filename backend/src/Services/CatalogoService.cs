@@ -27,6 +27,23 @@ namespace Services
             _IMAGE_BASE_URL = configuration["IMAGE_BASE_URL"] ?? "";
         }
 
+        /// <summary>
+        /// Consulta itens do catálogo com filtros, ordenação e paginação.
+        /// Quando <paramref name="searchTerm"/> é informado, aplica busca textual ampla e ignora filtros individuais.
+        /// </summary>
+        /// <param name="id">Identificador exato do item para filtro.</param>
+        /// <param name="catMat">Código CATMAT parcial ou completo para filtro.</param>
+        /// <param name="nome">Nome parcial do item para filtro.</param>
+        /// <param name="descricao">Descrição parcial para filtro.</param>
+        /// <param name="categoriaId">Lista de categorias permitidas na consulta.</param>
+        /// <param name="especificacao">Especificação parcial para filtro.</param>
+        /// <param name="isActive">Status de ativação do item.</param>
+        /// <param name="searchTerm">Termo livre para busca textual ampla.</param>
+        /// <param name="pageNumber">Número da página (base 1).</param>
+        /// <param name="pageSize">Quantidade de registros por página.</param>
+        /// <param name="sortOrder">Ordenação por nome: <c>asc</c> ou <c>desc</c>.</param>
+        /// <returns>Resultado paginado contendo itens e metadados de paginação.</returns>
+        /// <exception cref="Exception">Propaga falhas inesperadas durante a consulta ao banco.</exception>
         public async Task<PaginatedResultDto<ItemDto>> GetAllItensAsync(
             long? id,
             string? catMat,
@@ -161,6 +178,17 @@ namespace Services
             }
         }
 
+        /// <summary>
+        /// Atualiza os dados de um item e registra histórico quando houver alteração efetiva de campos.
+        /// </summary>
+        /// <param name="id">Identificador do item a ser editado.</param>
+        /// <param name="updateDto">Dados de atualização parcial do item.</param>
+        /// <param name="user">Usuário autenticado responsável pela alteração.</param>
+        /// <returns>Item atualizado; retorna <see langword="null"/> quando o item não existe.</returns>
+        /// <exception cref="InvalidOperationException">
+        /// Lançada quando a categoria final associada ao item não é encontrada após a atualização.
+        /// </exception>
+        /// <exception cref="FormatException">Lançada quando o claim de identificador do usuário é inválido.</exception>
         public async Task<ItemDto?> EditarItemAsync(
             int id,
             ItemUpdateDto updateDto,
@@ -256,6 +284,11 @@ namespace Services
             };
         }
 
+        /// <summary>
+        /// Importa itens em lote, atualizando registros existentes por CATMAT e inserindo novos itens.
+        /// </summary>
+        /// <param name="itensParaImportar">Coleção de itens de origem externa para sincronização do catálogo.</param>
+        /// <returns>Uma <see cref="Task"/> representando a conclusão da operação.</returns>
         public async Task ImportarItensAsync(IEnumerable<ItemImportacaoDto> itensParaImportar)
         {
             var codigosParaVerificar = itensParaImportar.Select(dto => dto.Codigo).Distinct();
@@ -303,6 +336,12 @@ namespace Services
             );
         }
 
+        /// <summary>
+        /// Associa imagens aos itens do catálogo com base no nome do arquivo (CATMAT) e persiste os links correspondentes.
+        /// </summary>
+        /// <param name="caminhoDasImagens">Diretório local contendo os arquivos de imagem.</param>
+        /// <returns>Resumo textual da quantidade de itens atualizados e imagens não correspondentes.</returns>
+        /// <exception cref="DirectoryNotFoundException">Lançada quando o diretório informado não existe.</exception>
         public async Task<string> PopularImagensAsync(string caminhoDasImagens)
         {
             _logger.LogInformation(
@@ -376,6 +415,12 @@ namespace Services
             return resumo;
         }
 
+        /// <summary>
+        /// Obtém um item por identificador incluindo dados da categoria.
+        /// </summary>
+        /// <param name="id">Identificador do item.</param>
+        /// <returns>Item encontrado; retorna <see langword="null"/> quando inexistente.</returns>
+        /// <exception cref="Exception">Propaga falhas inesperadas durante a leitura no banco.</exception>
         public async Task<ItemDto?> GetItemByIdAsync(long id)
         {
             _logger.LogInformation("Iniciando busca de um item pelo ID...");
@@ -424,6 +469,16 @@ namespace Services
             }
         }
 
+        /// <summary>
+        /// Cria um novo item no catálogo, valida unicidade de CATMAT e registra histórico de criação.
+        /// </summary>
+        /// <param name="dto">Dados de criação do item.</param>
+        /// <param name="user">Usuário autenticado responsável pela criação.</param>
+        /// <returns>DTO do item criado com dados de categoria.</returns>
+        /// <exception cref="InvalidOperationException">
+        /// Lançada quando já existe item com o mesmo CATMAT ou quando a categoria associada não é encontrada.
+        /// </exception>
+        /// <exception cref="FormatException">Lançada quando o claim de identificador do usuário é inválido.</exception>
         public async Task<ItemDto> CriarItemAsync(CreateItemDto dto, ClaimsPrincipal user)
         {
             var itemExistente = await _context.Items.AnyAsync(item => item.CatMat == dto.CatMat);
@@ -494,6 +549,15 @@ namespace Services
             };
         }
 
+        /// <summary>
+        /// Remove um item do catálogo aplicando hard delete para itens sem uso e soft delete para itens já solicitados.
+        /// </summary>
+        /// <param name="id">Identificador do item a remover.</param>
+        /// <param name="user">Usuário autenticado responsável pela remoção.</param>
+        /// <returns>
+        /// Tupla indicando sucesso da operação e mensagem de resultado para o fluxo de negócio.
+        /// </returns>
+        /// <exception cref="FormatException">Lançada quando o claim de identificador do usuário é inválido no fluxo de soft delete.</exception>
         public async Task<(bool sucesso, string mensagem)> DeleteItemAsync(
             long id,
             ClaimsPrincipal user
@@ -548,6 +612,12 @@ namespace Services
             }
         }
 
+        /// <summary>
+        /// Lista itens semelhantes ao item de referência usando igualdade de nome e excluindo o próprio item.
+        /// </summary>
+        /// <param name="id">Identificador do item de referência.</param>
+        /// <returns>Lista de itens semelhantes; retorna <see langword="null"/> quando o item base não existe.</returns>
+        /// <exception cref="Exception">Propaga falhas inesperadas durante a consulta no banco.</exception>
         public async Task<IEnumerable<ItemDto>?> GetItensSemelhantesAsync(long id)
         {
             _logger.LogInformation("Iniciando busca de itens semelhantes ao item de ID {Id}", id);
@@ -611,6 +681,15 @@ namespace Services
             }
         }
 
+        /// <summary>
+        /// Atualiza a imagem de um item, substitui o arquivo físico anterior e registra histórico da alteração.
+        /// </summary>
+        /// <param name="id">Identificador do item.</param>
+        /// <param name="imagem">Arquivo de imagem enviado para associação ao item.</param>
+        /// <param name="user">Usuário autenticado responsável pela alteração.</param>
+        /// <returns>Item atualizado com o link da nova imagem; retorna <see langword="null"/> quando o item não existe.</returns>
+        /// <exception cref="IOException">Lançada quando ocorre falha de leitura/escrita no sistema de arquivos.</exception>
+        /// <exception cref="FormatException">Lançada quando o claim de identificador do usuário é inválido.</exception>
         public async Task<ItemDto?> AtualizarImagemAsync(
             long id,
             IFormFile imagem,
@@ -681,6 +760,13 @@ namespace Services
             };
         }
 
+        /// <summary>
+        /// Remove a imagem associada ao item no banco e no disco (quando existente), registrando histórico da ação.
+        /// </summary>
+        /// <param name="id">Identificador do item.</param>
+        /// <param name="user">Usuário autenticado responsável pela remoção.</param>
+        /// <returns><see langword="true"/> quando o item é encontrado e atualizado; caso contrário, <see langword="false"/>.</returns>
+        /// <exception cref="FormatException">Lançada quando o claim de identificador do usuário é inválido.</exception>
         public async Task<bool> RemoverImagemAsync(long id, ClaimsPrincipal user)
         {
             var item = await _context.Items.FindAsync(id);
@@ -722,6 +808,11 @@ namespace Services
             return true;
         }
 
+        /// <summary>
+        /// Recupera o histórico de alterações de um item ordenado da ocorrência mais recente para a mais antiga.
+        /// </summary>
+        /// <param name="itemId">Identificador do item para consulta do histórico.</param>
+        /// <returns>Lista de eventos do histórico; retorna <see langword="null"/> quando o item não existe.</returns>
         public async Task<List<HistoricoItemDto>?> GetHistoricoItemAsync(long itemId)
         {
             var item = await _context
