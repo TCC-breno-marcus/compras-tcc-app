@@ -29,6 +29,19 @@ namespace Services
             _IMAGE_BASE_URL = configuration["IMAGE_BASE_URL"] ?? "";
         }
 
+        /// <summary>
+        /// Retorna relatório paginado de itens agrupados por produto com consolidação de demanda por departamento.
+        /// </summary>
+        /// <param name="searchTerm">Termo livre para busca em nome, descrição, CATMAT e especificação.</param>
+        /// <param name="categoriaNome">Filtro parcial por nome da categoria.</param>
+        /// <param name="itemsType">Tipo de item: patrimonial ou geral.</param>
+        /// <param name="siglaDepartamento">Sigla exata do departamento solicitante.</param>
+        /// <param name="somenteSolicitacoesAtivas">Indica se considera apenas solicitações em status ativos.</param>
+        /// <param name="sortOrder">Ordenação por nome do item: asc ou desc.</param>
+        /// <param name="pageNumber">Número da página (base 1).</param>
+        /// <param name="pageSize">Quantidade de registros por página.</param>
+        /// <returns>Resultado paginado com itens agregados e métricas de demanda.</returns>
+        /// <exception cref="Exception">Propaga falhas inesperadas durante consulta e agregação dos dados.</exception>
         public async Task<PaginatedResultDto<ItemPorDepartamentoDto>> GetItensPorDepartamentoAsync(
             string? searchTerm,
             string? categoriaNome,
@@ -60,6 +73,17 @@ namespace Services
             );
         }
 
+        /// <summary>
+        /// Retorna relatório completo de itens por departamento sem paginação, aplicando os mesmos filtros de negócio.
+        /// </summary>
+        /// <param name="searchTerm">Termo livre para busca em nome, descrição, CATMAT e especificação.</param>
+        /// <param name="categoriaNome">Filtro parcial por nome da categoria.</param>
+        /// <param name="itemsType">Tipo de item: patrimonial ou geral.</param>
+        /// <param name="siglaDepartamento">Sigla exata do departamento solicitante.</param>
+        /// <param name="somenteSolicitacoesAtivas">Indica se considera apenas solicitações em status ativos.</param>
+        /// <param name="sortOrder">Ordenação por nome do item: asc ou desc.</param>
+        /// <returns>Lista completa de itens agregados por produto.</returns>
+        /// <exception cref="Exception">Propaga falhas inesperadas durante consulta e agregação dos dados.</exception>
         public async Task<List<ItemPorDepartamentoDto>> GetAllItensPorDepartamentoAsync(
             string? searchTerm = null,
             string? categoriaNome = null,
@@ -242,6 +266,17 @@ namespace Services
                 : query.OrderBy(i => i.Nome);
         }
 
+        /// <summary>
+        /// Exporta o relatório de itens por departamento em CSV ou Excel conforme o formato solicitado.
+        /// </summary>
+        /// <param name="itemsType">Tipo de item: patrimonial ou geral.</param>
+        /// <param name="formatoArquivo">Formato de saída: csv ou xlsx.</param>
+        /// <param name="searchTerm">Termo livre para busca em nome, descrição, CATMAT e especificação.</param>
+        /// <param name="categoriaNome">Filtro parcial por nome da categoria.</param>
+        /// <param name="siglaDepartamento">Sigla exata do departamento solicitante.</param>
+        /// <param name="somenteSolicitacoesAtivas">Indica se considera apenas solicitações em status ativos.</param>
+        /// <returns>Conteúdo binário do arquivo exportado.</returns>
+        /// <exception cref="Exception">Propaga falhas inesperadas durante geração do arquivo.</exception>
         public async Task<byte[]> ExportarItensPorDepartamentoAsync(
             string itemsType,
             string formatoArquivo,
@@ -374,6 +409,13 @@ namespace Services
             }
         }
 
+        /// <summary>
+        /// Gera arquivo Excel detalhado do relatório de itens por departamento, incluindo justificativa para itens patrimoniais.
+        /// </summary>
+        /// <param name="insights">Dados agregados do relatório a serem exportados.</param>
+        /// <param name="isPatrimonial">Indica se deve incluir coluna de justificativa patrimonial.</param>
+        /// <returns>Conteúdo binário do arquivo Excel (.xlsx).</returns>
+        /// <exception cref="Exception">Propaga falhas inesperadas durante montagem e serialização da planilha.</exception>
         public byte[] GerarExcel(List<ItemPorDepartamentoDto> insights, bool isPatrimonial)
         {
             using (var workbook = new XLWorkbook())
