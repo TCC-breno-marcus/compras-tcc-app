@@ -212,9 +212,10 @@ const visitCatalog = () => {
   cy.wait('@getCatalog')
 }
 
-const selectCategory = (name: string, dialogAlias = '@createDialog') => {
-  cy.get(dialogAlias)
-    .find('#categoria-filter, [inputid="categoria-filter"]')
+const selectCategory = (name: string) => {
+  cy.get('[role="dialog"] #categoria-filter, [role="dialog"] [inputid="categoria-filter"]', {
+    timeout: 10000,
+  })
     .first()
     .scrollIntoView()
     .click({ force: true })
@@ -246,27 +247,30 @@ describe('Gestor - Gerenciar Catálogo (regras críticas)', () => {
     const newCatMat = '123456'
 
     cy.contains('button', /^Criar$/).should('be.visible').click({ force: true })
-    cy.get('[role="dialog"]', { timeout: 10000 }).should('be.visible').as('createDialog')
-    cy.get('@createDialog').contains('.p-dialog-header', 'Criar Novo Item').should('be.visible')
+    cy.contains('[role="dialog"] .p-dialog-header', 'Criar Novo Item', { timeout: 10000 }).should(
+      'be.visible',
+    )
 
-    cy.get('@createDialog').contains('.p-dialog-footer button', 'Criar').should('be.disabled')
+    cy.contains('[role="dialog"] .p-dialog-footer button', 'Criar').should('be.disabled')
 
-    cy.get('@createDialog').find('input#nome', { timeout: 8000 }).should('be.visible').type(newName)
-    cy.get('@createDialog').find('input#catMat', { timeout: 8000 }).should('be.visible').type(newCatMat)
-    cy.get('@createDialog')
-      .find('textarea#descricao, textarea[inputid="descricao"]')
+    cy.get('[role="dialog"] input#nome', { timeout: 10000 }).should('be.visible').type(newName)
+    cy.get('[role="dialog"] input#catMat', { timeout: 10000 }).should('be.visible').type(newCatMat)
+    cy.get('[role="dialog"] textarea#descricao, [role="dialog"] textarea[inputid="descricao"]')
       .first()
       .type('Descrição do item criado via e2e.')
 
-    selectCategory('Diversos', '@createDialog')
-    cy.get('@createDialog').find('input#precoSugerido, input[inputid="precoSugerido"]').first().click()
-    cy.get('@createDialog')
-      .find('input#precoSugerido, input[inputid="precoSugerido"]')
+    selectCategory('Diversos')
+    cy.get('[role="dialog"] input#precoSugerido, [role="dialog"] input[inputid="precoSugerido"]', {
+      timeout: 10000,
+    })
+      .first()
+      .click()
+    cy.get('[role="dialog"] input#precoSugerido, [role="dialog"] input[inputid="precoSugerido"]')
       .first()
       .type('{selectall}{backspace}200')
       .blur()
 
-    cy.get('@createDialog').contains('.p-dialog-footer button', 'Criar').click()
+    cy.contains('[role="dialog"] .p-dialog-footer button', 'Criar').click()
     cy.wait('@createItem').then(({ request, response }) => {
       expect(response?.statusCode).to.eq(200)
       expect(request.body.nome).to.eq(newName)
