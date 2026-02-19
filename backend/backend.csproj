@@ -23,5 +23,6 @@
     <Compile Remove="ComprasTccApp.Tests\**" />
     <EmbeddedResource Remove="ComprasTccApp.Tests\**" />
     <None Remove="ComprasTccApp.Tests\**" />
+    <Content Remove="ComprasTccApp.Tests\**" />
   </ItemGroup>
 </Project>
