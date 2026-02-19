@@ -10,12 +10,25 @@ Este manual descreve o uso do sistema pelo ponto de vista dos perfis `Solicitant
 - `Admin`: possui acesso equivalente (ou superior) ao gestor e também às funcionalidades do solicitante.
 
 ### 1.2 Login
+<img width="1903" height="897" alt="image" src="https://github.com/user-attachments/assets/5b6e9f16-fa53-44ba-8502-ea6d32f23be4" />
+
 1. Acesse a tela `Acesso ao Sistema`.
 2. Preencha os campos `Email` e `Senha`.
 3. Clique em `Entrar`.
 4. Em caso de campos vazios, o sistema exibe mensagens como:
 - `O email é obrigatório.`
 - `A senha é obrigatória.`
+
+#### **Credenciais de Primeiro Acesso (Padrão)**
+O sistema possui usuários pré-cadastrados no banco de dados para a configuração inicial. **Atenção:** Estas contas são de uso técnico e não devem ser utilizadas para as operações rotineiras após a implantação.
+| **Perfil** | **E-mail** | **Senha** |
+| --- | --- | --- |
+| **Administrador Padrão** | `admin@sistema.com` | `123456` |
+| **Gestor Padrão** | `gestor@sistema.com` | `123456` |
+| **Solicitante Padrão** | `solicitante@sistema.com` | `123456` |
+
+**Recomendação de Segurança:** Utilize o acesso de **Gestor Padrão** apenas no primeiro acesso para realizar o cadastro dos novos gestores e solicitantes reais do CCET. Uma vez criadas as contas oficiais, o uso das credenciais padrão deve ser descontinuado para garantir a auditabilidade e segurança do sistema.
+
 
 ### 1.3 Navegação principal
 - Menu lateral (desktop) ou menu em gaveta (mobile).
