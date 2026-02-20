@@ -12,6 +12,15 @@ namespace Services
         private readonly AppDbContext _context = context;
         private readonly ILogger<CategoriaService> _logger = logger;
 
+        /// <summary>
+        /// Consulta categorias com filtros opcionais por identificador, nome, descrição e status de ativação.
+        /// </summary>
+        /// <param name="id">Lista de identificadores de categoria para filtro exato.</param>
+        /// <param name="nome">Lista de termos para busca parcial no nome da categoria.</param>
+        /// <param name="descricao">Termo para busca parcial na descrição da categoria.</param>
+        /// <param name="isActive">Filtro de status ativo/inativo.</param>
+        /// <returns>Lista de categorias que atendem aos filtros informados.</returns>
+        /// <exception cref="Exception">Propaga falhas inesperadas durante a consulta ao banco de dados.</exception>
         public async Task<IEnumerable<CategoriaDto>> GetAllCategoriasAsync(
             List<long> id,
             List<string> nome,
@@ -78,6 +87,12 @@ namespace Services
             }
         }
 
+        /// <summary>
+        /// Atualiza os dados de uma categoria existente com base nas propriedades informadas no DTO.
+        /// </summary>
+        /// <param name="id">Identificador da categoria a ser editada.</param>
+        /// <param name="updateDto">Dados de atualização parcial da categoria.</param>
+        /// <returns>Categoria atualizada; retorna <see langword="null"/> quando a categoria não existe.</returns>
         public async Task<CategoriaDto?> EditarCategoriaAsync(int id, CategoriaUpdateDto updateDto)
         {
             var categoriaDoBanco = await _context.Categorias.FirstOrDefaultAsync(i => i.Id == id);
@@ -110,6 +125,12 @@ namespace Services
             };
         }
 
+        /// <summary>
+        /// Recupera uma categoria específica pelo seu identificador.
+        /// </summary>
+        /// <param name="id">Identificador da categoria.</param>
+        /// <returns>Categoria encontrada; retorna <see langword="null"/> quando inexistente.</returns>
+        /// <exception cref="Exception">Propaga falhas inesperadas durante a leitura no banco de dados.</exception>
         public async Task<CategoriaDto?> GetCategoriaByIdAsync(long id)
         {
             _logger.LogInformation("Iniciando busca de uma categoria pelo ID...");
@@ -144,6 +165,12 @@ namespace Services
             }
         }
 
+        /// <summary>
+        /// Cria uma nova categoria validando a unicidade do nome (normalizado por trim e lowercase).
+        /// </summary>
+        /// <param name="dto">Dados da categoria a ser criada.</param>
+        /// <returns>Categoria criada e persistida.</returns>
+        /// <exception cref="InvalidOperationException">Lançada quando já existe categoria com o mesmo nome normalizado.</exception>
         public async Task<CategoriaDto> CriarCategoriaAsync(CategoriaDto dto)
         {
             var nomeNormalizado = dto.Nome.Trim().ToLower();
@@ -178,6 +205,14 @@ namespace Services
             };
         }
 
+        /// <summary>
+        /// Remove uma categoria quando ela existe e não está associada a itens do catálogo.
+        /// </summary>
+        /// <param name="id">Identificador da categoria a ser removida.</param>
+        /// <returns><see langword="true"/> quando removida; <see langword="false"/> quando não encontrada.</returns>
+        /// <exception cref="InvalidOperationException">
+        /// Lançada quando a categoria está em uso por itens e não pode ser excluída.
+        /// </exception>
         public async Task<bool> DeleteCategoriaAsync(long id)
         {
             var categoria = await _context.Categorias.FindAsync(id);

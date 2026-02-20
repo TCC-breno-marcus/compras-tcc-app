@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models.Dtos;
 using Services.Interfaces;
+using System.Security.Claims;
 
 namespace Controllers
 {
@@ -127,10 +128,38 @@ namespace Controllers
                         $"relatorio-{itemsType}-{DateTime.Now:yyyyMMdd}.xlsx"
                     );
                 }
+                else if (formatoArquivo.Equals("pdf", StringComparison.OrdinalIgnoreCase))
+                {
+                    var usuarioSolicitante =
+                        User.FindFirstValue(ClaimTypes.Name)
+                        ?? User.Identity?.Name
+                        ?? "Usuario nao identificado";
+                    var dataHoraSolicitacao = DateTimeOffset.Now;
+
+                    var pdfBytes = await _relatorioService.ExportarItensPorDepartamentoAsync(
+                        itemsType,
+                        formatoArquivo,
+                        searchTerm,
+                        categoriaNome,
+                        siglaDepartamento,
+                        somenteSolicitacoesAtivas,
+                        usuarioSolicitante,
+                        dataHoraSolicitacao
+                    );
+
+                    return File(
+                        pdfBytes,
+                        "application/pdf",
+                        $"relatorio-itens-por-departamento-{DateTime.Now:yyyyMMdd-HHmmss}.pdf"
+                    );
+                }
                 else
                 {
                     return BadRequest(
-                        new { message = "O formatoArquivo de arquivo deve ser 'csv' ou 'excel'." }
+                        new
+                        {
+                            message = "O formatoArquivo de arquivo deve ser 'csv', 'excel' ou 'pdf'.",
+                        }
                     );
                 }
             }

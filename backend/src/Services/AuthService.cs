@@ -27,6 +27,18 @@ namespace ComprasTccApp.Backend.Services
             _logger = logger;
         }
 
+        /// <summary>
+        /// Registra uma nova pessoa no sistema e cria o vínculo de servidor para o perfil Solicitante ou Gestor.
+        /// A operação valida unicidade de email/CPF e exige unidade organizacional compatível com a role.
+        /// </summary>
+        /// <param name="registerDto">Dados de cadastro do usuário, incluindo credenciais, role e sigla da unidade organizacional.</param>
+        /// <returns>A entidade <see cref="Pessoa"/> criada e persistida.</returns>
+        /// <exception cref="ArgumentException">
+        /// Lançada quando a sigla de departamento/centro obrigatória para a role informada não é fornecida.
+        /// </exception>
+        /// <exception cref="Exception">
+        /// Lançada quando email ou CPF já estão em uso, ou quando a unidade organizacional informada não existe.
+        /// </exception>
         public async Task<Pessoa> RegisterAsync(RegisterDto registerDto)
         {
             if (await _context.Pessoas.AnyAsync(p => p.Email == registerDto.Email))
@@ -127,6 +139,16 @@ namespace ComprasTccApp.Backend.Services
             return novaPessoa;
         }
 
+        /// <summary>
+        /// Autentica uma pessoa por email e senha, valida se o usuário está ativo e gera um token JWT.
+        /// </summary>
+        /// <param name="loginDto">Credenciais de login contendo email e senha em texto plano.</param>
+        /// <returns>
+        /// Um <see cref="LoginResponseDto"/> com token e mensagem de sucesso quando autenticado; caso contrário, <see langword="null"/>.
+        /// </returns>
+        /// <exception cref="InvalidOperationException">
+        /// Lançada quando a pessoa existe, mas está inativa.
+        /// </exception>
         public async Task<LoginResponseDto?> LoginAsync(LoginDto loginDto)
         {
             var pessoa = await _context.Pessoas.FirstOrDefaultAsync(p => p.Email == loginDto.Email);
@@ -169,6 +191,13 @@ namespace ComprasTccApp.Backend.Services
             return new LoginResponseDto { Token = token, Message = "Login bem-sucedido!" };
         }
 
+        /// <summary>
+        /// Obtém o perfil do usuário autenticado a partir do claim de identificador e inclui a unidade organizacional conforme a role.
+        /// </summary>
+        /// <param name="user">Principal autenticado com o claim <see cref="ClaimTypes.NameIdentifier"/>.</param>
+        /// <returns>
+        /// Um <see cref="UserProfileDto"/> quando o usuário é encontrado; caso contrário, <see langword="null"/>.
+        /// </returns>
         public async Task<UserProfileDto?> GetMyProfileAsync(ClaimsPrincipal user)
         {
             var userIdString = user.FindFirstValue(ClaimTypes.NameIdentifier);

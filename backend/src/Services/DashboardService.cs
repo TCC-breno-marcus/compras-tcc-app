@@ -15,6 +15,13 @@ public class DashboardService : IDashboardService
         _logger = logger;
     }
 
+    /// <summary>
+    /// Consolida os indicadores e gráficos do dashboard gerencial para o ano informado.
+    /// O cálculo de valor total e custo médio considera apenas solicitações com status ativos.
+    /// </summary>
+    /// <param name="ano">Ano de referência para filtragem das solicitações.</param>
+    /// <returns>Estrutura completa do dashboard com KPIs, séries de gráficos e rankings de itens.</returns>
+    /// <exception cref="Exception">Propaga falhas inesperadas durante leitura e agregação dos dados.</exception>
     public async Task<DashResultDto> GetDashboardDataAsync(int ano)
     {
         _logger.LogInformation("Iniciando geração de dashs e KPIs para o gestor...");

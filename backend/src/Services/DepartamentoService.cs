@@ -14,6 +14,14 @@ public class DepartamentoService : IDepartamentoService
         _logger = logger;
     }
 
+    /// <summary>
+    /// Consulta departamentos com filtros opcionais por nome, sigla do departamento e sigla do centro.
+    /// O resultado é retornado ordenado por nome e inclui os dados do centro associado.
+    /// </summary>
+    /// <param name="nome">Trecho do nome do departamento para busca parcial case-insensitive.</param>
+    /// <param name="sigla">Sigla exata do departamento para comparação case-insensitive.</param>
+    /// <param name="siglaCentro">Sigla exata do centro associado para comparação case-insensitive.</param>
+    /// <returns>Lista de departamentos que atendem aos filtros informados.</returns>
     public async Task<IEnumerable<DepartamentoDto>> GetAllDepartamentosAsync(
         string? nome,
         string? sigla,
@@ -60,6 +68,12 @@ public class DepartamentoService : IDepartamentoService
         return departamentos;
     }
 
+    /// <summary>
+    /// Recupera um departamento pelo identificador, incluindo os dados do centro associado.
+    /// </summary>
+    /// <param name="id">Identificador do departamento.</param>
+    /// <returns>DTO do departamento encontrado; retorna <see langword="null"/> quando inexistente.</returns>
+    /// <exception cref="Exception">Propaga falhas inesperadas durante a consulta no banco de dados.</exception>
     public async Task<DepartamentoDto?> GetDepartamentoByIdAsync(long id)
     {
         _logger.LogInformation("Iniciando busca de uma departamento pelo ID...");

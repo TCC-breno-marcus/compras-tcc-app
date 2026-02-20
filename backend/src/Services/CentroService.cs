@@ -14,6 +14,12 @@ public class CentroService : ICentroService
         _logger = logger;
     }
 
+    /// <summary>
+    /// Consulta centros com filtros opcionais por nome e sigla, retornando o resultado ordenado por nome.
+    /// </summary>
+    /// <param name="nome">Trecho do nome do centro para busca parcial case-insensitive.</param>
+    /// <param name="sigla">Sigla exata do centro para comparação case-insensitive.</param>
+    /// <returns>Lista de centros que atendem aos filtros aplicados.</returns>
     public async Task<IEnumerable<CentroDto>> GetAllCentrosAsync(string? nome, string? sigla)
     {
         var query = _context.Centros.AsNoTracking().AsQueryable();
@@ -43,6 +49,12 @@ public class CentroService : ICentroService
         return centros;
     }
 
+    /// <summary>
+    /// Recupera um centro pelo identificador.
+    /// </summary>
+    /// <param name="id">Identificador do centro.</param>
+    /// <returns>DTO do centro encontrado; retorna <see langword="null"/> quando inexistente.</returns>
+    /// <exception cref="Exception">Propaga falhas inesperadas durante a consulta no banco de dados.</exception>
     public async Task<CentroDto?> GetCentroByIdAsync(long id)
     {
         _logger.LogInformation("Iniciando busca de uma centro pelo ID...");

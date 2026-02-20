@@ -89,6 +89,7 @@ builder.Services.AddScoped<IDepartamentoService, DepartamentoService>();
 builder.Services.AddScoped<ICentroService, CentroService>();
 builder.Services.AddScoped<IEmailService, ResendEmailService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<IDadosPublicosService, DadosPublicosService>();
 
 // --- CONFIGURAÇÃO DE CULTURA PADRÃO ---
 var cultureInfo = new System.Globalization.CultureInfo("pt-BR");

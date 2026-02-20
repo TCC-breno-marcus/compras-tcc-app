@@ -14,6 +14,12 @@ namespace ComprasTccApp.Backend.Services
         private readonly ITokenService _tokenService;
         private readonly ILogger<UsuarioService> _logger;
 
+        /// <summary>
+        /// Inicializa o serviço de usuários com acesso ao banco, serviço de token e logger.
+        /// </summary>
+        /// <param name="context">Contexto de dados usado para consultas e atualizações de usuários.</param>
+        /// <param name="tokenService">Serviço de token injetado para operações relacionadas à autenticação.</param>
+        /// <param name="logger">Logger usado para registrar eventos operacionais do serviço.</param>
         public UsuarioService(
             AppDbContext context,
             ITokenService tokenService,
@@ -25,6 +31,15 @@ namespace ComprasTccApp.Backend.Services
             _logger = logger;
         }
 
+        /// <summary>
+        /// Retorna usuários paginados com filtros opcionais de role e status ativo, aplicando ordenação por nome.
+        /// </summary>
+        /// <param name="role">Role opcional para filtro. Valores válidos: Admin, Gestor e Solicitante.</param>
+        /// <param name="pageNumber">Número da página a ser retornada.</param>
+        /// <param name="pageSize">Quantidade de registros por página.</param>
+        /// <param name="sortOrder">Direção da ordenação por nome: asc (padrão) ou desc.</param>
+        /// <param name="isActive">Filtro opcional para status ativo/inativo do usuário.</param>
+        /// <returns>Resultado paginado contendo os perfis de usuários conforme filtros aplicados.</returns>
         public async Task<PaginatedResultDto<UserProfileDto>> GetAllUsersAsync(
             string? role,
             int pageNumber,
@@ -137,6 +152,12 @@ namespace ComprasTccApp.Backend.Services
             );
         }
 
+        /// <summary>
+        /// Obtém os dados de servidor e solicitante vinculados à pessoa informada.
+        /// </summary>
+        /// <param name="pessoaId">Identificador da pessoa para busca do vínculo de servidor e solicitante.</param>
+        /// <returns>Tupla contendo as entidades de servidor e solicitante relacionadas à pessoa.</returns>
+        /// <exception cref="Exception">Lançada quando a pessoa não possui vínculo em Servidor ou Solicitante.</exception>
         public async Task<(Servidor servidor, Solicitante solicitante)> GetSolicitanteInfoAsync(
             long pessoaId
         )
@@ -160,6 +181,11 @@ namespace ComprasTccApp.Backend.Services
             return (servidor, solicitante);
         }
 
+        /// <summary>
+        /// Inativa um usuário pelo identificador, persistindo a alteração de status.
+        /// </summary>
+        /// <param name="id">Identificador do usuário a ser inativado.</param>
+        /// <returns><c>true</c> quando o usuário é encontrado e inativado; caso contrário, <c>false</c>.</returns>
         public async Task<bool> InativarUsuarioAsync(long id)
         {
             var pessoa = await _context.Pessoas.FindAsync(id);
@@ -175,6 +201,11 @@ namespace ComprasTccApp.Backend.Services
             return true;
         }
 
+        /// <summary>
+        /// Ativa um usuário pelo identificador, persistindo a alteração de status.
+        /// </summary>
+        /// <param name="id">Identificador do usuário a ser ativado.</param>
+        /// <returns><c>true</c> quando o usuário é encontrado e ativado; caso contrário, <c>false</c>.</returns>
         public async Task<bool> AtivarUsuarioAsync(long id)
         {
             var pessoa = await _context.Pessoas.FindAsync(id);

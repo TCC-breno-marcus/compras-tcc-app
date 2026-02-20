@@ -25,6 +25,12 @@ public class ConfiguracaoService : IConfiguracaoService
         _logger = logger;
     }
 
+    /// <summary>
+    /// Recupera as configurações funcionais do sistema convertendo os valores persistidos para o DTO tipado.
+    /// Aplica valores padrão quando chaves não existem ou possuem formato inválido.
+    /// </summary>
+    /// <returns>Objeto com as configurações de submissão, limites e emails de contato/notificação.</returns>
+    /// <exception cref="Exception">Propaga falhas inesperadas durante a leitura do banco de dados.</exception>
     public async Task<ConfiguracaoDto> GetConfiguracoesAsync()
     {
         var configs = await _context.Configuracoes.ToDictionaryAsync(c => c.Chave, c => c.Valor);
@@ -61,6 +67,13 @@ public class ConfiguracaoService : IConfiguracaoService
         return dto;
     }
 
+    /// <summary>
+    /// Atualiza as configurações informadas, realizando upsert por chave para cada campo preenchido no DTO.
+    /// Campos nulos ou vazios não são alterados.
+    /// </summary>
+    /// <param name="dto">Dados de atualização parcial das configurações do sistema.</param>
+    /// <returns>Uma <see cref="Task"/> que representa a conclusão da operação.</returns>
+    /// <exception cref="Exception">Propaga falhas inesperadas durante persistência no banco de dados.</exception>
     public async Task UpdateConfiguracoesAsync(UpdateConfiguracaoDto dto)
     {
         var chavesParaAtualizar = new List<string>

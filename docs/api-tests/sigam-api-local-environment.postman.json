@@ -1,0 +1,23 @@
+{
+  "id": "d2f39699-5b0f-4eaf-8f15-43af8bf08cf6",
+  "name": "SIGAM Local",
+  "values": [
+    { "key": "baseUrl", "value": "http://localhost:5000", "enabled": true },
+    { "key": "accessToken", "value": "", "enabled": true },
+    { "key": "adminEmail", "value": "admin@sigam.local", "enabled": true },
+    { "key": "adminPassword", "value": "123456", "enabled": true },
+    { "key": "userEmail", "value": "solicitante@sigam.local", "enabled": true },
+    { "key": "userPassword", "value": "123456", "enabled": true },
+    { "key": "categoriaId", "value": "1", "enabled": true },
+    { "key": "itemId", "value": "1", "enabled": true },
+    { "key": "solicitacaoId", "value": "1", "enabled": true },
+    { "key": "usuarioId", "value": "2", "enabled": true },
+    { "key": "departamentoSigla", "value": "DCOMP", "enabled": true },
+    { "key": "centroSigla", "value": "CCET", "enabled": true },
+    { "key": "statusId", "value": "1", "enabled": true },
+    { "key": "destinatarioTesteEmail", "value": "contato@sigam.local", "enabled": true }
+  ],
+  "_postman_variable_scope": "environment",
+  "_postman_exported_at": "2026-02-20T00:00:00.000Z",
+  "_postman_exported_using": "Codex GPT-5"
+}
