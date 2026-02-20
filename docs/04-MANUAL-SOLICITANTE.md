@@ -33,6 +33,7 @@ Menu do avatar:
 - `Sair`
 
 ### 1.3 Portal de Transparência (acesso público e interno)
+<img width="1906" height="902" alt="image" src="https://github.com/user-attachments/assets/1887b644-915d-4e81-b59f-277f38c9f362" />
 
 Rota: `/transparencia`
 
