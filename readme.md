@@ -98,6 +98,7 @@ Guia detalhado de contribuição, testes e arquitetura: `CONTRIBUTING.md`.
 - [01 - Setup e Execução Local](./docs/01-SETUP.md)
 - [02 - Gerenciamento do Banco de Dados](./docs/02-DATABASE.md)
 - [03 - Documentação de Implantação (DevOps)](./docs/03-IMPLANTACAO-DEVOPS.md)
+- [06 - Expansão para Outros Centros (Uma Instância por Centro)](./docs/06-EXPANSAO-OUTROS-CENTROS.md)
 - [Frontend README](./frontend/README.md)
 
 ### Uso do sistema
