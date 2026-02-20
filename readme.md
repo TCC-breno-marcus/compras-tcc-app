@@ -25,6 +25,7 @@ A proposta é substituir fluxos manuais em planilhas por uma plataforma centrali
 - Fluxo de análise, ajustes e mudança de status de solicitações.
 - Gestão de catálogo e histórico de itens.
 - Dashboard gerencial e relatórios.
+- Portal de transparência de dados públicos com filtros e exportação (CSV/JSON).
 
 ## Stack Tecnológica
 
