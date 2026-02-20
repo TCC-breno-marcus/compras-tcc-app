@@ -307,6 +307,28 @@ onMounted(() => {
               </p>
             </AccordionTab>
 
+            <AccordionTab header="Posso ter uma solicitação Geral e Patrimonial em andamento ao mesmo tempo?">
+              <p>
+                Não. O sistema mantém apenas <strong>uma solicitação em andamento</strong> no
+                carrinho por vez.
+              </p>
+            </AccordionTab>
+
+            <AccordionTab header="O que acontece se eu começar uma solicitação de outro tipo?">
+              <p>
+                Se você iniciou uma solicitação <strong>Geral</strong> e abrir a criação
+                <strong>Patrimonial</strong> (ou o contrário), o sistema pede confirmação para
+                descartar a solicitação atual antes de continuar.
+              </p>
+            </AccordionTab>
+
+            <AccordionTab header="E se eu sair da tela com alterações não salvas?">
+              <p>
+                O sistema exibe um alerta para evitar perda de dados e permite decidir se deseja
+                continuar ou descartar as alterações.
+              </p>
+            </AccordionTab>
+
             <AccordionTab header="Quais são as regras de justificativa da solicitação?">
               <p>
                 Em solicitação <strong>Geral</strong>, a <strong>Justificativa Geral</strong> é
@@ -319,6 +341,21 @@ onMounted(() => {
               <p>
                 Sim. O gestor configura limites como quantidade máxima por item e quantidade máxima
                 de itens diferentes por solicitação.
+              </p>
+            </AccordionTab>
+
+            <AccordionTab header="Quais status permitem que eu edite a solicitação?">
+              <p>
+                A edição pelo solicitante é permitida, em regra, quando a solicitação está em
+                <strong>Pendente</strong> ou <strong>Aguardando Ajustes</strong> e dentro do prazo
+                definido.
+              </p>
+            </AccordionTab>
+
+            <AccordionTab header="Por que um item não pode ser adicionado ou ter quantidade aumentada?">
+              <p>
+                Isso ocorre quando a solicitação atinge os limites configurados de
+                <strong>itens diferentes</strong> ou de <strong>quantidade máxima por item</strong>.
               </p>
             </AccordionTab>
           </Accordion>
