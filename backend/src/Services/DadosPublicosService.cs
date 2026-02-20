@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using System.Text;
 using ComprasTccApp.Backend.Domain;
 using ComprasTccApp.Models.Entities.Solicitacoes;
 using Database;
@@ -120,6 +121,130 @@ namespace Services
                 TotalItensSolicitados = totalItensSolicitados,
                 ValorTotalSolicitado = valorTotalSolicitado,
             };
+        }
+
+        /// <summary>
+        /// Exporta as solicitações públicas filtradas em CSV, mantendo os dados sensíveis mascarados.
+        /// </summary>
+        /// <param name="dataInicio">Data inicial de criação da solicitação (inclusive).</param>
+        /// <param name="dataFim">Data final de criação da solicitação (inclusive).</param>
+        /// <param name="statusId">Filtro por identificador do status.</param>
+        /// <param name="statusNome">Filtro parcial por nome do status.</param>
+        /// <param name="siglaDepartamento">Filtro por sigla do departamento solicitante.</param>
+        /// <param name="categoriaNome">Filtro parcial por nome da categoria do item.</param>
+        /// <param name="itemNome">Filtro parcial por nome do item solicitado.</param>
+        /// <param name="catMat">Filtro parcial por CATMAT do item.</param>
+        /// <param name="itemsType">Tipo da solicitação: geral ou patrimonial.</param>
+        /// <param name="valorMinimo">Valor mínimo total da solicitação.</param>
+        /// <param name="valorMaximo">Valor máximo total da solicitação.</param>
+        /// <param name="somenteSolicitacoesAtivas">Se true, considera apenas status ativos de negócio.</param>
+        /// <param name="pageNumber">Número da página (base 1).</param>
+        /// <param name="pageSize">Tamanho da página.</param>
+        /// <returns>Arquivo CSV serializado em bytes.</returns>
+        public async Task<byte[]> ExportarSolicitacoesCsvAsync(
+            DateTime? dataInicio,
+            DateTime? dataFim,
+            int? statusId,
+            string? statusNome,
+            string? siglaDepartamento,
+            string? categoriaNome,
+            string? itemNome,
+            string? catMat,
+            string? itemsType,
+            decimal? valorMinimo,
+            decimal? valorMaximo,
+            bool? somenteSolicitacoesAtivas,
+            int pageNumber,
+            int pageSize
+        )
+        {
+            var resultado = await ConsultarSolicitacoesAsync(
+                dataInicio,
+                dataFim,
+                statusId,
+                statusNome,
+                siglaDepartamento,
+                categoriaNome,
+                itemNome,
+                catMat,
+                itemsType,
+                valorMinimo,
+                valorMaximo,
+                somenteSolicitacoesAtivas,
+                pageNumber,
+                pageSize
+            );
+
+            var sb = new StringBuilder();
+            sb.AppendLine(
+                "SolicitacaoId,ExternalId,DataCriacao,TipoSolicitacao,StatusId,StatusNome,SolicitanteNomeMascarado,SolicitanteEmailMascarado,SolicitanteTelefoneMascarado,SolicitanteCpfMascarado,DepartamentoNome,DepartamentoSigla,ValorTotalSolicitacao,ItemId,ItemNome,CatMat,CategoriaNome,Quantidade,ValorUnitario,ValorTotal,Justificativa"
+            );
+
+            foreach (var solicitacao in resultado.Data)
+            {
+                if (solicitacao.Itens.Count == 0)
+                {
+                    sb.AppendLine(
+                        string.Join(
+                            ",",
+                            CsvEscapar(solicitacao.Id),
+                            CsvEscapar(solicitacao.ExternalId),
+                            CsvEscapar(solicitacao.DataCriacao.ToString("yyyy-MM-ddTHH:mm:ss")),
+                            CsvEscapar(solicitacao.TipoSolicitacao),
+                            CsvEscapar(solicitacao.StatusId),
+                            CsvEscapar(solicitacao.StatusNome),
+                            CsvEscapar(solicitacao.SolicitanteNomeMascarado),
+                            CsvEscapar(solicitacao.SolicitanteEmailMascarado),
+                            CsvEscapar(solicitacao.SolicitanteTelefoneMascarado),
+                            CsvEscapar(solicitacao.SolicitanteCpfMascarado),
+                            CsvEscapar(solicitacao.DepartamentoNome),
+                            CsvEscapar(solicitacao.DepartamentoSigla),
+                            CsvEscapar(solicitacao.ValorTotalSolicitacao),
+                            CsvEscapar(string.Empty),
+                            CsvEscapar(string.Empty),
+                            CsvEscapar(string.Empty),
+                            CsvEscapar(string.Empty),
+                            CsvEscapar(string.Empty),
+                            CsvEscapar(string.Empty),
+                            CsvEscapar(string.Empty),
+                            CsvEscapar(string.Empty)
+                        )
+                    );
+                    continue;
+                }
+
+                foreach (var item in solicitacao.Itens)
+                {
+                    sb.AppendLine(
+                        string.Join(
+                            ",",
+                            CsvEscapar(solicitacao.Id),
+                            CsvEscapar(solicitacao.ExternalId),
+                            CsvEscapar(solicitacao.DataCriacao.ToString("yyyy-MM-ddTHH:mm:ss")),
+                            CsvEscapar(solicitacao.TipoSolicitacao),
+                            CsvEscapar(solicitacao.StatusId),
+                            CsvEscapar(solicitacao.StatusNome),
+                            CsvEscapar(solicitacao.SolicitanteNomeMascarado),
+                            CsvEscapar(solicitacao.SolicitanteEmailMascarado),
+                            CsvEscapar(solicitacao.SolicitanteTelefoneMascarado),
+                            CsvEscapar(solicitacao.SolicitanteCpfMascarado),
+                            CsvEscapar(solicitacao.DepartamentoNome),
+                            CsvEscapar(solicitacao.DepartamentoSigla),
+                            CsvEscapar(solicitacao.ValorTotalSolicitacao),
+                            CsvEscapar(item.ItemId),
+                            CsvEscapar(item.ItemNome),
+                            CsvEscapar(item.CatMat),
+                            CsvEscapar(item.CategoriaNome),
+                            CsvEscapar(item.Quantidade),
+                            CsvEscapar(item.ValorUnitario),
+                            CsvEscapar(item.ValorTotal),
+                            CsvEscapar(item.Justificativa)
+                        )
+                    );
+                }
+            }
+
+            return Encoding.UTF8.GetBytes(sb.ToString());
         }
 
         private static IQueryable<Solicitacao> AplicarFiltros(
@@ -320,6 +445,13 @@ namespace Services
             }
 
             return $"***.***.***-{digitos[^2..]}";
+        }
+
+        private static string CsvEscapar(object? valor)
+        {
+            var texto = valor?.ToString() ?? string.Empty;
+            var textoEscapado = texto.Replace("\"", "\"\"");
+            return $"\"{textoEscapado}\"";
         }
     }
 }
