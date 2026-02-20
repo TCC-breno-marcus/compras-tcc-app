@@ -1,27 +1,24 @@
 name: Deploy TCC - Produção
 
 on:
-  workflow_run:
-    workflows: ["CI - Testes"]
-    types: [completed]
+  push:
+    branches: ["main"]
+    paths:
+      - "backend/**"
+      - "frontend/**"
+      - "docker-compose.prod.yml"
+      - ".github/workflows/deploy.yml"
 
 jobs:
   build-and-push:
-    if: >-
-      ${{
-        github.event.workflow_run.conclusion == 'success' &&
-        github.event.workflow_run.head_branch == 'main'
-      }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
 
     steps:
-      - name: Checkout do código (commit validado no CI)
+      - name: Checkout do código da main
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.workflow_run.head_sha }}
 
       - name: Login no GitHub Container Registry
         uses: docker/login-action@v3

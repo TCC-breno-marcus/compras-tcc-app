@@ -3,11 +3,30 @@ name: CI - Testes
 on:
   pull_request:
     branches: ["main"]
-  push:
-    branches: ["main"]
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      run_tests: ${{ steps.filter.outputs.run_tests }}
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Detectar mudanças relevantes para testes
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            run_tests:
+              - "backend/**"
+              - "frontend/**"
+              - "docker-compose.yml"
+              - ".github/workflows/ci.yml"
+
   tests:
+    needs: changes
+    if: needs.changes.outputs.run_tests == 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -212,3 +231,12 @@ jobs:
       - name: Encerrar stack de E2E
         if: always()
         run: docker compose down -v
+
+  no-relevant-changes:
+    needs: changes
+    if: needs.changes.outputs.run_tests != 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Nenhuma mudança que exija testes
+        run: echo "Somente arquivos fora de frontend/backend/infra de testes foram alterados."
