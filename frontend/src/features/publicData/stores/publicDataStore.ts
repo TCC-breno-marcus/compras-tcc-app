@@ -22,6 +22,10 @@ export const usePublicDataStore = defineStore('publicData', () => {
 
   const hasNextPage = computed(() => pageNumber.value < totalPages.value)
 
+  /**
+   * Busca solicitações públicas e hidrata dados de listagem, paginação e KPIs.
+   * @param filters Filtros aplicados na consulta.
+   */
   const fetchPublicSolicitations = async (filters: PublicSolicitationFilters) => {
     isLoading.value = true
     error.value = null
@@ -46,6 +50,12 @@ export const usePublicDataStore = defineStore('publicData', () => {
     }
   }
 
+  /**
+   * Exporta solicitações públicas no formato solicitado.
+   * @param filters Filtros aplicados na exportação.
+   * @param format Formato de exportação (`csv` ou `json`).
+   * @returns Blob de exportação.
+   */
   const exportPublicSolicitations = async (
     filters: PublicSolicitationFilters,
     format: 'csv' | 'json',

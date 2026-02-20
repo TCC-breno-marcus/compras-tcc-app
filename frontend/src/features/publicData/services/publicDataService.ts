@@ -32,6 +32,11 @@ const buildParams = (filters?: PublicSolicitationFilters, format?: PublicExportF
 }
 
 export const publicDataService: IPublicDataService = {
+  /**
+   * Consulta solicitações públicas com filtros opcionais e retorno paginado.
+   * @param filters Conjunto de filtros aceitos pela API pública.
+   * @returns Resultado paginado da consulta pública.
+   */
   async getSolicitations(filters) {
     try {
       const response = await apiClient.get<PublicSolicitationQueryResult>(
@@ -48,6 +53,14 @@ export const publicDataService: IPublicDataService = {
     }
   },
 
+  /**
+   * Exporta dados públicos conforme o formato solicitado.
+   * Para CSV utiliza o arquivo retornado pela API.
+   * Para JSON serializa o payload de consulta em um Blob baixável.
+   * @param filters Filtros aplicados na exportação.
+   * @param format Formato de saída (`csv` ou `json`).
+   * @returns Blob pronto para download.
+   */
   async exportSolicitations(filters, format) {
     try {
       if (format === 'csv') {

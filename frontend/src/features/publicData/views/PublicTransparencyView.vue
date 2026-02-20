@@ -103,6 +103,10 @@ const toIsoEndDate = (date: Date) => {
   return end.toISOString()
 }
 
+/**
+ * Normaliza o status vindo da query para evitar filtros inválidos.
+ * Aceita apenas IDs numéricos; valores textuais como "Todos os status" são ignorados.
+ */
 const parseStatusId = (value: unknown): string => {
   if (typeof value !== 'string') {
     return ''
@@ -117,6 +121,10 @@ const parseStatusId = (value: unknown): string => {
   return /^\d+$/.test(normalized) ? normalized : ''
 }
 
+/**
+ * Converte valores numéricos de query string para número.
+ * Retorna `null` quando o valor for inválido ou negativo.
+ */
 const parseQueryNumber = (value: unknown): number | null => {
   if (typeof value !== 'string' || value.trim() === '') {
     return null
@@ -131,6 +139,9 @@ const parseQueryNumber = (value: unknown): number | null => {
   return parsed
 }
 
+/**
+ * Mapeia os parâmetros da URL para o estado de filtros da tela.
+ */
 const normalizeQuery = (query: Record<string, any>): PublicSolicitationFilters => {
   return {
     dataInicio: typeof query.dataInicio === 'string' ? query.dataInicio : '',
@@ -155,6 +166,9 @@ const normalizeQuery = (query: Record<string, any>): PublicSolicitationFilters =
   }
 }
 
+/**
+ * Aplica filtros na URL e dispara nova busca via watcher da rota.
+ */
 const applyFilters = () => {
   valueRangeError.value = ''
 
@@ -193,6 +207,9 @@ const applyFilters = () => {
   router.push({ query })
 }
 
+/**
+ * Limpa filtros e reinicia a consulta com valores padrão.
+ */
 const clearFilters = () => {
   startDate.value = null
   endDate.value = null
@@ -206,6 +223,9 @@ const clearFilters = () => {
   })
 }
 
+/**
+ * Monta o payload final usado para exportação de dados.
+ */
 const buildFiltersForRequest = () => {
   return {
     ...filters,
@@ -214,6 +234,9 @@ const buildFiltersForRequest = () => {
   }
 }
 
+/**
+ * Exporta os dados públicos no formato solicitado e exibe feedback ao usuário.
+ */
 const exportData = async (format: 'csv' | 'json' = 'csv') => {
   try {
     const blob = await publicDataStore.exportPublicSolicitations(buildFiltersForRequest(), format)
