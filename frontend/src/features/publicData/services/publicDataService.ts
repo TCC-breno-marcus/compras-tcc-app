@@ -1,17 +1,19 @@
 import { apiClient } from '@/services/apiClient'
 import type { PublicSolicitationFilters, PublicSolicitationQueryResult } from '@/features/publicData/types'
 
+type PublicExportFormat = 'csv' | 'json'
+
 interface IPublicDataService {
   getSolicitations(filters?: PublicSolicitationFilters): Promise<PublicSolicitationQueryResult>
-  exportSolicitationsCsv(filters?: PublicSolicitationFilters): Promise<Blob>
+  exportSolicitations(filters: PublicSolicitationFilters, format: PublicExportFormat): Promise<Blob>
 }
 
-const buildParams = (filters?: PublicSolicitationFilters, forceCsv = false) => {
+const buildParams = (filters?: PublicSolicitationFilters, format?: PublicExportFormat) => {
   const params = new URLSearchParams()
 
   if (!filters) {
-    if (forceCsv) {
-      params.set('formatoArquivo', 'csv')
+    if (format) {
+      params.set('formatoArquivo', format)
     }
     return params
   }
@@ -22,8 +24,8 @@ const buildParams = (filters?: PublicSolicitationFilters, forceCsv = false) => {
     }
   })
 
-  if (forceCsv) {
-    params.set('formatoArquivo', 'csv')
+  if (format) {
+    params.set('formatoArquivo', format)
   }
 
   return params
@@ -46,17 +48,30 @@ export const publicDataService: IPublicDataService = {
     }
   },
 
-  async exportSolicitationsCsv(filters) {
+  async exportSolicitations(filters, format) {
     try {
-      const response = await apiClient.get<Blob>('/dados-publicos/solicitacoes', {
-        params: buildParams(filters, true),
-        responseType: 'blob',
-      })
+      if (format === 'csv') {
+        const response = await apiClient.get<Blob>('/dados-publicos/solicitacoes', {
+          params: buildParams(filters, 'csv'),
+          responseType: 'blob',
+        })
 
-      return response.data
+        return response.data
+      }
+
+      const response = await apiClient.get<PublicSolicitationQueryResult>(
+        '/dados-publicos/solicitacoes',
+        {
+          params: buildParams(filters, 'json'),
+        },
+      )
+
+      return new Blob([JSON.stringify(response.data, null, 2)], {
+        type: 'application/json;charset=utf-8',
+      })
     } catch (error) {
-      console.error('Erro ao exportar solicitações públicas em CSV:', error)
-      throw new Error('Não foi possível exportar os dados públicos em CSV.')
+      console.error(`Erro ao exportar solicitações públicas em ${format.toUpperCase()}:`, error)
+      throw new Error(`Não foi possível exportar os dados públicos em ${format.toUpperCase()}.`)
     }
   },
 }

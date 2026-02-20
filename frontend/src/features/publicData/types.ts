@@ -39,14 +39,15 @@ export interface PublicSolicitationQueryResult {
 export interface PublicSolicitationFilters {
   dataInicio?: string
   dataFim?: string
+  statusId?: string
   statusNome?: string
   siglaDepartamento?: string
   categoriaNome?: string
   itemNome?: string
   catMat?: string
   itemsType?: 'geral' | 'patrimonial' | ''
-  valorMinimo?: string
-  valorMaximo?: string
+  valorMinimo?: number | null
+  valorMaximo?: number | null
   somenteSolicitacoesAtivas?: 'true' | 'false' | ''
   pageNumber?: string
   pageSize?: string

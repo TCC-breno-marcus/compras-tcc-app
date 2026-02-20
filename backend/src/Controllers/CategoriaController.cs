@@ -29,7 +29,7 @@ namespace Controllers
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<CategoriaDto>), 200)]
         [ProducesResponseType(500)]
-        [Authorize(Roles = "Admin,Gestor,Solicitante")]
+        [AllowAnonymous]
         public async Task<IActionResult> Get(
             [FromQuery] List<long> id,
             [FromQuery] List<string> nome,

@@ -130,6 +130,7 @@ const handleLogin = async () => {
             severity="secondary"
             text
             class="w-full"
+            size="small"
             @click="router.push('/transparencia')"
           />
           <p class="text-center text-color-secondary">

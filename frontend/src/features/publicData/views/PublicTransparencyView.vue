@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useToast } from 'primevue/usetoast'
@@ -9,10 +9,12 @@ import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import DatePicker from 'primevue/datepicker'
 import FloatLabel from 'primevue/floatlabel'
+import InputNumber from 'primevue/inputnumber'
 import InputText from 'primevue/inputtext'
 import Message from 'primevue/message'
 import ProgressSpinner from 'primevue/progressspinner'
 import Select from 'primevue/select'
+import SplitButton from 'primevue/splitbutton'
 import Tag from 'primevue/tag'
 import Logo from '@/components/ui/Logo.vue'
 import CustomPaginator from '@/components/ui/CustomPaginator.vue'
@@ -21,6 +23,9 @@ import { formatDate } from '@/utils/dateUtils'
 import { useAuthStore } from '@/features/autentication/stores/authStore'
 import { usePublicDataStore } from '@/features/publicData/stores/publicDataStore'
 import type { PublicSolicitationFilters } from '@/features/publicData/types'
+import { useCategoriaStore } from '@/features/catalogo/stores/categoriaStore'
+import { useUnitOrganizationalStore } from '@/features/unitOrganizational/stores/unitOrganizationalStore'
+import { SOLICITATION_STATUS } from '@/features/solicitations/constants'
 
 const router = useRouter()
 const route = useRoute()
@@ -28,6 +33,8 @@ const toast = useToast()
 
 const authStore = useAuthStore()
 const publicDataStore = usePublicDataStore()
+const categoriaStore = useCategoriaStore()
+const unitOrganizationalStore = useUnitOrganizationalStore()
 
 const {
   solicitations,
@@ -41,6 +48,8 @@ const {
   isExporting,
   error,
 } = storeToRefs(publicDataStore)
+const { categorias } = storeToRefs(categoriaStore)
+const { departments } = storeToRefs(unitOrganizationalStore)
 
 const itemTypeOptions = [
   { label: 'Todos os tipos', value: '' },
@@ -54,17 +63,25 @@ const activeOptions = [
   { label: 'Incluir inativas', value: 'false' },
 ]
 
+const statusOptions = [
+  { label: 'Todos os status', value: '' },
+  ...SOLICITATION_STATUS.map((status) => ({
+    label: status.nome,
+    value: String(status.id),
+  })),
+]
+
 const filters = reactive<PublicSolicitationFilters>({
   dataInicio: '',
   dataFim: '',
-  statusNome: '',
+  statusId: '',
   siglaDepartamento: '',
   categoriaNome: '',
   itemNome: '',
   catMat: '',
   itemsType: '',
-  valorMinimo: '',
-  valorMaximo: '',
+  valorMinimo: null,
+  valorMaximo: null,
   somenteSolicitacoesAtivas: 'true',
   pageNumber: '1',
   pageSize: '25',
@@ -72,6 +89,7 @@ const filters = reactive<PublicSolicitationFilters>({
 
 const startDate = ref<Date | null>(null)
 const endDate = ref<Date | null>(null)
+const valueRangeError = ref('')
 
 const toIsoStartDate = (date: Date) => {
   const start = new Date(date)
@@ -85,11 +103,39 @@ const toIsoEndDate = (date: Date) => {
   return end.toISOString()
 }
 
+const parseStatusId = (value: unknown): string => {
+  if (typeof value !== 'string') {
+    return ''
+  }
+
+  const normalized = value.trim()
+
+  if (normalized === '' || normalized.toLowerCase() === 'todos os status') {
+    return ''
+  }
+
+  return /^\d+$/.test(normalized) ? normalized : ''
+}
+
+const parseQueryNumber = (value: unknown): number | null => {
+  if (typeof value !== 'string' || value.trim() === '') {
+    return null
+  }
+
+  const parsed = Number(value)
+
+  if (Number.isNaN(parsed) || parsed < 0) {
+    return null
+  }
+
+  return parsed
+}
+
 const normalizeQuery = (query: Record<string, any>): PublicSolicitationFilters => {
   return {
     dataInicio: typeof query.dataInicio === 'string' ? query.dataInicio : '',
     dataFim: typeof query.dataFim === 'string' ? query.dataFim : '',
-    statusNome: typeof query.statusNome === 'string' ? query.statusNome : '',
+    statusId: parseStatusId(query.statusId),
     siglaDepartamento: typeof query.siglaDepartamento === 'string' ? query.siglaDepartamento : '',
     categoriaNome: typeof query.categoriaNome === 'string' ? query.categoriaNome : '',
     itemNome: typeof query.itemNome === 'string' ? query.itemNome : '',
@@ -98,8 +144,8 @@ const normalizeQuery = (query: Record<string, any>): PublicSolicitationFilters =
       query.itemsType === 'geral' || query.itemsType === 'patrimonial'
         ? query.itemsType
         : '',
-    valorMinimo: typeof query.valorMinimo === 'string' ? query.valorMinimo : '',
-    valorMaximo: typeof query.valorMaximo === 'string' ? query.valorMaximo : '',
+    valorMinimo: parseQueryNumber(query.valorMinimo),
+    valorMaximo: parseQueryNumber(query.valorMaximo),
     somenteSolicitacoesAtivas:
       query.somenteSolicitacoesAtivas === 'false' || query.somenteSolicitacoesAtivas === 'true'
         ? query.somenteSolicitacoesAtivas
@@ -110,6 +156,18 @@ const normalizeQuery = (query: Record<string, any>): PublicSolicitationFilters =
 }
 
 const applyFilters = () => {
+  valueRangeError.value = ''
+
+  const hasMin = filters.valorMinimo !== null && filters.valorMinimo !== undefined
+  const hasMax = filters.valorMaximo !== null && filters.valorMaximo !== undefined
+  const minValue = hasMin ? Number(filters.valorMinimo) : null
+  const maxValue = hasMax ? Number(filters.valorMaximo) : null
+
+  if (hasMin && hasMax && minValue! > maxValue!) {
+    valueRangeError.value = 'O valor mínimo não pode ser maior que o valor máximo.'
+    return
+  }
+
   const query: Record<string, string> = {}
 
   if (startDate.value) {
@@ -119,14 +177,14 @@ const applyFilters = () => {
     query.dataFim = toIsoEndDate(endDate.value)
   }
 
-  if (filters.statusNome) query.statusNome = filters.statusNome
+  if (parseStatusId(filters.statusId)) query.statusId = String(filters.statusId)
   if (filters.siglaDepartamento) query.siglaDepartamento = filters.siglaDepartamento
   if (filters.categoriaNome) query.categoriaNome = filters.categoriaNome
   if (filters.itemNome) query.itemNome = filters.itemNome
   if (filters.catMat) query.catMat = filters.catMat
   if (filters.itemsType) query.itemsType = filters.itemsType
-  if (filters.valorMinimo) query.valorMinimo = filters.valorMinimo
-  if (filters.valorMaximo) query.valorMaximo = filters.valorMaximo
+  if (hasMin) query.valorMinimo = String(filters.valorMinimo)
+  if (hasMax) query.valorMaximo = String(filters.valorMaximo)
 
   query.somenteSolicitacoesAtivas = filters.somenteSolicitacoesAtivas || 'true'
   query.pageNumber = '1'
@@ -138,6 +196,7 @@ const applyFilters = () => {
 const clearFilters = () => {
   startDate.value = null
   endDate.value = null
+  valueRangeError.value = ''
   router.push({
     query: {
       somenteSolicitacoesAtivas: 'true',
@@ -155,13 +214,13 @@ const buildFiltersForRequest = () => {
   }
 }
 
-const exportCsv = async () => {
+const exportData = async (format: 'csv' | 'json' = 'csv') => {
   try {
-    const blob = await publicDataStore.exportPublicSolicitationsCsv(buildFiltersForRequest())
+    const blob = await publicDataStore.exportPublicSolicitations(buildFiltersForRequest(), format)
     const url = window.URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
-    link.download = `dados_publicos_solicitacoes_${new Date().toISOString().slice(0, 10)}.csv`
+    link.download = `dados_publicos_solicitacoes_${new Date().toISOString().slice(0, 10)}.${format}`
 
     document.body.appendChild(link)
     link.click()
@@ -171,18 +230,31 @@ const exportCsv = async () => {
     toast.add({
       severity: 'success',
       summary: 'Sucesso',
-      detail: 'Arquivo CSV exportado com sucesso.',
+      detail: `Arquivo ${format.toUpperCase()} exportado com sucesso.`,
       life: 3000,
     })
   } catch {
     toast.add({
       severity: 'error',
       summary: 'Erro',
-      detail: 'Não foi possível exportar o CSV de dados públicos.',
+      detail: `Não foi possível exportar os dados públicos em ${format.toUpperCase()}.`,
       life: 3000,
     })
   }
 }
+
+const exportOptions = ref([
+  {
+    label: 'CSV (.csv)',
+    icon: 'pi pi-file',
+    command: () => exportData('csv'),
+  },
+  {
+    label: 'JSON (.json)',
+    icon: 'pi pi-code',
+    command: () => exportData('json'),
+  },
+])
 
 const goToLogin = () => {
   router.push('/login')
@@ -191,6 +263,16 @@ const goToLogin = () => {
 const goToSystemHome = () => {
   router.push('/')
 }
+
+onMounted(async () => {
+  if (!departments.value.length) {
+    await unitOrganizationalStore.fetchDepartments()
+  }
+
+  if (!categorias.value.length) {
+    await categoriaStore.fetch({})
+  }
+})
 
 watch(
   () => route.query,
@@ -209,14 +291,14 @@ watch(
 
 const hasFiltersApplied = computed(() => {
   return !!(
-    filters.statusNome ||
+    filters.statusId ||
     filters.siglaDepartamento ||
     filters.categoriaNome ||
     filters.itemNome ||
     filters.catMat ||
     filters.itemsType ||
-    filters.valorMinimo ||
-    filters.valorMaximo ||
+    filters.valorMinimo !== null ||
+    filters.valorMaximo !== null ||
     startDate.value ||
     endDate.value
   )
@@ -265,14 +347,14 @@ const statusSeverity = (status: string) => {
         <template #content>
           <div class="grid">
             <div class="col-12 md:col-6 lg:col-3">
-              <FloatLabel variant="on" class="w-full">
+              <FloatLabel variant="on" class="w-full md:w-10rem">
                 <DatePicker
                   v-model="startDate"
                   inputId="data-inicio"
                   showIcon
                   iconDisplay="input"
                   dateFormat="dd/mm/yy"
-                  class="w-full"
+                  class="w-full md:w-10rem"
                   size="small"
                 />
                 <label for="data-inicio">Data início</label>
@@ -280,14 +362,14 @@ const statusSeverity = (status: string) => {
             </div>
 
             <div class="col-12 md:col-6 lg:col-3">
-              <FloatLabel variant="on" class="w-full">
+              <FloatLabel variant="on" class="w-full md:w-10rem">
                 <DatePicker
                   v-model="endDate"
                   inputId="data-fim"
                   showIcon
                   iconDisplay="input"
                   dateFormat="dd/mm/yy"
-                  class="w-full"
+                  class="w-full md:w-10rem"
                   size="small"
                 />
                 <label for="data-fim">Data fim</label>
@@ -295,54 +377,78 @@ const statusSeverity = (status: string) => {
             </div>
 
             <div class="col-12 md:col-6 lg:col-3">
-              <FloatLabel variant="on" class="w-full">
-                <InputText v-model="filters.statusNome" inputId="status" class="w-full" size="small" />
+              <FloatLabel variant="on" class="w-full md:w-14rem">
+                <Select
+                  v-model="filters.statusId"
+                  :options="statusOptions"
+                  optionLabel="label"
+                  optionValue="value"
+                  inputId="status"
+                  class="w-full md:w-14rem"
+                  :showClear="true"
+                  size="small"
+                />
                 <label for="status">Status</label>
               </FloatLabel>
             </div>
 
             <div class="col-12 md:col-6 lg:col-3">
-              <FloatLabel variant="on" class="w-full">
-                <InputText
+              <FloatLabel variant="on" class="w-full md:w-26rem">
+                <Select
                   v-model="filters.siglaDepartamento"
+                  :options="departments"
+                  optionLabel="nome"
+                  optionValue="sigla"
                   inputId="sigla-departamento"
-                  class="w-full"
+                  class="w-full md:w-26rem"
+                  :showClear="true"
+                  filter
                   size="small"
                 />
-                <label for="sigla-departamento">Sigla do departamento</label>
+                <label for="sigla-departamento">Departamento</label>
               </FloatLabel>
             </div>
 
             <div class="col-12 md:col-6 lg:col-3">
-              <FloatLabel variant="on" class="w-full">
-                <InputText v-model="filters.itemNome" inputId="item" class="w-full" size="small" />
+              <FloatLabel variant="on" class="w-full md:w-18rem">
+                <InputText v-model="filters.itemNome" inputId="item" class="w-full md:w-18rem" size="small" />
                 <label for="item">Item</label>
               </FloatLabel>
             </div>
 
             <div class="col-12 md:col-6 lg:col-3">
-              <FloatLabel variant="on" class="w-full">
-                <InputText v-model="filters.categoriaNome" inputId="categoria" class="w-full" size="small" />
+              <FloatLabel variant="on" class="w-full md:w-16rem">
+                <Select
+                  v-model="filters.categoriaNome"
+                  :options="categorias"
+                  optionLabel="nome"
+                  optionValue="nome"
+                  inputId="categoria"
+                  class="w-full md:w-16rem"
+                  :showClear="true"
+                  filter
+                  size="small"
+                />
                 <label for="categoria">Categoria</label>
               </FloatLabel>
             </div>
 
             <div class="col-12 md:col-6 lg:col-2">
-              <FloatLabel variant="on" class="w-full">
-                <InputText v-model="filters.catMat" inputId="catmat" class="w-full" size="small" />
+              <FloatLabel variant="on" class="w-full md:w-10rem">
+                <InputText v-model="filters.catMat" inputId="catmat" class="w-full md:w-10rem" size="small" />
                 <label for="catmat">CATMAT</label>
               </FloatLabel>
             </div>
 
             <div class="col-12 md:col-6 lg:col-2">
-              <FloatLabel variant="on" class="w-full">
+              <FloatLabel variant="on" class="w-full md:w-12rem">
                 <Select
                   v-model="filters.itemsType"
                   :options="itemTypeOptions"
                   optionLabel="label"
                   optionValue="value"
                   inputId="tipo-item"
-                  class="w-full"
+                  class="w-full md:w-12rem"
                   size="small"
                 />
                 <label for="tipo-item">Tipo</label>
@@ -350,11 +456,15 @@ const statusSeverity = (status: string) => {
             </div>
 
             <div class="col-12 md:col-6 lg:col-2">
-              <FloatLabel variant="on" class="w-full">
-                <InputText
+              <FloatLabel variant="on" class="w-full md:w-10rem">
+                <InputNumber
                   v-model="filters.valorMinimo"
                   inputId="valor-min"
-                  class="w-full"
+                  mode="currency"
+                  currency="BRL"
+                  locale="pt-BR"
+                  fluid
+                  :min="0"
                   size="small"
                 />
                 <label for="valor-min">Valor mínimo</label>
@@ -362,11 +472,15 @@ const statusSeverity = (status: string) => {
             </div>
 
             <div class="col-12 md:col-6 lg:col-2">
-              <FloatLabel variant="on" class="w-full">
-                <InputText
+              <FloatLabel variant="on" class="w-full md:w-10rem">
+                <InputNumber
                   v-model="filters.valorMaximo"
                   inputId="valor-max"
-                  class="w-full"
+                  mode="currency"
+                  currency="BRL"
+                  locale="pt-BR"
+                  fluid
+                  :min="0"
                   size="small"
                 />
                 <label for="valor-max">Valor máximo</label>
@@ -374,14 +488,14 @@ const statusSeverity = (status: string) => {
             </div>
 
             <div class="col-12 md:col-6 lg:col-3">
-              <FloatLabel variant="on" class="w-full">
+              <FloatLabel variant="on" class="w-full md:w-16rem">
                 <Select
                   v-model="filters.somenteSolicitacoesAtivas"
                   :options="activeOptions"
                   optionLabel="label"
                   optionValue="value"
                   inputId="status-ativo"
-                  class="w-full"
+                  class="w-full md:w-16rem"
                   size="small"
                 />
                 <label for="status-ativo">Situação da solicitação</label>
@@ -389,6 +503,9 @@ const statusSeverity = (status: string) => {
             </div>
 
             <div class="col-12">
+              <Message v-if="valueRangeError" severity="warn" class="mb-2">
+                {{ valueRangeError }}
+              </Message>
               <div class="flex flex-column sm:flex-row gap-2 sm:justify-content-end">
                 <Button
                   label="Limpar"
@@ -396,14 +513,17 @@ const statusSeverity = (status: string) => {
                   severity="secondary"
                   text
                   @click="clearFilters"
+                  size="small"
                 />
-                <Button label="Buscar" icon="pi pi-search" @click="applyFilters" />
-                <Button
-                  label="Exportar CSV"
+                <Button label="Buscar" icon="pi pi-search" @click="applyFilters" size="small" />
+                <SplitButton
+                  label="Exportar"
                   icon="pi pi-download"
                   outlined
                   :loading="isExporting"
-                  @click="exportCsv"
+                  :model="exportOptions"
+                  @click="exportData('csv')"
+                  size="small"
                 />
               </div>
             </div>

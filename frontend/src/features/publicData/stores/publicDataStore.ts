@@ -46,14 +46,17 @@ export const usePublicDataStore = defineStore('publicData', () => {
     }
   }
 
-  const exportPublicSolicitationsCsv = async (filters: PublicSolicitationFilters) => {
+  const exportPublicSolicitations = async (
+    filters: PublicSolicitationFilters,
+    format: 'csv' | 'json',
+  ) => {
     isExporting.value = true
     error.value = null
 
     try {
-      return await publicDataService.exportSolicitationsCsv(filters)
+      return await publicDataService.exportSolicitations(filters, format)
     } catch (err: any) {
-      error.value = err?.message || 'Falha ao exportar dados públicos em CSV.'
+      error.value = err?.message || `Falha ao exportar dados públicos em ${format.toUpperCase()}.`
       throw err
     } finally {
       isExporting.value = false
@@ -73,6 +76,6 @@ export const usePublicDataStore = defineStore('publicData', () => {
     error,
     hasNextPage,
     fetchPublicSolicitations,
-    exportPublicSolicitationsCsv,
+    exportPublicSolicitations,
   }
 })
