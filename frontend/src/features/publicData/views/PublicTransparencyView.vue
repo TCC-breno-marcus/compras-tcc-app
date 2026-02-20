@@ -331,6 +331,7 @@ const statusSeverity = (status: string) => {
   const normalized = status.toLowerCase()
 
   if (normalized.includes('aprov')) return 'success'
+  if (normalized.includes('encerr')) return 'contrast'
   if (normalized.includes('pend')) return 'warn'
   if (normalized.includes('neg') || normalized.includes('cancel')) return 'danger'
 
@@ -605,7 +606,7 @@ const statusSeverity = (status: string) => {
               scrollable
               class="mb-3"
             >
-              <Column field="externalId" header="Protocolo" style="min-width: 10rem">
+              <Column field="externalId" header="Código" style="min-width: 10rem">
                 <template #body="{ data }">
                   {{ data.externalId || '-' }}
                 </template>

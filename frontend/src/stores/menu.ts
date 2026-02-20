@@ -86,7 +86,7 @@ export const useMenuStore = defineStore('menu', () => {
     },
     {
       label: 'Transparência',
-      icon: 'visibility',
+      icon: 'travel_explore',
       materialIcon: true,
       roles: ['Admin', 'Gestor', 'Solicitante'],
       command: () => {
@@ -119,7 +119,7 @@ export const useMenuStore = defineStore('menu', () => {
         },
         {
           label: 'Transparência',
-          icon: 'visibility',
+          icon: 'travel_explore',
           materialIcon: true,
           command: () => {
             router.push('/transparencia')
