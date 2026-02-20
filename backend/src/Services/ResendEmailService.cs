@@ -43,6 +43,32 @@ namespace Services
         }
 
         /// <summary>
+        /// Envia um e-mail genérico utilizando os parâmetros de destinatário, assunto e corpo HTML.
+        /// Este método centraliza o envio para ser reutilizado por métodos específicos do serviço.
+        /// </summary>
+        /// <param name="emailDestinatario">Destinatário principal da mensagem.</param>
+        /// <param name="assunto">Assunto do e-mail.</param>
+        /// <param name="corpoHtml">Corpo HTML do e-mail.</param>
+        /// <param name="cancellationToken">Token opcional para cancelamento da operação.</param>
+        private async Task EnviarEmailGenericoAsync(
+            string emailDestinatario,
+            string assunto,
+            string corpoHtml,
+            CancellationToken cancellationToken = default
+        )
+        {
+            var mensagem = new EmailMessage()
+            {
+                From = _emailRemetente,
+                Subject = assunto,
+                HtmlBody = corpoHtml,
+            };
+
+            mensagem.To.Add(emailDestinatario);
+            await _resend.EmailSendAsync(mensagem, cancellationToken);
+        }
+
+        /// <summary>
         /// Envia um e-mail de health check para validar a integração de envio no ambiente atual.
         /// </summary>
         /// <param name="emailDestinatario">E-mail que receberá a mensagem de validação do serviço.</param>
@@ -55,20 +81,15 @@ namespace Services
                 var dataHoraAtual = DateTime.UtcNow;
                 var ambiente = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Indefinido";
 
-                var mensagem = new EmailMessage()
-                {
-                    From = _emailRemetente,
-                    Subject = $"SIGAM - Teste de Saúde do Serviço de E-mail ({ambiente})",
-                    HtmlBody = $@"
+                var assunto = $"SIGAM - Teste de Saúde do Serviço de E-mail ({ambiente})";
+                var corpoHtml = $@"
                         <div style='font-family: Arial, sans-serif;'>
                             <h2 style='color: #007bff;'>✅ Serviço de E-mail Operacional</h2>
                             <p>Se você está recebendo este e-mail, a integração com o Resend está funcionando.</p>
                             <p><strong>Data (UTC):</strong> {dataHoraAtual:o}</p>
-                        </div>"
-                };
-                mensagem.To.Add(emailDestinatario);
+                        </div>";
 
-                await _resend.EmailSendAsync(mensagem);
+                await EnviarEmailGenericoAsync(emailDestinatario, assunto, corpoHtml);
             }
             catch (Exception ex)
             {
