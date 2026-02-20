@@ -337,10 +337,24 @@ const statusSeverity = (status: string) => {
 
     <main class="px-3 md:px-5 py-4 md:py-5">
       <div class="mb-4">
-        <h1 class="m-0 text-2xl md:text-4xl text-primary">Portal de Transparência</h1>
-        <p class="m-0 mt-2 text-color-secondary">
-          Consulte solicitações públicas com dados mascarados, aplique filtros e exporte os resultados.
-        </p>
+        <div class="flex flex-column md:flex-row md:align-items-start md:justify-content-between gap-2">
+          <div>
+            <h1 class="m-0 text-2xl md:text-4xl text-primary">Portal de Transparência</h1>
+            <p class="m-0 mt-2 text-color-secondary">
+              Consulte solicitações públicas com dados mascarados, aplique filtros e exporte os resultados.
+            </p>
+          </div>
+          <SplitButton
+            label="Exportar"
+            icon="pi pi-download"
+            outlined
+            :loading="isExporting"
+            :model="exportOptions"
+            @click="exportData('csv')"
+            size="small"
+            class="w-full md:w-auto md:mt-1"
+          />
+        </div>
       </div>
 
       <Card class="mb-4">
@@ -516,15 +530,6 @@ const statusSeverity = (status: string) => {
                   size="small"
                 />
                 <Button label="Buscar" icon="pi pi-search" @click="applyFilters" size="small" />
-                <SplitButton
-                  label="Exportar"
-                  icon="pi pi-download"
-                  outlined
-                  :loading="isExporting"
-                  :model="exportOptions"
-                  @click="exportData('csv')"
-                  size="small"
-                />
               </div>
             </div>
           </div>
