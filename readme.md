@@ -97,13 +97,13 @@ Guia detalhado de contribuição, testes e arquitetura: `CONTRIBUTING.md`.
 - [Guia de Contribuição](./CONTRIBUTING.md)
 - [01 - Setup e Execução Local](./docs/01-SETUP.md)
 - [02 - Gerenciamento do Banco de Dados](./docs/02-DATABASE.md)
-- [06 - Documentação de Implantação (DevOps)](./docs/05-IMPLANTACAO-DEVOPS.md)
+- [03 - Documentação de Implantação (DevOps)](./docs/03-IMPLANTACAO-DEVOPS.md)
 - [Frontend README](./frontend/README.md)
 
 ### Uso do sistema
 
-- [03 - Manual do Usuário Solicitante](./docs/03-MANUAL-SOLICITANTE.md)
-- [04 - Manual do Usuário Gestor](./docs/04-MANUAL-GESTOR.md)
+- [04 - Manual do Usuário Solicitante](./docs/04-MANUAL-SOLICITANTE.md)
+- [05 - Manual do Usuário Gestor](./docs/05-MANUAL-GESTOR.md)
 
 ## Boas Práticas para PR
 
