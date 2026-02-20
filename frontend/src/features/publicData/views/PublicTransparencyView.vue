@@ -345,8 +345,8 @@ const statusSeverity = (status: string) => {
 
       <Card class="mb-4">
         <template #content>
-          <div class="grid">
-            <div class="col-12 md:col-6 lg:col-3">
+          <div class="flex flex-wrap align-items-end gap-2 md:gap-3">
+            <div class="w-full md:w-auto">
               <FloatLabel variant="on" class="w-full md:w-10rem">
                 <DatePicker
                   v-model="startDate"
@@ -361,7 +361,7 @@ const statusSeverity = (status: string) => {
               </FloatLabel>
             </div>
 
-            <div class="col-12 md:col-6 lg:col-3">
+            <div class="w-full md:w-auto">
               <FloatLabel variant="on" class="w-full md:w-10rem">
                 <DatePicker
                   v-model="endDate"
@@ -376,7 +376,7 @@ const statusSeverity = (status: string) => {
               </FloatLabel>
             </div>
 
-            <div class="col-12 md:col-6 lg:col-3">
+            <div class="w-full md:w-auto">
               <FloatLabel variant="on" class="w-full md:w-14rem">
                 <Select
                   v-model="filters.statusId"
@@ -392,7 +392,7 @@ const statusSeverity = (status: string) => {
               </FloatLabel>
             </div>
 
-            <div class="col-12 md:col-6 lg:col-3">
+            <div class="w-full md:w-auto">
               <FloatLabel variant="on" class="w-full md:w-26rem">
                 <Select
                   v-model="filters.siglaDepartamento"
@@ -409,14 +409,14 @@ const statusSeverity = (status: string) => {
               </FloatLabel>
             </div>
 
-            <div class="col-12 md:col-6 lg:col-3">
+            <div class="w-full md:w-auto">
               <FloatLabel variant="on" class="w-full md:w-18rem">
                 <InputText v-model="filters.itemNome" inputId="item" class="w-full md:w-18rem" size="small" />
                 <label for="item">Item</label>
               </FloatLabel>
             </div>
 
-            <div class="col-12 md:col-6 lg:col-3">
+            <div class="w-full md:w-auto">
               <FloatLabel variant="on" class="w-full md:w-16rem">
                 <Select
                   v-model="filters.categoriaNome"
@@ -433,14 +433,14 @@ const statusSeverity = (status: string) => {
               </FloatLabel>
             </div>
 
-            <div class="col-12 md:col-6 lg:col-2">
+            <div class="w-full md:w-auto">
               <FloatLabel variant="on" class="w-full md:w-10rem">
                 <InputText v-model="filters.catMat" inputId="catmat" class="w-full md:w-10rem" size="small" />
                 <label for="catmat">CATMAT</label>
               </FloatLabel>
             </div>
 
-            <div class="col-12 md:col-6 lg:col-2">
+            <div class="w-full md:w-auto">
               <FloatLabel variant="on" class="w-full md:w-12rem">
                 <Select
                   v-model="filters.itemsType"
@@ -455,7 +455,7 @@ const statusSeverity = (status: string) => {
               </FloatLabel>
             </div>
 
-            <div class="col-12 md:col-6 lg:col-2">
+            <div class="w-full md:w-auto">
               <FloatLabel variant="on" class="w-full md:w-10rem">
                 <InputNumber
                   v-model="filters.valorMinimo"
@@ -471,7 +471,7 @@ const statusSeverity = (status: string) => {
               </FloatLabel>
             </div>
 
-            <div class="col-12 md:col-6 lg:col-2">
+            <div class="w-full md:w-auto">
               <FloatLabel variant="on" class="w-full md:w-10rem">
                 <InputNumber
                   v-model="filters.valorMaximo"
@@ -487,7 +487,7 @@ const statusSeverity = (status: string) => {
               </FloatLabel>
             </div>
 
-            <div class="col-12 md:col-6 lg:col-3">
+            <div class="w-full md:w-auto">
               <FloatLabel variant="on" class="w-full md:w-16rem">
                 <Select
                   v-model="filters.somenteSolicitacoesAtivas"
@@ -502,7 +502,7 @@ const statusSeverity = (status: string) => {
               </FloatLabel>
             </div>
 
-            <div class="col-12">
+            <div class="w-full pt-1">
               <Message v-if="valueRangeError" severity="warn" class="mb-2">
                 {{ valueRangeError }}
               </Message>
