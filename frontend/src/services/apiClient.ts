@@ -1,8 +1,11 @@
 import axios from 'axios'
 import { useAuthStore } from '@/features/autentication/stores/authStore'
 
-const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const apiUrl = import.meta.env.VITE_API_URL || '/api'
 
+/**
+ * Instância compartilhada de cliente HTTP da aplicação.
+ */
 export const apiClient = axios.create({
   baseURL: apiUrl,
   headers: {
@@ -11,6 +14,9 @@ export const apiClient = axios.create({
 })
 
 apiClient.interceptors.request.use(
+  /**
+   * Injeta token JWT atual em todas as requisições autenticadas.
+   */
   (config) => {
     const authStore = useAuthStore()
     const token = authStore.token

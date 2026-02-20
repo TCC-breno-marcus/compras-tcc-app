@@ -48,3 +48,8 @@ items_img/
 
 #.env files
 .env
+
+.mp4
+.png
+videos/
+screenshots/

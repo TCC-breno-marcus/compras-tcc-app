@@ -60,4 +60,8 @@ public interface ISolicitacaoService
         long solicitacaoId,
         ClaimsPrincipal user
     );
+
+    // Arquiva (marca como Encerrada) todas as solicitações com DataCriacao em anos anteriores ao ano informado.
+    // Retorna a quantidade de solicitações alteradas.
+    Task<int> ArchiveOldSolicitationsAsync(int anoReferencia, long executorPessoaId);
 }

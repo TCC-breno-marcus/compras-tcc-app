@@ -25,5 +25,7 @@ namespace Services.Interfaces
             string? usuarioSolicitante = null,
             DateTimeOffset? dataHoraSolicitacao = null
         );
+
+        Task<List<RelatorioItemSaidaDto>> GetRelatorioItensPorDepartamentoAsync(RelatorioItensFiltroDto filtro);
     }
 }

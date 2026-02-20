@@ -19,7 +19,7 @@ import { formatDate } from '@/utils/dateUtils'
 import SolicitationDetailsSkeleton from '../components/SolicitationDetailsSkeleton.vue'
 import { useSolicitationStore } from '../stores/solicitationStore'
 import CustomBreadcrumb from '@/components/ui/CustomBreadcrumb.vue'
-import { useConfirm, useToast } from 'primevue'
+import { Tag, useConfirm, useToast } from 'primevue'
 import { SAVE_CONFIRMATION } from '@/utils/confirmationFactoryUtils'
 import type { Solicitation } from '../types'
 import Textarea from 'primevue/textarea'
@@ -27,6 +27,7 @@ import { toTitleCase } from '@/utils/stringUtils'
 import SolicitationHistory from '../components/SolicitationHistory.vue'
 import { useSolicitationHistoryStore } from '../stores/historySolicitationStore'
 import SelectStatus from '../components/SelectStatus.vue'
+import { getSolicitationStatusOptions } from '../utils'
 
 const solicitationContext = reactive<SolicitationContext>({
   dialogMode: 'selection',
@@ -41,11 +42,12 @@ const toast = useToast()
 const confirm = useConfirm()
 const settingStore = useSettingStore()
 const { deadline, deadlineHasExpired } = storeToRefs(settingStore)
-const { user, isGestor } = storeToRefs(authStore)
+const { user, isGestor, isSolicitante } = storeToRefs(authStore)
 const solicitationStore = useSolicitationStore()
 const { currentSolicitation, isLoading, error, currentSolicitationBackup } =
   storeToRefs(solicitationStore)
 const historyStore = useSolicitationHistoryStore()
+const { solicitationHistory } = storeToRefs(historyStore)
 
 const activeTab = ref('0')
 
@@ -57,6 +59,9 @@ const isEditing = ref<boolean>(false)
 
 const isEditingStatus = ref<boolean>(false)
 
+/**
+ * Cancela edição e restaura dados da solicitação a partir do backup quando necessário.
+ */
 const handleCancel = () => {
   const id = currentSolicitation.value?.id
   if (id && solicitationStore.isDirty) {
@@ -65,6 +70,9 @@ const handleCancel = () => {
   isEditing.value = false
 }
 
+/**
+ * Persiste alterações da solicitação e recarrega histórico após sucesso.
+ */
 const acceptSaveChanges = async () => {
   if (!currentSolicitation.value) return
   const success = await solicitationStore.update(currentSolicitation.value)
@@ -76,6 +84,9 @@ const acceptSaveChanges = async () => {
   }
 }
 
+/**
+ * Valida regras de negócio e abre confirmação antes de salvar alterações.
+ */
 const saveChanges = () => {
   if (!isSolicitationValid(currentSolicitation?.value)) return
   confirm.require({
@@ -84,6 +95,11 @@ const saveChanges = () => {
   })
 }
 
+/**
+ * Aplica validações de negócio para edição de solicitação.
+ * @param solicitation Solicitação em edição.
+ * @returns `true` quando todos os campos obrigatórios estão válidos.
+ */
 const isSolicitationValid = (solicitation: Solicitation | null): boolean => {
   if (!solicitation) {
     toast.add({
@@ -158,18 +174,29 @@ const isSolicitationValid = (solicitation: Solicitation | null): boolean => {
   return isValid
 }
 
+/**
+ * Ativa modo de edição da solicitação na aba principal.
+ */
 const handleEdit = () => {
   isEditing.value = true
   activeTab.value = '0'
 }
 
-const handleStatusChange = async (newStatusId: number) => {
+/**
+ * Executa transição de status e atualiza histórico apresentado em tela.
+ * @param newStatusId Novo status selecionado.
+ * @param observation Justificativa informada para a transição.
+ */
+const handleStatusChange = async (newStatusId: number, observation: string) => {
   if (!currentSolicitation.value) return
-  await solicitationStore.updateStatus(newStatusId)
+  await solicitationStore.updateStatus(newStatusId, observation)
   historyStore.clearHistory()
   historyStore.fetchSolicitationHistory(currentSolicitation.value.id)
 }
 
+/**
+ * Define se solicitação pode ser editada considerando papel do usuário, status e prazo global.
+ */
 const canEditSolicitation = computed(() => {
   if (!user.value || !currentSolicitation.value) {
     return false
@@ -179,9 +206,44 @@ const canEditSolicitation = computed(() => {
   const isStatusEditable = editableStatus.includes(currentSolicitation.value.status.nome)
 
   return (
-    !isEditing.value && loggedUserCreatedIt.value && isStatusEditable && !deadlineHasExpired.value
+    isSolicitante.value &&
+    !isEditing.value &&
+    loggedUserCreatedIt.value &&
+    isStatusEditable &&
+    !deadlineHasExpired.value
   )
 })
+
+/**
+ * Retorna a observação mais recente da última transição para o status atual.
+ */
+const getStatusObservations = (): string => {
+  const history = solicitationHistory.value
+  const currentStatus = currentSolicitation.value?.status?.nome
+
+  if (!history || !history.length || !currentStatus) {
+    return ''
+  }
+
+  const targetPhrase = `para '${currentStatus}'`
+
+  // 1. Filtra itens que indicam mudança PARA o status atual
+  const matchingItems = history.filter(
+    (item) => item.detalhes && item.detalhes.includes(targetPhrase),
+  )
+
+  if (matchingItems.length === 0) {
+    return ''
+  }
+
+  // 2. Ordena pela data mais recente (Decrescente)
+  // Garante que pegamos a última vez que esse status foi definido
+  matchingItems.sort(
+    (a, b) => new Date(b.dataOcorrencia).getTime() - new Date(a.dataOcorrencia).getTime(),
+  )
+
+  return matchingItems[0].observacoes || ''
+}
 
 watch(
   () => route.params.id,
@@ -189,6 +251,7 @@ watch(
     if (newId && typeof newId === 'string') {
       solicitationStore.fetchById(parseInt(newId, 10))
       historyStore.clearHistory()
+      historyStore.fetchSolicitationHistory(parseInt(newId, 10))
     }
   },
   {
@@ -210,6 +273,76 @@ watch(
   },
 )
 
+const observationText = computed(() => getStatusObservations())
+const currentStatusOption = computed(() => {
+  if (!currentSolicitation.value) return null
+  return getSolicitationStatusOptions(currentSolicitation.value.status.id)
+})
+
+const isIrreversibleStatus = computed(() => {
+  if (!currentSolicitation.value) return false
+  return [5, 6].includes(currentSolicitation.value.status.id)
+})
+
+const irreversibleStatusTooltip = computed(() => {
+  if (!currentSolicitation.value) return ''
+  if (currentSolicitation.value.status.id === 6) {
+    return 'Solicitação encerrada automaticamente pelo sistema por ser de anos anteriores. Este status é irreversível.'
+  }
+  if (currentSolicitation.value.status.id === 5) {
+    return 'Solicitação cancelada pelo gestor. Este status é irreversível.'
+  }
+  return ''
+})
+
+const adjustedAndResubmittedEvent = computed(() => {
+  if (!currentSolicitation.value || currentSolicitation.value.status.id !== 1) return null
+
+  const history = solicitationHistory.value ?? []
+  const latestStatusChange = history.find((event) => {
+    const action = event.acao?.toLowerCase() ?? ''
+    return action === 'mudancadestatus' || action === 'mudança de status'
+  })
+
+  if (!latestStatusChange) return null
+
+  const details = (latestStatusChange.detalhes ?? '').toLowerCase()
+  const observation = (latestStatusChange.observacoes ?? '').toLowerCase()
+  const cameFromAdjustments =
+    (details.includes('aguardando ajustes') && details.includes('pendente')) ||
+    observation.includes('ajustes enviados pelo solicitante')
+
+  return cameFromAdjustments ? latestStatusChange : null
+})
+
+const showAdjustedAndResubmittedWarning = computed(() => {
+  return isGestor.value && !!adjustedAndResubmittedEvent.value
+})
+
+watch(observationText, (newText) => {
+  if (newText && isSolicitante.value && currentSolicitation.value) {
+    const currentStatus = currentSolicitation.value.status
+    if (currentStatus.id === 1) return
+
+    const statusConfig = getSolicitationStatusOptions(currentStatus.id)
+    const statusName = toTitleCase(currentStatus.nome)
+    const toastSeverity =
+      statusConfig?.severity === 'danger'
+        ? 'error'
+        : statusConfig?.severity === 'success'
+          ? 'success'
+          : statusConfig?.severity === 'info'
+            ? 'info'
+            : 'warn'
+
+    toast.add({
+      severity: toastSeverity,
+      summary: `Status: ${statusName}`,
+      detail: `A solicitação está com status "${statusName}". Verifique as observações para mais detalhes.`,
+      life: 6000,
+    })
+  }
+})
 onMounted(() => {
   settingStore.fetchSettings()
 })
@@ -269,6 +402,16 @@ onMounted(() => {
         />
       </div>
     </div>
+    <Message
+      v-if="showAdjustedAndResubmittedWarning"
+      icon="pi pi-refresh"
+      severity="info"
+      :closable="true"
+      class="mb-2"
+    >
+      Solicitação ajustada pelo solicitante e reenviada para análise em
+      {{ formatDate(adjustedAndResubmittedEvent!.dataOcorrencia, 'long') }}.
+    </Message>
 
     <div class="grid">
       <div class="col-12 lg:col-4">
@@ -317,11 +460,41 @@ onMounted(() => {
                 <i class="pi pi-clock text-primary text-xl mr-3"></i>
                 <div class="flex-1">
                   <span class="text-sm text-color-secondary">Status</span>
-                  <div class="flex flex-wrap align-items-center gap-2">
-                    <p v-if="!isEditingStatus" class="font-bold m-0">
+                  <div class="flex flex-wrap align-items-center gap-2 mb-2">
+                    <p v-if="!isEditingStatus" class="font-bold m-0 flex align-items-center gap-2">
                       {{ toTitleCase(currentSolicitation.status.nome) }}
+                      <!-- <i
+                        v-if="isIrreversibleStatus"
+                        class="pi pi-info-circle text-color-secondary"
+                        v-tooltip.top="irreversibleStatusTooltip"
+                      ></i> -->
+                      <!-- <Tag
+                        v-if="getStatusObservations()"
+                        v-tooltip.top="getStatusObservations()"
+                        severity="warn"
+                        rounded
+                      >
+                        <div class="flex align-items-center gap-2" style="max-width: 180px">
+                          <i class="pi pi-exclamation-triangle"></i>
+
+                          <span
+                            class="white-space-nowrap overflow-hidden text-overflow-ellipsis block"
+                          >
+                            Motivo: {{ getStatusObservations() }}
+                          </span>
+                        </div>
+                      </Tag> -->
                     </p>
                   </div>
+                  <small v-if="currentStatusOption?.descricao" class="text-color-secondary block line-height-3">
+                    {{ currentStatusOption.descricao }}
+                  </small>
+                  <small
+                    v-if="getStatusObservations()"
+                    class="text-color-secondary block line-height-3 mt-1"
+                  >
+                    <strong>Motivo informado:</strong> {{ getStatusObservations() }}
+                  </small>
                 </div>
                 <SelectStatus
                   v-if="isGestor"

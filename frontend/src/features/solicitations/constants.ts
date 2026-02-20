@@ -21,7 +21,7 @@ export const SOLICITATION_STATUS = [
   {
     id: 1,
     nome: 'Pendente',
-    descricao: 'Solicitação recém-criada, aguardando a análise do gestor.',
+    descricao: 'Solicitação aguardando análise do gestor.',
     severity: 'info',
     icon: 'pi pi-clock',
   },

@@ -266,4 +266,21 @@ public class SolicitacaoController : ControllerBase
 
         return Ok(resultado);
     }
+
+    [HttpPost("manutencao/encerrar-anos-anteriores")]
+    [Authorize(Roles = "Admin,Gestor")]
+    public async Task<IActionResult> ArchiveOldSolicitations()
+    {
+        try
+        {
+            var pessoaId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var anoAtual = DateTime.UtcNow.Year;
+            var count = await _solicitacaoService.ArchiveOldSolicitationsAsync(anoAtual, pessoaId);
+            return Ok(new { archived = count });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = $"Ocorreu um erro interno: {ex.Message}" });
+        }
+    }
 }

@@ -30,14 +30,24 @@ watch(
   { deep: true },
 )
 
+/**
+ * Emite evento para remover item da solicitação pai.
+ */
 const removeItem = () => {
   emit('removeItem', props.item.id)
 }
 
+/**
+ * Propaga alterações locais do item para o componente pai.
+ */
 const onFieldUpdate = () => {
   emit('updateItem', localItem.value)
 }
 
+/**
+ * Alerta quando usuário ultrapassa limite de quantidade por item configurado.
+ * @param event Evento de input do componente numérico.
+ */
 const handleQuantityInput = (event: InputNumberInputEvent) => {
   const newQuantity = event.value
   const maxQuantity = settings.value?.maxQuantidadePorItem

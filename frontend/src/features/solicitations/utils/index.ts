@@ -16,13 +16,18 @@ export const transformSolicitation = (
   return {
     ...solicitation,
     typeDisplay,
+    department: solicitation.solicitante?.unidade?.sigla,
     ...(solicitationListType === 'allSolicitations' && {
       requester: solicitation.solicitante.nome,
-      department: solicitation.solicitante.unidade.sigla,
     }),
   }
 }
 
+/**
+ * Busca metadados visuais de status de solicitação por ID.
+ * @param statusId ID do status.
+ * @returns Configuração de status para UI ou `null` quando não encontrado.
+ */
 export const getSolicitationStatusOptions = (statusId: number) => {
   return SOLICITATION_STATUS.find((status) => status.id === statusId) || null
 }

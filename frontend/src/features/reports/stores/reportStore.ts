@@ -1,7 +1,14 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { reportService } from '../services/reportService'
-import type { ItemDepartmentResponse, ItemsDepartmentFilters } from '../types'
+import type {
+  CategoryConsumptionResponse,
+  CenterExpenseResponse,
+  ItemDepartmentResponse,
+  ItemsDepartmentFilters,
+  ReportDateFilters,
+  ReportType,
+} from '../types'
 
 /**
  * Store para gerenciar estados de relatórios
@@ -14,7 +21,11 @@ export const useReportStore = defineStore('report', () => {
   const pageNumber = ref<number>(1)
   const pageSize = ref<number>(10)
   const totalPages = ref<number>(1)
-  
+
+  const activeReportType = ref<ReportType>(null)
+  const centerData = ref<CenterExpenseResponse[]>([])
+  const categoryData = ref<CategoryConsumptionResponse[]>([])
+
   /**
    * Busca os itens solicitados organizados por departamento.
    * @param filters Os possíveis filtros.
@@ -37,6 +48,32 @@ export const useReportStore = defineStore('report', () => {
     }
   }
 
+  /**
+   * Gera o relatório baseado no tipo selecionado
+   */
+  const generateReport = async (type: ReportType, filters: ReportDateFilters) => {
+    isLoading.value = true
+    error.value = null
+    activeReportType.value = type
+
+    // Limpa dados anteriores para garantir que não mostre lixo
+    centerData.value = []
+    categoryData.value = []
+
+    try {
+      if (type === 'GASTOS_CENTRO') {
+        centerData.value = await reportService.getCenterExpenses(filters)
+      } else if (type === 'CONSUMO_CATEGORIA') {
+        categoryData.value = await reportService.getCategoryConsumption(filters)
+      }
+    } catch (err: any) {
+      error.value = err.message || 'Falha ao gerar o relatório.'
+      activeReportType.value = null // Reseta se der erro
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   const hasNextPage = computed(() => pageNumber.value < totalPages.value)
 
   const $reset = () => {
@@ -47,6 +84,9 @@ export const useReportStore = defineStore('report', () => {
     pageNumber.value = 1
     pageSize.value = 10
     totalPages.value = 1
+    activeReportType.value = null
+    centerData.value = []
+    categoryData.value = []
   }
 
   return {
@@ -58,7 +98,11 @@ export const useReportStore = defineStore('report', () => {
     pageNumber,
     pageSize,
     hasNextPage,
+    activeReportType, 
+    centerData, 
+    categoryData,
     fetchItemsPerDepartment,
+    generateReport,
     $reset,
   }
 })

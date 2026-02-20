@@ -1,0 +1,242 @@
+name: CI - Testes
+
+on:
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      run_tests: ${{ steps.filter.outputs.run_tests }}
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Detectar mudanças relevantes para testes
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            run_tests:
+              - "backend/**"
+              - "frontend/**"
+              - "docker-compose.yml"
+              - ".github/workflows/ci.yml"
+
+  tests:
+    needs: changes
+    if: needs.changes.outputs.run_tests == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Testes do backend (.NET)
+        run: |
+          dotnet restore backend/backend.sln
+          dotnet test backend/backend.sln --configuration Release --no-restore
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Instalar dependências do frontend
+        working-directory: frontend
+        run: npm ci
+
+      - name: Instalar provider de coverage do Vitest (CI)
+        working-directory: frontend
+        run: npm i -D @vitest/coverage-v8@3.2.4 --no-save
+
+      - name: Testes unitários do frontend com coverage (Vitest)
+        working-directory: frontend
+        run: npm run test:unit:coverage
+
+      - name: Gerar resumo de coverage no job
+        if: always()
+        working-directory: frontend
+        run: |
+          if [ -f coverage/coverage-summary.json ]; then
+            node -e "
+            const fs=require('fs');
+            const s=JSON.parse(fs.readFileSync('coverage/coverage-summary.json','utf8')).total;
+            const out = [
+              '## Cobertura de Testes Unitários (Vitest)',
+              '',
+              '| Métrica | Percentual |',
+              '|---|---:|',
+              '| Linhas | '+s.lines.pct+'% |',
+              '| Funções | '+s.functions.pct+'% |',
+              '| Statements | '+s.statements.pct+'% |',
+              '| Branches | '+s.branches.pct+'% |',
+              '',
+            ].join('\n');
+            fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, out);
+            "
+          else
+            echo "Resumo de coverage não encontrado." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Publicar artefato de coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage-report
+          path: |
+            frontend/coverage
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Criar .env para stack de E2E no CI
+        run: |
+          cat > .env << 'EOF'
+          DB_USER=postgres
+          DB_PASSWORD=postgres
+          DB_NAME=compras_db
+          ASPNETCORE_ENVIRONMENT=Development
+          JWT_KEY=chave-super-secreta-para-ci-com-mais-de-64-bytes-para-hs512-aaaaaaaa
+          JWT_ISSUER=compras-tcc-ci
+          JWT_AUDIENCE=compras-tcc-ci
+          RESEND_API_KEY=ci-fake-resend-key
+          EOF
+
+      - name: Validar JWT_KEY do CI antes de subir containers
+        run: |
+          if [ ! -f .env ]; then
+            echo ".env não encontrado"
+            exit 1
+          fi
+          jwt_key=$(grep '^JWT_KEY=' .env | cut -d= -f2-)
+          if [ -z "$jwt_key" ]; then
+            echo "JWT_KEY não definido no .env"
+            exit 1
+          fi
+          key_len=${#jwt_key}
+          echo "JWT_KEY length (.env): $key_len"
+          if [ "$key_len" -lt 64 ]; then
+            echo "JWT_KEY curto para HS512 (mínimo 64 caracteres)"
+            exit 1
+          fi
+          resolved_key=$(docker compose config | awk '/Jwt__Key:/ {print $2; exit}')
+          resolved_len=${#resolved_key}
+          echo "Jwt__Key length (docker compose config): $resolved_len"
+          if [ "$resolved_len" -lt 64 ]; then
+            echo "Jwt__Key interpolada pelo compose está curta para HS512"
+            exit 1
+          fi
+
+      - name: Subir stack para E2E
+        run: docker compose up -d --build postgres-db backend-service frontend-service cypress
+
+      - name: Diagnóstico inicial dos containers
+        run: |
+          echo "=== docker compose ps ==="
+          docker compose ps
+          echo
+          echo "=== docker ps ==="
+          docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+
+      - name: Aguardar Postgres saudável
+        run: |
+          for i in {1..60}; do
+            status=$(docker inspect -f '{{.State.Health.Status}}' postgres-db-container 2>/dev/null || echo "starting")
+            echo "postgres health: $status"
+            if [ "$status" = "healthy" ]; then
+              exit 0
+            fi
+            sleep 3
+          done
+          echo "Postgres não ficou healthy a tempo"
+          docker compose logs postgres-db --tail=300 || true
+          exit 1
+
+      - name: Aguardar frontend no ar
+        run: |
+          for i in {1..60}; do
+            if curl -sSf http://localhost:5173 > /dev/null; then
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Frontend não ficou disponível a tempo"
+          exit 1
+
+      - name: Aguardar backend no ar (HTTP)
+        run: |
+          for i in {1..60}; do
+            if curl -sSf http://localhost:5000/swagger/index.html > /dev/null; then
+              exit 0
+            fi
+            docker compose ps backend-service || true
+            sleep 5
+          done
+          echo "Backend não ficou disponível a tempo"
+          docker compose logs backend-service --tail=200 || true
+          docker inspect backend-service-container || true
+          exit 1
+
+      - name: Validar JWT efetiva no container backend
+        run: |
+          docker compose exec -T backend-service /bin/sh -lc '
+            echo "JWT_KEY length (container): ${#JWT_KEY}";
+            echo "Jwt__Key length (container): ${#Jwt__Key}";
+            if [ "${#Jwt__Key}" -lt 64 ]; then
+              echo "Jwt__Key curta dentro do container";
+              exit 1;
+            fi
+          '
+
+      - name: Validar endpoint de login do backend
+        run: |
+          code=$(curl -s -o /tmp/login_response.json -w "%{http_code}" \
+            -H "Content-Type: application/json" \
+            -d '{"email":"solicitante@sistema.com","password":"123456"}' \
+            http://localhost:5000/api/auth/login)
+          echo "Login status code: $code"
+          cat /tmp/login_response.json || true
+          if [ "$code" != "200" ]; then
+            echo "Endpoint de login falhou"
+            docker compose logs backend-service --tail=300 || true
+            docker inspect backend-service-container || true
+            exit 1
+          fi
+
+      - name: Instalar dependências no container Cypress
+        run: docker compose exec -T cypress npm ci
+
+      - name: Rodar testes E2E (Cypress)
+        run: docker compose exec -T cypress npx cypress run --e2e
+
+      - name: Logs dos serviços em caso de falha
+        if: failure()
+        run: |
+          docker compose ps || true
+          docker compose logs backend-service --tail=300 || true
+          docker compose logs frontend-service --tail=300 || true
+          docker compose logs postgres-db --tail=300 || true
+          docker inspect backend-service-container || true
+          docker inspect frontend-service-container || true
+          docker inspect postgres-db-container || true
+
+      - name: Encerrar stack de E2E
+        if: always()
+        run: docker compose down -v
+
+  no-relevant-changes:
+    needs: changes
+    if: needs.changes.outputs.run_tests != 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Nenhuma mudança que exija testes
+        run: echo "Somente arquivos fora de frontend/backend/infra de testes foram alterados."

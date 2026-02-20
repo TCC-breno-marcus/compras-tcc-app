@@ -503,7 +503,7 @@ namespace backend.Migrations
                         new
                         {
                             Id = 1,
-                            Descricao = "Solicitação recém-criada, aguardando a análise do gestor.",
+                            Descricao = "Solicitação aguardando análise do gestor.",
                             Nome = "Pendente"
                         },
                         new

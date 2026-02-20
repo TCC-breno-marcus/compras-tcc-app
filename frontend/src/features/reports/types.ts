@@ -48,3 +48,26 @@ export type ItemDepartmentResponse = Partial<Item> & {
   numeroDeSolicitacoes: number
   demandaPorDepartamento: ItemQuantityPerDepartment[]
 }
+
+export type ReportType = 'GASTOS_CENTRO' | 'CONSUMO_CATEGORIA' | null
+
+export interface ReportDateFilters {
+  DataInicio: string; 
+  DataFim: string;   
+}
+
+export interface CenterExpenseResponse {
+  centroId: number;
+  centroNome: string;
+  centroSigla: string;
+  quantidadeSolicitacoes: number;
+  valorTotalGasto: number;
+  departamentoMaiorGasto: string;
+}
+
+export interface CategoryConsumptionResponse {
+  categoriaNome: string;
+  quantidadeItensVendidos: number;
+  valorTotal: number;
+  percentualDoTotal: number;
+}

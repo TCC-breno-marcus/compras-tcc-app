@@ -5,6 +5,10 @@ import { useSettingStore } from '../stores/settingStore'
 import { DatePicker, InputNumber, Button, Card } from 'primevue'
 import { formatDate } from '@/utils/dateUtils'
 import { useSettingsForm } from '@/composables/useSettingsForm'
+import { useToast } from 'primevue/usetoast'
+import { useConfirm } from 'primevue'
+import { settingService } from '../services/settingService'
+import { useAuthStore } from '@/features/autentication/stores/authStore'
 
 const settingsStore = useSettingStore()
 const { settings } = storeToRefs(settingsStore)
@@ -19,11 +23,35 @@ const {
   handleCancel,
 } = useSettingsForm(settings)
 
+const toast = useToast()
+const confirm = useConfirm()
+const authStore = useAuthStore()
+const { isAdmin, isGestor } = storeToRefs(authStore)
+
 onMounted(() => {
   if (!settings.value) {
     settingsStore.fetchSettings()
   }
 })
+
+const triggerArchive = async () => {
+  confirm.require({
+    message: 'Deseja realmente encerrar todas as solicitações de anos anteriores? Esta ação é irreversível.',
+    header: 'Encerrar Anos Anteriores?',
+    icon: 'pi pi-exclamation-triangle',
+    acceptProps: { label: 'Encerrar', severity: 'danger', icon: 'pi pi-lock', size: 'small' },
+    rejectProps: { label: 'Cancelar', severity: 'secondary', text: true, icon: 'pi pi-times', size: 'small' },
+    accept: async () => {
+      try {
+        const response = await settingService.archiveOldSolicitations()
+        toast.add({ severity: 'success', summary: 'Sucesso', detail: `Foram arquivadas ${response.archived} solicitações.`, life: 3000 })
+      } catch (err: any) {
+        console.error(err)
+        toast.add({ severity: 'error', summary: 'Erro', detail: err?.response?.data?.message || 'Falha ao executar a rotina.', life: 3000 })
+      }
+    },
+  })
+}
 </script>
 
 <template>
@@ -225,6 +253,19 @@ onMounted(() => {
                 </li>
               </ul>
             </div>
+          </div>
+        </template>
+
+        <template #footer>
+          <div class="mt-2 flex justify-content-end">
+            <Button
+              v-if="isAdmin || isGestor"
+              label="Encerrar Anos Anteriores"
+              icon="pi pi-lock"
+              severity="danger"
+              @click="triggerArchive"
+              size="small"
+            />
           </div>
         </template>
       </Card>

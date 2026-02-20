@@ -28,13 +28,30 @@ const status = ref([
 ])
 
 const availableStatus = computed(() => status.value.filter((s) => s.id !== props.currentStatusId))
+const irreversibleStatusTooltip = computed(() => {
+  if (props.currentStatusId === 6) {
+    return 'Encerrada automaticamente pelo sistema por ser de anos anteriores. Status irreversível.'
+  }
+  if (props.currentStatusId === 5) {
+    return 'Cancelada pelo gestor. Status irreversível.'
+  }
+  return 'Alterar status'
+})
 
+/**
+ * Abre/fecha popover de seleção e reseta estado temporário do formulário.
+ * @param event Evento de clique do botão de edição.
+ */
 const toggle = (event: Event) => {
   op.value.toggle(event)
   showMessageError.value = false
   observation.value = ''
 }
 
+/**
+ * Seleciona novo status e valida justificativa obrigatória para transições críticas.
+ * @param newStatus Status alvo selecionado pelo gestor.
+ */
 const selectStatus = (newStatus: Status) => {
   selectedStatusId.value = newStatus.id
 
@@ -43,10 +60,15 @@ const selectStatus = (newStatus: Status) => {
     return
   }
 
-  emit('status-change', newStatus.id)
+  emit('status-change', newStatus.id, observation.value)
   op.value.hide()
 }
 
+/**
+ * Regra de validação de justificativa:
+ * obrigatória para todos os status, exceto quando muda para "Aprovada" (id 3).
+ * @returns `true` quando a justificativa atual é inválida.
+ */
 const observationIsInvalid = () => {
   if (observation.value.trim() !== '') {
     return false
@@ -67,10 +89,8 @@ const observationIsInvalid = () => {
       text
       size="small"
       @click="toggle"
-      :disabled="currentStatusId === 5"
-      v-tooltip.left="
-        currentStatusId === 5 ? 'Solicitação cancelada (ação desativada)' : 'Alterar status'
-      "
+      :disabled="currentStatusId === 5 || currentStatusId === 6"
+      v-tooltip.left="irreversibleStatusTooltip"
     />
 
     <Popover ref="op" class="w-64">

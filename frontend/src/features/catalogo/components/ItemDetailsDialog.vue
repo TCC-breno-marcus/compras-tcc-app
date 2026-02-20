@@ -34,6 +34,7 @@ import Select from 'primevue/select'
 import { SolicitationContextKey } from '@/features/solicitations/keys'
 import ItemHistory from './ItemHistory.vue'
 import { useItemHistoryStore } from '../stores/historyItemStore'
+import { useAuthStore } from '@/features/autentication/stores/authStore'
 
 const props = defineProps<{
   visible: boolean
@@ -63,6 +64,9 @@ const {
 const historyStore = useItemHistoryStore()
 const { itemHistory, isLoading: historyLoading } = storeToRefs(historyStore)
 const activeTab = ref('0')
+const authStore = useAuthStore()
+const { isSolicitante } = storeToRefs(authStore)
+const canViewHistory = computed(() => !isSolicitante.value)
 
 const emit = defineEmits(['update:visible', 'update-dialog'])
 
@@ -107,8 +111,10 @@ watch(
         ])
         detailedItem.value = responseDados
         itensSemelhantes.value = responseSemelhantes
-        historyStore.clearHistory()
-        historyStore.fetchItemHistory(detailedItem.value.id)
+        if (canViewHistory.value) {
+          historyStore.clearHistory()
+          historyStore.fetchItemHistory(detailedItem.value.id)
+        }
       } catch (err) {
         console.error('Erro ao buscar detalhes ou pré-carregar imagem:', err)
         error.value = 'Não foi possível carregar os detalhes do item.'
@@ -221,8 +227,10 @@ const acceptSaveChanges = async () => {
       life: 3000,
     })
 
-    historyStore.clearHistory()
-    historyStore.fetchItemHistory(detailedItem.value.id)
+    if (canViewHistory.value) {
+      historyStore.clearHistory()
+      historyStore.fetchItemHistory(detailedItem.value.id)
+    }
 
     isEditing.value = false
     activeTab.value = '0'
@@ -373,7 +381,7 @@ const fileUploadPT = ref({
     <Tabs v-model:value="activeTab">
       <TabList>
         <Tab value="0">Detalhes</Tab>
-        <Tab value="1">Histórico</Tab>
+        <Tab v-if="canViewHistory" value="1">Histórico</Tab>
       </TabList>
       <TabPanels>
         <TabPanel value="0">
@@ -584,7 +592,7 @@ const fileUploadPT = ref({
             </div>
           </div>
         </TabPanel>
-        <TabPanel value="1">
+        <TabPanel v-if="canViewHistory" value="1">
           <ItemHistory :item-id="detailedItem?.id" />
         </TabPanel>
       </TabPanels>

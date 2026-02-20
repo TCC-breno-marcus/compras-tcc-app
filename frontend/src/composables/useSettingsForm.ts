@@ -28,6 +28,9 @@ export function useSettingsForm(initialData: Ref<any>) {
 
   const isDirty = computed(() => dataHasBeenChanged(formBackup.value, formData.value))
 
+  /**
+   * Converte entre a string persistida do prazo e o objeto Date usado no DatePicker.
+   */
   const prazoSubmissaoDatePicker = computed({
     get() {
       return formData.value.prazoSubmissao ? parseDateString(formData.value.prazoSubmissao) : null
@@ -50,6 +53,9 @@ export function useSettingsForm(initialData: Ref<any>) {
     { immediate: true, deep: true },
   )
 
+  /**
+   * Persiste alterações validadas e sincroniza backup para controle de edição.
+   */
   const acceptSaveChanges = async () => {
     if (!formData.value) return
 
@@ -79,6 +85,9 @@ export function useSettingsForm(initialData: Ref<any>) {
     }
   }
 
+  /**
+   * Valida formulário e abre confirmação antes de persistir no backend.
+   */
   const handleSave = () => {
     if (!isFormValid(formData.value)) return
     confirm.require({
@@ -87,11 +96,19 @@ export function useSettingsForm(initialData: Ref<any>) {
     })
   }
 
+  /**
+   * Restaura o estado de edição para o último snapshot salvo.
+   */
   const handleCancel = () => {
     formData.value = JSON.parse(JSON.stringify(formBackup.value))
     isEditing.value = false
   }
 
+  /**
+   * Aplica regras de negócio dos campos obrigatórios de configuração.
+   * @param data Dados em edição.
+   * @returns `true` quando todos os campos obrigatórios estão válidos.
+   */
   const isFormValid = (data: Partial<Setting>) => {
     let isValid = true
     if (!data.prazoSubmissao) {

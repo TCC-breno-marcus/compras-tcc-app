@@ -178,7 +178,7 @@ public class AppDbContext : DbContext
                 {
                     Id = 1,
                     Nome = "Pendente",
-                    Descricao = "Solicitação recém-criada, aguardando a análise do gestor.",
+                    Descricao = "Solicitação aguardando análise do gestor.",
                 },
                 new StatusSolicitacao
                 {

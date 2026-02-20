@@ -488,6 +488,25 @@ public class SolicitacaoService : ISolicitacaoService
                     Observacoes = null,
                 };
                 await _context.HistoricoSolicitacoes.AddAsync(historico);
+
+                // Quando o solicitante envia ajustes, a solicitação volta para a fila do gestor.
+                if (!isAdmin && solicitacaoDoBanco.StatusId == StatusConsts.AguardandoAjustes)
+                {
+                    solicitacaoDoBanco.StatusId = StatusConsts.Pendente;
+
+                    var historicoStatus = new HistoricoSolicitacao
+                    {
+                        SolicitacaoId = solicitacaoDoBanco.Id,
+                        DataOcorrencia = DateTime.UtcNow,
+                        PessoaId = pessoaId,
+                        Acao = AcaoHistoricoEnum.MudancaDeStatus,
+                        Detalhes =
+                            "Status alterado automaticamente de 'Aguardando Ajustes' para 'Pendente' após edição do solicitante.",
+                        Observacoes =
+                            "Ajustes enviados pelo solicitante para nova análise do gestor.",
+                    };
+                    await _context.HistoricoSolicitacoes.AddAsync(historicoStatus);
+                }
             }
 
             await _context.SaveChangesAsync();
@@ -1159,5 +1178,63 @@ public class SolicitacaoService : ISolicitacaoService
             .ToListAsync();
 
         return historico;
+    }
+
+    public async Task<int> ArchiveOldSolicitationsAsync(int anoReferencia, long executorPessoaId)
+    {
+        await using var transaction = await _context.Database.BeginTransactionAsync();
+        try
+        {
+            var toArchive = await _context
+                .Solicitacoes.Where(s =>
+                    s.DataCriacao.Year < anoReferencia && s.StatusId != StatusConsts.Encerrada
+                )
+                .ToListAsync();
+
+            if (!toArchive.Any())
+            {
+                _logger.LogInformation(
+                    "Nenhuma solicitação encontrada para arquivamento referente ao ano {Ano}",
+                    anoReferencia
+                );
+                return 0;
+            }
+
+            foreach (var s in toArchive)
+            {
+                var statusAnterior = s.StatusId;
+                s.StatusId = StatusConsts.Encerrada;
+
+                var historico = new HistoricoSolicitacao
+                {
+                    SolicitacaoId = s.Id,
+                    DataOcorrencia = DateTime.UtcNow,
+                    PessoaId = executorPessoaId,
+                    Acao = AcaoHistoricoEnum.MudancaDeStatus,
+                    Detalhes =
+                        $"Rotina de arquivamento anual: status alterado de {statusAnterior} para {StatusConsts.Encerrada}",
+                    Observacoes = "Encerrada automaticamente por rotina anual",
+                };
+
+                await _context.HistoricoSolicitacoes.AddAsync(historico);
+            }
+
+            var changed = await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            _logger.LogInformation(
+                "Arquivadas {Count} solicitações anteriores a {Ano}",
+                toArchive.Count,
+                anoReferencia
+            );
+
+            return toArchive.Count;
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync();
+            _logger.LogError(ex, "Erro ao arquivar solicitações antigas");
+            throw;
+        }
     }
 }

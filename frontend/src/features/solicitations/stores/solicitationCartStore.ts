@@ -5,6 +5,9 @@ import type { CreateSolicitationPayload, SolicitationItem } from '@/features/sol
 import { solicitationService } from '../services/solicitationService'
 import { useSettingStore } from '@/features/settings/stores/settingStore'
 
+/**
+ * Store do carrinho de solicitação durante o fluxo de criação.
+ */
 export const useSolicitationCartStore = defineStore('solicitationCart', () => {
   const solicitationItems = ref<SolicitationItem[]>([])
   const justification = ref<string>('')
@@ -15,6 +18,12 @@ export const useSolicitationCartStore = defineStore('solicitationCart', () => {
   const settingsStore = useSettingStore()
   const { settings } = storeToRefs(settingsStore)
 
+  /**
+   * Adiciona item no carrinho respeitando limites de quantidade por item e total de itens distintos.
+   * @param item Item selecionado no catálogo.
+   * @param type Tipo da solicitação em construção.
+   * @returns Resultado da operação para feedback de UI.
+   */
   const addItem = (item: Item, type: 'geral' | 'patrimonial') => {
     if (solicitationItems.value.length === 0) {
       solicitationType.value = type
@@ -39,11 +48,21 @@ export const useSolicitationCartStore = defineStore('solicitationCart', () => {
     }
   }
 
+  /**
+   * Remove item do carrinho pelo ID.
+   * @param itemId ID do item a remover.
+   * @returns Resultado da operação para feedback de UI.
+   */
   const removeItem = (itemId: number) => {
     solicitationItems.value = solicitationItems.value.filter((i) => i.id !== itemId)
     return 'removed'
   }
 
+  /**
+   * Atualiza quantidade de um item existente no carrinho.
+   * @param itemId ID do item.
+   * @param newQuantity Nova quantidade informada pelo usuário.
+   */
   const updateItemQuantity = (itemId: number, newQuantity: number) => {
     const item = solicitationItems.value.find((i) => i.id === itemId)
     if (item) {
@@ -51,6 +70,12 @@ export const useSolicitationCartStore = defineStore('solicitationCart', () => {
     }
   }
 
+  /**
+   * Monta payload conforme tipo de solicitação e envia para criação no backend.
+   * Em solicitações gerais inclui justificativa global; em patrimoniais usa justificativa por item.
+   * @param isGeneral Flag para determinar estrutura do payload.
+   * @returns `true` quando criação conclui com sucesso.
+   */
   const createSolicitation = async (isGeneral?: boolean) => {
     isLoading.value = true
     error.value = null
@@ -91,6 +116,9 @@ export const useSolicitationCartStore = defineStore('solicitationCart', () => {
     }
   }
 
+  /**
+   * Limpa estado do carrinho e retorna store ao estado inicial.
+   */
   const $reset = () => {
     solicitationItems.value = []
     justification.value = ''

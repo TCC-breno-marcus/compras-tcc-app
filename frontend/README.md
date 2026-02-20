@@ -1,61 +1,57 @@
-# .
+# Frontend - SIGAM
 
-This template should help get you started developing with Vue 3 in Vite.
+Este documento resume os comandos do frontend considerando o ambiente Docker do projeto.
 
-## Recommended IDE Setup
+## Pré-requisito
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+Suba os serviços na raiz do repositório:
 
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
+```bash
+docker compose up -d --build
 ```
 
-### Compile and Hot-Reload for Development
+## Comandos principais (via Docker)
 
-```sh
-npm run dev
+### Desenvolvimento
+
+```bash
+docker compose exec frontend-service npm run dev
 ```
 
-### Type-Check, Compile and Minify for Production
+### Build de produção
 
-```sh
-npm run build
+```bash
+docker compose exec frontend-service npm run build
 ```
 
-### Run Unit Tests with [Vitest](https://vitest.dev/)
+### Testes unitários (Vitest)
 
-```sh
-npm run test:unit
+```bash
+docker compose exec frontend-service npm run test:unit
 ```
 
-### Run End-to-End Tests with [Cypress](https://www.cypress.io/)
+Cobertura:
 
-```sh
-npm run test:e2e:dev
+```bash
+docker compose exec frontend-service npm run test:unit:coverage
 ```
 
-This runs the end-to-end tests against the Vite development server.
-It is much faster than the production build.
+### Testes E2E (Cypress)
 
-But it's still recommended to test the production build with `test:e2e` before deploying (e.g. in CI environments):
+Headless:
 
-```sh
-npm run build
-npm run test:e2e
+```bash
+docker compose exec cypress npx cypress run --e2e
 ```
 
-### Lint with [ESLint](https://eslint.org/)
+Interativo:
 
-```sh
-npm run lint
+```bash
+docker compose exec cypress npx cypress open --e2e
+```
+
+### Lint
+
+```bash
+docker compose exec frontend-service npm run lint
 ```

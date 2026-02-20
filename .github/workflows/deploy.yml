@@ -2,7 +2,12 @@ name: Deploy TCC - Produção
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
+    paths:
+      - "backend/**"
+      - "frontend/**"
+      - "docker-compose.prod.yml"
+      - ".github/workflows/deploy.yml"
 
 jobs:
   build-and-push:
@@ -12,7 +17,7 @@ jobs:
       packages: write
 
     steps:
-      - name: Checkout do código
+      - name: Checkout do código da main
         uses: actions/checkout@v4
 
       - name: Login no GitHub Container Registry
@@ -22,7 +27,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Build do Backend
       - name: Build e Push Backend
         uses: docker/build-push-action@v5
         with:
@@ -31,7 +35,6 @@ jobs:
           push: true
           tags: ghcr.io/tcc-breno-marcus/compras-tcc-app/backend:latest
 
-      # Build do Frontend
       - name: Build e Push Frontend
         uses: docker/build-push-action@v5
         with:
@@ -55,21 +58,11 @@ jobs:
           key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
           script_stop: true
           script: |
-            # Navega até a pasta
             cd ~/compras-tcc-app
-            
-            # Atualiza o código
             git checkout main
             git pull origin main
-            
-            # Faz login no registro de imagens (usando token pessoal na VM)
             echo "${{ secrets.VM_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-            
-            # Baixa as novas imagens
             docker compose -f docker-compose.prod.yml pull
-            
-            # Reinicia os serviços (recriando apenas os que mudaram)
             docker compose -f docker-compose.prod.yml up -d --remove-orphans
-            
-            # Limpeza de imagens antigas para economizar espaço
             docker image prune -f
+
