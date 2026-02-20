@@ -18,6 +18,7 @@ import SolicitationsSettings from '@/features/settings/components/SolicitationsS
 import UserProfileView from '@/features/autentication/views/UserProfileView.vue'
 import ContactUsView from '@/views/ContactUsView.vue'
 import Usuarios from '@/features/management/components/Usuarios.vue'
+import PublicTransparencyView from '@/features/publicData/views/PublicTransparencyView.vue'
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -158,6 +159,11 @@ const router = createRouter({
       path: '/login',
       name: 'Login',
       component: () => import('../features/autentication/views/LoginView.vue'),
+    },
+    {
+      path: '/transparencia',
+      name: 'PublicTransparency',
+      component: PublicTransparencyView,
     },
     {
       path: '/not-found',
