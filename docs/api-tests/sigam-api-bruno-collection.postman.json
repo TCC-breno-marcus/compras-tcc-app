@@ -1,0 +1,663 @@
+{
+  "info": {
+    "name": "SIGAM API - Compras TCC",
+    "description": "Collection para testes completos da API SIGAM no Bruno (importar como Postman Collection v2.1). Inclui autenticação JWT, CRUDs, filtros, paginação, exportações e endpoints públicos.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000" },
+    { "key": "accessToken", "value": "" },
+    { "key": "adminEmail", "value": "admin@sigam.local" },
+    { "key": "adminPassword", "value": "123456" },
+    { "key": "userEmail", "value": "solicitante@sigam.local" },
+    { "key": "userPassword", "value": "123456" },
+    { "key": "categoriaId", "value": "1" },
+    { "key": "itemId", "value": "1" },
+    { "key": "solicitacaoId", "value": "1" },
+    { "key": "usuarioId", "value": "2" },
+    { "key": "departamentoSigla", "value": "DCOMP" },
+    { "key": "centroSigla", "value": "CCET" },
+    { "key": "statusId", "value": "1" },
+    { "key": "destinatarioTesteEmail", "value": "contato@sigam.local" }
+  ],
+  "item": [
+    {
+      "name": "HealthCheck",
+      "item": [
+        {
+          "name": "App Health",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "noauth" },
+            "url": "{{baseUrl}}/api/HealthCheck",
+            "description": "Retorna status básico da API."
+          }
+        },
+        {
+          "name": "Database Health",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "noauth" },
+            "url": "{{baseUrl}}/api/HealthCheck/database",
+            "description": "Valida conectividade com o banco de dados."
+          }
+        },
+        {
+          "name": "Testar Envio Email",
+          "request": {
+            "method": "POST",
+            "auth": { "type": "noauth" },
+            "url": {
+              "raw": "{{baseUrl}}/api/HealthCheck/testar-email?destinatario={{destinatarioTesteEmail}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "HealthCheck", "testar-email"],
+              "query": [
+                { "key": "destinatario", "value": "{{destinatarioTesteEmail}}" }
+              ]
+            },
+            "description": "Dispara e-mail de teste para o endereço informado."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "auth": { "type": "noauth" },
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/Auth/login",
+            "description": "Modelo LoginDto: { email: string(email), password: string }. Retorna token JWT em `token`.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"{{adminPassword}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Meu Perfil",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/Auth/me",
+            "description": "Retorna UserProfileDto do usuário autenticado."
+          }
+        },
+        {
+          "name": "Registrar Usuário",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/Auth/register",
+            "description": "Modelo RegisterDto: nome, email, telefone, CPF (11 dígitos), password (6-24), role (Admin|Gestor|Solicitante), departamentoSigla?, centroSigla?.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Usuário Teste\",\n  \"email\": \"usuario.teste@sigam.local\",\n  \"telefone\": \"79999999999\",\n  \"cpf\": \"12345678909\",\n  \"password\": \"123456\",\n  \"role\": \"Solicitante\",\n  \"departamentoSigla\": \"{{departamentoSigla}}\",\n  \"centroSigla\": \"{{centroSigla}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Roles",
+      "item": [
+        {
+          "name": "Atribuir Role",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/Roles/atribuir-role",
+            "description": "Modelo AtribuirRoleDto: { email: string, role: string }.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"usuario.teste@sigam.local\",\n  \"role\": \"Gestor\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Usuários",
+      "item": [
+        {
+          "name": "Listar Usuários",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/Usuario?role=Gestor&pageNumber=1&pageSize=20&sortOrder=asc&isActive=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Usuario"],
+              "query": [
+                { "key": "role", "value": "Gestor" },
+                { "key": "pageNumber", "value": "1" },
+                { "key": "pageSize", "value": "20" },
+                { "key": "sortOrder", "value": "asc" },
+                { "key": "isActive", "value": "true" }
+              ]
+            },
+            "description": "Paginação de UserProfileDto com filtros por role e status ativo."
+          }
+        },
+        {
+          "name": "Inativar Usuário",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/api/Usuario/{{usuarioId}}/inativar"
+          }
+        },
+        {
+          "name": "Ativar Usuário",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/api/Usuario/{{usuarioId}}/ativar"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Centros e Departamentos",
+      "item": [
+        {
+          "name": "Listar Centros",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/Centro?sigla={{centroSigla}}"
+          }
+        },
+        {
+          "name": "Centro por ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/Centro/1"
+          }
+        },
+        {
+          "name": "Listar Departamentos",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/Departamento?sigla={{departamentoSigla}}&siglaCentro={{centroSigla}}"
+          }
+        },
+        {
+          "name": "Departamento por ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/Departamento/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Categorias",
+      "item": [
+        {
+          "name": "Listar Categorias",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/Categoria?id=1&nome=Material%20de%20Consumo&isActive=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Categoria"],
+              "query": [
+                { "key": "id", "value": "1" },
+                { "key": "nome", "value": "Material de Consumo" },
+                { "key": "isActive", "value": "true" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Categoria por ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/Categoria/{{categoriaId}}"
+          }
+        },
+        {
+          "name": "Criar Categoria",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/Categoria",
+            "description": "Modelo CategoriaDto: { id, nome, descricao, isActive }. Para criação, `id` pode ser 0.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 0,\n  \"nome\": \"Materiais Elétricos\",\n  \"descricao\": \"Itens para manutenção elétrica\",\n  \"isActive\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Editar Categoria",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/Categoria/{{categoriaId}}",
+            "description": "Modelo CategoriaUpdateDto: { nome?, descricao?, isActive? }.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Materiais Elétricos e Eletrônicos\",\n  \"descricao\": \"Itens elétricos em geral\",\n  \"isActive\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Excluir Categoria",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/Categoria/{{categoriaId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Catálogo",
+      "item": [
+        {
+          "name": "Listar Itens",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/Catalogo?pageNumber=1&pageSize=20&sortOrder=asc&searchTerm=caneta&isActive=true&categoriaId={{categoriaId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Catalogo"],
+              "query": [
+                { "key": "pageNumber", "value": "1" },
+                { "key": "pageSize", "value": "20" },
+                { "key": "sortOrder", "value": "asc" },
+                { "key": "searchTerm", "value": "caneta" },
+                { "key": "isActive", "value": "true" },
+                { "key": "categoriaId", "value": "{{categoriaId}}" }
+              ]
+            },
+            "description": "Paginação de ItemDto com filtros avançados."
+          }
+        },
+        {
+          "name": "Item por ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/Catalogo/{{itemId}}"
+          }
+        },
+        {
+          "name": "Itens Semelhantes",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/Catalogo/{{itemId}}/itens-semelhantes"
+          }
+        },
+        {
+          "name": "Criar Item",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/Catalogo",
+            "description": "Modelo CreateItemDto: nome, descricao, catMat, categoriaId, linkImagem, especificacao, precoSugerido, isActive.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Caneta Azul\",\n  \"descricao\": \"Caneta esferográfica azul\",\n  \"catMat\": \"7510\",\n  \"categoriaId\": {{categoriaId}},\n  \"linkImagem\": \"https://exemplo.com/imagens/caneta.jpg\",\n  \"especificacao\": \"Ponta média 1.0mm\",\n  \"precoSugerido\": 2.99,\n  \"isActive\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Editar Item",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/Catalogo/{{itemId}}",
+            "description": "Modelo ItemUpdateDto: nome?, catMat?, descricao?, especificacao?, precoSugerido?, categoriaId?, isActive?.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Caneta Azul Premium\",\n  \"precoSugerido\": 3.49,\n  \"isActive\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Excluir Item",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/Catalogo/{{itemId}}"
+          }
+        },
+        {
+          "name": "Importar Itens em Lote",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/Catalogo/importar",
+            "description": "Modelo ItemImportacaoDto[]: nome, descricao, codigo, categoriaId, especificacao?, linkImagem?.",
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"nome\": \"Mouse USB\",\n    \"descricao\": \"Mouse óptico\",\n    \"codigo\": \"MOU-001\",\n    \"categoriaId\": {{categoriaId}},\n    \"especificacao\": \"1200dpi\",\n    \"linkImagem\": \"\"\n  }\n]",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Popular Imagens",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/Catalogo/popular-imagens"
+          }
+        },
+        {
+          "name": "Atualizar Imagem do Item",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/Catalogo/{{itemId}}/imagem",
+            "description": "Multipart/form-data com campo `imagem` (arquivo).",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "imagem",
+                  "type": "file",
+                  "src": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Remover Imagem do Item",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/Catalogo/{{itemId}}/imagem"
+          }
+        },
+        {
+          "name": "Histórico do Item",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/Catalogo/{{itemId}}/historico",
+            "description": "Retorna List<HistoricoItemDto> com ações e observações por item."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Solicitações",
+      "item": [
+        {
+          "name": "Criar Solicitação Geral",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/Solicitacao/geral",
+            "description": "Modelo CreateSolicitacaoGeralDto: gestorId?, justificativaGeral (max 500), itens[] (itemId, quantidade>0, justificativa?, valorUnitario).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"gestorId\": null,\n  \"justificativaGeral\": \"Materiais necessários para reposição do semestre.\",\n  \"itens\": [\n    {\n      \"itemId\": {{itemId}},\n      \"quantidade\": 10,\n      \"justificativa\": \"Consumo mensal\",\n      \"valorUnitario\": 3.49\n    }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Criar Solicitação Patrimonial",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/Solicitacao/patrimonial",
+            "description": "Modelo CreateSolicitacaoPatrimonialDto: gestorId?, itens[] (itemId, quantidade, justificativa, valorUnitario).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"gestorId\": null,\n  \"itens\": [\n    {\n      \"itemId\": {{itemId}},\n      \"quantidade\": 1,\n      \"justificativa\": \"Equipamento para novo laboratório\",\n      \"valorUnitario\": 1200.00\n    }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Editar Solicitação",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/Solicitacao/{{solicitacaoId}}",
+            "description": "Modelo UpdateSolicitacaoDto: justificativaGeral?, itens[] obrigatório (mesmo modelo de SolicitacaoItemDto).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"justificativaGeral\": \"Ajuste de quantitativo após revisão interna.\",\n  \"itens\": [\n    {\n      \"itemId\": {{itemId}},\n      \"quantidade\": 8,\n      \"justificativa\": \"Redução por estoque existente\",\n      \"valorUnitario\": 3.49\n    }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Cancelar Solicitação",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/Solicitacao/{{solicitacaoId}}/cancelar",
+            "description": "Modelo CancelarSolicitacaoDto: observacoes? (max 500).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"observacoes\": \"Cancelada por alteração de prioridade.\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Atualizar Status da Solicitação",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/Solicitacao/{{solicitacaoId}}/status",
+            "description": "Modelo UpdateStatusSolicitacaoDto: novoStatusId obrigatório (1=Pendente,2=AguardandoAjustes,3=Aprovada,4=Rejeitada,5=Cancelada,6=Encerrada), observacoes?.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"novoStatusId\": 3,\n  \"observacoes\": \"Solicitação aprovada para próxima etapa.\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Buscar Solicitação por ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/Solicitacao/{{solicitacaoId}}"
+          }
+        },
+        {
+          "name": "Minhas Solicitações",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/Solicitacao/minhas-solicitacoes?tipo=geral&statusIds=1&statusIds=2&sortOrder=desc&pageNumber=1&pageSize=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Solicitacao", "minhas-solicitacoes"],
+              "query": [
+                { "key": "tipo", "value": "geral" },
+                { "key": "statusIds", "value": "1" },
+                { "key": "statusIds", "value": "2" },
+                { "key": "sortOrder", "value": "desc" },
+                { "key": "pageNumber", "value": "1" },
+                { "key": "pageSize", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Listar Todas Solicitações (Gestão)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/Solicitacao?tipo=patrimonial&siglaDepartamento={{departamentoSigla}}&statusIds=1&statusIds=3&pageNumber=1&pageSize=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Solicitacao"],
+              "query": [
+                { "key": "tipo", "value": "patrimonial" },
+                { "key": "siglaDepartamento", "value": "{{departamentoSigla}}" },
+                { "key": "statusIds", "value": "1" },
+                { "key": "statusIds", "value": "3" },
+                { "key": "pageNumber", "value": "1" },
+                { "key": "pageSize", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Histórico da Solicitação",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/Solicitacao/{{solicitacaoId}}/historico"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Configuração e Dashboard",
+      "item": [
+        {
+          "name": "Buscar Configuração",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/Configuracao"
+          }
+        },
+        {
+          "name": "Atualizar Configuração",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/Configuracao",
+            "description": "Modelo UpdateConfiguracaoDto: prazoSubmissao?, maxQuantidadePorItem?, maxItensDiferentesPorSolicitacao?, emailContatoPrincipal?, emailParaNotificacoes?.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prazoSubmissao\": \"2026-12-31T23:59:59Z\",\n  \"maxQuantidadePorItem\": 100,\n  \"maxItensDiferentesPorSolicitacao\": 20,\n  \"emailContatoPrincipal\": \"contato@sigam.local\",\n  \"emailParaNotificacoes\": \"notificacoes@sigam.local\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Dashboard",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/Dashboard",
+            "description": "Retorna DashResultDto com KPIs, séries de gráfico e top itens do ano corrente."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Relatórios",
+      "item": [
+        {
+          "name": "Itens por Departamento (Paginado)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/Relatorio/itens-departamento?itemsType=geral&categoriaNome=Material&siglaDepartamento={{departamentoSigla}}&somenteSolicitacoesAtivas=true&pageNumber=1&pageSize=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Relatorio", "itens-departamento"],
+              "query": [
+                { "key": "itemsType", "value": "geral" },
+                { "key": "categoriaNome", "value": "Material" },
+                { "key": "siglaDepartamento", "value": "{{departamentoSigla}}" },
+                { "key": "somenteSolicitacoesAtivas", "value": "true" },
+                { "key": "pageNumber", "value": "1" },
+                { "key": "pageSize", "value": "20" }
+              ]
+            },
+            "description": "itemsType aceito: `geral` ou `patrimonial`."
+          }
+        },
+        {
+          "name": "Exportar Relatório CSV",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/Relatorio/itens-departamento/geral/exportar?formatoArquivo=csv&siglaDepartamento={{departamentoSigla}}"
+          }
+        },
+        {
+          "name": "Exportar Relatório Excel",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/Relatorio/itens-departamento/patrimonial/exportar?formatoArquivo=excel&siglaDepartamento={{departamentoSigla}}"
+          }
+        },
+        {
+          "name": "Exportar Relatório PDF",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/Relatorio/itens-departamento/geral/exportar?formatoArquivo=pdf&somenteSolicitacoesAtivas=true"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dados Públicos",
+      "item": [
+        {
+          "name": "Consultar Solicitações Públicas",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "noauth" },
+            "url": {
+              "raw": "{{baseUrl}}/api/dados-publicos/solicitacoes?dataInicio=2026-01-01&dataFim=2026-12-31&statusId={{statusId}}&siglaDepartamento={{departamentoSigla}}&itemsType=geral&valorMinimo=10&valorMaximo=100000&somenteSolicitacoesAtivas=true&pageNumber=1&pageSize=25",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "dados-publicos", "solicitacoes"],
+              "query": [
+                { "key": "dataInicio", "value": "2026-01-01" },
+                { "key": "dataFim", "value": "2026-12-31" },
+                { "key": "statusId", "value": "{{statusId}}" },
+                { "key": "siglaDepartamento", "value": "{{departamentoSigla}}" },
+                { "key": "itemsType", "value": "geral" },
+                { "key": "valorMinimo", "value": "10" },
+                { "key": "valorMaximo", "value": "100000" },
+                { "key": "somenteSolicitacoesAtivas", "value": "true" },
+                { "key": "pageNumber", "value": "1" },
+                { "key": "pageSize", "value": "25" }
+              ]
+            },
+            "description": "Endpoint público com mascaramento de dados sensíveis. Filtros opcionais: statusNome, categoriaNome, itemNome, catMat, itemsType (geral|patrimonial)."
+          }
+        }
+      ]
+    }
+  ]
+}
