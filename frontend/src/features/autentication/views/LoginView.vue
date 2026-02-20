@@ -123,6 +123,16 @@ const handleLogin = async () => {
             :loading="isLoading"
             class="w-full mt-2"
           />
+          <Button
+            type="button"
+            icon="pi pi-eye"
+            label="Acessar dados públicos"
+            severity="secondary"
+            text
+            class="w-full"
+            size="small"
+            @click="router.push('/transparencia')"
+          />
           <p class="text-center text-color-secondary">
             Ainda não possui acesso? Solicite junto à gestão do seu centro ou departamento.
           </p>
