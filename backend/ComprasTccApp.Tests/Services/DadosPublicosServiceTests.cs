@@ -134,6 +134,42 @@ public class DadosPublicosServiceTests
         csv.Should().NotContain("ana.silva@universidade.edu");
     }
 
+    [Fact]
+    public async Task ExportarSolicitacoesPdfAsync_DeveGerarPdf_QuandoConsultaPublica()
+    {
+        // Arrange
+        await using var context = CriarContexto(
+            nameof(ExportarSolicitacoesPdfAsync_DeveGerarPdf_QuandoConsultaPublica)
+        );
+        await SeedDadosAsync(context);
+        var service = CriarServico(context);
+
+        // Act
+        var bytes = await service.ExportarSolicitacoesPdfAsync(
+            dataInicio: null,
+            dataFim: null,
+            statusId: null,
+            statusNome: null,
+            siglaDepartamento: null,
+            categoriaNome: null,
+            itemNome: null,
+            catMat: null,
+            itemsType: null,
+            valorMinimo: null,
+            valorMaximo: null,
+            somenteSolicitacoesAtivas: null,
+            pageNumber: 1,
+            pageSize: 10
+        );
+
+        // Assert
+        bytes.Should().NotBeEmpty();
+        bytes[0].Should().Be((byte)'%');
+        bytes[1].Should().Be((byte)'P');
+        bytes[2].Should().Be((byte)'D');
+        bytes[3].Should().Be((byte)'F');
+    }
+
     private static DadosPublicosService CriarServico(AppDbContext context)
     {
         var loggerMock = new Mock<ILogger<DadosPublicosService>>();

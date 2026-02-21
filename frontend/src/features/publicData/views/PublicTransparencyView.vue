@@ -237,7 +237,7 @@ const buildFiltersForRequest = () => {
 /**
  * Exporta os dados públicos no formato solicitado e exibe feedback ao usuário.
  */
-const exportData = async (format: 'csv' | 'json' = 'csv') => {
+const exportData = async (format: 'csv' | 'pdf' | 'json' = 'csv') => {
   try {
     const blob = await publicDataStore.exportPublicSolicitations(buildFiltersForRequest(), format)
     const url = window.URL.createObjectURL(blob)
@@ -271,6 +271,11 @@ const exportOptions = ref([
     label: 'CSV (.csv)',
     icon: 'pi pi-file',
     command: () => exportData('csv'),
+  },
+  {
+    label: 'PDF (.pdf)',
+    icon: 'pi pi-file-pdf',
+    command: () => exportData('pdf'),
   },
   {
     label: 'JSON (.json)',
@@ -630,7 +635,7 @@ const statusSeverity = (status: string) => {
 
               <Column field="solicitanteNomeMascarado" header="Solicitante" style="min-width: 14rem" />
 
-              <Column field="valorTotalSolicitacao" header="Valor" style="min-width: 10rem">
+              <Column field="valorTotalSolicitacao" header="Valor Total" style="min-width: 10rem">
                 <template #body="{ data }">
                   {{ formatCurrency(data.valorTotalSolicitacao) }}
                 </template>

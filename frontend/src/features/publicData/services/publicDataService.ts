@@ -1,7 +1,7 @@
 import { apiClient } from '@/services/apiClient'
 import type { PublicSolicitationFilters, PublicSolicitationQueryResult } from '@/features/publicData/types'
 
-type PublicExportFormat = 'csv' | 'json'
+type PublicExportFormat = 'csv' | 'json' | 'pdf'
 
 interface IPublicDataService {
   getSolicitations(filters?: PublicSolicitationFilters): Promise<PublicSolicitationQueryResult>
@@ -55,17 +55,17 @@ export const publicDataService: IPublicDataService = {
 
   /**
    * Exporta dados públicos conforme o formato solicitado.
-   * Para CSV utiliza o arquivo retornado pela API.
+   * Para CSV/PDF utiliza o arquivo retornado pela API.
    * Para JSON serializa o payload de consulta em um Blob baixável.
    * @param filters Filtros aplicados na exportação.
-   * @param format Formato de saída (`csv` ou `json`).
+   * @param format Formato de saída (`csv`, `pdf` ou `json`).
    * @returns Blob pronto para download.
    */
   async exportSolicitations(filters, format) {
     try {
-      if (format === 'csv') {
+      if (format === 'csv' || format === 'pdf') {
         const response = await apiClient.get<Blob>('/dados-publicos/solicitacoes', {
-          params: buildParams(filters, 'csv'),
+          params: buildParams(filters, format),
           responseType: 'blob',
         })
 
