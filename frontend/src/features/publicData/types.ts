@@ -23,6 +23,7 @@ export interface PublicSolicitation {
   departamentoNome: string
   departamentoSigla: string
   valorTotalSolicitacao: number
+  justificativaGeral?: string | null
   itens: PublicSolicitationItem[]
 }
 
