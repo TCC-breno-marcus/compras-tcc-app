@@ -440,17 +440,13 @@ namespace Services
             DateTimeOffset? dataHoraSolicitacao
         )
         {
+            PdfFontResolver.EnsureInitialized();
             var isPatrimonial = itemsType.Equals("patrimonial", StringComparison.OrdinalIgnoreCase);
             var cultura = new CultureInfo("pt-BR");
             var usuario = string.IsNullOrWhiteSpace(usuarioSolicitante)
                 ? "Usuario nao identificado"
                 : usuarioSolicitante;
             var dataGeracao = dataHoraSolicitacao ?? DateTimeOffset.Now;
-            var todosOsDepartamentos = itens
-                .SelectMany(i => i.DemandaPorDepartamento.Select(d => d.Unidade.Sigla))
-                .Distinct()
-                .OrderBy(sigla => sigla)
-                .ToList();
 
             using var stream = new MemoryStream();
             using var document = new PdfDocument();
@@ -460,16 +456,15 @@ namespace Services
             page.Orientation = PdfSharpCore.PageOrientation.Landscape;
 
             XGraphics gfx = XGraphics.FromPdfPage(page);
-            var fonteTitulo = new XFont("Arial", 14, XFontStyle.Bold);
-            var fonteTexto = new XFont("Arial", 6.5, XFontStyle.Regular);
-            var fonteCabecalhoTabela = new XFont("Arial", 6.5, XFontStyle.Bold);
+            var fonteTitulo = new XFont("AppSans", 14, XFontStyle.Bold);
+            var fonteTexto = new XFont("AppSans", 8, XFontStyle.Regular);
+            var fonteCabecalhoTabela = new XFont("AppSans", 8, XFontStyle.Bold);
 
             const double margemEsquerda = 30;
             const double margemDireita = 30;
             const double margemTopo = 25;
             const double margemRodape = 25;
-            const double alturaCabecalhoTabela = 18;
-            const double alturaLinha = 16;
+            const double paddingCelula = 3;
             double larguraUtil = page.Width - margemEsquerda - margemDireita;
             double y = margemTopo + 50;
             int numeroPagina = 1;
@@ -486,46 +481,108 @@ namespace Services
                 "Preco Medio",
                 "Valor Total",
                 "Qtde. Total",
+                "Departamento",
+                "Qtde. Solicitada",
             };
-            cabecalhos.AddRange(todosOsDepartamentos.Select(sigla => $"Qtde {sigla}"));
             if (isPatrimonial)
             {
                 cabecalhos.Add("Justificativa(s)");
             }
 
-            var pesosColunas = new List<double> { 1.2, 1.9, 2.2, 2.2, 1.4, 1.2, 1.2, 1.2, 1.4, 0.9 };
-            pesosColunas.AddRange(todosOsDepartamentos.Select(_ => 0.8));
+            var pesosColunas = new List<double>
+            {
+                1.0,
+                1.6,
+                1.9,
+                1.9,
+                1.2,
+                1.0,
+                1.0,
+                1.0,
+                1.2,
+                0.9,
+                1.1,
+                1.0,
+            };
             if (isPatrimonial)
             {
-                pesosColunas.Add(2.0);
+                pesosColunas.Add(2.2);
             }
 
             var somaPesos = pesosColunas.Sum();
             var largurasColunas = pesosColunas.Select(p => larguraUtil * (p / somaPesos)).ToList();
 
-            string TruncarTexto(string? texto, double larguraColuna, XFont fonte)
+            List<string> QuebrarTexto(string? texto, double larguraColuna, XFont fonte, XGraphics grafico)
             {
                 if (string.IsNullOrWhiteSpace(texto))
                 {
-                    return string.Empty;
+                    return [string.Empty];
                 }
 
-                var valor = texto.Trim();
-                if (gfx.MeasureString(valor, fonte).Width <= larguraColuna - 4)
+                var limite = Math.Max(larguraColuna - 2 * paddingCelula, 10);
+                var linhas = new List<string>();
+                var paragrafos = texto.Replace("\r", string.Empty).Split('\n');
+
+                foreach (var paragrafo in paragrafos)
                 {
-                    return valor;
+                    var palavras = paragrafo.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                    if (palavras.Length == 0)
+                    {
+                        linhas.Add(string.Empty);
+                        continue;
+                    }
+
+                    var linhaAtual = string.Empty;
+                    foreach (var palavra in palavras)
+                    {
+                        var tentativa = string.IsNullOrEmpty(linhaAtual)
+                            ? palavra
+                            : $"{linhaAtual} {palavra}";
+                        if (grafico.MeasureString(tentativa, fonte).Width <= limite)
+                        {
+                            linhaAtual = tentativa;
+                            continue;
+                        }
+
+                        if (!string.IsNullOrEmpty(linhaAtual))
+                        {
+                            linhas.Add(linhaAtual);
+                        }
+
+                        if (grafico.MeasureString(palavra, fonte).Width <= limite)
+                        {
+                            linhaAtual = palavra;
+                            continue;
+                        }
+
+                        var trecho = string.Empty;
+                        foreach (var caractere in palavra)
+                        {
+                            var tentativaTrecho = trecho + caractere;
+                            if (
+                                grafico.MeasureString(tentativaTrecho, fonte).Width <= limite
+                                || string.IsNullOrEmpty(trecho)
+                            )
+                            {
+                                trecho = tentativaTrecho;
+                            }
+                            else
+                            {
+                                linhas.Add(trecho);
+                                trecho = caractere.ToString();
+                            }
+                        }
+
+                        linhaAtual = trecho;
+                    }
+
+                    if (!string.IsNullOrEmpty(linhaAtual))
+                    {
+                        linhas.Add(linhaAtual);
+                    }
                 }
 
-                const string sufixo = "...";
-                while (
-                    valor.Length > 1
-                    && gfx.MeasureString(valor + sufixo, fonte).Width > larguraColuna - 4
-                )
-                {
-                    valor = valor[..^1];
-                }
-
-                return valor + sufixo;
+                return linhas.Count == 0 ? [string.Empty] : linhas;
             }
 
             void DesenharCabecalho(PdfPage paginaAtual, XGraphics graficoAtual)
@@ -571,9 +628,39 @@ namespace Services
                 );
             }
 
-            void DesenharCabecalhoTabela(PdfPage paginaAtual, XGraphics graficoAtual, double yCabecalho)
+            double CalcularAlturaCabecalho(XGraphics graficoAtual)
+            {
+                var alturaLinhaCabecalho = graficoAtual.MeasureString("Ag", fonteCabecalhoTabela).Height;
+                var maxLinhasCabecalho = 1;
+
+                for (int i = 0; i < cabecalhos.Count; i++)
+                {
+                    var linhasCabecalho = QuebrarTexto(
+                        cabecalhos[i],
+                        largurasColunas[i],
+                        fonteCabecalhoTabela,
+                        graficoAtual
+                    );
+                    if (linhasCabecalho.Count > maxLinhasCabecalho)
+                    {
+                        maxLinhasCabecalho = linhasCabecalho.Count;
+                    }
+                }
+
+                return Math.Max(20, maxLinhasCabecalho * alturaLinhaCabecalho + 2 * paddingCelula);
+            }
+
+            var alturaCabecalhoTabela = CalcularAlturaCabecalho(gfx);
+
+            void DesenharCabecalhoTabela(
+                PdfPage paginaAtual,
+                XGraphics graficoAtual,
+                double yCabecalho,
+                double alturaCabecalhoAtual
+            )
             {
                 double x = margemEsquerda;
+                var alturaLinhaCabecalho = graficoAtual.MeasureString("Ag", fonteCabecalhoTabela).Height;
                 for (int i = 0; i < cabecalhos.Count; i++)
                 {
                     var larguraColuna = largurasColunas[i];
@@ -582,44 +669,87 @@ namespace Services
                         x,
                         yCabecalho,
                         larguraColuna,
-                        alturaCabecalhoTabela
+                        alturaCabecalhoAtual
                     );
                     graficoAtual.DrawRectangle(
                         XPens.Gray,
                         x,
                         yCabecalho,
                         larguraColuna,
-                        alturaCabecalhoTabela
+                        alturaCabecalhoAtual
                     );
-                    graficoAtual.DrawString(
-                        TruncarTexto(cabecalhos[i], larguraColuna, fonteCabecalhoTabela),
+                    var linhasCabecalho = QuebrarTexto(
+                        cabecalhos[i],
+                        larguraColuna,
                         fonteCabecalhoTabela,
-                        XBrushes.Black,
-                        new XRect(x + 2, yCabecalho + 2, larguraColuna - 4, alturaCabecalhoTabela - 4),
-                        XStringFormats.TopLeft
+                        graficoAtual
                     );
+                    for (int j = 0; j < linhasCabecalho.Count; j++)
+                    {
+                        graficoAtual.DrawString(
+                            linhasCabecalho[j],
+                            fonteCabecalhoTabela,
+                            XBrushes.Black,
+                            new XPoint(
+                                x + paddingCelula,
+                                yCabecalho + paddingCelula + alturaLinhaCabecalho * (j + 1) - 1
+                            )
+                        );
+                    }
                     x += larguraColuna;
                 }
             }
 
             DesenharCabecalho(page, gfx);
-            DesenharCabecalhoTabela(page, gfx, y);
+            DesenharCabecalhoTabela(page, gfx, y, alturaCabecalhoTabela);
             y += alturaCabecalhoTabela;
+
+            var alturaLinhaTexto = gfx.MeasureString("Ag", fonteTexto).Height;
 
             foreach (var item in itens)
             {
-                var justificativasTexto = string.Join(
-                    "; ",
-                    item.DemandaPorDepartamento.Where(d => !string.IsNullOrWhiteSpace(d.Justificativa))
-                        .Select(d => $"{d.Unidade.Sigla}: {d.Justificativa}")
-                        .Distinct()
-                );
-                var demandaDict = item.DemandaPorDepartamento.ToDictionary(
-                    d => d.Unidade.Sigla,
-                    d => d.QuantidadeTotal
-                );
+                var demandasOrdenadas = item
+                    .DemandaPorDepartamento.GroupBy(d => NormalizeDepartmentSigla(d.Unidade.Sigla))
+                    .Select(g => new DemandaPorDepartamentoDto
+                    {
+                        Unidade = new UnidadeOrganizacionalDto
+                        {
+                            Id = g.First().Unidade.Id,
+                            Nome = g.First().Unidade.Nome,
+                            Sigla = g.Key,
+                            Email = g.First().Unidade.Email,
+                            Telefone = g.First().Unidade.Telefone,
+                            Tipo = g.First().Unidade.Tipo,
+                        },
+                        QuantidadeTotal = g.Sum(x => x.QuantidadeTotal),
+                        Justificativa = string.Join(
+                            "; ",
+                            g.Select(x => x.Justificativa)
+                                .Where(j => !string.IsNullOrWhiteSpace(j))
+                                .Distinct()
+                        ),
+                    })
+                    .OrderBy(d => d.Unidade.Nome)
+                    .ToList();
 
-                var valoresLinha = new List<string>
+                if (demandasOrdenadas.Count == 0)
+                {
+                    demandasOrdenadas.Add(
+                        new DemandaPorDepartamentoDto
+                        {
+                            Unidade = new UnidadeOrganizacionalDto
+                            {
+                                Sigla = "-",
+                                Nome = "-",
+                                Tipo = "Departamento",
+                            },
+                            QuantidadeTotal = 0,
+                            Justificativa = string.Empty,
+                        }
+                    );
+                }
+
+                var valoresItem = new List<string>
                 {
                     item.CatMat ?? string.Empty,
                     item.Nome ?? string.Empty,
@@ -632,20 +762,68 @@ namespace Services
                     item.ValorTotalSolicitado.ToString("C", cultura),
                     item.QuantidadeTotalSolicitada.ToString(cultura),
                 };
-                valoresLinha.AddRange(
-                    todosOsDepartamentos.Select(sigla =>
-                        demandaDict.TryGetValue(sigla, out var quantidade)
-                            ? quantidade.ToString(cultura)
-                            : "0"
-                    )
-                );
 
-                if (isPatrimonial)
+                var deptColStart = 10;
+                var deptRowHeight = new List<double>();
+                var deptRowsLines = new List<List<List<string>>>();
+
+                foreach (var depto in demandasOrdenadas)
                 {
-                    valoresLinha.Add(justificativasTexto);
+                    var valoresDepto = new List<string>
+                    {
+                        depto.Unidade.Sigla ?? "-",
+                        depto.QuantidadeTotal.ToString(cultura),
+                    };
+                    if (isPatrimonial)
+                    {
+                        valoresDepto.Add(depto.Justificativa ?? string.Empty);
+                    }
+
+                    var linhasCelulaDepto = new List<List<string>>();
+                    var maxLinhasDepto = 1;
+
+                    for (int i = 0; i < valoresDepto.Count; i++)
+                    {
+                        var colIndex = deptColStart + i;
+                        var linhas = QuebrarTexto(
+                            valoresDepto[i],
+                            largurasColunas[colIndex],
+                            fonteTexto,
+                            gfx
+                        );
+                        linhasCelulaDepto.Add(linhas);
+                        if (linhas.Count > maxLinhasDepto)
+                        {
+                            maxLinhasDepto = linhas.Count;
+                        }
+                    }
+
+                    deptRowsLines.Add(linhasCelulaDepto);
+                    deptRowHeight.Add(Math.Max(16, maxLinhasDepto * alturaLinhaTexto + 2 * paddingCelula));
                 }
 
-                if (y + alturaLinha > page.Height - margemRodape - 12)
+                var alturaBlocoDepto = deptRowHeight.Sum();
+
+                var linhasItemPorCelula = new List<List<string>>();
+                var maxLinhasItem = 1;
+                for (int i = 0; i < valoresItem.Count; i++)
+                {
+                    var linhas = QuebrarTexto(valoresItem[i], largurasColunas[i], fonteTexto, gfx);
+                    linhasItemPorCelula.Add(linhas);
+                    if (linhas.Count > maxLinhasItem)
+                    {
+                        maxLinhasItem = linhas.Count;
+                    }
+                }
+
+                var alturaMinimaItem = Math.Max(16, maxLinhasItem * alturaLinhaTexto + 2 * paddingCelula);
+                var alturaBlocoItem = Math.Max(alturaBlocoDepto, alturaMinimaItem);
+                if (alturaBlocoDepto < alturaBlocoItem && deptRowHeight.Count > 0)
+                {
+                    deptRowHeight[^1] += (alturaBlocoItem - alturaBlocoDepto);
+                }
+
+                if (y + alturaBlocoItem > page.Height - margemRodape - 12)
                 {
                     DesenharRodape(page, gfx, numeroPagina);
                     page = document.AddPage();
@@ -655,26 +833,73 @@ namespace Services
                     numeroPagina++;
                     DesenharCabecalho(page, gfx);
                     y = margemTopo + 50;
-                    DesenharCabecalhoTabela(page, gfx, y);
+                    alturaCabecalhoTabela = CalcularAlturaCabecalho(gfx);
+                    DesenharCabecalhoTabela(page, gfx, y, alturaCabecalhoTabela);
                     y += alturaCabecalhoTabela;
+                    alturaLinhaTexto = gfx.MeasureString("Ag", fonteTexto).Height;
                 }
 
-                double xLinha = margemEsquerda;
-                for (int i = 0; i < valoresLinha.Count; i++)
+                var xItem = margemEsquerda;
+                for (int i = 0; i < valoresItem.Count; i++)
                 {
                     var larguraColuna = largurasColunas[i];
-                    gfx.DrawRectangle(XPens.LightGray, xLinha, y, larguraColuna, alturaLinha);
-                    gfx.DrawString(
-                        TruncarTexto(valoresLinha[i], larguraColuna, fonteTexto),
-                        fonteTexto,
-                        XBrushes.Black,
-                        new XRect(xLinha + 2, y + 2, larguraColuna - 4, alturaLinha - 4),
-                        XStringFormats.TopLeft
-                    );
-                    xLinha += larguraColuna;
+                    gfx.DrawRectangle(XPens.LightGray, xItem, y, larguraColuna, alturaBlocoItem);
+
+                    var linhas = linhasItemPorCelula[i];
+                    for (int j = 0; j < linhas.Count; j++)
+                    {
+                        gfx.DrawString(
+                            linhas[j],
+                            fonteTexto,
+                            XBrushes.Black,
+                            new XPoint(
+                                xItem + paddingCelula,
+                                y + paddingCelula + alturaLinhaTexto * (j + 1) - 1
+                            )
+                        );
+                    }
+
+                    xItem += larguraColuna;
                 }
 
-                y += alturaLinha;
+                var yDepto = y;
+                for (int linhaDepto = 0; linhaDepto < demandasOrdenadas.Count; linhaDepto++)
+                {
+                    var alturaLinhaDepto = deptRowHeight[linhaDepto];
+                    var xDepto = margemEsquerda + largurasColunas.Take(deptColStart).Sum();
+
+                    for (int i = 0; i < deptRowsLines[linhaDepto].Count; i++)
+                    {
+                        var colIndex = deptColStart + i;
+                        var larguraColuna = largurasColunas[colIndex];
+                        gfx.DrawRectangle(
+                            XPens.LightGray,
+                            xDepto,
+                            yDepto,
+                            larguraColuna,
+                            alturaLinhaDepto
+                        );
+
+                        var linhas = deptRowsLines[linhaDepto][i];
+                        for (int j = 0; j < linhas.Count; j++)
+                        {
+                            gfx.DrawString(
+                                linhas[j],
+                                fonteTexto,
+                                XBrushes.Black,
+                                new XPoint(
+                                    xDepto + paddingCelula,
+                                    yDepto + paddingCelula + alturaLinhaTexto * (j + 1) - 1
+                                )
+                            );
+                        }
+                        xDepto += larguraColuna;
+                    }
+
+                    yDepto += alturaLinhaDepto;
+                }
+
+                y += alturaBlocoItem;
             }
 
             DesenharRodape(page, gfx, numeroPagina);

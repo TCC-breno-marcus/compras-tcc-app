@@ -115,9 +115,16 @@ const exportOptions = ref([
       exportReport('csv')
     },
   },
+  {
+    label: 'PDF (.pdf)',
+    icon: 'pi pi-file-pdf',
+    command: () => {
+      exportReport('pdf')
+    },
+  },
 ])
 
-const exportReport = async (fileFormat: 'csv' | 'excel' = 'excel') => {
+const exportReport = async (fileFormat: 'csv' | 'excel' | 'pdf' = 'excel') => {
   try {
     reportLoading.value = true
 
@@ -126,7 +133,7 @@ const exportReport = async (fileFormat: 'csv' | 'excel' = 'excel') => {
     const link = document.createElement('a')
     link.href = url
 
-    const extension = fileFormat === 'excel' ? 'xlsx' : 'csv'
+    const extension = fileFormat === 'excel' ? 'xlsx' : fileFormat
     link.download = `relatorio_itens_por_departamento_${reportType.value}.${extension}`
 
     document.body.appendChild(link)
