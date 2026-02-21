@@ -69,6 +69,23 @@ describe('Service: publicDataService', () => {
     expect(result).toBe(blob)
   })
 
+  it('deve exportar PDF com responseType blob', async () => {
+    const blob = new Blob(['pdf'], { type: 'application/pdf' })
+    apiClientMock.get.mockResolvedValue({ data: blob })
+
+    const result = await publicDataService.exportSolicitations({ pageSize: '25' }, 'pdf')
+
+    expect(apiClientMock.get).toHaveBeenCalledWith('/dados-publicos/solicitacoes', {
+      params: expect.any(URLSearchParams),
+      responseType: 'blob',
+    })
+
+    const [, config] = apiClientMock.get.mock.calls[0]
+    const params = config.params as URLSearchParams
+    expect(params.get('formatoArquivo')).toBe('pdf')
+    expect(result).toBe(blob)
+  })
+
   it('deve exportar JSON como Blob serializado', async () => {
     apiClientMock.get.mockResolvedValue({
       data: {

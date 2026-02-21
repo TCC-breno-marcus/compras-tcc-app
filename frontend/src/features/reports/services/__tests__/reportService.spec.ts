@@ -50,6 +50,19 @@ describe('Service: reportService', () => {
     expect(result).toBe(blob)
   })
 
+  it('deve exportar itens por departamento em PDF', async () => {
+    const blob = new Blob(['pdf'], { type: 'application/pdf' })
+    apiClientMock.get.mockResolvedValue({ data: blob })
+
+    const result = await reportService.exportItemsPerDepartment('patrimonial', 'pdf')
+
+    expect(apiClientMock.get).toHaveBeenCalledWith('/relatorio/itens-departamento/patrimonial/exportar', {
+      params: { formatoArquivo: 'pdf' },
+      responseType: 'blob',
+    })
+    expect(result).toBe(blob)
+  })
+
   it('deve enviar DataInicio/DataFim no relatório de centro', async () => {
     apiClientMock.get.mockResolvedValue({ data: [] })
 
@@ -69,4 +82,3 @@ describe('Service: reportService', () => {
     ).rejects.toThrow('Não foi possível carregar o consumo por categoria.')
   })
 })
-

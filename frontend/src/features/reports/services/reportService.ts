@@ -8,7 +8,7 @@ interface IReportService {
   ): Promise<PaginatedResponse<ItemDepartmentResponse>>
   exportItemsPerDepartment(
     itemsType: 'geral' | 'patrimonial',
-    fileFormat: 'csv' | 'excel',
+    fileFormat: 'csv' | 'excel' | 'pdf',
   ): Promise<Blob>
   getCenterExpenses(filters: ReportDateFilters): Promise<CenterExpenseResponse[]>
   getCategoryConsumption(filters: ReportDateFilters): Promise<CategoryConsumptionResponse[]>
@@ -47,7 +47,7 @@ export const reportService: IReportService = {
   /**
    * Gerar um relatório com todos os itens solicitados agrupados por departamento na API.
    * @param itemsType O tipo de relatório (geral ou patrimonial)
-   * @param fileFormat O formato do arquivo ('csv' ou 'excel')
+   * @param fileFormat O formato do arquivo ('csv', 'excel' ou 'pdf')
    * @returns Um Blob contendo o arquivo no fileFormat especificado.
    */
   async exportItemsPerDepartment(itemsType, fileFormat = 'excel') {

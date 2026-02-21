@@ -90,6 +90,7 @@ const filters = reactive<PublicSolicitationFilters>({
 const startDate = ref<Date | null>(null)
 const endDate = ref<Date | null>(null)
 const valueRangeError = ref('')
+const expandedRows = ref<Record<string, boolean> | null>({})
 
 const toIsoStartDate = (date: Date) => {
   const start = new Date(date)
@@ -237,7 +238,7 @@ const buildFiltersForRequest = () => {
 /**
  * Exporta os dados públicos no formato solicitado e exibe feedback ao usuário.
  */
-const exportData = async (format: 'csv' | 'json' = 'csv') => {
+const exportData = async (format: 'csv' | 'pdf' | 'json' = 'csv') => {
   try {
     const blob = await publicDataStore.exportPublicSolicitations(buildFiltersForRequest(), format)
     const url = window.URL.createObjectURL(blob)
@@ -271,6 +272,11 @@ const exportOptions = ref([
     label: 'CSV (.csv)',
     icon: 'pi pi-file',
     command: () => exportData('csv'),
+  },
+  {
+    label: 'PDF (.pdf)',
+    icon: 'pi pi-file-pdf',
+    command: () => exportData('pdf'),
   },
   {
     label: 'JSON (.json)',
@@ -336,6 +342,20 @@ const statusSeverity = (status: string) => {
   if (normalized.includes('neg') || normalized.includes('cancel')) return 'danger'
 
   return 'info'
+}
+
+const expandAllRows = () => {
+  expandedRows.value = solicitations.value.reduce(
+    (acc, solicitation) => {
+      acc[String(solicitation.id)] = true
+      return acc
+    },
+    {} as Record<string, boolean>,
+  )
+}
+
+const collapseAllRows = () => {
+  expandedRows.value = {}
 }
 </script>
 
@@ -599,6 +619,7 @@ const statusSeverity = (status: string) => {
 
           <div v-else>
             <DataTable
+              v-model:expandedRows="expandedRows"
               :value="solicitations"
               dataKey="id"
               stripedRows
@@ -606,6 +627,27 @@ const statusSeverity = (status: string) => {
               scrollable
               class="mb-3"
             >
+              <template #header>
+                <div class="flex justify-content-end gap-2">
+                  <Button
+                    label="Expandir itens"
+                    icon="pi pi-plus"
+                    text
+                    size="small"
+                    @click="expandAllRows"
+                  />
+                  <Button
+                    label="Recolher itens"
+                    icon="pi pi-minus"
+                    text
+                    size="small"
+                    @click="collapseAllRows"
+                  />
+                </div>
+              </template>
+
+              <Column expander style="width: 4rem" />
+
               <Column field="externalId" header="Código" style="min-width: 10rem">
                 <template #body="{ data }">
                   {{ data.externalId || '-' }}
@@ -630,7 +672,7 @@ const statusSeverity = (status: string) => {
 
               <Column field="solicitanteNomeMascarado" header="Solicitante" style="min-width: 14rem" />
 
-              <Column field="valorTotalSolicitacao" header="Valor" style="min-width: 10rem">
+              <Column field="valorTotalSolicitacao" header="Valor Total" style="min-width: 10rem">
                 <template #body="{ data }">
                   {{ formatCurrency(data.valorTotalSolicitacao) }}
                 </template>
@@ -641,6 +683,47 @@ const statusSeverity = (status: string) => {
                   {{ data.itens?.length || 0 }}
                 </template>
               </Column>
+
+              <template #expansion="{ data }">
+                <div class="p-3 surface-50 border-round-sm">
+                  <div class="grid mb-2">
+                    <div class="col-12 md:col-4">
+                      <span class="text-xs text-color-secondary">Email</span>
+                      <div>{{ data.solicitanteEmailMascarado || '-' }}</div>
+                    </div>
+                    <div class="col-12 md:col-3">
+                      <span class="text-xs text-color-secondary">Telefone</span>
+                      <div>{{ data.solicitanteTelefoneMascarado || '-' }}</div>
+                    </div>
+                    <div class="col-12 md:col-5">
+                      <span class="text-xs text-color-secondary">Justificativa geral</span>
+                      <div>{{ data.justificativaGeral || '-' }}</div>
+                    </div>
+                  </div>
+
+                  <DataTable :value="data.itens || []" size="small" stripedRows responsiveLayout="scroll">
+                    <Column field="itemNome" header="Item" style="min-width: 14rem" />
+                    <Column field="catMat" header="CATMAT" style="min-width: 8rem" />
+                    <Column field="categoriaNome" header="Categoria" style="min-width: 12rem" />
+                    <Column field="quantidade" header="Quantidade" style="min-width: 8rem" />
+                    <Column field="valorUnitario" header="Valor Unitário" style="min-width: 10rem">
+                      <template #body="{ data: item }">
+                        {{ formatCurrency(item.valorUnitario) }}
+                      </template>
+                    </Column>
+                    <Column field="valorTotal" header="Valor Total Item" style="min-width: 10rem">
+                      <template #body="{ data: item }">
+                        {{ formatCurrency(item.valorTotal) }}
+                      </template>
+                    </Column>
+                    <Column field="justificativa" header="Justificativa por Item" style="min-width: 18rem">
+                      <template #body="{ data: item }">
+                        {{ item.justificativa || '-' }}
+                      </template>
+                    </Column>
+                  </DataTable>
+                </div>
+              </template>
             </DataTable>
 
             <div v-if="totalCount > 0" class="mb-3">

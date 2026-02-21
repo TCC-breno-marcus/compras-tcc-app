@@ -53,12 +53,12 @@ export const usePublicDataStore = defineStore('publicData', () => {
   /**
    * Exporta solicitações públicas no formato solicitado.
    * @param filters Filtros aplicados na exportação.
-   * @param format Formato de exportação (`csv` ou `json`).
+   * @param format Formato de exportação (`csv`, `pdf` ou `json`).
    * @returns Blob de exportação.
    */
   const exportPublicSolicitations = async (
     filters: PublicSolicitationFilters,
-    format: 'csv' | 'json',
+    format: 'csv' | 'pdf' | 'json',
   ) => {
     isExporting.value = true
     error.value = null

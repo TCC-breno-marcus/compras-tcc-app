@@ -26,6 +26,7 @@ namespace Models.Dtos
         public string DepartamentoNome { get; set; } = string.Empty;
         public string DepartamentoSigla { get; set; } = string.Empty;
         public decimal ValorTotalSolicitacao { get; set; }
+        public string? JustificativaGeral { get; set; }
         public List<PublicoSolicitacaoItemDto> Itens { get; set; } = [];
     }
 

@@ -26,4 +26,11 @@
     <None Remove="ComprasTccApp.Tests\**" />
     <Content Remove="ComprasTccApp.Tests\**" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="src/Assets/Fonts/*.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Link>Fonts/%(Filename)%(Extension)</Link>
+    </Content>
+  </ItemGroup>
 </Project>

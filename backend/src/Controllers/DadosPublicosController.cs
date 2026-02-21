@@ -23,10 +23,11 @@ namespace Controllers
         }
 
         /// <summary>
-        /// Consulta pública de solicitações com filtros e permite retorno em JSON ou exportação em CSV com dados mascarados.
+        /// Consulta pública de solicitações com filtros e permite retorno em JSON ou exportação em CSV/PDF com dados mascarados.
         /// </summary>
         /// <returns>
-        /// Resultado paginado em JSON quando formatoArquivo = json (padrão) ou arquivo CSV quando formatoArquivo = csv.
+        /// Resultado paginado em JSON quando formatoArquivo = json (padrão), arquivo CSV quando formatoArquivo = csv
+        /// e arquivo PDF quando formatoArquivo = pdf.
         /// </returns>
         [HttpGet("solicitacoes")]
         [ProducesResponseType(typeof(PublicoSolicitacaoConsultaResultDto), 200)]
@@ -78,12 +79,38 @@ namespace Controllers
                     );
                 }
 
+                if (formatoArquivo.Equals("pdf", StringComparison.OrdinalIgnoreCase))
+                {
+                    var pdfBytes = await _dadosPublicosService.ExportarSolicitacoesPdfAsync(
+                        dataInicio,
+                        dataFim,
+                        statusId,
+                        statusNome,
+                        siglaDepartamento,
+                        categoriaNome,
+                        itemNome,
+                        catMat,
+                        itemsType,
+                        valorMinimo,
+                        valorMaximo,
+                        somenteSolicitacoesAtivas,
+                        pageNumber,
+                        pageSize
+                    );
+
+                    return File(
+                        pdfBytes,
+                        "application/pdf",
+                        $"dados-publicos-solicitacoes-{DateTime.UtcNow:yyyyMMdd-HHmmss}.pdf"
+                    );
+                }
+
                 if (!formatoArquivo.Equals("json", StringComparison.OrdinalIgnoreCase))
                 {
                     return BadRequest(
                         new
                         {
-                            message = "O formatoArquivo deve ser 'json' ou 'csv'.",
+                            message = "O formatoArquivo deve ser 'json', 'csv' ou 'pdf'.",
                         }
                     );
                 }
