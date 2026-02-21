@@ -10,6 +10,7 @@ Este manual apresenta apenas as funcionalidades do perfil `Solicitante`.
 1. Acesse a tela `Acesso ao Sistema`.
 2. Preencha os campos `Email` e `Senha`.
 3. Clique em `Entrar`.
+4. Para consultar dados públicos sem autenticação, clique em `Acessar dados públicos`.
 
 Mensagens de validação mais comuns:
 - `O email é obrigatório.`
@@ -21,6 +22,7 @@ Mensagens de validação mais comuns:
 Menu disponível para solicitante:
 - `Início`
 - `Solicitações`
+- `Transparência`
 - `Fale Conosco`
 
 Menu do avatar:
@@ -30,8 +32,24 @@ Menu do avatar:
 - `Alternar Tema`
 - `Sair`
 
+### 1.3 Portal de Transparência (acesso público e interno)
+<img width="1906" height="902" alt="image" src="https://github.com/user-attachments/assets/1887b644-915d-4e81-b59f-277f38c9f362" />
+
+Rota: `/transparencia`
+
+Funcionalidades:
+- Consulta pública de solicitações com dados mascarados.
+- Filtros por período, status, departamento, categoria, item, CATMAT, tipo e faixa de valores.
+- Exportação em `CSV` ou `JSON`.
+
+Observações:
+- O botão `Entrar` aparece no cabeçalho quando o usuário não está autenticado.
+- O botão `Voltar ao sistema` aparece para usuários logados.
+
 ## 2. Página inicial
 ![alt text](imgs/image2.png)
+
+Rota: `/inicio`
 
 Na home, o solicitante tem acesso aos atalhos:
 - `Nova Solicitação` (botões `Geral` e `Patrimonial`)

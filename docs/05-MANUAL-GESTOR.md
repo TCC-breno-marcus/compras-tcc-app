@@ -39,6 +39,7 @@ Recomendação de segurança:
 Menu principal do gestor:
 - `Início`
 - `Painel do Gestor`
+- `Transparência`
 - `Fale Conosco`
 - `Configurações`
 
@@ -49,8 +50,30 @@ Menu do avatar:
 - `Alternar Tema`
 - `Sair`
 
+### 1.5 Portal de Transparência (acesso público e interno)
+<img width="1906" height="902" alt="image" src="https://github.com/user-attachments/assets/4b8477c6-45f5-4dec-b22b-1a69c428192b" />
+
+Rota: `/transparencia`
+
+Funcionalidades:
+- Consulta de solicitações públicas com dados anonimizados/mascarados.
+- Filtros por:
+  - período (`Data início` e `Data fim`)
+  - `Status`
+  - `Departamento`
+  - `Categoria`
+  - `Item`
+  - `CATMAT`
+  - `Tipo` (geral/patrimonial)
+  - faixa de valores (`Valor mínimo` e `Valor máximo`)
+- Exportação de dados em:
+  - `CSV (.csv)`
+  - `JSON (.json)`
+
 ## 2. Página inicial do gestor
 <img width="1907" height="903" alt="image" src="https://github.com/user-attachments/assets/c5ed7f1d-a8d6-4ea8-b425-a9b334b8293a" />
+
+Rota: `/inicio`
 
 Atalhos para as principais funcionalidades:
   - `Itens por Departamento`
